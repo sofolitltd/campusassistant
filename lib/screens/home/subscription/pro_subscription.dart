@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
-
-import '/bkash/bkash_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '/bkash/bkash_payment.dart';
 
 final List<Map<String, dynamic>> proFeatures = [
   {'title': 'N0 long Ads'},
@@ -236,7 +236,7 @@ class _ProSubscriptionPageState extends State<ProSubscriptionPage> {
                       );
                     },
                   ),
-                  // const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Text(
                     'Payment Method',
                     style: Theme.of(context)

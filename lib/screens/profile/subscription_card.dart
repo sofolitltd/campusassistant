@@ -43,12 +43,11 @@ class UserSubscriptionCard extends StatelessWidget {
           final start = _formatDate(data['startDate']);
           final end = _formatDate(data['endDate']);
 
-          return Card(
-            margin: EdgeInsets.zero,
-            elevation: 1,
-            color: Colors.orange.shade50,
-            shape: RoundedRectangleBorder(
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.shade100),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -73,6 +72,7 @@ class UserSubscriptionCard extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4,
                       children: [
                         Text(
                           "Pro User ($plan)",
@@ -80,7 +80,9 @@ class UserSubscriptionCard extends StatelessWidget {
                               fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                         Text(
-                          '$start  -  $end',
+                          end.isEmpty
+                              ? '$start  - Life Time'
+                              : '$start  -  $end',
                           style: const TextStyle(color: Colors.black),
                         ),
                       ],

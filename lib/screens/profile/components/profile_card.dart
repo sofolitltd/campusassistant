@@ -7,13 +7,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../subscription_card.dart';
 import '/admin/admin_dashboard.dart';
 import '/models/profile_data.dart';
 import '/screens/auth/new_splash_screen.dart';
 import '/screens/community/notice/notice_group.dart';
 import '/screens/profile/moderator/moderator_dashboard.dart';
 import '../profile_edit.dart';
+import '../subscription_card.dart';
 
 enum Profession { student, teacher }
 
@@ -255,6 +255,9 @@ class ProfileCard extends StatelessWidget {
                               //
                               Expanded(
                                 child: OutlinedButton(
+                                  style: ButtonStyle(
+                                    visualDensity: VisualDensity.compact,
+                                  ),
                                   onPressed: () {
                                     Navigator.push(
                                       context,
@@ -273,8 +276,11 @@ class ProfileCard extends StatelessWidget {
                               // log out
                               Expanded(
                                 child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    visualDensity: VisualDensity.compact,
+                                  ),
                                   onPressed: () async {
-                                    logOutDialog(context);
+                                    await logOutDialog(context);
                                   },
                                   child: Text('Log out'.toUpperCase()),
                                 ),
@@ -290,7 +296,8 @@ class ProfileCard extends StatelessWidget {
             ),
 
             // subscription
-            UserSubscriptionCard(uid: profileData.uid),
+            if (profileData.information.status!.subscriber == "pro")
+              UserSubscriptionCard(uid: profileData.uid),
 
             // contact
             Column(
@@ -516,77 +523,105 @@ class ProfileCard extends StatelessWidget {
   }
 
   // logout dialog
-  logOutDialog(context) {
+  Future logOutDialog(BuildContext context) {
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Log out'),
-        content: const Text('Are you sure to log out?'),
-        actionsPadding: const EdgeInsets.only(
-          right: 12,
-          left: 12,
-          bottom: 12,
-        ),
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-        actions: [
-          //
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Cancel'.toUpperCase()),
+      barrierDismissible: false, // prevent closing while loading
+      builder: (context) {
+        bool isLoading = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: const Text('Log out'),
+            content: const Text('Are you sure to log out?'),
+            actionsPadding: const EdgeInsets.only(
+              right: 12,
+              left: 12,
+              bottom: 12,
+            ),
+            actions: [
+              // Cancel button (disabled if loading)
+              OutlinedButton(
+                style: const ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                ),
+                onPressed: isLoading ? null : () => Navigator.pop(context),
+                child: Text('Cancel'.toUpperCase()),
+              ),
+
+              const SizedBox(width: 1),
+
+              // Logout button
+              ElevatedButton(
+                  style: const ButtonStyle(
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          setState(() => isLoading = true);
+
+                          // unsubscribe
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                              .snapshots()
+                              .first // only take once
+                              .then((data) async {
+                            ProfileData profileData =
+                                ProfileData.fromJson(data.data()!);
+
+                            // topic
+                            var topicSource =
+                                '${profileData.university} ${profileData.department} ${profileData.information.batch!}';
+                            var topic =
+                                topicSource.replaceAll(' ', '_').toLowerCase();
+                            log('topic: $topic');
+
+                            if (!kIsWeb) {
+                              await FirebaseMessaging.instance
+                                  .unsubscribeFromTopic('all-users');
+                              await FirebaseMessaging.instance
+                                  .unsubscribeFromTopic(topic);
+                              log('Unsubscribed from $topic');
+                            }
+
+                            // sign out
+                            await FirebaseAuth.instance.signOut();
+
+                            // go to splash
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NewSplashScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          });
+                        },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isLoading)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      //
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8, right: 8),
+                        child: Text('Log out'.toUpperCase()),
+                      )
+                    ],
+                  )),
+            ],
           ),
-
-          //
-          ElevatedButton(
-            onPressed: () async {
-              //unsubscribe
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .snapshots()
-                  .forEach((data) async {
-                ProfileData profileData = ProfileData.fromJson(data.data());
-
-                // todo: notification topic
-                var topicSource =
-                    '${profileData.university} ${profileData.department} ${profileData.information.batch!}';
-                var topic = topicSource.replaceAll(' ', '_').toLowerCase();
-                log('topic: $topic');
-
-                if (!kIsWeb) {
-                  //
-                  await FirebaseMessaging.instance
-                      .unsubscribeFromTopic('all-users');
-
-                  //
-                  await FirebaseMessaging.instance
-                      .unsubscribeFromTopic(topic)
-                      .then((value) async {
-                    log('unsubscribeFromTopic $topic');
-
-                    ///log out
-                    await FirebaseAuth.instance.signOut().then(
-                      (value) {
-                        // got to
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const NewSplashScreen()),
-                            (route) => false);
-                      },
-                    );
-                    //
-                  });
-                }
-              });
-            },
-            child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text('Log out'.toUpperCase())),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

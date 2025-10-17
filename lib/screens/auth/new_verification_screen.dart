@@ -129,8 +129,7 @@ class _NewVerificationScreenState extends State<NewVerificationScreen> {
 
                                       //
                                       await FirebaseFirestore.instance
-                                          .collection(
-                                              'verification') // Todo: jus for test
+                                          .collection('verifications')
                                           .doc(enteredCode)
                                           .get()
                                           .then(

@@ -102,7 +102,7 @@ class BkashApis {
             {
               "mode": "0011",
               "payerReference": payerReference,
-              "callbackURL": 'https://campusassistantbd.web.app/',
+              "callbackURL": 'https://campusassistant.web.app/',
               "amount": amount,
               "currency": "BDT",
               "intent": "sale",

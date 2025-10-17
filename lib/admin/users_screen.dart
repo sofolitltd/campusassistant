@@ -1098,7 +1098,12 @@ class _UsersScreenState extends State<UsersScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: MediaQuery.of(context).size.width > 800
+                  ? MediaQuery.of(context).size.width * .2
+                  : 16,
+            ),
             child: Column(
               children: [
                 // University filter
@@ -1226,12 +1231,23 @@ class _UsersScreenState extends State<UsersScreen> {
                 return false;
               },
               child: ListView.builder(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width > 800
+                      ? MediaQuery.of(context).size.width * .19
+                      : 16,
+                ),
                 itemCount: _users.length + 1,
                 itemBuilder: (context, index) {
                   if (index == _users.length) {
                     return _isLoading
-                        ? const Padding(
-                            padding: EdgeInsets.all(16),
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal:
+                                  MediaQuery.of(context).size.width > 800
+                                      ? MediaQuery.of(context).size.width * .2
+                                      : 16,
+                            ),
                             child: Center(child: CupertinoActivityIndicator()),
                           )
                         : const SizedBox();

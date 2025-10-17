@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -165,7 +166,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall!
-                                          .copyWith(height: 1.2),
+                                          .copyWith(
+                                              height: 1.2, color: Colors.red),
                                     ),
 
                                     //
@@ -173,8 +175,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             _pickedMobileImage == null
-                                                ? Colors.deepPurple
-                                                : Colors.red,
+                                                ? Colors.grey
+                                                : Colors.red.shade400,
                                       ),
                                       onPressed: () async {
                                         await pickImage(context);
@@ -317,19 +319,76 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   //add image
-  pickImage(context) async {
+  // Future<void> pickImage(context) async {
+  //   // Pick an image
+  //   XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //
+  //   //
+  //   CroppedFile? croppedImage = await ImageCropper().cropImage(
+  //     sourcePath: image!.path,
+  //     compressFormat: ImageCompressFormat.jpg,
+  //     compressQuality: 40,
+  //     uiSettings: [
+  //       //android
+  //       AndroidUiSettings(
+  //         toolbarTitle: 'image Customization',
+  //         toolbarColor: ThemeData().cardColor,
+  //         toolbarWidgetColor: Colors.deepOrange,
+  //         initAspectRatio: CropAspectRatioPreset.square,
+  //         lockAspectRatio: false,
+  //         cropStyle: CropStyle.rectangle,
+  //         aspectRatioPresets: [
+  //           CropAspectRatioPreset.original,
+  //           CropAspectRatioPreset.square,
+  //           CropAspectRatioPreset.ratio3x2,
+  //           CropAspectRatioPreset.ratio4x3,
+  //           CropAspectRatioPreset.ratio16x9
+  //         ],
+  //       ),
+  //
+  //       //web
+  //       WebUiSettings(
+  //         context: context,
+  //         presentStyle: WebPresentStyle.dialog,
+  //         size: const CropperSize(
+  //           width: 350,
+  //           height: 350,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  //
+  //   if (!kIsWeb) {
+  //     if (croppedImage != null) {
+  //       var selectedMobileImage = File(croppedImage.path);
+  //       setState(() {
+  //         _pickedMobileImage = selectedMobileImage;
+  //       });
+  //     }
+  //   } else if (kIsWeb) {
+  //     if (croppedImage != null) {
+  //       var selectedWebImage = await croppedImage.readAsBytes();
+  //       setState(() {
+  //         _webImage = selectedWebImage;
+  //         _pickedMobileImage = File('');
+  //       });
+  //     }
+  //   }
+  // }
+
+  Future<void> pickImage(BuildContext context) async {
     // Pick an image
     XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) return;
 
-    //
+    // Crop
     CroppedFile? croppedImage = await ImageCropper().cropImage(
-      sourcePath: image!.path,
+      sourcePath: image.path,
       compressFormat: ImageCompressFormat.jpg,
-      compressQuality: 40,
+      compressQuality: 90, // start high quality
       uiSettings: [
-        //android
         AndroidUiSettings(
-          toolbarTitle: 'image Customization',
+          toolbarTitle: 'Image Customization',
           toolbarColor: ThemeData().cardColor,
           toolbarWidgetColor: Colors.deepOrange,
           initAspectRatio: CropAspectRatioPreset.square,
@@ -343,35 +402,79 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             CropAspectRatioPreset.ratio16x9
           ],
         ),
-
-        //web
         WebUiSettings(
           context: context,
           presentStyle: WebPresentStyle.dialog,
-          size: const CropperSize(
-            width: 350,
-            height: 350,
-          ),
+          size: const CropperSize(width: 350, height: 350),
         ),
       ],
     );
 
+    if (croppedImage == null) return;
+
     if (!kIsWeb) {
-      if (croppedImage != null) {
-        var selectedMobileImage = File(croppedImage.path);
-        setState(() {
-          _pickedMobileImage = selectedMobileImage;
-        });
-      }
-    } else if (kIsWeb) {
-      if (croppedImage != null) {
-        var selectedWebImage = await croppedImage.readAsBytes();
-        setState(() {
-          _webImage = selectedWebImage;
-          _pickedMobileImage = File('');
-        });
-      }
+      /// ---- Mobile ----
+      File file = File(croppedImage.path);
+      print("📏 Cropped size: ${file.lengthSync() / 1024} KB");
+
+      // Re-encode to reduce size if needed
+      Uint8List compressed =
+          await _compressImageIfNeeded(await file.readAsBytes(), 150 * 1024);
+
+      // Save back to File (optional)
+      File finalFile = await file.writeAsBytes(compressed);
+
+      print("✅ Final size: ${finalFile.lengthSync() / 1024} KB");
+
+      setState(() {
+        _pickedMobileImage = finalFile;
+      });
+    } else {
+      /// ---- Web ----
+      Uint8List bytes = await croppedImage.readAsBytes();
+      print("📏 Cropped size: ${bytes.length / 1024} KB");
+
+      Uint8List compressed = await _compressImageIfNeeded(bytes, 150 * 1024);
+
+      print("✅ Final size: ${compressed.length / 1024} KB");
+
+      setState(() {
+        _webImage = compressed;
+        _pickedMobileImage = File('');
+      });
     }
+  }
+
+  /// Compress bytes by re-encoding with lower quality until under [maxSize]
+  Future<Uint8List> _compressImageIfNeeded(Uint8List bytes, int maxSize) async {
+    if (bytes.length <= maxSize) return bytes;
+
+    int quality = 90;
+    Uint8List result = bytes;
+
+    while (result.length > maxSize && quality > 10) {
+      final codec = await ui.instantiateImageCodec(
+        bytes,
+        targetWidth: null,
+        targetHeight: null,
+        allowUpscaling: false,
+      );
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
+
+      final byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png, // or .jpeg if you want
+      );
+
+      if (byteData != null) {
+        result = byteData.buffer.asUint8List();
+      }
+
+      print("⚡ Trying quality: $quality | size: ${result.length / 1024} KB");
+      quality -= 10;
+    }
+
+    return result;
   }
 
   // createNewUser
@@ -436,7 +539,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   //
-  addUserInformation(String uid, image) async {
+  Future<void> addUserInformation(String uid, image) async {
     String? token = '';
     if (!kIsWeb) {
       token = await FirebaseMessaging.instance.getToken();
@@ -473,7 +576,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   //update student info
-  updateStudentInformation({required String image}) async {
+  Future<void> updateStudentInformation({required String image}) async {
     await FirebaseFirestore.instance
         .collection('Universities')
         .doc(widget.university)
@@ -493,7 +596,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   // delete verification
-  deleteVerificationToken(String downloadUrl) async {
+  Future<void> deleteVerificationToken(String downloadUrl) async {
     await FirebaseFirestore.instance
         .collection('Universities')
         .doc(widget.university)

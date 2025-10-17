@@ -1,14 +1,19 @@
-import 'package:campusassistant/screens/home/slider/pro_subscription.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SliderSection extends StatelessWidget {
-  const SliderSection({super.key});
+import 'pro_subscription.dart';
+
+class ProBannerSection extends StatelessWidget {
+  const ProBannerSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width > 800
+            ? MediaQuery.of(context).size.width * .195
+            : 12,
+      ),
       child: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -47,22 +52,26 @@ class SliderSection extends StatelessWidget {
 
                     //
                     Text(
-                      'আমাদের অ্যাপে গুগল হোস্টিং ব্যবহৃত হচ্ছে। ফলে হোস্টিং খরচ ও রক্ষণাবেক্ষণ দিন দিন কঠিন হয়ে পড়ছে। তাই প্রজেক্টটি সচল রাখতে সকলের সহযোগিতা একান্ত কাম্য। অনুগ্রহ করে সাবস্ক্রাইব করে পাশে থাকুন। ধন্যবাদ।',
+                      'অ্যাপে গুগল হোস্টিং ব্যবহৃত হচ্ছে। ফলে হোস্টিং খরচ ও রক্ষণাবেক্ষণ দিন দিন কঠিন হয়ে পড়ছে। তাই প্রজেক্টটি সচল রাখতে সকলের সহযোগিতা একান্ত কাম্য। অনুগ্রহ করে সাবস্ক্রাইব করে পাশে থাকুন। ধন্যবাদ।',
                       style: GoogleFonts.tiroBangla(
                         textStyle: Theme.of(context)
                             .textTheme
                             .bodySmall!
-                            .copyWith(color: Colors.black),
+                            .copyWith(color: Colors.black, height: 1.4),
                       ),
                     ),
                   ],
                 ),
 
                 //
-                Icon(
-                  Icons.diamond_outlined,
-                  size: 32,
-                  color: Colors.red,
+                Positioned(
+                  top: -4,
+                  right: 0,
+                  child: Icon(
+                    Icons.diamond_outlined,
+                    size: 32,
+                    color: Colors.red,
+                  ),
                 ),
               ],
             ),

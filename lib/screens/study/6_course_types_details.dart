@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '/models/content_model.dart';
@@ -38,39 +40,42 @@ class CourseTypesDetails extends StatefulWidget {
 }
 
 class _CourseTypesDetailsState extends State<CourseTypesDetails> {
+  String _selectedBatch = "";
+
   // init
   @override
   void initState() {
     super.initState();
-    // initBannerAd();
+    initBannerAd();
+    _selectedBatch = widget.selectedBatch; // default selected
   }
 
   // banner ad
-  // BannerAd? bannerAd;
-  // bool _isAdLoaded = false;
+  BannerAd? bannerAd;
+  bool _isAdLoaded = false;
   // String adUnitId = 'ca-app-pub-3940256099942544/6300978111'; //test id
   String adUnitId = 'ca-app-pub-2392427719761726/6294434973'; //real id
 
-  // initBannerAd() {
-  //   bannerAd = BannerAd(
-  //     size: AdSize.banner,
-  //     adUnitId: adUnitId,
-  //     listener: BannerAdListener(
-  //       onAdLoaded: (ad) {
-  //         // setState(() {
-  //         //   _isAdLoaded = true;
-  //         // });
-  //         log('ad load: ${ad.adUnitId}');
-  //       },
-  //       onAdFailedToLoad: (ad, error) {
-  //         ad.dispose();
-  //         log('ad error: ${error.message}');
-  //       },
-  //     ),
-  //     request: const AdRequest(),
-  //   );
-  //   bannerAd!.load();
-  // }
+  void initBannerAd() {
+    bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: adUnitId,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+          log('ad load: ${ad.adUnitId}');
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log('ad error: ${error.message}');
+        },
+      ),
+      request: const AdRequest(),
+    );
+    bannerAd!.load();
+  }
 
   //
   @override
@@ -107,20 +112,102 @@ class _CourseTypesDetailsState extends State<CourseTypesDetails> {
       //
       body: Column(
         children: [
+          const SizedBox(height: 8),
+
+          // ✅ Batch selector row (All + Dropdown)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                const Text('Filter: '),
+                const Spacer(),
+
+                // All button
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedBatch = "All";
+                    });
+                  },
+                  child: Card(
+                    color: _selectedBatch == "All"
+                        ? Colors.pink.shade100
+                        : Colors.grey.shade200,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 7, horizontal: 12),
+                      child: Text(
+                        "All ${widget.courseType.toLowerCase()}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Dropdown for batches
+                Card(
+                  color: _selectedBatch != "All"
+                      ? Colors.pink.shade100
+                      : Colors.grey.shade200,
+                  child: DropdownButton<String>(
+                    underline: const SizedBox(),
+                    isDense: true,
+                    padding: const EdgeInsets.fromLTRB(12, 4, 4, 4),
+
+                    // ✅ If "All", then show null
+                    value: _selectedBatch == "All" ? null : _selectedBatch,
+
+                    hint: const Text("Select Batch"),
+
+                    // ✅ Ensure items are unique
+                    items: widget.batches.toSet().map((batch) {
+                      return DropdownMenuItem<String>(
+                        value: batch,
+                        child: Text(batch),
+                      );
+                    }).toList(),
+
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBatch = value ?? "All";
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
           //
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('Universities')
-                  .doc(widget.university)
-                  .collection('Departments')
-                  .doc(widget.department)
-                  .collection(widget.courseType.toLowerCase())
-                  .where('status', whereIn: ['basic', subscriber])
-                  .where('courseCode', isEqualTo: widget.courseModel.courseCode)
-                  .where('batches', arrayContains: widget.selectedBatch)
-                  // .where('lessonNo', isEqualTo: courseType.lessonNo)
-                  .snapshots(),
+              stream: _selectedBatch == "All"
+                  ? FirebaseFirestore.instance
+                      .collection('Universities')
+                      .doc(widget.university)
+                      .collection('Departments')
+                      .doc(widget.department)
+                      .collection(widget.courseType.toLowerCase())
+                      // .where('status', whereIn: ['basic', subscriber])
+                      .where('courseCode',
+                          isEqualTo: widget.courseModel.courseCode)
+                      // .where('batches', arrayContains: widget.selectedBatch)
+                      // .where('lessonNo', isEqualTo: courseType.lessonNo)
+                      .snapshots()
+                  : FirebaseFirestore.instance
+                      .collection('Universities')
+                      .doc(widget.university)
+                      .collection('Departments')
+                      .doc(widget.department)
+                      .collection(widget.courseType.toLowerCase())
+                      // .where('status', whereIn: ['basic', subscriber])
+                      .where('courseCode',
+                          isEqualTo: widget.courseModel.courseCode)
+                      .where('batches', arrayContains: _selectedBatch)
+                      // .where('lessonNo', isEqualTo: courseType.lessonNo)
+                      .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return const Center(child: Text('Something wrong'));
@@ -169,17 +256,17 @@ class _CourseTypesDetailsState extends State<CourseTypesDetails> {
           ),
 
           //banner ad
-          // if (!kIsWeb && bannerAd != null
-          //     // _isAdLoaded
-          //     // && widget.profileData.information.status!.subscriber != 'pro'
-          //     ) ...[
-          //   Container(
-          //     margin: const EdgeInsets.symmetric(vertical: 8),
-          //     height: bannerAd!.size.height.toDouble(),
-          //     width: bannerAd!.size.width.toDouble(),
-          //     child: AdWidget(ad: bannerAd!),
-          //   )
-          // ],
+          if (!kIsWeb &&
+              bannerAd != null &&
+              _isAdLoaded &&
+              widget.profileData.information.status!.subscriber != 'pro') ...[
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              height: bannerAd!.size.height.toDouble(),
+              width: bannerAd!.size.width.toDouble(),
+              child: AdWidget(ad: bannerAd!),
+            )
+          ],
         ],
       ),
     );

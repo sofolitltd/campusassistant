@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "campusassistantbd"
+  },
+  "targets": {
+    "campusassistantbd": {
+      "hosting": {
+        "campusassistant": [
+          "campusassistant"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

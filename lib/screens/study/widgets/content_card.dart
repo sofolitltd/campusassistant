@@ -12,6 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '/models/content_model.dart';
 import '/models/profile_data.dart';
+import '/screens/home/subscription/pro_subscription.dart';
 import '/screens/study/uploader/content_edit.dart';
 import '/screens/study/widgets/bookmark_button.dart';
 import '/widgets/open_app.dart';
@@ -52,8 +53,8 @@ class _ContentCardState extends State<ContentCard> {
   late InterstitialAd interstitialAd;
   bool _isAdLoaded = false;
 
-  String adUnitId = 'ca-app-pub-3940256099942544/1033173712'; //test idF
-  // String adUnitId = 'ca-app-pub-2392427719761726/7253073672'; //real id
+  // String adUnitId = 'ca-app-pub-3940256099942544/1033173712'; //test id
+  String adUnitId = 'ca-app-pub-2392427719761726/7253073672'; //real id
 
   //
   void initInterstitialAd() {
@@ -118,44 +119,133 @@ class _ContentCardState extends State<ContentCard> {
               topRight: Radius.circular(8),
             ),
             // view pdf
+            // onTap: () async {
+            //   //todo: fix before web publish
+            //   if (kIsWeb) {
+            //     // Navigator.push(
+            //     //   context,
+            //     //   MaterialPageRoute(
+            //     //     builder: (context) => PdfViewerWeb(
+            //     //       title: widget.contentModel.contentTitle,
+            //     //       fileUrl: widget.contentModel.fileUrl,
+            //     //     ),
+            //     //   ),
+            //     // );
+            //   } else {
+            //     if (widget.contentModel.status == 'pro' &&
+            //         widget.profileData.information.status!.subscriber ==
+            //             'pro') {
+            //       log('Pro user');
+            //       //
+            //       if (File(
+            //               '/storage/emulated/0/Download/Campus Assistant/$fileName')
+            //           .existsSync()) {
+            //         await openFileAndroid(fileName: fileName);
+            //       } else {
+            //         setState(() => _isLoading = true);
+            //
+            //         //
+            //         await downloadFileAndroid(
+            //           url: widget.contentModel.fileUrl,
+            //           fileName: fileName,
+            //         );
+            //
+            //         //show ads
+            //         // if (!kIsWeb &&
+            //         //     _isAdLoaded &&
+            //         //     widget.profileData.information.status!.subscriber !=
+            //         //         'pro') {
+            //         //   await interstitialAd.show();
+            //         // } else {
+            //         //   Fluttertoast.showToast(
+            //         //       msg: 'Loading...\nPlease wait & try again');
+            //         // }
+            //
+            //         setState(() => _isLoading = false);
+            //       }
+            //     } else {
+            //       showDialog(
+            //         context: context,
+            //         builder: (context) => AlertDialog(
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(8),
+            //           ),
+            //           title: const Text(
+            //             "Pro Content 🔒",
+            //             style: TextStyle(fontWeight: FontWeight.bold),
+            //           ),
+            //           content: const Text(
+            //             "This file is available only for Pro members.\n\n"
+            //             "Upgrade now to unlock this and all other premium files.",
+            //           ),
+            //           actionsPadding: EdgeInsets.only(bottom: 16, right: 16),
+            //           actions: [
+            //             OutlinedButton(
+            //               style: ButtonStyle(
+            //                 visualDensity: VisualDensity.compact,
+            //               ),
+            //               onPressed: () {
+            //                 Navigator.pop(context); // Close dialog
+            //               },
+            //               child: const Text("Later"),
+            //             ),
+            //
+            //             SizedBox(width: 1),
+            //             //
+            //             ElevatedButton(
+            //               style: ButtonStyle(
+            //                 visualDensity: VisualDensity.compact,
+            //               ),
+            //               onPressed: () {
+            //                 Navigator.push(
+            //                     context,
+            //                     MaterialPageRoute(
+            //                         builder: (context) =>
+            //                             ProSubscriptionPage()));
+            //               },
+            //               child: const Text("Become Pro"),
+            //             ),
+            //           ],
+            //         ),
+            //       );
+            //     }
+            //   }
+            // },
+
             onTap: () async {
               if (kIsWeb) {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => PdfViewerWeb(
-                //       title: widget.contentModel.contentTitle,
-                //       fileUrl: widget.contentModel.fileUrl,
-                //     ),
-                //   ),
-                // );
-              } else {
-                if (File(
-                        '/storage/emulated/0/Download/Campus Assistant/$fileName')
-                    .existsSync()) {
-                  await openFileAndroid(fileName: fileName);
+                // TODO: implement web pdf viewer
+                return;
+              }
+
+              final isProContent = widget.contentModel.status == 'pro';
+              final isProUser =
+                  widget.profileData.information.status!.subscriber == 'pro';
+
+              if (isProContent) {
+                if (isProUser) {
+                  // ✅ Pro user can download Pro file
+                  await _handleDownload(fileName, widget.contentModel.fileUrl);
                 } else {
-                  setState(() => _isLoading = true);
-
-                  //
-                  await downloadFileAndroid(
-                    url: widget.contentModel.fileUrl,
-                    fileName: fileName,
-                  );
-
-                  //show ads
-                  if (!kIsWeb &&
-                      _isAdLoaded &&
-                      widget.profileData.information.status!.subscriber !=
-                          'pro') {
+                  // ❌ Basic user trying to open Pro file → show dialog
+                  _showProDialog(context);
+                }
+              } else {
+                // ✅ File is basic
+                if (isProUser) {
+                  // Pro users skip ads
+                  await _handleDownload(fileName, widget.contentModel.fileUrl);
+                } else {
+                  // Basic user → show ads then download
+                  if (_isAdLoaded) {
                     await interstitialAd.show();
                   } else {
                     Fluttertoast.showToast(
-                        msg: 'Loading...\nPlease wait & try again');
+                      msg: 'Loading...\nPlease wait & try again',
+                    );
                   }
 
-                  //
-                  setState(() => _isLoading = false);
+                  await _handleDownload(fileName, widget.contentModel.fileUrl);
                 }
               }
             },
@@ -194,7 +284,8 @@ class _ContentCardState extends State<ContentCard> {
                         child: Container(
                           width: 72,
                           height: 72,
-                          color: Colors.blueAccent.shade100.withOpacity(.1),
+                          color:
+                              Colors.blueAccent.shade100.withValues(alpha: .1),
                           child: widget.contentModel.imageUrl == ''
                               ? SizedBox(
                                   child: Image.asset(
@@ -210,6 +301,7 @@ class _ContentCardState extends State<ContentCard> {
                       ),
 
                       //
+
                       if (widget.contentModel.status == 'pro')
                         const Icon(
                           Icons.workspace_premium_outlined,
@@ -244,7 +336,7 @@ class _ContentCardState extends State<ContentCard> {
                                 ),
                           ),
 
-                          const SizedBox(height: 1),
+                          const SizedBox(height: 4),
 
                           //title
                           Text(
@@ -260,7 +352,7 @@ class _ContentCardState extends State<ContentCard> {
                                 ),
                           ),
 
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
 
                           // const Spacer(),
 
@@ -534,8 +626,9 @@ class _ContentCardState extends State<ContentCard> {
           ),
 
           // batches
-          if (widget.profileData.information.status!.moderator! ||
-              widget.profileData.information.status!.cr!) ...[
+          // if (widget.profileData.information.status!.moderator! ||
+          //     widget.profileData.information.status!.cr!)
+          ...[
             // const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -642,5 +735,59 @@ class _ContentCardState extends State<ContentCard> {
         Directory('/storage/emulated/0/Download/Campus Assistant');
     String filePath = '${downloadDir.path}/$fileName';
     await OpenFilex.open(filePath);
+  }
+
+  //
+  Future<void> _handleDownload(String fileName, String url) async {
+    final filePath = '/storage/emulated/0/Download/Campus Assistant/$fileName';
+
+    if (File(filePath).existsSync()) {
+      await openFileAndroid(fileName: fileName);
+    } else {
+      setState(() => _isLoading = true);
+
+      await downloadFileAndroid(url: url, fileName: fileName);
+      await openFileAndroid(fileName: fileName);
+
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showProDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        title: const Text(
+          "Pro Content 🔒",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          "This file is available only for Pro members.\n\n"
+          "Upgrade now to unlock this and all other premium files.",
+        ),
+        actionsPadding: const EdgeInsets.only(bottom: 16, right: 16),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Later"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProSubscriptionPage(),
+                ),
+              );
+            },
+            child: const Text("Become Pro"),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -11,7 +11,7 @@ import '../community/notice/notice_screen.dart';
 import '../community/notice/notification_badge.dart';
 import 'explore/explore.dart';
 import 'header/header.dart';
-import 'slider/slider_section.dart';
+import 'subscription/subscription_section.dart';
 
 enum Profession { student, teacher }
 
@@ -182,7 +182,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
 
           const SizedBox(height: 8),
 
-          const SliderSection(),
+          const ProBannerSection(),
 
           const SizedBox(height: 8),
 

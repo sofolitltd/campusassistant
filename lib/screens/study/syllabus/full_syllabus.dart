@@ -80,10 +80,10 @@ class FullSyllabus extends StatelessWidget {
             itemBuilder: (context, index) {
               var contentData = data[index];
 
-              // for web browser
+              // // for web browser
               // if (kIsWeb) {
               //   //todo:
-              //   return SyllabusCardWeb(contentData: contentData);
+              //   return Text('data');
               // }
 
               //for mobile

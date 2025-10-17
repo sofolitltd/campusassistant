@@ -33,11 +33,16 @@ class AdminDashboardScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        padding: EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: MediaQuery.of(context).size.width > 800
+              ? MediaQuery.of(context).size.width * .2
+              : 16,
+        ),
         child: GridView.builder(
           shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: MediaQuery.of(context).size.width > 800 ? 3 : 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             childAspectRatio: 1,

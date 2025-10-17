@@ -18,7 +18,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Your smart assistant in campus">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -27,12 +27,48 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/ico" href="favicon.ico"/>
 
-  <title>campusassistant</title>
+  <title>Campus Assistant</title>
   <link rel="manifest" href="manifest.json">
+  <!-- Splash animation styling -->
+  <style>
+    @keyframes scalePulse {
+      0% { transform: scale(0.9); }
+      50% { transform: scale(1); }
+      100% { transform: scale(0.9); }
+    }
+
+    .app-logo-container {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white;
+      z-index: 9999;
+    }
+
+    .app-logo-scaling {
+      height: 36px; /* Similar to Flutter default */
+      width: auto;
+      animation: scalePulse 2s ease-in-out infinite;
+      user-select: none;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.4s ease-out;
+    }
+  </style>
+
+
+
 </head>
 <body>
+  <!-- Flutter bootstrap (deferred) -->
   <script src="flutter_bootstrap.js" async></script>
+
+
 </body>
 </html>

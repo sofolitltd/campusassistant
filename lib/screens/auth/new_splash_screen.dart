@@ -24,7 +24,7 @@ class _NewSplashScreenState extends State<NewSplashScreen>
 
     // Create the animation controller
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 900),
       vsync: this,
     );
 
@@ -45,7 +45,7 @@ class _NewSplashScreenState extends State<NewSplashScreen>
 
     //
 
-    Future.delayed(const Duration(milliseconds: 3000)).then((value) {
+    Future.delayed(const Duration(milliseconds: 2000)).then((value) {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const WrapperScreen()),

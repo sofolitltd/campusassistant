@@ -35,7 +35,7 @@ class AllBatchCardWidget extends StatelessWidget {
         '\nBatch: $selectedBatch'
         '\n\nYour verification code is: \n${studentModel.token}'
         '\n\nFor Android - https://play.google.com/store/apps/details?id=com.sofolit.campusassistant'
-        '\n\nFor Apple device or Website - https://campusassistantbd.web.app';
+        '\n\nFor Apple device or Website - https://campusassistant.web.app';
 
     //
     return Card(
@@ -267,18 +267,19 @@ class AllBatchCardWidget extends StatelessWidget {
                           onTap: () async {
                             //add verify code
                             await addVerificationCode(
-                                studentModel,
-                                profileData.university,
-                                profileData.department,
-                                selectedBatch,
+                              studentModel,
+                              profileData.university,
+                              profileData.department,
+                              selectedBatch,
                             );
 
                             // copy
                             Clipboard.setData(ClipboardData(text: shareToken))
-                                .then((value) => Fluttertoast.showToast(
-                              backgroundColor: Colors.blue.shade200,
-                                    msg: 'Copy to clipboard\n\n'
-                                        '$shareToken'),
+                                .then(
+                              (value) => Fluttertoast.showToast(
+                                  backgroundColor: Colors.blue.shade200,
+                                  msg: 'Copy to clipboard\n\n'
+                                      '$shareToken'),
                             );
                           },
                           child: Container(

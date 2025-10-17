@@ -15,8 +15,9 @@ class More extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 120,
       // color: Colors.green,
+      margin: EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.only(
         left: MediaQuery.of(context).size.width > 800
             ? MediaQuery.of(context).size.width * .19
@@ -35,8 +36,8 @@ class More extends StatelessWidget {
               shrinkWrap: true,
               itemCount: moreList.length,
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
-              separatorBuilder: (context, index) => const SizedBox(width: 4),
+              padding: const EdgeInsets.fromLTRB(12, 8, 0, 0),
+              separatorBuilder: (context, index) => const SizedBox(width: 0),
               itemBuilder: (context, index) => MoreCard(
                 index: index,
                 profileData: profileData,
@@ -97,40 +98,45 @@ class MoreCard extends StatelessWidget {
                     builder: (context) => Clubs(profileData: profileData)));
         }
       },
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 80),
-        padding: const EdgeInsets.symmetric(
-          vertical: 4,
-          horizontal: 4,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //
-            CircleAvatar(
-              radius: 26,
-              backgroundColor:
-                  index.isEven ? Colors.blue.shade50 : Colors.purple.shade50,
-              child: Image.asset(
-                moreList[index].imageUrl,
-                fit: BoxFit.cover,
-                height: 32,
-                width: 32,
-              ),
-            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          //
+          Container(
+            height: 56,
+            width: 56,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 4,
+                    spreadRadius: 4,
+                    color: Colors.black12.withValues(alpha: .02),
+                  ),
+                ],
+                // borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: AssetImage(moreList[index].imageUrl),
+                  fit: BoxFit.cover,
+                )),
+          ),
 
-            const SizedBox(height: 8),
-
-            //
-            Text(
+          //
+          Container(
+            width: 88,
+            padding: EdgeInsets.fromLTRB(4, 4, 4, 8),
+            child: Text(
               '${moreList[index].name}'.toUpperCase(),
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  // fontWeight: FontWeight.w600,
+                    // fontWeight: FontWeight.w600,
+                    fontSize: 11,
                   ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -138,32 +144,32 @@ class MoreCard extends StatelessWidget {
 
 List moreList = [
   MoreModel(
-    name: 'Routine',
+    name: 'Class\nRoutine',
     route: 'routine',
-    imageUrl: 'assets/images/routine.png',
+    imageUrl: 'assets/images/1.png',
     color: 0xff012544,
   ),
   MoreModel(
-      name: 'Emergency',
+      name: 'Emergency\nContact',
       route: 'emergency',
-      imageUrl: 'assets/images/emergency.png',
+      imageUrl: 'assets/images/2.png',
       color: 0xff012544),
   MoreModel(
-    name: 'Transports',
+    name: 'Transport\nService',
     route: 'transports',
-    imageUrl: 'assets/images/transports.png',
+    imageUrl: 'assets/images/3.png',
     color: 0xff012544,
   ),
   MoreModel(
-    name: 'Blood',
+    name: 'Blood\nBank',
     route: 'blood',
-    imageUrl: 'assets/images/syllabus.png',
+    imageUrl: 'assets/images/4.png',
     color: 0xff012544,
   ),
   MoreModel(
-    name: 'Clubs',
+    name: 'Club&\nOrg.',
     route: 'clubs',
-    imageUrl: 'assets/images/clubs.png',
+    imageUrl: 'assets/images/5.png',
     color: 0xff012544,
   ),
 ];

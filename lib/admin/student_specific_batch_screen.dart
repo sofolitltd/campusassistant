@@ -8,12 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../screens/home/explore/student/widget/all_batch_card_widget.dart';
-import '../screens/home/explore/student/widget/student_edit.dart';
-import '../utils/create_verification_code.dart';
 import '/models/student_model.dart';
 import '/screens/home/explore/student/widget/full_image.dart';
 import '/screens/home/explore/student/widget/student_add.dart';
+import '../screens/home/explore/student/widget/all_batch_card_widget.dart';
+import '../screens/home/explore/student/widget/student_edit.dart';
+import '../utils/create_verification_code.dart';
 
 class SpecificBatchScreen extends StatelessWidget {
   const SpecificBatchScreen({
@@ -184,7 +184,7 @@ class StudentCard extends StatelessWidget {
         '\nBatch: $selectedBatch'
         '\n\nYour verification code is: \n${studentModel.token}'
         '\n\nFor Android - https://play.google.com/store/apps/details?id=com.sofolit.campusassistant'
-        '\n\nFor Apple device or Website - https://campusassistantbd.web.app';
+        '\n\nFor Apple device or Website - https://campusassistant.web.app';
     //
     return Stack(
       alignment: Alignment.bottomRight,

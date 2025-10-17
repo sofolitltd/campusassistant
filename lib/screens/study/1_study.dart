@@ -471,6 +471,218 @@ class _StudyState extends State<Study> with AutomaticKeepAliveClientMixin {
                                       );
                                     }
                                   },
+                                  // child: Stack(
+                                  //   clipBehavior: Clip.none,
+                                  //   alignment: Alignment.centerRight,
+                                  //   children: [
+                                  //     //
+                                  //     Card(
+                                  //       elevation: 2,
+                                  //       margin:
+                                  //           const EdgeInsets.only(right: 16),
+                                  //       shape: RoundedRectangleBorder(
+                                  //           borderRadius:
+                                  //               BorderRadius.circular(8)),
+                                  //       child: Container(
+                                  //         width: double.infinity,
+                                  //         height: 96,
+                                  //         padding: const EdgeInsets.all(12),
+                                  //         child: Column(
+                                  //           crossAxisAlignment:
+                                  //               CrossAxisAlignment.start,
+                                  //           mainAxisAlignment:
+                                  //               MainAxisAlignment.spaceBetween,
+                                  //           children: [
+                                  //             //year title
+                                  //             Text(
+                                  //               semester.title,
+                                  //               style: Theme.of(context)
+                                  //                   .textTheme
+                                  //                   .headlineSmall!
+                                  //                   .copyWith(
+                                  //                       fontWeight:
+                                  //                           FontWeight.bold),
+                                  //             ),
+                                  //
+                                  //             // year sub title
+                                  //             Row(
+                                  //               mainAxisAlignment:
+                                  //                   MainAxisAlignment.start,
+                                  //               children: [
+                                  //                 //
+                                  //                 Container(
+                                  //                   padding:
+                                  //                       const EdgeInsets.only(
+                                  //                     left: 10,
+                                  //                   ),
+                                  //                   decoration: BoxDecoration(
+                                  //                     color:
+                                  //                         Colors.blue.shade100,
+                                  //                     borderRadius:
+                                  //                         BorderRadius.circular(
+                                  //                             32),
+                                  //                   ),
+                                  //                   child: Row(
+                                  //                     // alignment: Alignment.centerRight,
+                                  //                     children: [
+                                  //                       const Text(
+                                  //                         'Courses:',
+                                  //                         style: TextStyle(
+                                  //                             color:
+                                  //                                 Colors.black),
+                                  //                       ),
+                                  //
+                                  //                       const SizedBox(
+                                  //                           width: 8),
+                                  //                       //
+                                  //                       Container(
+                                  //                         decoration:
+                                  //                             BoxDecoration(
+                                  //                                 shape: BoxShape
+                                  //                                     .circle,
+                                  //                                 color: Theme.of(
+                                  //                                         context)
+                                  //                                     .cardColor,
+                                  //                                 border: Border
+                                  //                                     .all(
+                                  //                                   color: Theme.of(
+                                  //                                           context)
+                                  //                                       .dividerColor,
+                                  //                                 )),
+                                  //                         padding:
+                                  //                             const EdgeInsets
+                                  //                                 .all(4),
+                                  //                         child: Text(
+                                  //                           semester.courses,
+                                  //                           style: Theme.of(
+                                  //                                   context)
+                                  //                               .textTheme
+                                  //                               .titleMedium!
+                                  //                               .copyWith(
+                                  //                                 fontWeight:
+                                  //                                     FontWeight
+                                  //                                         .bold,
+                                  //                               ),
+                                  //                         ),
+                                  //                       ),
+                                  //                     ],
+                                  //                   ),
+                                  //                 ),
+                                  //
+                                  //                 const SizedBox(width: 8),
+                                  //
+                                  //                 Container(
+                                  //                   padding:
+                                  //                       const EdgeInsets.only(
+                                  //                     left: 10,
+                                  //                   ),
+                                  //                   decoration: BoxDecoration(
+                                  //                     color: Colors
+                                  //                         .greenAccent.shade100,
+                                  //                     borderRadius:
+                                  //                         BorderRadius.circular(
+                                  //                             32),
+                                  //                   ),
+                                  //                   child: Row(
+                                  //                     // alignment: Alignment.centerRight,
+                                  //                     children: [
+                                  //                       const Text(
+                                  //                         'Marks:',
+                                  //                         style: TextStyle(
+                                  //                             color:
+                                  //                                 Colors.black),
+                                  //                       ),
+                                  //
+                                  //                       const SizedBox(
+                                  //                           width: 8),
+                                  //                       //
+                                  //                       Container(
+                                  //                         constraints:
+                                  //                             const BoxConstraints(
+                                  //                                 minWidth: 50),
+                                  //                         alignment:
+                                  //                             Alignment.center,
+                                  //                         decoration:
+                                  //                             BoxDecoration(
+                                  //                                 borderRadius:
+                                  //                                     BorderRadius
+                                  //                                         .circular(
+                                  //                                             32),
+                                  //                                 color: Theme.of(
+                                  //                                         context)
+                                  //                                     .cardColor,
+                                  //                                 border: Border
+                                  //                                     .all(
+                                  //                                   color: Theme.of(
+                                  //                                           context)
+                                  //                                       .dividerColor,
+                                  //                                 )),
+                                  //                         padding:
+                                  //                             const EdgeInsets
+                                  //                                 .all(4),
+                                  //                         child: Text(
+                                  //                           semester.marks,
+                                  //                           style: Theme.of(
+                                  //                                   context)
+                                  //                               .textTheme
+                                  //                               .titleMedium!
+                                  //                               .copyWith(
+                                  //                                 fontWeight:
+                                  //                                     FontWeight
+                                  //                                         .bold,
+                                  //                               ),
+                                  //                         ),
+                                  //                       ),
+                                  //                     ],
+                                  //                   ),
+                                  //                 ),
+                                  //               ],
+                                  //             ),
+                                  //           ],
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //
+                                  //     //
+                                  //     Container(
+                                  //       padding: const EdgeInsets.all(12),
+                                  //       decoration: BoxDecoration(
+                                  //         shape: BoxShape.circle,
+                                  //         color: Colors.orangeAccent.shade100,
+                                  //         boxShadow: [
+                                  //           BoxShadow(
+                                  //               color: Colors.grey.shade200,
+                                  //               spreadRadius: 4,
+                                  //               offset: const Offset(1, 3)),
+                                  //         ],
+                                  //       ),
+                                  //       child: Column(
+                                  //         children: [
+                                  //           Text(
+                                  //             semester.credits,
+                                  //             style: Theme.of(context)
+                                  //                 .textTheme
+                                  //                 .titleLarge!
+                                  //                 .copyWith(
+                                  //                   fontWeight: FontWeight.bold,
+                                  //                   color: Colors.black,
+                                  //                 ),
+                                  //           ),
+                                  //           Text(
+                                  //             'credits',
+                                  //             style: Theme.of(context)
+                                  //                 .textTheme
+                                  //                 .labelMedium!
+                                  //                 .copyWith(
+                                  //                     color: Colors.black),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //       // const Icon(Icons.arrow_forward_ios_outlined),
+                                  //     )
+                                  //   ],
+                                  // ),
+
                                   child: Stack(
                                     clipBehavior: Clip.none,
                                     alignment: Alignment.centerRight,

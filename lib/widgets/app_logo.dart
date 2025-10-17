@@ -5,9 +5,11 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/splash.png',
-      height: 40,
+    return Center(
+      child: Image.asset(
+        'assets/images/splash.png',
+        height: 36,
+      ),
     );
   }
 }

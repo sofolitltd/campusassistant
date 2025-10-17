@@ -43,7 +43,6 @@ class CourseNotesScreens extends StatefulWidget {
 
 class _CourseNotesScreensState extends State<CourseNotesScreens> {
   String _selectedBatch = "";
-  final ScrollController _batchScrollController = ScrollController();
 
   // init
   @override
@@ -60,7 +59,7 @@ class _CourseNotesScreensState extends State<CourseNotesScreens> {
   String adUnitId = 'ca-app-pub-2392427719761726/6294434973'; //real id
 
   //
-  initBannerAd() {
+  void initBannerAd() {
     bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: adUnitId,
@@ -209,7 +208,7 @@ class _CourseNotesScreensState extends State<CourseNotesScreens> {
                       .collection('Departments')
                       .doc(widget.department)
                       .collection('notes')
-                      .where('status', whereIn: ['basic', subscriber])
+                      // .where('status', whereIn: ['basic', subscriber])
                       .where('courseCode',
                           isEqualTo: widget.courseModel.courseCode)
                       .where('lessonNo',
@@ -222,7 +221,7 @@ class _CourseNotesScreensState extends State<CourseNotesScreens> {
                       .collection('Departments')
                       .doc(widget.department)
                       .collection('notes')
-                      .where('status', whereIn: ['basic', subscriber])
+                      // .where('status', whereIn: ['basic', subscriber])
                       .where('courseCode',
                           isEqualTo: widget.courseModel.courseCode)
                       .where('lessonNo',

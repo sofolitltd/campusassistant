@@ -55,7 +55,7 @@ class _NewStudentSignUpScreenState extends State<NewStudentSignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up(2/1)'),
+        title: const Text('Sign Up(1/2)'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -172,13 +172,15 @@ class _NewStudentSignUpScreenState extends State<NewStudentSignUpScreen> {
 
                             Expanded(
                               flex: 2,
-                              child: CommonDropDownWidget(
-                                heading: 'Blood Group',
-                                hint: 'Blood group',
-                                value: _selectedBloodGroup,
-                                itemList: kBloodGroup,
-                                onChanged: (value) =>
-                                    setState(() => _selectedBloodGroup = value),
+                              child: ButtonTheme(
+                                child: CommonDropDownWidget(
+                                  heading: 'Blood Group',
+                                  hint: 'Blood group',
+                                  value: _selectedBloodGroup,
+                                  itemList: kBloodGroup,
+                                  onChanged: (value) => setState(
+                                      () => _selectedBloodGroup = value),
+                                ),
                               ),
                             ),
                           ],

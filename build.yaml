@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # Automatically maps snake_case JSON keys to camelCase Dart fields
+          # This means full_name → fullName, university_id → universityId, etc.
+          field_rename: snake
+          # Ensure nulls are not written to JSON (cleaner API payloads)
+          include_if_null: false
+

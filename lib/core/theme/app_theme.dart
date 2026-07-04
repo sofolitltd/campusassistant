@@ -27,7 +27,7 @@ ThemeData buildLightTheme() {
     colorScheme: colorScheme,
     cardColor: Colors.white,
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    scaffoldBackgroundColor: const Color(0xFFFAFAFA),
+    scaffoldBackgroundColor: const Color(0xFFF9F9F8),
     dividerColor: colorScheme.outlineVariant,
     extensions: const [AppColors.light],
     textTheme: ThemeData.light().textTheme.apply(

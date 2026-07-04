@@ -32,7 +32,7 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(RadiusToken.md),
+            borderRadius: BorderRadius.circular(RadiusToken.xl),
           ),
           child: Material(
             color: Colors.transparent,
@@ -42,7 +42,7 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
                   _isExpanded = !_isExpanded;
                 });
               },
-              borderRadius: BorderRadius.circular(RadiusToken.md),
+              borderRadius: BorderRadius.circular(RadiusToken.xl),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: Column(
@@ -171,7 +171,7 @@ class _SubscriptionSkeleton extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
         color: Theme.of(context).cardColor,
       ),
       child: const Padding(

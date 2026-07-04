@@ -115,7 +115,7 @@ class _ExploreCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.xl),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.grey.shade200,
           ),
@@ -239,7 +239,7 @@ class _SkeletonCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),

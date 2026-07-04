@@ -7,7 +7,7 @@ import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
 /// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFF22C55E);
+const Color _brandPrimary = Color(0xFF0D9488);
 
 /// Cached Outfit font family so GoogleFonts.outfit() is called only once.
 final TextTheme _outfitTextTheme = GoogleFonts.outfitTextTheme();
@@ -21,7 +21,7 @@ ThemeData buildLightTheme() {
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
-    cardColor: colorScheme.surface,
+    cardColor: Colors.white,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     scaffoldBackgroundColor: const Color(0xFFFAFAFA),
     dividerColor: colorScheme.outlineVariant,
@@ -104,11 +104,11 @@ ThemeData buildLightTheme() {
 
     // --- Cards ---
     cardTheme: CardThemeData(
-      color: colorScheme.surface,
+      color: Colors.white,
       elevation: ElevationToken.md,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
       ),
     ),
 

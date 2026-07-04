@@ -34,7 +34,7 @@ class ShortcutSection extends ConsumerWidget {
           child: Container(
             decoration: BoxDecoration(
               color: theme.cardColor,
-              borderRadius: BorderRadius.circular(RadiusToken.md),
+              borderRadius: BorderRadius.circular(RadiusToken.xl),
               border: Border.all(
                 color: isDark ? Colors.white10 : Colors.grey.shade200,
               ),
@@ -164,7 +164,7 @@ class _ShortcutSkeleton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.xl),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.grey.shade200,
           ),
@@ -210,7 +210,7 @@ class _ShortcutSkeleton extends StatelessWidget {
                     color: isDark
                         ? Colors.white.withValues(alpha: 0.06)
                         : Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(RadiusToken.md),
+                    borderRadius: BorderRadius.circular(RadiusToken.xl),
                   ),
                 ),
               ),

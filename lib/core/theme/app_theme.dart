@@ -7,7 +7,11 @@ import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
 /// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFF0D9488);
+const Color _brandPrimary = Color(0xFF00C853);
+const Color _darkBg = Color(0xFF121212);
+const Color _darkCard = Color(0xFF1E1E1E);
+const Color _darkSurfaceAlt = Color(0xFF2A2A2A);
+const Color _darkAppBar = Color(0xFF1A1A1A);
 
 /// Cached Outfit font family so GoogleFonts.outfit() is called only once.
 final TextTheme _outfitTextTheme = GoogleFonts.outfitTextTheme();
@@ -34,37 +38,42 @@ ThemeData buildLightTheme() {
     // --- Input ---
     inputDecorationTheme: InputDecorationTheme(
       isDense: true,
+      filled: true,
+      fillColor: Colors.grey.shade100,
+      hintStyle: TextStyle(color: Colors.grey.shade400),
       contentPadding: const EdgeInsets.symmetric(
         vertical: Spacing.md,
         horizontal: Spacing.md,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
-        borderSide: BorderSide(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: BorderSide(color: Colors.grey.shade300, width: 0.5),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
-        borderSide: BorderSide(color: colorScheme.primary, width: 1),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: const BorderSide(color: Color(0xFF00C853), width: 1.5),
       ),
     ),
 
     // --- Buttons ---
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        minimumSize: const Size(48, 48),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        elevation: ElevationToken.sm,
+        minimumSize: const Size(double.infinity, 48),
+        backgroundColor: const Color(0xFF00C853),
+        foregroundColor: Colors.white,
+        elevation: 0,
         visualDensity: VisualDensity.compact,
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
       ),
     ),
@@ -72,14 +81,14 @@ ThemeData buildLightTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: colorScheme.primary,
+        foregroundColor: const Color(0xFF00C853),
         side: BorderSide(color: colorScheme.outline),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
       ),
     ),
@@ -87,13 +96,13 @@ ThemeData buildLightTheme() {
       style: TextButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: colorScheme.primary,
+        foregroundColor: const Color(0xFF00C853),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
       ),
     ),
@@ -105,7 +114,7 @@ ThemeData buildLightTheme() {
     // --- Cards ---
     cardTheme: CardThemeData(
       color: Colors.white,
-      elevation: ElevationToken.md,
+      elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(RadiusToken.xl),
@@ -232,21 +241,22 @@ ThemeData buildDarkTheme() {
     brightness: Brightness.dark,
   );
 
+  final ColorScheme darkColorScheme = colorScheme.copyWith(
+    surface: _darkCard,
+    surfaceContainerHighest: _darkSurfaceAlt,
+    onSurface: const Color(0xFFE8E9ED),
+    onSurfaceVariant: const Color(0xFFB0B0B0),
+    outline: const Color(0xFF333333),
+    outlineVariant: const Color(0xFF2E2E2E),
+  );
+
   return ThemeData(
     useMaterial3: true,
-    colorScheme: colorScheme.copyWith(
-      // Override surface-related tones to match our app's exact dark palette
-      surface: const Color(0xFF323541),
-      surfaceContainerHighest: const Color(0xFF363944),
-      onSurface: const Color(0xFFE8E9ED),
-      onSurfaceVariant: const Color(0xFFBEC0C8),
-      outline: const Color(0xFF424550),
-      outlineVariant: const Color(0xFF3A3D48),
-    ),
-    cardColor: const Color(0xFF323541),
+    colorScheme: darkColorScheme,
+    cardColor: _darkCard,
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    scaffoldBackgroundColor: const Color(0xFF252831),
-    dividerColor: const Color(0xFF3A3D48),
+    scaffoldBackgroundColor: _darkBg,
+    dividerColor: const Color(0xFF2E2E2E),
     extensions: const [AppColors.dark],
     textTheme: ThemeData.dark().textTheme.apply(
       fontFamily: _outfitTextTheme.bodyMedium?.fontFamily,
@@ -256,39 +266,42 @@ ThemeData buildDarkTheme() {
     // --- Input ---
     inputDecorationTheme: InputDecorationTheme(
       isDense: true,
+      filled: true,
+      fillColor: _darkSurfaceAlt,
+      hintStyle: const TextStyle(color: Color(0xFF888888)),
       contentPadding: const EdgeInsets.symmetric(
         vertical: Spacing.md,
         horizontal: Spacing.md,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
-        borderSide: const BorderSide(color: Color(0xFF424550), width: 0.5),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: const BorderSide(color: Color(0xFF333333), width: 0.5),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
-        borderSide: BorderSide(color: colorScheme.primary, width: 1),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: const BorderSide(color: Color(0xFF00C853), width: 1.5),
       ),
-      fillColor: const Color(0xFF2C2F3A),
-      filled: true,
     ),
 
     // --- Buttons ---
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        minimumSize: const Size(48, 48),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        elevation: ElevationToken.sm,
+        minimumSize: const Size(double.infinity, 48),
+        backgroundColor: const Color(0xFF00C853),
+        foregroundColor: Colors.white,
+        elevation: 0,
         visualDensity: VisualDensity.compact,
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
       ),
     ),
@@ -296,14 +309,14 @@ ThemeData buildDarkTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: colorScheme.primary,
-        side: BorderSide(color: colorScheme.outline),
+        foregroundColor: const Color(0xFF00C853),
+        side: const BorderSide(color: Color(0xFF333333)),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
       ),
     ),
@@ -311,34 +324,34 @@ ThemeData buildDarkTheme() {
       style: TextButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: colorScheme.primary,
+        foregroundColor: const Color(0xFF00C853),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.md),
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: colorScheme.primary,
-      foregroundColor: colorScheme.onPrimary,
+      backgroundColor: const Color(0xFF00C853),
+      foregroundColor: Colors.white,
     ),
 
     // --- Cards ---
     cardTheme: CardThemeData(
-      color: const Color(0xFF323541),
-      elevation: ElevationToken.md,
+      color: _darkCard,
+      elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
       ),
     ),
 
     // --- AppBar ---
     appBarTheme: AppBarTheme(
-      backgroundColor: const Color(0xFF2C2F3A),
+      backgroundColor: _darkAppBar,
       surfaceTintColor: Colors.transparent,
       centerTitle: true,
       elevation: 0,
@@ -346,36 +359,36 @@ ThemeData buildDarkTheme() {
         fontFamily: _outfitTextTheme.headlineSmall?.fontFamily,
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: colorScheme.onSurface,
+        color: darkColorScheme.onSurface,
       ),
-      iconTheme: IconThemeData(color: colorScheme.onSurface),
+      iconTheme: IconThemeData(color: darkColorScheme.onSurface),
     ),
 
     // --- Navigation ---
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: const Color(0xFF3D4050),
-      backgroundColor: const Color(0xFF2C2F3A),
+      backgroundColor: _darkAppBar,
       height: 64,
     ),
     navigationRailTheme: NavigationRailThemeData(
-      backgroundColor: const Color(0xFF2C2F3A),
+      backgroundColor: _darkAppBar,
     ),
 
     // --- Dialogs & Sheets ---
     dialogTheme: DialogThemeData(
-      backgroundColor: const Color(0xFF323541),
+      backgroundColor: _darkCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
       ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: const Color(0xFF323541),
+      backgroundColor: _darkCard,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(RadiusToken.lg),
+          top: Radius.circular(RadiusToken.xl),
         ),
       ),
-      elevation: ElevationToken.lg,
+      elevation: 0,
     ),
 
     // --- Menus ---
@@ -383,7 +396,7 @@ ThemeData buildDarkTheme() {
       style: MenuStyle(
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(RadiusToken.md),
+            borderRadius: BorderRadius.circular(RadiusToken.lg),
           ),
         ),
         elevation: WidgetStatePropertyAll(ElevationToken.lg),
@@ -392,7 +405,7 @@ ThemeData buildDarkTheme() {
 
     // --- Dividers ---
     dividerTheme: DividerThemeData(
-      color: const Color(0xFF3A3D48),
+      color: const Color(0xFF2E2E2E),
       thickness: 0.5,
       space: 0,
       indent: Spacing.lg,
@@ -400,38 +413,38 @@ ThemeData buildDarkTheme() {
 
     // --- Progress ---
     progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: colorScheme.primary,
-      linearTrackColor: colorScheme.surfaceContainerHighest,
+      color: const Color(0xFF00C853),
+      linearTrackColor: _darkSurfaceAlt,
     ),
 
     // --- SnackBar ---
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: colorScheme.onSurface,
-      contentTextStyle: TextStyle(color: colorScheme.surface),
+      backgroundColor: _darkCard,
+      contentTextStyle: TextStyle(color: darkColorScheme.onSurface),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
       ),
     ),
 
     // --- ListTile ---
     listTileTheme: ListTileThemeData(
-      iconColor: colorScheme.onSurfaceVariant,
+      iconColor: darkColorScheme.onSurfaceVariant,
       contentPadding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
     ),
 
     // --- Chip ---
     chipTheme: ChipThemeData(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.sm),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
       ),
     ),
 
     // --- Tabs ---
     tabBarTheme: TabBarThemeData(
-      indicatorColor: colorScheme.primary,
-      labelColor: colorScheme.primary,
-      unselectedLabelColor: colorScheme.onSurfaceVariant,
+      indicatorColor: const Color(0xFF00C853),
+      labelColor: const Color(0xFF00C853),
+      unselectedLabelColor: darkColorScheme.onSurfaceVariant,
       labelStyle: const TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w500,
@@ -441,10 +454,10 @@ ThemeData buildDarkTheme() {
 
     // --- Tooltip ---
     tooltipTheme: TooltipThemeData(
-      textStyle: TextStyle(color: colorScheme.onPrimary),
+      textStyle: TextStyle(color: Colors.white),
       decoration: BoxDecoration(
-        color: colorScheme.onSurface,
-        borderRadius: BorderRadius.circular(RadiusToken.sm),
+        color: _darkCard,
+        borderRadius: BorderRadius.circular(RadiusToken.md),
       ),
     ),
   );

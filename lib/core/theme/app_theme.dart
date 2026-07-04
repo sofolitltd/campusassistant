@@ -7,7 +7,7 @@ import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
 /// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFF6C7BFF);
+const Color _brandPrimary = Color(0xFF22C55E);
 
 /// Cached Outfit font family so GoogleFonts.outfit() is called only once.
 final TextTheme _outfitTextTheme = GoogleFonts.outfitTextTheme();

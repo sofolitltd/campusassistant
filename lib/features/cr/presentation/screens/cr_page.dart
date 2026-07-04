@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/pill_tab_bar.dart';
+import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/section_tab_bar.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/cr_model.dart';
 import '../providers/cr_provider.dart';
@@ -16,6 +18,7 @@ class CrPage extends ConsumerStatefulWidget {
 
 class _CrPageState extends ConsumerState<CrPage>
     with SingleTickerProviderStateMixin {
+  String _searchQuery = '';
   late TabController _tabController;
 
   @override
@@ -34,39 +37,52 @@ class _CrPageState extends ConsumerState<CrPage>
   Widget build(BuildContext context) {
     final crAsync = ref.watch(crProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Class Representative'),
-        centerTitle: true,
-      ),
-      body: crAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (crList) {
-          final activeCrs = crList.where((cr) => cr.isCurrent).toList();
-          final archivedCrs = crList.where((cr) => !cr.isCurrent).toList();
+    return RedHeaderLayout(
+      title: 'Class Representative',
+      searchHint: 'Search class representatives...',
+      onSearchChanged: (value) => setState(() => _searchQuery = value),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: SectionTabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Active'),
+                Tab(text: 'Archived'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: crAsync.when(
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error: $e')),
+              data: (crList) {
+                final activeCrs =
+                    crList.where((cr) => cr.isCurrent).toList();
+                final archivedCrs =
+                    crList.where((cr) => !cr.isCurrent).toList();
 
-          return Column(
-            children: [
-              PillTabBar(
-                controller: _tabController,
-                labels: const ['Active', 'Archived'],
-              ),
-              Expanded(
-                child: TabBarView(
+                return TabBarView(
                   controller: _tabController,
                   children: [
-                    _CrList(crs: activeCrs, emptyMessage: 'No active CRs found'),
+                    _CrList(
+                      crs: activeCrs,
+                      searchQuery: _searchQuery,
+                      emptyMessage: 'No active CRs found',
+                    ),
                     _CrList(
                       crs: archivedCrs,
+                      searchQuery: _searchQuery,
                       emptyMessage: 'No archived records',
                     ),
                   ],
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -74,18 +90,52 @@ class _CrPageState extends ConsumerState<CrPage>
 
 class _CrList extends StatelessWidget {
   final List<CrModel> crs;
+  final String searchQuery;
   final String emptyMessage;
 
-  const _CrList({required this.crs, required this.emptyMessage});
+  const _CrList({
+    required this.crs,
+    required this.searchQuery,
+    required this.emptyMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (crs.isEmpty) {
-      return Center(child: Text(emptyMessage));
+    // Filter CRs by search query
+    final filteredCrs = crs.where((cr) {
+      if (searchQuery.isEmpty) return true;
+      final q = searchQuery.toLowerCase();
+      return cr.name.toLowerCase().contains(q) ||
+          cr.batch.toLowerCase().contains(q);
+    }).toList();
+
+    if (filteredCrs.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              searchQuery.isNotEmpty
+                  ? LucideIcons.searchX
+                  : LucideIcons.userX,
+              size: 48,
+              color: Colors.grey.shade300,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              searchQuery.isNotEmpty ? 'No matches found' : emptyMessage,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     final batchGroup = <String, List<CrModel>>{};
-    for (final cr in crs) {
+    for (final cr in filteredCrs) {
       batchGroup.putIfAbsent(cr.batch, () => []).add(cr);
     }
 
@@ -93,9 +143,10 @@ class _CrList extends StatelessWidget {
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        horizontal: MediaQuery.of(context).size.width > 800
-            ? MediaQuery.of(context).size.width * .2
-            : 16,
+        horizontal:
+            MediaQuery.of(context).size.width > 800
+                ? MediaQuery.of(context).size.width * .2
+                : 16,
         vertical: 16,
       ),
       itemCount: batches.length,

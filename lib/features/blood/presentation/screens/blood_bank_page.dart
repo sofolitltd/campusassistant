@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/pill_tab_bar.dart';
-import '/core/widgets/floating_search_bar.dart';
+import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/section_tab_bar.dart';
 import '/utils/constants.dart';
 import '/features/session/presentation/providers/session_provider.dart';
 import '/features/blood/presentation/providers/blood_bank_provider.dart';
@@ -57,95 +57,76 @@ class _BloodBankState extends ConsumerState<BloodBank>
     final currentScope = ref.watch(bloodBankScopeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Blood Bank'),
-        centerTitle: true,
-      ),
-      body: Stack(
+    return RedHeaderLayout(
+      title: 'Blood Bank',
+      searchHint: 'Search donor name...',
+      onSearchChanged: _onSearchChanged,
+      searchTrailing: _BloodGroupDropdown(selectedBlood: selectedBlood),
+      body: Column(
         children: [
-          Column(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: SectionTabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Batch'),
+                Tab(text: 'Department'),
+                Tab(text: 'University'),
+                Tab(text: 'National'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: bloodAsync.when(
+        data: (state) {
+          if (state.students.isEmpty && !state.isLoadingMore) {
+            return const Center(child: Text('No donors found.'));
+          }
+
+          return Column(
             children: [
-              const SizedBox(height: 8),
-
-              // Smooth Tabs
-              PillTabBar(
-                controller: _tabController,
-                labels: const ['Batch', 'Department', 'University', 'National'],
-                onTap: (index) {
-                  ref.read(bloodBankScopeProvider.notifier).update(index);
-                },
+              // Count indicator
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'Showing ${state.students.length} / ${state.total}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
               ),
-              // const SizedBox(height: 4),
-
               Expanded(
-                child: bloodAsync.when(
-                  data: (state) {
-                    if (state.students.isEmpty && !state.isLoadingMore) {
-                      return const Center(child: Text('No donors found.'));
+                child: ListView.separated(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                  itemCount: state.students.length + (state.hasMore ? 1 : 0),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    if (index < state.students.length) {
+                      final p = state.students[index];
+                      return _buildDonorCard(p, currentScope, isDark);
+                    } else {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator.adaptive(),
+                        ),
+                      );
                     }
-
-                    return Column(
-                      children: [
-                        // Count indicator
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 0,
-                          ),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'Showing ${state.students.length} / ${state.total}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-              const SizedBox(height: 8),
-
-                        Expanded(
-                          child: ListView.separated(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                            itemCount: state.students.length + (state.hasMore ? 1 : 0),
-                            separatorBuilder: (_, _) => const SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              if (index < state.students.length) {
-                                final p = state.students[index];
-                                return _buildDonorCard(p, currentScope, isDark);
-                              } else {
-                                return const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: CircularProgressIndicator.adaptive(),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    );
                   },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator.adaptive()),
-                  error: (err, _) => Center(child: Text('Error: $err')),
                 ),
               ),
             ],
-          ),
-
-          // Floating bottom search and filter bar
-          Positioned(
-            bottom: 24,
-            left: 16,
-            right: 16,
-            child: FloatingSearchBar(
-              hintText: 'Search donor name...',
-              onChanged: _onSearchChanged,
-              debounceMilliseconds: 500,
-              trailing: _BloodGroupDropdown(selectedBlood: selectedBlood),
+          );
+        },
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()),
+        error: (err, _) => Center(child: Text('Error: $err')),
             ),
           ),
         ],
@@ -181,9 +162,9 @@ class _BloodBankState extends ConsumerState<BloodBank>
                 // Name — always shown
                 Text(
                   p.name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
 
@@ -197,7 +178,10 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((universityId: p.universityId, id: p.sessionId)),
+                        sessionNameProvider((
+                          universityId: p.universityId,
+                          id: p.sessionId,
+                        )),
                       );
                       return Text(
                         'Session: $sessionName',
@@ -212,7 +196,10 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((universityId: p.universityId, id: p.sessionId)),
+                        sessionNameProvider((
+                          universityId: p.universityId,
+                          id: p.sessionId,
+                        )),
                       );
                       return Text(
                         'Session: $sessionName',
@@ -236,7 +223,10 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((universityId: p.universityId, id: p.sessionId)),
+                        sessionNameProvider((
+                          universityId: p.universityId,
+                          id: p.sessionId,
+                        )),
                       );
                       return Text(
                         'Session: $sessionName',
@@ -244,7 +234,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                       );
                     },
                   ),
-                  if (p.departmentName != null && p.departmentName!.isNotEmpty) ...[
+                  if (p.departmentName != null &&
+                      p.departmentName!.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
                       p.departmentName!,
@@ -262,7 +253,10 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((universityId: p.universityId, id: p.sessionId)),
+                        sessionNameProvider((
+                          universityId: p.universityId,
+                          id: p.sessionId,
+                        )),
                       );
                       return Text(
                         'Session: $sessionName',
@@ -270,7 +264,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                       );
                     },
                   ),
-                  if (p.departmentName != null && p.departmentName!.isNotEmpty) ...[
+                  if (p.departmentName != null &&
+                      p.departmentName!.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
                       p.departmentName!,
@@ -281,7 +276,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                       ),
                     ),
                   ],
-                  if (p.universityName != null && p.universityName!.isNotEmpty) ...[
+                  if (p.universityName != null &&
+                      p.universityName!.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
                       p.universityName!,
@@ -322,7 +318,6 @@ class _BloodBankState extends ConsumerState<BloodBank>
       ),
     );
   }
-
 }
 
 /// Blood group filter dropdown used as trailing widget in the search bar.
@@ -336,9 +331,9 @@ class _BloodGroupDropdown extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Theme(
-      data: Theme.of(context).copyWith(
-        canvasColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-      ),
+      data: Theme.of(
+        context,
+      ).copyWith(canvasColor: isDark ? const Color(0xFF1E1E1E) : Colors.white),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: selectedBlood,
@@ -389,13 +384,10 @@ class _BloodGroupDropdown extends ConsumerWidget {
             ),
           ],
           onChanged: (val) {
-            ref
-                .read(bloodBankSelectedGroupProvider.notifier)
-                .update(val);
+            ref.read(bloodBankSelectedGroupProvider.notifier).update(val);
           },
         ),
       ),
     );
   }
 }
-

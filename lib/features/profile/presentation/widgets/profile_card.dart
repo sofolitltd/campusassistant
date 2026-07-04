@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:campusassistant/features/auth/domain/entities/user.dart'
     as user_entity;
 import 'header_card.dart';
-import 'academic_section.dart';
-import 'contact_section.dart';
+import 'profile_info_tabs.dart';
 import 'account_section.dart';
 import 'theme_section.dart';
 import 'essentials_section.dart';
@@ -25,15 +24,14 @@ class ProfileCard extends ConsumerWidget {
         child: Column(
           children: [
             HeaderCard(user: user),
+            const AccountSection(),
+            const SizedBox(height: 16),
             if (user.subscriptionStatus == 'pro')
               SubscriptionCard(uid: user.id),
-            if (user.role == 'student')
-              AcademicSection(user: user),
-            ContactSection(user: user),
-            const SizedBox(height: Spacing.lg),
-            const AccountSection(),
-            const SizedBox(height: 8),
+            ProfileInfoTabsSection(user: user),
+            const SizedBox(height: 16),
             const ThemeSection(),
+            const SizedBox(height: 16),
             EssentialsSection(user: user),
           ],
         ),

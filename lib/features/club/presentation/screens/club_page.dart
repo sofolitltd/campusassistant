@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/pill_tab_bar.dart';
+import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/section_tab_bar.dart';
 import '/features/club/domain/entities/club.dart';
 import '/features/club/presentation/providers/club_provider.dart';
 import '/routes/app_route.dart';
@@ -36,25 +37,25 @@ class _ClubsPageState extends ConsumerState<ClubsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Clubs & Organizations'),
-      ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () => context.push(AppRoute.addClub.path),
-      //   label: const Text('Add Club'),
-      // ),
+    return RedHeaderLayout(
+      title: 'Clubs & Organizations',
+      searchHint: 'Search clubs...',
       body: Column(
         children: [
-          PillTabBar(
-            controller: _tabController,
-            labels: const ['Department', 'University'],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: SectionTabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Department'),
+                Tab(text: 'University'),
+              ],
+            ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
+              children: const [
                 ClubsList(filterType: 'department'),
                 ClubsList(filterType: 'university'),
               ],
@@ -85,7 +86,9 @@ class ClubsList extends ConsumerWidget {
                 Icon(
                   LucideIcons.users,
                   size: 64,
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: Spacing.lg),
                 Text(

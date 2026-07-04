@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/pill_tab_bar.dart';
-import '/core/widgets/floating_search_bar.dart';
+import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/section_tab_bar.dart';
 import '/routes/app_route.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -38,51 +38,35 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Faculty Members'),
-        centerTitle: true,
-      ),
-      body: Stack(
+    return RedHeaderLayout(
+      title: 'Faculty Members',
+      searchHint: 'Search by name, dept or designation...',
+      onSearchChanged: (value) => setState(() => _searchQuery = value),
+      body: Column(
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 4),
-
-              // Tabs stay at the top
-              PillTabBar(
-                controller: _tabController,
-                labels: const ['Present', 'Leave'],
-              ),
-              // const SizedBox(height: 4),
-
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    TeacherListView(isPresent: true, searchQuery: _searchQuery),
-                    TeacherListView(isPresent: false, searchQuery: _searchQuery),
-                  ],
-                ),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: SectionTabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Present'),
+                Tab(text: 'Leave'),
+              ],
+            ),
           ),
-
-          // Premium Floating Bottom Search Bar
-          Positioned(
-            bottom: 24,
-            left: 16,
-            right: 16,
-            child: FloatingSearchBar(
-              hintText: 'Search by name, dept or designation...',
-              onChanged: (value) => setState(() => _searchQuery = value),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                TeacherListView(isPresent: true, searchQuery: _searchQuery),
+                TeacherListView(isPresent: false, searchQuery: _searchQuery),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-
 }
 
 class TeacherListView extends ConsumerWidget {
@@ -119,53 +103,18 @@ class TeacherListView extends ConsumerWidget {
               t.post.toLowerCase().contains(query);
         }).toList();
 
-        if (filteredTeachers.isEmpty) return _buildEmpty(isPresent, searchQuery.isNotEmpty);
+        if (filteredTeachers.isEmpty) {
+          return _buildEmpty(isPresent, searchQuery.isNotEmpty);
+        }
 
-        return Column(
-          children: [
-            if (searchQuery.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 3,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.dark 
-                            ? Colors.blue.shade400 
-                            : Colors.blue.shade700,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Found ${filteredTeachers.length} Results',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                        color: Theme.of(context).brightness == Brightness.dark 
-                            ? Colors.grey.shade300 
-                            : Colors.grey.shade800,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredTeachers.length,
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final teacher = filteredTeachers[index];
-                  return _TeacherCard(teacher: teacher);
-                },
-              ),
-            ),
-          ],
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          physics: const BouncingScrollPhysics(),
+          itemCount: filteredTeachers.length,
+          itemBuilder: (context, index) {
+            final teacher = filteredTeachers[index];
+            return _TeacherCard(teacher: teacher);
+          },
         );
       },
     );
@@ -176,14 +125,20 @@ class TeacherListView extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(isSearching ? LucideIcons.searchX : LucideIcons.userX, 
-              size: 48, color: Colors.grey.shade300),
+          Icon(
+            isSearching ? LucideIcons.searchX : LucideIcons.userX,
+            size: 48,
+            color: Colors.grey.shade300,
+          ),
           const SizedBox(height: 12),
           Text(
-            isSearching 
-                ? 'No matches found' 
+            isSearching
+                ? 'No matches found'
                 : 'No ${isPresent ? "present" : "on leave"} faculties',
-            style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -219,7 +174,8 @@ class _TeacherCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        onTap: () => context.push('${AppRoute.teacher.path}/details?id=${teacher.id}'),
+        onTap: () =>
+            context.push('${AppRoute.teacher.path}/details?id=${teacher.id}'),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -234,7 +190,9 @@ class _TeacherCard extends StatelessWidget {
                     Text(
                       teacher.name,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 14),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -250,17 +208,25 @@ class _TeacherCard extends StatelessWidget {
                     if (teacher.phd.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
+                          color: isDark
+                              ? Colors.white10
+                              : Colors.blueGrey.shade50,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           teacher.phd,
                           style: TextStyle(
-                              color: isDark ? Colors.blue.shade300 : Colors.blueGrey.shade700,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600),
+                            color: isDark
+                                ? Colors.blue.shade300
+                                : Colors.blueGrey.shade700,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -269,7 +235,11 @@ class _TeacherCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Icon(LucideIcons.chevronRight, size: 16, color: Colors.grey.shade400),
+                child: Icon(
+                  LucideIcons.chevronRight,
+                  size: 16,
+                  color: Colors.grey.shade400,
+                ),
               ),
             ],
           ),
@@ -299,8 +269,11 @@ class _TeacherCard extends StatelessWidget {
               fit: BoxFit.cover,
               placeholder: (context, url) =>
                   const Center(child: CupertinoActivityIndicator(radius: 6)),
-              errorWidget: (context, url, error) =>
-                  Icon(LucideIcons.user, color: Colors.grey.shade300, size: 24),
+              errorWidget: (context, url, error) => Icon(
+                LucideIcons.user,
+                color: Colors.grey.shade300,
+                size: 24,
+              ),
             ),
           ),
         ),
@@ -328,10 +301,11 @@ class _TeacherCard extends StatelessWidget {
                 'CHAIRMAN',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 7,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.3),
+                  color: Colors.white,
+                  fontSize: 7,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
           ),

@@ -11,6 +11,7 @@ import '/features/routine/domain/entities/routine.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class RoutinePage extends ConsumerWidget {
   const RoutinePage({super.key});
@@ -28,11 +29,9 @@ class RoutinePage extends ConsumerWidget {
       )),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Class Routine'),
-        centerTitle: true,
-      ),
+    return RedHeaderLayout(
+      title: 'Class Routine',
+      showSearchBar: false,
       body: routineAsync.when(
         data: (routines) {
           if (routines.isEmpty) {
@@ -43,22 +42,24 @@ class RoutinePage extends ConsumerWidget {
                   Icon(
                     LucideIcons.calendarDays,
                     size: 64,
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: Spacing.lg),
                   Text(
                     'No Class Routines Found',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Check back later for updates.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                 ],
               ),
@@ -76,9 +77,7 @@ class RoutinePage extends ConsumerWidget {
             itemCount: routines.length,
             itemBuilder: (context, index) {
               final routine = routines[index];
-              return RoutineCard(
-                routine: routine,
-              );
+              return RoutineCard(routine: routine);
             },
             separatorBuilder: (context, index) => const SizedBox(height: 20),
           );
@@ -97,9 +96,9 @@ class RoutinePage extends ConsumerWidget {
               Text(
                 'Something went wrong',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -118,10 +117,7 @@ class RoutinePage extends ConsumerWidget {
 class RoutineCard extends StatelessWidget {
   final Routine routine;
 
-  const RoutineCard({
-    super.key,
-    required this.routine,
-  });
+  const RoutineCard({super.key, required this.routine});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +165,9 @@ class RoutineCard extends StatelessWidget {
                 child: Container(
                   height: 220,
                   width: double.infinity,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   child: CachedNetworkImage(
                     imageUrl: resolvedUrl,
                     fadeInDuration: const Duration(milliseconds: 300),
@@ -181,11 +179,12 @@ class RoutineCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    placeholder: (context, url) => const Center(
-                      child: CupertinoActivityIndicator(),
-                    ),
+                    placeholder: (context, url) =>
+                        const Center(child: CupertinoActivityIndicator()),
                     errorWidget: (context, url, error) => Container(
-                      color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.errorContainer.withValues(alpha: 0.1),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -197,7 +196,8 @@ class RoutineCard extends StatelessWidget {
                           const SizedBox(height: 8),
                           Text(
                             'Could not load routine image',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   color: Theme.of(context).colorScheme.error,
                                 ),
                           ),
@@ -207,7 +207,7 @@ class RoutineCard extends StatelessWidget {
                   ),
                 ),
               ),
-      
+
               // Text Info & Action buttons Section
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -217,32 +217,31 @@ class RoutineCard extends StatelessWidget {
                     Text(
                       routine.title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            height: 1.2,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        height: 1.2,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-      
+
                     // Validity / Time section with icon
                     Row(
                       children: [
                         Icon(
                           LucideIcons.clock,
                           size: 14,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.color
-                              ?.withValues(alpha: 0.7),
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                         ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             routine.time,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -252,8 +251,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  
-      ],
+                  ],
                 ),
               ),
             ],

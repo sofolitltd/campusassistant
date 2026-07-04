@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/core/widgets/pill_tab_bar.dart';
-import '/core/widgets/floating_search_bar.dart';
+import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/section_tab_bar.dart';
 import '/features/emergency/presentation/providers/emergency_provider.dart';
 import '/features/emergency/presentation/widgets/contact_card.dart';
 
@@ -44,53 +44,33 @@ class _EmergencyPageState extends ConsumerState<EmergencyPage>
   Widget build(BuildContext context) {
     final tabs = ['Department', 'University', 'National'];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Emergency Contacts'),
-        centerTitle: true,
-      ),
-      body: Stack(
+    return RedHeaderLayout(
+      title: 'Emergency Contacts',
+      searchHint: 'Search contacts...',
+      onSearchChanged: _onSearchChanged,
+      body: Column(
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.center,
-                child: PillTabBar(
-                  controller: _tabController,
-                  labels: tabs,
-                ),
-              ),
-              // const SizedBox(height: 4),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _EmergencyList(scopeIndex: 0),
-                    _EmergencyList(scopeIndex: 1),
-                    _EmergencyList(scopeIndex: 2),
-                  ],
-                ),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: SectionTabBar(
+              controller: _tabController,
+              tabs: tabs.map((t) => Tab(text: t)).toList(),
+            ),
           ),
-
-          // Premium Floating Bottom Search Bar
-          Positioned(
-            bottom: 24,
-            left: 16,
-            right: 16,
-            child: FloatingSearchBar(
-              hintText: 'Search contacts...',
-              onChanged: _onSearchChanged,
-              debounceMilliseconds: 500,
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                _EmergencyList(scopeIndex: 0),
+                _EmergencyList(scopeIndex: 1),
+                _EmergencyList(scopeIndex: 2),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-
 }
 
 class _EmergencyList extends ConsumerStatefulWidget {

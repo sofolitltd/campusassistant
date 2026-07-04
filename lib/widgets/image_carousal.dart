@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/features/banner/domain/entities/banner.dart' as entity show Banner;
+import '/core/theme/tokens/app_radius.dart';
 
 class ImageCarousel extends StatefulWidget {
   final List<entity.Banner> images;
@@ -92,7 +93,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white10
@@ -107,7 +108,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               child: SizedBox(
                 width: double.infinity,
                 height: 160,

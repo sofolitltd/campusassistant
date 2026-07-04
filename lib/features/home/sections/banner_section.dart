@@ -4,6 +4,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../banner/presentation/providers/banner_provider.dart';
 import '/widgets/image_carousal.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class BannerSection extends ConsumerWidget {
   const BannerSection({super.key});
@@ -15,7 +16,10 @@ class BannerSection extends ConsumerWidget {
     return bannersAsync.when(
       data: (banners) {
         if (banners.isEmpty) return const SizedBox.shrink();
-        return ImageCarousel(images: banners);
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: ImageCarousel(images: banners),
+        );
       },
       loading: () => const Skeletonizer(
         enabled: true,
@@ -36,53 +40,19 @@ class _BannerSkeleton extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minHeight: 160),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade200,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-              color: isDark ? Theme.of(context).cardColor : Colors.white,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: const SizedBox(
-                width: double.infinity,
-                height: 160,
-              ),
-            ),
-          ),
-          Positioned(
-            right: 12,
-            bottom: 12,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                3,
-                (_) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        child: const SizedBox(
+          width: double.infinity,
+          height: 160,
+        ),
       ),
     );
   }
 }
-

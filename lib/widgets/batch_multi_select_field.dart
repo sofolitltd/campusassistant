@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../features/batch/domain/entities/batch.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class BatchMultiSelectField extends StatelessWidget {
   final List<Batch> batches;
@@ -39,7 +41,7 @@ class BatchMultiSelectField extends StatelessWidget {
 
     return InkWell(
       onTap: () => _showSelector(context),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
@@ -152,7 +154,7 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
               fillColor: Colors.grey.shade100,
               filled: true,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
                 borderSide: BorderSide.none,
               ),
               suffixIcon: _searchQuery.isNotEmpty
@@ -226,7 +228,7 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                       border: Border.all(
                         color: isSelected ? Colors.blue : Colors.grey.shade300,
                       ),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Row(
                       children: [
@@ -264,7 +266,7 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

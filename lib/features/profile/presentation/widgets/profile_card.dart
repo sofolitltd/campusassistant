@@ -10,6 +10,7 @@ import 'account_section.dart';
 import 'theme_section.dart';
 import 'essentials_section.dart';
 import 'subscription_card.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class ProfileCard extends ConsumerWidget {
   const ProfileCard({super.key, required this.user});
@@ -29,7 +30,7 @@ class ProfileCard extends ConsumerWidget {
             if (user.role == 'student')
               AcademicSection(user: user),
             ContactSection(user: user),
-            const SizedBox(height: 16),
+            const SizedBox(height: Spacing.lg),
             const AccountSection(),
             const SizedBox(height: 8),
             const ThemeSection(),

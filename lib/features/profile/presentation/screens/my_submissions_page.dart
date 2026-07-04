@@ -5,6 +5,7 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/study/widgets/content_card.dart';
 import '/features/study/data/models/content_model.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class MySubmissionsPage extends ConsumerWidget {
   const MySubmissionsPage({super.key});
@@ -61,7 +62,7 @@ class MySubmissionsPage extends ConsumerWidget {
                     size: 64,
                     color: Colors.grey.shade300,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text(
                     'No submissions yet',
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
@@ -79,7 +80,7 @@ class MySubmissionsPage extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: resources.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            separatorBuilder: (context, index) => const SizedBox(height: Spacing.lg),
             itemBuilder: (context, index) {
               final resource = resources[index];
 

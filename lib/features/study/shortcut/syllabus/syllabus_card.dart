@@ -13,6 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../syllabus/domain/entities/syllabus.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class SyllabusCard extends StatefulWidget {
   const SyllabusCard({super.key, required this.syllabus});
@@ -55,7 +56,7 @@ class _SyllabusCardState extends State<SyllabusCard> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withValues(alpha: 0.05),

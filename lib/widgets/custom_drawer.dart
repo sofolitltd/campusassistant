@@ -5,6 +5,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/utils/constants.dart';
 import '/widgets/open_app.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -20,7 +22,7 @@ class CustomDrawer extends StatelessWidget {
             //
             Drawer(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
               ),
               //from right side
 
@@ -42,14 +44,14 @@ class CustomDrawer extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleSmall!
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                           Container(
                             height: 100,
                             width: 100,
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              // borderRadius: BorderRadius.circular(8),
+                              // borderRadius: BorderRadius.circular(RadiusToken.sm),
                               color: Colors.pink.shade100,
                               image: const DecorationImage(
                                 fit: BoxFit.cover,
@@ -57,7 +59,7 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                           Text(
                             kDeveloperName,
                             style: Theme.of(context).textTheme.titleMedium!
@@ -219,7 +221,7 @@ class CustomDrawer extends StatelessWidget {
                       dense: true,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(color: Colors.grey.shade300, width: 1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -309,7 +311,7 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 16),
+                            const SizedBox(height: Spacing.lg),
                           ],
                         ),
                       ),

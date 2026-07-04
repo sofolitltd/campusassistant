@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/tokens/app_radius.dart';
+
 const kAppName = 'Campus Assistant';
 
 // theme color
@@ -38,16 +40,7 @@ List kArchive = ['Library', 'Research'];
 const List<String> kSessionList = ['17-18', '18-19', '19-20', '20-21'];
 List<String> kStudentStatus = ['Regular', 'Irregular'];
 
-List<String> kBloodGroup = [
-  'A+',
-  'A-',
-  'B+',
-  'B-',
-  'AB+',
-  'AB-',
-  'O+',
-  'O-',
-];
+List<String> kBloodGroup = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 //role
 enum UserRole { admin, cr }
@@ -77,7 +70,7 @@ const kDevYoutube = 'https://youtube.com/@sofolitltd';
 //
 final boxStyle = BoxDecoration(
   color: Colors.white,
-  borderRadius: BorderRadius.circular(8),
+  borderRadius: BorderRadius.circular(RadiusToken.sm),
   border: Border.all(color: Colors.grey.shade300, width: .2),
   boxShadow: [
     BoxShadow(

@@ -6,6 +6,7 @@ import 'package:campusassistant/features/auth/domain/entities/user.dart'
     as user_entity;
 import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
 import 'section_header.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class ContactSection extends ConsumerWidget {
   final user_entity.User user;
@@ -29,7 +30,7 @@ class ContactSection extends ConsumerWidget {
               color: Theme.of(context).brightness == Brightness.dark
                   ? Theme.of(context).cardColor
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white10

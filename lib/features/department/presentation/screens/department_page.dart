@@ -10,6 +10,7 @@ import '/features/department/presentation/providers/department_provider.dart';
 import '/widgets/open_app.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class DepartmentPage extends ConsumerWidget {
   const DepartmentPage({super.key});
@@ -109,7 +110,7 @@ class DepartmentPage extends ConsumerWidget {
                 ],
               ),
 
-              // const SizedBox(height: 16),
+              // const SizedBox(height: Spacing.lg),
 
               // Quick Actions Grid
               Padding(
@@ -177,7 +178,7 @@ class DepartmentPage extends ConsumerWidget {
                 ),
               ),
 
-              // const SizedBox(height: 16),
+              // const SizedBox(height: Spacing.lg),
 
               // About section
               Padding(
@@ -197,7 +198,7 @@ class DepartmentPage extends ConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Text(
@@ -244,7 +245,7 @@ class _QuickActionCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isDark ? Theme.of(context).cardColor : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.grey.shade200,
             width: 1,
@@ -266,7 +267,7 @@ class _QuickActionCard extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: isDark ? Colors.white10 : Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
               ),
               child: Icon(
                 icon,

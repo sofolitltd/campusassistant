@@ -3,6 +3,8 @@ import '/features/batch/presentation/providers/batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
 import '/features/course/presentation/providers/course_provider.dart';
 import '/features/resource/data/models/resource_model.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -445,14 +447,14 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                       height: 160,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(),
                       ),
                       child: _localThumbnailFile != null
                           ? Stack(
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(RadiusToken.md),
                                   child: Image.file(
                                     _localThumbnailFile!,
                                     fit: BoxFit.cover,
@@ -483,7 +485,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                             )
                           : InkWell(
                               onTap: _pickFile,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(RadiusToken.md),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -532,7 +534,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
 
                         _infoTile(
                           icon: LucideIcons.hardDrive,
@@ -618,7 +620,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                     ? 'Please enter a title'
                     : null,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
@@ -732,7 +734,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
                   ),
                   elevation: 2,
                 ),

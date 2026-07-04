@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '/features/student/domain/entities/student.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class StudentCard extends StatelessWidget {
   const StudentCard({
@@ -18,7 +19,7 @@ class StudentCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: Padding(
@@ -30,10 +31,10 @@ class StudentCard extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                   child: studentModel.imageUrl.isEmpty
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(RadiusToken.sm),
                           child: Image.asset(
                             'assets/images/pp_placeholder.png',
                             fit: BoxFit.cover,
@@ -47,7 +48,7 @@ class StudentCard extends StatelessWidget {
                           width: 80,
                           imageUrl: studentModel.imageUrl,
                           placeholder: (context, url) => ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(
                               'assets/images/pp_placeholder.png',
                               fit: BoxFit.cover,
@@ -56,7 +57,7 @@ class StudentCard extends StatelessWidget {
                             ),
                           ),
                           errorWidget: (context, url, error) => ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(
                               'assets/images/pp_placeholder.png',
                               fit: BoxFit.cover,

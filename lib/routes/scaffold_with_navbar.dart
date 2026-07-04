@@ -123,7 +123,10 @@ class ScaffoldWithNavBar extends StatelessWidget {
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             border: Border(
-              top: BorderSide(color: Colors.grey.shade200, width: 0.5),
+              top: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                width: 0.5,
+              ),
             ),
           ),
           child: NavigationBar(

@@ -5,6 +5,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class BookmarkPage extends ConsumerStatefulWidget {
   const BookmarkPage({super.key});
@@ -35,9 +37,9 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(LucideIcons.alertCircle, size: 48, color: Colors.red[300]),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Text('Error: $e', textAlign: TextAlign.center),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               ElevatedButton.icon(
                 onPressed: () => ref.invalidate(userBookmarksProvider(userId)),
                 icon: const Icon(Icons.refresh, size: 18),
@@ -57,7 +59,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     size: 64,
                     color: isDark ? Colors.white24 : Colors.grey.shade300,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text(
                     'No bookmarks yet',
                     style: TextStyle(
@@ -119,7 +121,7 @@ class _BookmarkCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),

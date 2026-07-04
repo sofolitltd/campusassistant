@@ -1,12 +1,13 @@
-import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/pill_tab_bar.dart';
+import '/core/widgets/floating_search_bar.dart';
 import '/utils/constants.dart';
 import '/features/session/presentation/providers/session_provider.dart';
 import '/features/blood/presentation/providers/blood_bank_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class BloodBank extends ConsumerStatefulWidget {
   const BloodBank({super.key});
@@ -19,8 +20,6 @@ class _BloodBankState extends ConsumerState<BloodBank>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _searchController = TextEditingController();
-  Timer? _debounce;
 
   @override
   void initState() {
@@ -41,18 +40,13 @@ class _BloodBankState extends ConsumerState<BloodBank>
   }
 
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(bloodBankSearchQueryProvider.notifier).update(query);
-    });
+    ref.read(bloodBankSearchQueryProvider.notifier).update(query);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     _scrollController.dispose();
-    _searchController.dispose();
-    _debounce?.cancel();
     super.dispose();
   }
 
@@ -75,7 +69,13 @@ class _BloodBankState extends ConsumerState<BloodBank>
               const SizedBox(height: 8),
 
               // Smooth Tabs
-              _buildSmoothTabControl(isDark),
+              PillTabBar(
+                controller: _tabController,
+                labels: const ['Batch', 'Department', 'University', 'National'],
+                onTap: (index) {
+                  ref.read(bloodBankScopeProvider.notifier).update(index);
+                },
+              ),
               // const SizedBox(height: 4),
 
               Expanded(
@@ -137,7 +137,17 @@ class _BloodBankState extends ConsumerState<BloodBank>
           ),
 
           // Floating bottom search and filter bar
-          _buildFloatingSearchAndFilter(context, isDark, selectedBlood),
+          Positioned(
+            bottom: 24,
+            left: 16,
+            right: 16,
+            child: FloatingSearchBar(
+              hintText: 'Search donor name...',
+              onChanged: _onSearchChanged,
+              debounceMilliseconds: 500,
+              trailing: _BloodGroupDropdown(selectedBlood: selectedBlood),
+            ),
+          ),
         ],
       ),
     );
@@ -148,7 +158,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
     return Container(
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
           width: 1,
@@ -313,235 +323,76 @@ class _BloodBankState extends ConsumerState<BloodBank>
     );
   }
 
-  // ── Tab Control ─────────────────────────────────────────────────────────────
-  Widget _buildSmoothTabControl(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1,
-          ),
-        ),
-        child: AnimatedBuilder(
-          animation: _tabController.animation!,
-          builder: (context, child) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildSmoothTab('Batch', 0, isDark),
-                  const SizedBox(width: 4),
-                  _buildSmoothTab('Department', 1, isDark),
-                  const SizedBox(width: 4),
-                  _buildSmoothTab('University', 2, isDark),
-                  const SizedBox(width: 4),
-                  _buildSmoothTab('National', 3, isDark),
-                ],
+}
+
+/// Blood group filter dropdown used as trailing widget in the search bar.
+class _BloodGroupDropdown extends ConsumerWidget {
+  const _BloodGroupDropdown({required this.selectedBlood});
+
+  final String? selectedBlood;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        canvasColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String?>(
+          value: selectedBlood,
+          hint: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              'Blood',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.grey.shade700,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
-            );
+            ),
+          ),
+          icon: const Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Icon(LucideIcons.chevronDown, size: 12),
+          ),
+          items: [
+            DropdownMenuItem<String?>(
+              value: null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  'All',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
+                ),
+              ),
+            ),
+            ...kBloodGroup.map(
+              (group) => DropdownMenuItem<String?>(
+                value: group,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    group,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          onChanged: (val) {
+            ref
+                .read(bloodBankSelectedGroupProvider.notifier)
+                .update(val);
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSmoothTab(String label, int index, bool isDark) {
-    final double animationValue = _tabController.animation!.value;
-    final double progress = (1.0 - (animationValue - index).abs()).clamp(0.0, 1.0);
-
-    final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor = isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white;
-    final Color activeTextColor = isDark ? Colors.black : Colors.white;
-    final Color inactiveTextColor = Colors.grey.shade600;
-
-    return GestureDetector(
-      onTap: () {
-        _tabController.animateTo(index);
-        ref.read(bloodBankScopeProvider.notifier).update(index);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        height: 32,
-        decoration: BoxDecoration(
-          color: Color.lerp(inactiveColor, activeColor, progress),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: Color.lerp(
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              progress,
-            )!,
-            width: 1,
-          ),
-          boxShadow: progress > 0.5
-              ? [
-                  BoxShadow(
-                    color: activeColor.withValues(alpha: 0.1 * progress),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  )
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Color.lerp(inactiveTextColor, activeTextColor, progress),
-              fontWeight: progress > 0.5 ? FontWeight.bold : FontWeight.w600,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingSearchAndFilter(BuildContext context, bool isDark, String? selectedBlood) {
-    return Positioned(
-      bottom: 24,
-      left: 16,
-      right: 16,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: isDark 
-                  ? Colors.black.withValues(alpha: 0.7) 
-                  : Colors.white.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade300,
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: _onSearchChanged,
-                    style: const TextStyle(fontSize: 13),
-                    decoration: InputDecoration(
-                      hintText: 'Search donor name...',
-                      hintStyle: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 12,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 8),
-                        child: Icon(LucideIcons.search, size: 14, color: Colors.grey.shade400),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 32),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _searchController.clear();
-                                _onSearchChanged('');
-                                setState(() {});
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Icon(LucideIcons.circleX, size: 14, color: Colors.grey.shade400),
-                              ),
-                            )
-                          : null,
-                      suffixIconConstraints: const BoxConstraints(maxHeight: 28),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 18,
-                  width: 1,
-                  color: isDark ? Colors.white24 : Colors.grey.shade300,
-                ),
-                Theme(
-                  data: Theme.of(context).copyWith(
-                    canvasColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String?>(
-                   
-                      value: selectedBlood,
-                      hint: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          'Blood',
-                          style: TextStyle(
-                            color: isDark ? Colors.white70 : Colors.grey.shade700,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      icon: const Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Icon(LucideIcons.chevronDown, size: 12),
-                      ),
-                      items: [
-                        DropdownMenuItem<String?>(
-                          value: null,
-                          
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'All',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: isDark ? Colors.white70 : Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ),
-                        ...kBloodGroup.map(
-                          (group) => DropdownMenuItem<String?>(
-                            value: group,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                group,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.red.shade300 : Colors.red.shade700,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        ref
-                            .read(bloodBankSelectedGroupProvider.notifier)
-                            .update(val);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

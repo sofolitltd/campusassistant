@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:campusassistant/features/study/data/models/content_model.dart';
 import 'package:campusassistant/features/batch/presentation/providers/batch_provider.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class ResourceInfoSheet extends ConsumerWidget {
   final ContentModel contentModel;
@@ -92,7 +94,7 @@ class ResourceInfoSheet extends ConsumerWidget {
                 height: 60,
                 decoration: BoxDecoration(
                   color: Colors.blueAccent.shade100.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: Center(
                   child: Icon(
@@ -121,7 +123,7 @@ class ResourceInfoSheet extends ConsumerWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                       ),
                       child: Text(
                         contentModel.contentType.toUpperCase(),
@@ -166,7 +168,7 @@ class ResourceInfoSheet extends ConsumerWidget {
           ),
           _buildInfoRow(LucideIcons.users, 'Target Batches', batchNames),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           _buildSectionTitle(context, 'Type-Specific Details'),
 
           if (contentModel.contentType.toLowerCase().contains('note')) ...[
@@ -193,7 +195,7 @@ class ResourceInfoSheet extends ConsumerWidget {
             _buildInfoRow(LucideIcons.calendar, 'Academic Year', academicYear),
           ],
 
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           _buildSectionTitle(context, 'Stats'),
           Row(
             children: [
@@ -277,7 +279,7 @@ class ResourceInfoSheet extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: Row(

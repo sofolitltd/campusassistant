@@ -6,9 +6,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '/core/di.dart';
 import '/features/community/data/models/community_post.dart';
-import '/features/community/presentation/widgets/community_tabs.dart';
+import '/core/widgets/pill_tab_bar.dart';
 import '/features/community/presentation/widgets/create_post_sheet.dart';
 import '/features/community/presentation/widgets/discussion_card.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class CommunityPage extends ConsumerStatefulWidget {
   const CommunityPage({super.key});
@@ -46,7 +47,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
       ),
       body: Column(
         children: [
-          CommunityTabs(tabController: _tabController),
+          PillTabBar(
+            controller: _tabController,
+            labels: const ['Batch', 'Department', 'University', 'Saved'],
+          ),
           const SizedBox(height: 4),
           Expanded(
             child: TabBarView(
@@ -194,7 +198,7 @@ class _FeedSkeleton extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isDark ? Theme.of(context).cardColor : Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: isDark ? Colors.white10 : Colors.grey.shade200,
             ),

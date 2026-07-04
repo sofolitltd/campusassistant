@@ -9,6 +9,8 @@ import '/features/student/presentation/providers/student_provider.dart'
 import 'package:campusassistant/utils/constants.dart';
 import 'package:go_router/go_router.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 import 'package:campusassistant/widgets/open_app.dart';
 
 class GetVerificationCodeScreen extends StatelessWidget {
@@ -36,7 +38,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(color: Theme.of(context).dividerColor),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -52,7 +54,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                       "Connect with your class representative",
                       style: TextStyle(fontWeight: FontWeight.w100),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     OutlinedButton.icon(
                       onPressed: () {
                         context.push(AppRoute.contactWithCR.path);
@@ -77,7 +79,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(color: Theme.of(context).dividerColor),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -93,7 +95,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                       "Like the page and send a message with",
                       style: TextStyle(fontWeight: FontWeight.w100),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     Text(
                       "Requirements:".toUpperCase(),
                       style: Theme.of(context).textTheme.labelMedium!.copyWith(
@@ -109,7 +111,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                       "\n3. Photo of Student ID (Clear photo).",
                       style: TextStyle(height: 1.4),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     const Text(
                       "We will register your email as soon as possible.",
                     ),
@@ -144,7 +146,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Theme.of(context).dividerColor),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 padding: const EdgeInsets.all(8),
                 child: Column(
@@ -165,7 +167,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     const Text(
                       kDeveloperName,
                       style: TextStyle(
@@ -227,7 +229,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     Container(
                       color: Colors.transparent,
                       child: Row(
@@ -274,7 +276,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                   ],
                 ),
               ),
@@ -346,7 +348,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                 loading: () => const LinearProgressIndicator(),
                 error: (e, _) => Text('Error: $e'),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               if (_selectedUniversityId != null)
                 ref
                     .watch(
@@ -382,7 +384,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                       loading: () => const LinearProgressIndicator(),
                       error: (e, _) => Text('Error: $e'),
                     ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               if (_selectedDepartmentId != null)
                 ref
                     .watch(
@@ -473,7 +475,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                             );
                           },
                           separatorBuilder: (context, index) =>
-                              const SizedBox(height: 16),
+                              const SizedBox(height: Spacing.lg),
                         );
                       },
                       loading: () =>

@@ -6,6 +6,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class DownloadedFilesPage extends StatefulWidget {
   const DownloadedFilesPage({super.key});
@@ -77,7 +79,7 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
                 return Container(
                   decoration: BoxDecoration(
                     color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
                     border: Border.all(
                       color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
                     ),
@@ -112,7 +114,7 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
                                       color: isDark
                                           ? Colors.white.withValues(alpha: 0.08)
                                           : Colors.red.shade50,
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                                     ),
                                     child: Icon(
                                       LucideIcons.fileText,
@@ -226,7 +228,7 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
             size: 64,
             color: isDark ? Colors.white24 : Colors.grey.shade300,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Text(
             'No downloaded files found',
             style: TextStyle(

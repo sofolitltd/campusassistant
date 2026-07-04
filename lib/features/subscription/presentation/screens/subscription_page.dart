@@ -10,6 +10,8 @@ import '/features/subscription/domain/entities/subscription.dart';
 import '/features/subscription/presentation/providers/subscription_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class SubscriptionPage extends ConsumerStatefulWidget {
   const SubscriptionPage({super.key});
@@ -72,7 +74,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(LucideIcons.packageSearch, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
+              SizedBox(height: Spacing.lg),
               Text("No plans available right now.",
                   style: TextStyle(color: Colors.grey, fontSize: 16)),
             ],
@@ -136,7 +138,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
         boxShadow: [
           BoxShadow(
             color: Colors.teal.withValues(alpha: 0.1),
@@ -211,7 +213,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.sm),
               border: Border.all(
                 color: isSelected ? primaryColor : Colors.grey.shade200,
                 width: isSelected ? 2 : 1,
@@ -340,12 +342,12 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader('Payment Method'),
-        const SizedBox(height: 16),
+        const SizedBox(height: Spacing.lg),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             border: Border.all(
               color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               width: 1.5,
@@ -388,7 +390,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
           ),
           elevation: 0,
         ),

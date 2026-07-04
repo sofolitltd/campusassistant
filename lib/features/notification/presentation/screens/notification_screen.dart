@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notification_tile.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -115,7 +116,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                   : (isDark
                       ? Colors.white.withValues(alpha: 0.05)
                       : Colors.grey.shade100),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.sm),
               border: Border.all(
                 color: _showUnreadOnly
                     ? Theme.of(context)

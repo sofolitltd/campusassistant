@@ -124,7 +124,7 @@
 //                 ),
 //               ),
 //
-//               const SizedBox(height: 16),
+//               const SizedBox(height: Spacing.lg),
 //
 //               //
 //               if (noticeModel.imageUrl[0] != '')
@@ -163,7 +163,7 @@
 //                             const CupertinoActivityIndicator(),
 //                     errorWidget: (context, url, error) => Container(
 //                       decoration: BoxDecoration(
-//                         borderRadius: BorderRadius.circular(8),
+//                         borderRadius: BorderRadius.circular(RadiusToken.sm),
 //                         color: Colors.grey.shade100,
 //                       ),
 //                     ),

@@ -12,6 +12,7 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '../semester/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class CourseVideos extends ConsumerStatefulWidget {
   const CourseVideos({
@@ -170,7 +171,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
               return Container(
                 decoration: BoxDecoration(
                   color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(RadiusToken.md),
                   border: Border.all(
                     color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
                     width: 1,
@@ -184,7 +185,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                   ],
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                   onTap: () {
                     if (videoId.isNotEmpty) {
                       context.push(

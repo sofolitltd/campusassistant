@@ -7,6 +7,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../widgets/profile_card.dart';
 import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
 import 'package:campusassistant/routes/app_route.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -110,7 +112,7 @@ class _ProfileSkeleton extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: cardBg,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(color: borderClr),
             ),
             child: Row(
@@ -120,7 +122,7 @@ class _ProfileSkeleton extends StatelessWidget {
                   height: 90, width: 90,
                   decoration: BoxDecoration(
                     color: cardBg,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
                     border: Border.all(color: borderClr),
                   ),
                 ),
@@ -145,16 +147,16 @@ class _ProfileSkeleton extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           // Section: Contact
           _sectionSkeleton(theme, isDark),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           // Section: Account
           _sectionSkeleton(theme, isDark),
           const SizedBox(height: 8),
           // Section: Theme
           _sectionSkeleton(theme, isDark),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           // Section: Essentials
           _sectionSkeleton(theme, isDark),
         ],
@@ -171,7 +173,7 @@ class _ProfileSkeleton extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(color: borderClr),
       ),
       child: Column(
@@ -183,7 +185,7 @@ class _ProfileSkeleton extends StatelessWidget {
                 height: 40, width: 40,
                 decoration: BoxDecoration(
                   color: cardBg,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(RadiusToken.md),
                   border: Border.all(color: borderClr),
                 ),
               ),

@@ -7,6 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/routes/app_route.dart';
 import '/features/transport/presentation/providers/transport_provider.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class TransportPage extends ConsumerWidget {
   const TransportPage({super.key});
@@ -31,7 +32,7 @@ class TransportPage extends ConsumerWidget {
                 size: 48,
                 color: Theme.of(context).colorScheme.error,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Text(
                 'Something went wrong',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -59,7 +60,7 @@ class TransportPage extends ConsumerWidget {
                     size: 64,
                     color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text(
                     'No Transports Found',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(

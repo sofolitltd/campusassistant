@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:campusassistant/core/providers/theme_provider.dart';
 import 'section_header.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class ThemeSection extends ConsumerWidget {
   const ThemeSection({super.key});
@@ -28,7 +29,7 @@ class ThemeSection extends ConsumerWidget {
               color: Theme.of(context).brightness == Brightness.dark
                   ? Theme.of(context).cardColor
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white10

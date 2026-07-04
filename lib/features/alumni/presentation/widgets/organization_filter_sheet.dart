@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/alumni_provider.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 Future<void> showOrganizationFilterSheet(
   BuildContext context,
@@ -52,7 +54,7 @@ Future<void> showOrganizationFilterSheet(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -98,7 +100,7 @@ Future<void> showOrganizationFilterSheet(
                           color: isDark
                               ? Colors.white.withValues(alpha: 0.08)
                               : Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                         child: TextField(
                           onChanged: (val) {
@@ -132,7 +134,7 @@ Future<void> showOrganizationFilterSheet(
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     Expanded(
                       child: orgsAsync.when(
                         data: (orgs) {

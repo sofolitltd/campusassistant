@@ -7,6 +7,7 @@ import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
 import '../semester/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class CourseChaptersScreen extends ConsumerStatefulWidget {
   const CourseChaptersScreen({
@@ -77,7 +78,7 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
 
                 return Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
                     color: theme.cardColor,
                     border: Border.all(
                       color: isDark ? Colors.white10 : Colors.blueGrey.shade50,

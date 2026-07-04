@@ -5,6 +5,8 @@ import 'package:share_plus/share_plus.dart' hide Share;
 
 import 'package:campusassistant/widgets/open_app.dart';
 import 'package:campusassistant/features/alumni/domain/entities/alumni.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class AlumniCard extends StatelessWidget {
   final Alumni alumni;
@@ -291,7 +293,7 @@ class AlumniCard extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                                       ),
                                       child: Text(
                                         a.batch.startsWith('Batch')
@@ -340,7 +342,7 @@ class AlumniCard extends StatelessWidget {
                               color: isDark
                                   ? Colors.white.withValues(alpha: 0.04)
                                   : Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(RadiusToken.md),
                               border: Border.all(
                                 color: isDark
                                     ? Colors.white10
@@ -371,7 +373,7 @@ class AlumniCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                         ],
 
                         _buildDetailSection(
@@ -397,7 +399,7 @@ class AlumniCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
 
                         _buildDetailSection(
                           title: 'Professional Details',
@@ -431,7 +433,7 @@ class AlumniCard extends StatelessWidget {
                           height: 1,
                           color: isDark ? Colors.white10 : Colors.grey.shade200,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         Text(
                           'Connect With Alumni',
                           style: TextStyle(
@@ -552,7 +554,7 @@ class AlumniCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
           width: 1.0,
@@ -566,7 +568,7 @@ class AlumniCard extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         child: InkWell(
           onTap: () => _showAlumniDetailsDialog(
             context,
@@ -915,7 +917,7 @@ class AlumniCard extends StatelessWidget {
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.02)
                           : Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Text(
                       a.bio,
@@ -1103,9 +1105,9 @@ class AlumniCard extends StatelessWidget {
         message: tooltip,
         child: Material(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
             onTap: onTap,
             child: Container(
               width: 44,
@@ -1134,7 +1136,7 @@ class AlumniCard extends StatelessWidget {
           height: 32,
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
           ),
           alignment: Alignment.center,
           child: Icon(icon, color: iconColor, size: 16),

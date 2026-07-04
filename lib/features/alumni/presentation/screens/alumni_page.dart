@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/core/widgets/pill_tab_bar.dart';
+
 import '../providers/alumni_provider.dart';
 import '../widgets/alumni_card.dart';
 import '../widgets/alumni_empty_state.dart';
-import '../widgets/alumni_tab_control.dart';
 import '../widgets/floating_search_bar.dart';
 import '../widgets/organization_filter_sheet.dart';
 
@@ -71,9 +72,10 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
           Column(
             children: [
               const SizedBox(height: 8),
-              AlumniTabControl(
-                tabController: _tabController,
-                onTabChanged: (index) {
+              PillTabBar(
+                controller: _tabController,
+                labels: const ['Batch', 'Department', 'University', 'National'],
+                onTap: (index) {
                   ref.read(alumniScopeProvider.notifier).update(index);
                 },
               ),

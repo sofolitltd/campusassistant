@@ -9,6 +9,7 @@ import 'package:campusassistant/features/community/data/models/community_post.da
 import 'package:campusassistant/features/community/presentation/widgets/comments_sheet.dart';
 import 'package:campusassistant/features/community/presentation/widgets/interaction_button.dart';
 import 'package:campusassistant/features/community/presentation/widgets/share_option.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class DiscussionCard extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -44,7 +45,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),

@@ -9,6 +9,8 @@ import '/routes/app_route.dart';
 import '/widgets/app_logo.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -170,7 +172,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   },
                                 ),
 
-                                const SizedBox(height: 16),
+                                const SizedBox(height: Spacing.lg),
 
                                 CommonTextFieldWidget(
                                   heading: 'Password',
@@ -256,7 +258,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           elevation: 6,
                           margin: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -274,7 +276,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         color: Colors.grey,
                                       ),
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: Spacing.lg),
 
                                 //
                                 OutlinedButton(

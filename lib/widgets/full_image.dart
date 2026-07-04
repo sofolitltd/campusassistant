@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../core/theme/tokens/app_radius.dart' show RadiusToken;
+
 class FullImage extends StatelessWidget {
   final String title;
   final String imageUrl;
@@ -56,7 +58,7 @@ class FullImage extends StatelessWidget {
                             const CupertinoActivityIndicator(),
                     errorWidget: (context, url, error) => Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                         color: Colors.grey.shade100,
                       ),
                     ),

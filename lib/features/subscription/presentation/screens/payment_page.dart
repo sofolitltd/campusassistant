@@ -9,6 +9,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/bkash/bkash_payment.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class PaymentPage extends ConsumerStatefulWidget {
   const PaymentPage({super.key, required this.plan, required this.amount});
@@ -171,7 +173,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                       ),
                       child: Column(
                         children: [
@@ -200,7 +202,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                           minimumSize: const Size(200, 50),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: Spacing.lg),
                     ],
                     ElevatedButton(
                       onPressed: () => context.goNamed(AppRoute.home.name),

@@ -14,6 +14,7 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/inbox/data/services/message_queue_service.dart';
 import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class InboxPage extends ConsumerStatefulWidget {
   const InboxPage({super.key});
@@ -251,9 +252,10 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
 
   void _showConversationActions(BuildContext ctx, String convId, String name,
       String otherUserId, bool isDark) {
+    final cs = Theme.of(context).colorScheme;
     showModalBottomSheet(
       context: ctx,
-      backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
+      backgroundColor: cs.surfaceContainerHighest,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -418,7 +420,7 @@ class _ConversationTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         onTap: () {
           if (isPending) {
             context.pushNamed(
@@ -449,7 +451,7 @@ class _ConversationTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: isDark ? Theme.of(context).cardColor : Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: isPending
                   ? Colors.orange.shade300

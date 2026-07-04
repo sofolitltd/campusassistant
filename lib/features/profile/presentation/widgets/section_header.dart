@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -23,7 +24,7 @@ class SectionHeader extends StatelessWidget {
           color: Theme.of(context).brightness == Brightness.dark
               ? Theme.of(context).cardColor
               : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white10

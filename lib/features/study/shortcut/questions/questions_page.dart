@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'dart:ui';
 import 'package:campusassistant/features/study/widgets/content_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../presentation/providers/questions_provider.dart';
+import 'package:campusassistant/core/widgets/floating_search_bar.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class QuestionsPage extends ConsumerStatefulWidget {
   const QuestionsPage({super.key});
@@ -16,8 +16,6 @@ class QuestionsPage extends ConsumerStatefulWidget {
 
 class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _searchController = TextEditingController();
-  Timer? _debounce;
 
   @override
   void initState() {
@@ -31,8 +29,6 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchController.dispose();
-    _debounce?.cancel();
     super.dispose();
   }
 
@@ -71,7 +67,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
@@ -156,158 +152,50 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     );
   }
 
-  Widget _buildFloatingSearchBar(BuildContext context) {
+  Widget _buildYearFilterTrailing(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedYear = ref.watch(questionsSelectedYearProvider);
-    return Positioned(
-      bottom: 24,
-      left: 16,
-      right: 16,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.7)
-                  : Colors.white.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade300,
-                width: 1,
+    return GestureDetector(
+      onTap: () => _showYearFilterSheet(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              LucideIcons.calendar,
+              size: 14,
+              color: selectedYear != null
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey.shade500,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              selectedYear ?? 'Year',
+              style: TextStyle(
+                color: selectedYear != null
+                    ? Theme.of(context).primaryColor
+                    : (isDark ? Colors.white70 : Colors.grey.shade700),
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
-              child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (val) {
-                      if (_debounce?.isActive ?? false) _debounce!.cancel();
-                      _debounce = Timer(const Duration(milliseconds: 500), () {
-                        ref
-                            .read(questionsSearchQueryProvider.notifier)
-                            .state = val;
-                      });
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Search questions...',
-                      hintStyle: TextStyle(
-                        color: isDark
-                            ? Colors.grey.shade500
-                            : Colors.grey.shade500,
-                        fontSize: 12,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 8),
-                        child: Icon(
-                          LucideIcons.search,
-                          size: 14,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 32),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _searchController.clear();
-                                ref
-                                    .read(questionsSearchQueryProvider.notifier)
-                                    .state = '';
-                                setState(() {});
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Icon(
-                                  LucideIcons.circleX,
-                                  size: 14,
-                                  color: Colors.grey.shade400,
-                                ),
-                              ),
-                            )
-                          : null,
-                      suffixIconConstraints: const BoxConstraints(
-                        maxHeight: 28,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                  ),
+            if (selectedYear != null) ...[
+              const SizedBox(width: 4),
+              GestureDetector(
+                onTap: () {
+                  ref.read(questionsSelectedYearProvider.notifier).state = null;
+                  setState(() {});
+                },
+                child: Icon(
+                  LucideIcons.circleX,
+                  size: 12,
+                  color: Colors.red.shade700,
                 ),
-                Container(
-                  height: 18,
-                  width: 1,
-                  color: isDark ? Colors.white24 : Colors.grey.shade300,
-                ),
-                GestureDetector(
-                  onTap: () => _showYearFilterSheet(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          LucideIcons.calendar,
-                          size: 14,
-                          color: selectedYear != null
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey.shade500,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          selectedYear ?? 'Year',
-                          style: TextStyle(
-                            color: selectedYear != null
-                                ? Theme.of(context).primaryColor
-                                : (isDark
-                                      ? Colors.white70
-                                      : Colors.grey.shade700),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (selectedYear != null) ...[
-                          const SizedBox(width: 4),
-                          GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(questionsSelectedYearProvider.notifier)
-                                  .state = null;
-                              setState(() {});
-                            },
-                            child: Icon(
-                              LucideIcons.circleX,
-                              size: 12,
-                              color: Colors.red.shade700,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -405,7 +293,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(LucideIcons.circleAlert, color: Colors.red, size: 48),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text('Error: $e'),
                   TextButton(
                     onPressed: () =>
@@ -416,7 +304,19 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
               ),
             ),
           ),
-          _buildFloatingSearchBar(context),
+          Positioned(
+            bottom: 24,
+            left: 16,
+            right: 16,
+            child: FloatingSearchBar(
+              hintText: 'Search questions...',
+              onChanged: (val) {
+                ref.read(questionsSearchQueryProvider.notifier).state = val;
+              },
+              debounceMilliseconds: 500,
+              trailing: _buildYearFilterTrailing(context),
+            ),
+          ),
         ],
       ),
     );

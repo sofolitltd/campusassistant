@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/semester.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class SemesterListCard extends StatelessWidget {
   final Semester semester;
@@ -61,7 +62,7 @@ class SemesterListCard extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: theme.cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: isDark ? Colors.white10 : Colors.grey.shade200,
             ),

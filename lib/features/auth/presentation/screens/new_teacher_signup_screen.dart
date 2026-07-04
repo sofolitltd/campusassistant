@@ -5,6 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import '/routes/app_route.dart';
 import '/widgets/common_text_field_widget.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class NewTeacherSignupScreen extends ConsumerStatefulWidget {
   const NewTeacherSignupScreen({
@@ -74,7 +76,7 @@ class _NewTeacherSignupScreenState
                   elevation: 6,
                   margin: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -108,7 +110,7 @@ class _NewTeacherSignupScreenState
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         CommonTextFieldWidget(
                           controller: _mobileController,
                           heading: 'Mobile',
@@ -124,7 +126,7 @@ class _NewTeacherSignupScreenState
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         CommonTextFieldWidget(
                           controller: _emailController,
                           heading: 'Email',
@@ -139,7 +141,7 @@ class _NewTeacherSignupScreenState
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         CommonTextFieldWidget(
                           heading: 'Password',
                           controller: _passwordController,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class YearMultiSelectField extends StatelessWidget {
   final List<String> years;
@@ -35,7 +37,7 @@ class YearMultiSelectField extends StatelessWidget {
 
     return InkWell(
       onTap: () => _showSelector(context),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
@@ -149,7 +151,7 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
                       border: Border.all(
                         color: isSelected ? Colors.black : Colors.grey.shade300,
                       ),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Text(
                       year,
@@ -163,7 +165,7 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 50,

@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '/widgets/open_app.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class CrCard extends StatelessWidget {
   const CrCard({super.key, required this.cr});
@@ -17,7 +18,7 @@ class CrCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withValues(alpha: 0.05),
@@ -41,14 +42,14 @@ class CrCard extends StatelessWidget {
                   width: 85,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade100),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: CachedNetworkImage(
                     imageUrl: cr.imageUrl,
                     fadeInDuration: const Duration(milliseconds: 500),
                     imageBuilder: (_, imageProvider) => Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: imageProvider,

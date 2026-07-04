@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class AlumniEmptyState extends StatelessWidget {
   const AlumniEmptyState({super.key});
@@ -18,7 +19,7 @@ class AlumniEmptyState extends StatelessWidget {
               size: 64,
               color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: Spacing.lg),
             Text(
               'No alumni match your criteria.',
               textAlign: TextAlign.center,

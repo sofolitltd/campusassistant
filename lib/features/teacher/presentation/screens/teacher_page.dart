@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campusassistant/features/teacher/domain/entities/teacher.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,8 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/pill_tab_bar.dart';
+import '/core/widgets/floating_search_bar.dart';
 import '/routes/app_route.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class TeacherPage extends ConsumerStatefulWidget {
   const TeacherPage({super.key});
@@ -19,7 +21,6 @@ class TeacherPage extends ConsumerStatefulWidget {
 
 class _TeacherPageState extends ConsumerState<TeacherPage>
     with SingleTickerProviderStateMixin {
-  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   late TabController _tabController;
 
@@ -31,15 +32,12 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
 
   @override
   void dispose() {
-    _searchController.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Faculty Members'),
@@ -52,7 +50,10 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
               const SizedBox(height: 4),
 
               // Tabs stay at the top
-              _buildSmoothTabControl(isDark),
+              PillTabBar(
+                controller: _tabController,
+                labels: const ['Present', 'Leave'],
+              ),
               // const SizedBox(height: 4),
 
               Expanded(
@@ -72,157 +73,15 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
             bottom: 24,
             left: 16,
             right: 16,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark 
-                        ? Colors.black.withValues(alpha: 0.7) 
-                        : Colors.white.withValues(alpha: 0.8),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: isDark ? Colors.white10 : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    style: const TextStyle(fontSize: 14),
-                    decoration: InputDecoration(
-                      hintText: 'Search by name, dept or designation...',
-                      hintStyle: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 13,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 14, right: 10),
-                        child: Icon(LucideIcons.search, size: 16, color: Colors.grey.shade400),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 40),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
-                                child: Icon(LucideIcons.circleX, size: 16, color: Colors.grey.shade400),
-                              ),
-                            )
-                          : null,
-                      suffixIconConstraints: const BoxConstraints(maxHeight: 32),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                    onChanged: (value) {
-                      setState(() => _searchQuery = value);
-                    },
-                  ),
-                ),
-              ),
+            child: FloatingSearchBar(
+              hintText: 'Search by name, dept or designation...',
+              onChanged: (value) => setState(() => _searchQuery = value),
             ),
           ),
         ],
       ),
     );
   }
-
-  Widget _buildSmoothTabControl(bool isDark) {
-    return Align(
-      alignment: Alignment.center,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-              width: 1,
-            ),
-          ),
-          child: AnimatedBuilder(
-            animation: _tabController.animation!,
-            builder: (context, child) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildSmoothTab('Present', 0, isDark),
-                  const SizedBox(width: 4),
-                  _buildSmoothTab('Leave', 1, isDark),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-
-
-
-  Widget _buildSmoothTab(String label, int index, bool isDark) {
-    final double animationValue = _tabController.animation!.value;
-    final double progress = (index == 0) ? (1.0 - animationValue) : animationValue;
-    final double clampedProgress = progress.clamp(0.0, 1.0);
-
-    final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor = isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white;
-    final Color activeTextColor = isDark ? Colors.black : Colors.white;
-    final Color inactiveTextColor = Colors.grey.shade600;
-
-    return GestureDetector(
-      onTap: () => _tabController.animateTo(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        height: 32,
-        decoration: BoxDecoration(
-          color: Color.lerp(inactiveColor, activeColor, clampedProgress),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: Color.lerp(
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              clampedProgress,
-            )!,
-            width: 1,
-          ),
-          boxShadow: clampedProgress > 0.5
-              ? [
-                  BoxShadow(
-                    color: activeColor.withValues(alpha: 0.1 * clampedProgress),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  )
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Color.lerp(inactiveTextColor, activeTextColor, clampedProgress),
-              fontWeight: clampedProgress > 0.5 ? FontWeight.bold : FontWeight.w600,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
 
 }
 
@@ -345,7 +204,7 @@ class _TeacherCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
           width: 1,
@@ -359,7 +218,7 @@ class _TeacherCard extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         onTap: () => context.push('${AppRoute.teacher.path}/details?id=${teacher.id}'),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -434,7 +293,7 @@ class _TeacherCard extends StatelessWidget {
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             child: CachedNetworkImage(
               imageUrl: teacher.imageUrl,
               fit: BoxFit.cover,

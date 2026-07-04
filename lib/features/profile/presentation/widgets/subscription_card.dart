@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '/features/subscription/presentation/providers/subscription_provider.dart'
-    show userSubscriptionProvider;
+import '/features/subscription/presentation/providers/subscription_provider.dart' show userSubscriptionProvider;
+import '/core/theme/tokens/app_radius.dart';
 
 class SubscriptionCard extends ConsumerWidget {
   final String uid;
@@ -30,7 +30,7 @@ class SubscriptionCard extends ConsumerWidget {
           margin: const EdgeInsets.only(top: 32),
           decoration: BoxDecoration(
             color: Colors.orange.shade50,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             border: Border.all(color: Colors.orange.shade100),
           ),
           child: Padding(
@@ -42,7 +42,7 @@ class SubscriptionCard extends ConsumerWidget {
                   width: 40,
                   decoration: BoxDecoration(
                     color: Colors.orange.shade300,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: const Icon(
                     Icons.diamond_outlined,

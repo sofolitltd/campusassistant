@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class NotificationTile extends StatelessWidget {
   final AppNotification notification;
@@ -66,7 +67,7 @@ class NotificationTile extends StatelessWidget {
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Icon(LucideIcons.checkCheck, color: color, size: 24),
       ),
@@ -79,7 +80,7 @@ class NotificationTile extends StatelessWidget {
             color: notification.isRead
                 ? Colors.transparent
                 : color.withValues(alpha: isDark ? 0.06 : 0.04),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: notification.isRead
                   ? Colors.transparent

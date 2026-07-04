@@ -4,6 +4,8 @@ import 'package:campusassistant/features/student/presentation/providers/student_
 import 'package:campusassistant/widgets/common_text_field_widget.dart';
 import 'package:campusassistant/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class VerificationPage extends ConsumerStatefulWidget {
   const VerificationPage({super.key});
@@ -48,7 +50,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                       elevation: 6,
                       margin: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -69,7 +71,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                             ),
                             const SizedBox(height: 8),
                             const Divider(height: .5),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: Spacing.lg),
                             CommonTextFieldWidget(
                               controller: _verificationCodeController,
                               heading: 'Verification Code',
@@ -156,7 +158,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                       elevation: 6,
                       margin: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -174,7 +176,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                     color: Colors.grey,
                                   ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: Spacing.lg),
                             OutlinedButton(
                               onPressed: () {
                                 context.push(AppRoute.getVerificationCode.path);

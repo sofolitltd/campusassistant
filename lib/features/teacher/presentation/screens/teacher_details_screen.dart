@@ -10,6 +10,9 @@ import 'package:share_plus/share_plus.dart' hide Share;
 
 import '/features/teacher/domain/entities/teacher.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
+import '/core/widgets/pill_tab_bar.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class TeacherDetailsScreen extends ConsumerStatefulWidget {
   const TeacherDetailsScreen({super.key, required this.teacherId});
@@ -39,7 +42,6 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen>
   @override
   Widget build(BuildContext context) {
     final teacherAsync = ref.watch(singleTeacherProvider(widget.teacherId));
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return teacherAsync.when(
       loading: () =>
@@ -65,9 +67,12 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen>
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                 child: _HeaderCard(teacher: teacherModel),
               ),
-              
+
               // Custom Tabs
-              _buildSmoothTabControl(isDark),
+              PillTabBar(
+                controller: _tabController,
+                labels: const ['Contact', 'Academic'],
+              ),
 
               // Tab Content
               Expanded(
@@ -113,94 +118,6 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen>
       debugPrint('Error sharing profile: $e');
     }
   }
-
-  Widget _buildSmoothTabControl(bool isDark) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-              width: 1,
-            ),
-          ),
-          child: AnimatedBuilder(
-            animation: _tabController.animation!,
-            builder: (context, child) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildSmoothTab('Contact', 0, isDark),
-                  const SizedBox(width: 4),
-                  _buildSmoothTab('Academic', 1, isDark),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-
-
-
-  Widget _buildSmoothTab(String label, int index, bool isDark) {
-    final double animationValue = _tabController.animation!.value;
-    final double distance = (index - animationValue).abs();
-    final double progress = (1.0 - distance).clamp(0.0, 1.0);
-
-    final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor = isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white;
-    final Color activeTextColor = isDark ? Colors.black : Colors.white;
-    final Color inactiveTextColor = Colors.grey.shade600;
-
-    return GestureDetector(
-      onTap: () => _tabController.animateTo(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        height: 32,
-        decoration: BoxDecoration(
-          color: Color.lerp(inactiveColor, activeColor, progress),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: Color.lerp(
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              progress,
-            )!,
-            width: 1,
-          ),
-          boxShadow: progress > 0.5
-              ? [
-                  BoxShadow(
-                    color: activeColor.withValues(alpha: 0.1 * progress),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  )
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Color.lerp(inactiveTextColor, activeTextColor, progress),
-              fontWeight: progress > 0.5 ? FontWeight.bold : FontWeight.w600,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-
 }
 
 class _ContactTab extends StatelessWidget {
@@ -214,7 +131,7 @@ class _ContactTab extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
@@ -255,7 +172,7 @@ class _AcademicTab extends StatelessWidget {
             content: teacher.publications.isNotEmpty ? teacher.publications : 'No publications available.',
             isLink: teacher.publications.isNotEmpty,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           _AcademicSection(
             title: 'Research Interests',
             isInterests: true,
@@ -289,7 +206,7 @@ class _AcademicSection extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
@@ -306,7 +223,7 @@ class _AcademicSection extends StatelessWidget {
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const SizedBox(height: 12),
           if (isInterests)
-            interests.isEmpty 
+            interests.isEmpty
               ? const Text('No research interests listed.', style: TextStyle(color: Colors.grey, fontSize: 13))
               : Wrap(
                   spacing: 8,
@@ -349,7 +266,7 @@ class _HeaderCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
@@ -371,7 +288,7 @@ class _HeaderCard extends StatelessWidget {
                 border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade100, width: 1.5),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
                 child: CachedNetworkImage(
                   imageUrl: teacher.imageUrl,
                   fit: BoxFit.cover,
@@ -437,4 +354,3 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-

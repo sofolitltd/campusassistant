@@ -10,6 +10,7 @@ import '../semester/presentation/providers/semester_provider.dart';
 import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_spacing.dart';
 import '../../../widgets/breadcrumbs.dart';
 
 class CourseNotesScreens extends ConsumerStatefulWidget {
@@ -200,7 +201,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens> {
                     vertical: 12,
                   ),
                   itemCount: resources.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 16),
+                  separatorBuilder: (_, _) => const SizedBox(height: Spacing.lg),
                   itemBuilder: (context, index) {
                     final resource = resources[index];
                     return ResourceCard(

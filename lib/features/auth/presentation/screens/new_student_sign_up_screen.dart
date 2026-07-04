@@ -7,6 +7,8 @@ import '/utils/constants.dart';
 import 'package:go_router/go_router.dart';
 import '/widgets/common_dropdown_widget.dart';
 import '/widgets/common_text_field_widget.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class NewStudentSignUpScreen extends ConsumerStatefulWidget {
   const NewStudentSignUpScreen({super.key, required this.studentId});
@@ -84,7 +86,7 @@ class _NewStudentSignUpScreenState
                       elevation: 6,
                       margin: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -109,7 +111,7 @@ class _NewStudentSignUpScreenState
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(RadiusToken.sm),
                                 border: Border.all(color: Colors.blue.shade100),
                               ),
                               child: Row(
@@ -131,7 +133,7 @@ class _NewStudentSignUpScreenState
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: Spacing.lg),
                             _buildOfficialInfoRow(
                               context,
                               'University',
@@ -333,7 +335,7 @@ class _NewStudentSignUpScreenState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Error loading student info: $error'),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               ElevatedButton(
                 onPressed: () =>
                     ref.refresh(studentByCodeProvider(widget.studentId)),

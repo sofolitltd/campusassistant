@@ -9,6 +9,7 @@ import 'package:campusassistant/features/study/semester/presentation/providers/s
 import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/widgets/breadcrumbs.dart';
+import '/core/theme/tokens/app_spacing.dart';
 import 'course_card.dart';
 
 // ---------------------------------------------------------------------------
@@ -236,7 +237,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(LucideIcons.userX, size: 48, color: Colors.grey),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                           const Text('User profile incomplete'),
                           const SizedBox(height: 8),
                           TextButton(
@@ -268,9 +269,9 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: Spacing.lg),
                                 Text('Error: $e', textAlign: TextAlign.center),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: Spacing.lg),
                                 ElevatedButton.icon(
                                   onPressed: () => ref.invalidate(coursesProvider(
                                     universityId: uid,
@@ -320,7 +321,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(LucideIcons.bookOpen, size: 48, color: Colors.grey),
-                                          const SizedBox(height: 16),
+                                          const SizedBox(height: Spacing.lg),
                                           const Text('No courses available'),
                                         ],
                                       ),
@@ -375,9 +376,9 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Text('Error: $e', textAlign: TextAlign.center),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               ElevatedButton.icon(
                 onPressed: () => ref.invalidate(userProvider),
                 icon: const Icon(Icons.refresh, size: 18),

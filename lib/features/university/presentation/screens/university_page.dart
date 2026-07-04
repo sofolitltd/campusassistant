@@ -10,6 +10,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../providers/university_provider.dart';
 import '/routes/app_route.dart';
 import '/widgets/open_app.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class UniversityPage extends ConsumerWidget {
   const UniversityPage({super.key});
@@ -198,7 +199,7 @@ class UniversityPage extends ConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: theme.cardColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(
                           color: isDark
                               ? Colors.white10
@@ -242,7 +243,7 @@ class UniversityPage extends ConsumerWidget {
                       child: Container(
                         height: 200,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                           border: Border.all(
                             color: isDark
                                 ? Colors.white10
@@ -375,7 +376,7 @@ class _StatCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         decoration: BoxDecoration(
           color: isDark ? Theme.of(context).cardColor : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: isDark
                 ? Colors.white10

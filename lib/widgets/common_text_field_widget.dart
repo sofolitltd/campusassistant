@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+
 class CommonTextFieldWidget extends StatefulWidget {
   const CommonTextFieldWidget({
     super.key,
@@ -44,6 +47,8 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -51,10 +56,10 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
           widget.heading,
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
             fontWeight: FontWeight.w500,
-            color: Colors.grey,
+            color: cs.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Spacing.sm),
         TextFormField(
           controller: widget.controller,
           focusNode: widget.focusNode,
@@ -66,24 +71,29 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
               : widget.textCapitalization!,
           obscureText: _obscureText!,
           validator: (value) => widget.validator(value),
-          style: TextStyle(color: widget.enabled! ? null : Colors.grey),
+          style: TextStyle(
+            color: widget.enabled! ? null : cs.onSurfaceVariant,
+          ),
           decoration: InputDecoration(
             isDense: true,
             filled: widget.enabled! ? false : true,
             visualDensity: VisualDensity.compact,
             contentPadding: const EdgeInsets.symmetric(
               vertical: 14,
-              horizontal: 8,
+              horizontal: Spacing.sm,
             ),
             hintText: widget.hintText,
-            // prefixIcon: const Icon(Icons.mail_outline_outlined),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(width: .5),
+              borderRadius: BorderRadius.circular(RadiusToken.sm),
+              borderSide: BorderSide(color: cs.outline, width: 0.5),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(width: .5),
+              borderRadius: BorderRadius.circular(RadiusToken.sm),
+              borderSide: BorderSide(color: cs.primary, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(RadiusToken.sm),
+              borderSide: BorderSide(color: cs.outlineVariant, width: 0.5),
             ),
             suffixIcon: widget.obscureText!
                 ? IconButton(
@@ -99,7 +109,7 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
                       _obscureText!
                           ? Icons.visibility_off_outlined
                           : Icons.remove_red_eye_outlined,
-                      color: Colors.grey,
+                      color: cs.onSurfaceVariant,
                     ),
                   )
                 : null,

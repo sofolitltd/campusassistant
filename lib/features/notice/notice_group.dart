@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:campusassistant/features/auth/domain/entities/user.dart'
     as user_entity;
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class NoticeGroup extends StatelessWidget {
   final user_entity.User user;
@@ -24,7 +25,7 @@ class NoticeGroup extends StatelessWidget {
               size: 64,
               color: Colors.grey,
             ),
-            SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             Text(
               'Notices are temporarily unavailable.',
               style: TextStyle(fontSize: 18, color: Colors.grey),

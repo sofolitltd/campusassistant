@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart' hide Share;
 import '/features/resource/domain/entities/resource.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
 import 'resource_info_sheet.dart';
 
 class ResourceCard extends ConsumerStatefulWidget {
@@ -91,7 +92,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         color: theme.cardColor,
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
@@ -107,7 +108,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       child: Column(
         children: [
           InkWell(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             onTap: () async {
               if (kIsWeb) return;
 
@@ -366,7 +367,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         padding: const EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
           ),

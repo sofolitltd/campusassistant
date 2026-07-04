@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart' hide Share;
 import 'package:campusassistant/features/profile/data/models/profile_model.dart';
 import '/features/staff/domain/entities/staff.dart';
 import '/widgets/open_app.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class StaffCard extends StatelessWidget {
   final Staff staff;
@@ -23,7 +24,7 @@ class StaffCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withValues(alpha: 0.05),
@@ -177,7 +178,7 @@ class _StaffImage extends StatelessWidget {
         width: 85,
         decoration: BoxDecoration(
           color: Colors.teal.shade50,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
           image: const DecorationImage(
             image: AssetImage('assets/images/pp_placeholder.png'),
             fit: BoxFit.cover,
@@ -190,14 +191,14 @@ class _StaffImage extends StatelessWidget {
       width: 85,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade100),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
       ),
       child: CachedNetworkImage(
         imageUrl: imageUrl,
         fadeInDuration: const Duration(milliseconds: 500),
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
           ),
         ),
@@ -206,7 +207,7 @@ class _StaffImage extends StatelessWidget {
         errorWidget: (_, _, _) => Container(
           decoration: BoxDecoration(
             color: Colors.teal.shade50,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             image: const DecorationImage(
               image: AssetImage('assets/images/pp_placeholder.png'),
               fit: BoxFit.cover,

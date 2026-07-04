@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '/features/university/domain/entities/university.dart';
 import '/features/university/presentation/providers/university_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class UniversityLocationPage extends ConsumerStatefulWidget {
   const UniversityLocationPage({super.key});
@@ -79,7 +81,7 @@ class _UniversityLocationPageState
                                   ),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(RadiusToken.sm),
                                   ),
                                   child: Text(
                                     university.name,
@@ -165,7 +167,7 @@ class _UniversityLocationPageState
                             .withValues(alpha: 0.6),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     Row(
                       children: [
                         Expanded(
@@ -183,7 +185,7 @@ class _UniversityLocationPageState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Spacing.lg),
                     ElevatedButton.icon(
                       onPressed: () => _openMap(university),
                       icon: const Icon(LucideIcons.navigation),
@@ -193,7 +195,7 @@ class _UniversityLocationPageState
                         foregroundColor: theme.colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                       ),
                     ),
@@ -265,7 +267,7 @@ class _CoordChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: theme.colorScheme.outlineVariant,
         ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../providers/university_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class UniversityHallsPage extends ConsumerWidget {
   const UniversityHallsPage({super.key});
@@ -45,7 +46,7 @@ class _HallCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),
@@ -63,20 +64,13 @@ class _HallCard extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isDark ? Colors.white10 : Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
           ),
-          child: Icon(
-            LucideIcons.hotel,
-            size: 20,
-            color: Colors.blue.shade700,
-          ),
+          child: Icon(LucideIcons.hotel, size: 20, color: Colors.blue.shade700),
         ),
         title: Text(
           name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         // trailing: Icon(
         //   LucideIcons.chevronRight,

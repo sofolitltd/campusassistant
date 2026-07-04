@@ -6,6 +6,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class NotificationDetailScreen extends ConsumerWidget {
   final dynamic notification;
@@ -237,7 +239,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.03)
                           : Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(RadiusToken.md),
                       border: Border.all(
                         color: isDark ? Colors.white10 : Colors.grey.shade200,
                       ),
@@ -254,7 +256,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         Text(
                           notif.body,
                           style: TextStyle(
@@ -285,13 +287,13 @@ class NotificationDetailScreen extends ConsumerWidget {
                         style: FilledButton.styleFrom(
                           backgroundColor: color,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(RadiusToken.md),
                           ),
                         ),
                       ),
                     ),
                   ],
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -304,7 +306,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                       ),
                       style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                         side: BorderSide(
                           color: isDark ? Colors.white24 : Colors.grey.shade300,

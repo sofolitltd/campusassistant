@@ -6,6 +6,7 @@ import 'package:campusassistant/features/auth/domain/entities/user.dart'
     as user_entity;
 import 'package:campusassistant/routes/app_route.dart';
 import 'section_header.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class EssentialsSection extends StatelessWidget {
   final user_entity.User user;
@@ -28,7 +29,7 @@ class EssentialsSection extends StatelessWidget {
               color: Theme.of(context).brightness == Brightness.dark
                   ? Theme.of(context).cardColor
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white10

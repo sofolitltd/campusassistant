@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/smooth_tab_control.dart';
+import '/core/widgets/pill_tab_bar.dart';
 import '/features/club/domain/entities/club.dart';
 import '/features/club/presentation/providers/club_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ClubsPage extends ConsumerStatefulWidget {
   const ClubsPage({super.key});
@@ -45,8 +47,8 @@ class _ClubsPageState extends ConsumerState<ClubsPage>
       // ),
       body: Column(
         children: [
-          SmoothTabControl(
-            tabController: _tabController,
+          PillTabBar(
+            controller: _tabController,
             labels: const ['Department', 'University'],
           ),
           Expanded(
@@ -85,7 +87,7 @@ class ClubsList extends ConsumerWidget {
                   size: 64,
                   color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: Spacing.lg),
                 Text(
                   'No clubs found',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -141,7 +143,7 @@ class _ClubCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? Theme.of(context).cardColor : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.grey.shade200,
             width: 1.0,
@@ -155,7 +157,7 @@ class _ClubCard extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

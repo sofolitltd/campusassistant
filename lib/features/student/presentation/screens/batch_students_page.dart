@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '/core/widgets/inline_search_bar.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import 'student_card.dart';
 
@@ -14,7 +15,6 @@ class BatchStudentsPage extends ConsumerStatefulWidget {
 }
 
 class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
-  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   @override
@@ -59,28 +59,10 @@ class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        visualDensity: VisualDensity.compact,
-                        hintText: 'Search by name, id, hall or blood',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? GestureDetector(
-                                child: const Icon(Icons.clear, size: 16),
-                                onTap: () {
-                                  _searchController.clear();
-                                  setState(() => _searchQuery = '');
-                                },
-                              )
-                            : null,
-                      ),
-                      onChanged: (value) {
-                        setState(() => _searchQuery = value);
-                      },
+                    InlineSearchBar(
+                      hintText: 'Search by name, id, hall or blood',
+                      onChanged: (value) => setState(() => _searchQuery = value),
+                      dense: true,
                     ),
                     const SizedBox(height: 8),
                     Text(

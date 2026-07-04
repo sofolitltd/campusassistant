@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '/features/course/domain/entities/course.dart';
 import '/widgets/headline.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard({
@@ -36,7 +38,7 @@ class CourseCard extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           itemCount: courses.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 16),
+          separatorBuilder: (_, _) => const SizedBox(height: Spacing.lg),
           itemBuilder: (context, index) {
             final course = courses[index];
             return InkWell(
@@ -74,7 +76,7 @@ class _CourseCardContent extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),

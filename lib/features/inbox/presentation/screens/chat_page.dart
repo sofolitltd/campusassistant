@@ -21,6 +21,7 @@ import '/features/inbox/presentation/widgets/menu_row.dart';
 import '/features/inbox/presentation/widgets/message_bubble.dart';
 import '/features/inbox/presentation/widgets/reply_banner.dart';
 import '/features/inbox/presentation/widgets/select_bar.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final String conversationId;
@@ -663,7 +664,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ],
       color: Theme.of(ctx).brightness == Brightness.dark ? const Color(0xFF1F2C33) : Colors.white,
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(RadiusToken.md)),
     );
   }
 

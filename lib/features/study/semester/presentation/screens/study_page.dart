@@ -14,6 +14,7 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/widgets/headline.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/core/providers/download_counter_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
 import '../widgets/semester_grid_card.dart';
 import '../widgets/semester_list_card.dart';
 
@@ -281,7 +282,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
               ),
             ),
 
-            SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             // Title + toggle buttons
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 16, 4),
@@ -425,7 +426,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                separatorBuilder: (_, _) => const SizedBox(height: 16),
+                separatorBuilder: (_, _) => const SizedBox(height: Spacing.lg),
                 itemCount: displaySemesters.length,
                 itemBuilder: (context, index) {
                   final semester = displaySemesters[index];

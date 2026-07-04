@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   final String paymentID;
@@ -31,7 +32,7 @@ class PaymentSuccessPage extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               const Text(
                 "Check your subscription status on Profile page",
                 style: TextStyle(fontWeight: FontWeight.w500),

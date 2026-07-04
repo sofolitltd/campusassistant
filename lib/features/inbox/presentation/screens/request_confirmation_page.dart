@@ -7,6 +7,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class RequestConfirmationPage extends ConsumerWidget {
   final String conversationId;
@@ -66,7 +68,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text(
                     name,
                     style: GoogleFonts.outfit(
@@ -108,7 +110,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                         color: isDark
                             ? const Color(0xFF1F2C33)
                             : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(
                           color: isDark
                               ? Colors.white10
@@ -166,7 +168,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                       ),
                       child: const Text(
@@ -186,7 +188,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                         foregroundColor: Colors.red,
                         side: const BorderSide(color: Colors.red),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                       ),
                       child: const Text(

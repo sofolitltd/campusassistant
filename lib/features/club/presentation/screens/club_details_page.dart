@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '/features/club/domain/entities/club.dart';
 import '/widgets/open_app.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ClubDetailsPage extends StatelessWidget {
   final Club club;
@@ -23,14 +25,14 @@ class ClubDetailsPage extends StatelessWidget {
         children: [
           if (club.bannerUrl != null && club.bannerUrl!.isNotEmpty)
             ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               child: CachedNetworkImage(
                 imageUrl: club.bannerUrl!,
                 height: 180,
                 fit: BoxFit.cover,
               ),
             ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             children: [
               Container(

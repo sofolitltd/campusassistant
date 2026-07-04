@@ -9,6 +9,8 @@ import '/features/routine/presentation/providers/routine_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/routine/domain/entities/routine.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class RoutinePage extends ConsumerWidget {
   const RoutinePage({super.key});
@@ -43,7 +45,7 @@ class RoutinePage extends ConsumerWidget {
                     size: 64,
                     color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text(
                     'No Class Routines Found',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -91,7 +93,7 @@ class RoutinePage extends ConsumerWidget {
                 size: 48,
                 color: Theme.of(context).colorScheme.error,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Text(
                 'Something went wrong',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -142,7 +144,7 @@ class RoutineCard extends StatelessWidget {
           color: Theme.of(context).brightness == Brightness.dark
               ? Theme.of(context).cardColor
               : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white10
@@ -157,7 +159,7 @@ class RoutineCard extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

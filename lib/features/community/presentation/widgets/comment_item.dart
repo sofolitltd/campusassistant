@@ -7,6 +7,7 @@ import 'package:campusassistant/features/community/data/models/community_comment
 import 'package:campusassistant/core/di.dart';
 import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class CommentItem extends ConsumerStatefulWidget {
   final CommunityComment comment;
@@ -65,7 +66,7 @@ class _CommentItemState extends ConsumerState<CommentItem> {
           maxLines: 3,
           decoration: InputDecoration(
             hintText: 'Update your comment...',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(RadiusToken.md)),
           ),
         ),
         actions: [
@@ -166,7 +167,7 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                         color: isDark
                             ? Colors.white.withValues(alpha: 0.05)
                             : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

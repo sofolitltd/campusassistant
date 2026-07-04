@@ -1,13 +1,12 @@
-import 'dart:async';
-import 'dart:ui';
+import 'package:campusassistant/core/widgets/floating_search_bar.dart';
 import 'package:campusassistant/widgets/open_app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../presentation/providers/research_provider.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class ResearchPage extends ConsumerStatefulWidget {
   const ResearchPage({super.key});
@@ -97,7 +96,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey.withValues(alpha: 0.05),
@@ -159,135 +158,19 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
             },
             error: (e, st) => Center(child: Text('Error: $e')),
           ),
-          const _SearchBar(),
-        ],
-      ),
-    );
-  }
-}
-
-class _SearchBar extends ConsumerStatefulWidget {
-  const _SearchBar();
-
-  @override
-  ConsumerState<_SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends ConsumerState<_SearchBar> {
-  final TextEditingController _searchController = TextEditingController();
-  Timer? _debounce;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _debounce?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Positioned(
-      bottom: 24,
-      left: 16,
-      right: 16,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.7)
-                  : Colors.white.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade300,
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (val) {
-                      if (_debounce?.isActive ?? false) _debounce!.cancel();
-                      _debounce = Timer(const Duration(milliseconds: 500), () {
-                        ref
-                            .read(researchSearchQueryProvider.notifier)
-                            .state = val;
-                      });
-                    },
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Search research...',
-                      hintStyle: TextStyle(
-                        color: isDark
-                            ? Colors.grey.shade500
-                            : Colors.grey.shade500,
-                        fontSize: 12,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 8),
-                        child: Icon(
-                          LucideIcons.search,
-                          size: 14,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 32),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _searchController.clear();
-                                ref
-                                    .read(researchSearchQueryProvider.notifier)
-                                    .state = '';
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Icon(
-                                  LucideIcons.circleX,
-                                  size: 14,
-                                  color: Colors.grey.shade400,
-                                ),
-                              ),
-                            )
-                          : null,
-                      suffixIconConstraints: const BoxConstraints(
-                        maxHeight: 28,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                  ),
-                ),
-              ],
+          Positioned(
+            bottom: 24,
+            left: 16,
+            right: 16,
+            child: FloatingSearchBar(
+              hintText: 'Search research...',
+              onChanged: (val) {
+                ref.read(researchSearchQueryProvider.notifier).state = val;
+              },
+              debounceMilliseconds: 500,
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:campusassistant/core/theme/app_colors.dart';
 import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
 import 'package:campusassistant/routes/app_route.dart';
 import 'section_header.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class AccountSection extends ConsumerWidget {
   const AccountSection({super.key});
@@ -32,7 +33,7 @@ class AccountSection extends ConsumerWidget {
               color: Theme.of(context).brightness == Brightness.dark
                   ? Theme.of(context).cardColor
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white10

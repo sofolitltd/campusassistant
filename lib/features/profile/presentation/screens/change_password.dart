@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '/widgets/breadcrumbs.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -95,7 +96,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         },
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: Spacing.lg),
 
                       // title
                       Text(

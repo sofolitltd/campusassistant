@@ -13,6 +13,8 @@ import 'package:go_router/go_router.dart';
 import 'package:campusassistant/routes/app_route.dart';
 
 import '/widgets/common_text_field_widget.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
@@ -95,7 +97,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   elevation: 6,
                   margin: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -123,7 +125,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                     height: 116,
                                     width: 116,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                                       color: Colors.grey.shade200,
                                     ),
                                     padding: const EdgeInsets.all(8),
@@ -137,7 +139,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                     height: 116,
                                     width: 116,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                                       border: Border.all(
                                         color: Colors.blueGrey.shade100,
                                       ),
@@ -232,12 +234,12 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         ),
                         const SizedBox(height: 24),
                         const Divider(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 54),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(RadiusToken.md),
                             ),
                             elevation: 2,
                           ),

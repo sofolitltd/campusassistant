@@ -7,6 +7,7 @@ import 'package:campusassistant/features/auth/domain/entities/user.dart'
     as user_entity;
 import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
 import 'section_header.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class AcademicSection extends ConsumerWidget {
   final user_entity.User user;
@@ -33,7 +34,7 @@ class AcademicSection extends ConsumerWidget {
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Theme.of(context).cardColor
                       : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(RadiusToken.md),
                   border: Border.all(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white10
@@ -74,7 +75,7 @@ class _AcademicRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: appColors.academicRowBg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
       ),
       child: Row(
         children: [

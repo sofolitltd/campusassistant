@@ -13,6 +13,8 @@ import '/features/university/presentation/providers/university_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/utils/constants.dart';
 import '/widgets/breadcrumbs.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class EditProfilePage extends ConsumerWidget {
   final String uid;
@@ -123,7 +125,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Theme.of(context).cardColor
                             : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.white10
@@ -166,7 +168,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                 val!.isEmpty ? 'Enter your name' : null,
                           ),
                   
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                   
                           /// ---- MOBILE + BLOOD ----
                           Row(
@@ -231,7 +233,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             ],
                           ),
                   
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                   
                           /// ---- HALL ----
                           const Text('Hall Name'),
@@ -316,7 +318,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
         color: Theme.of(context).brightness == Brightness.dark
             ? Theme.of(context).cardColor
             : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: Theme.of(context).brightness == Brightness.dark
               ? Colors.white10

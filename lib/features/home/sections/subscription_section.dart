@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class SubscriptionSection extends ConsumerStatefulWidget {
   const SubscriptionSection({super.key});
@@ -24,14 +24,7 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
 
     return userAsync.when(
       data: (user) {
-        // todo: If user is already pro, hide the support section
-        // if (user.information.status?.subscriber == 'pro') {
-        //   return const SizedBox.shrink();
-        // }
-
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
+        return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -39,14 +32,7 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.teal.withValues(alpha: 0.2),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(RadiusToken.md),
           ),
           child: Material(
             color: Colors.transparent,
@@ -56,13 +42,12 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
                   _isExpanded = !_isExpanded;
                 });
               },
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // --- SLIM HEADER (Always Visible) ---
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -82,7 +67,6 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 "আমাদের এই উদ্যোগকে বাঁচিয়ে রাখুন",
@@ -120,8 +104,6 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
                         ),
                       ],
                     ),
-
-                    // --- EXPANDABLE CONTENT ---
                     AnimatedCrossFade(
                       firstChild: const SizedBox(width: double.infinity),
                       secondChild: Column(
@@ -175,10 +157,7 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
           ),
         );
       },
-      loading: () => const Skeletonizer(
-        enabled: true,
-        child: _SubscriptionSkeleton(),
-      ),
+      loading: () => const _SubscriptionSkeleton(),
       error: (e, _) => const SizedBox.shrink(),
     );
   }
@@ -192,7 +171,7 @@ class _SubscriptionSkeleton extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         color: Theme.of(context).cardColor,
       ),
       child: const Padding(

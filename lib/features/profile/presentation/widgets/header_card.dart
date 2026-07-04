@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:campusassistant/features/auth/domain/entities/user.dart'
     as user_entity;
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class HeaderCard extends StatelessWidget {
   final user_entity.User user;
@@ -22,7 +23,7 @@ class HeaderCard extends StatelessWidget {
         color: Theme.of(context).brightness == Brightness.dark
             ? Theme.of(context).cardColor
             : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: Theme.of(context).brightness == Brightness.dark
               ? Colors.white10
@@ -106,7 +107,7 @@ class _ProfileImage extends StatelessWidget {
       width: 90,
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),

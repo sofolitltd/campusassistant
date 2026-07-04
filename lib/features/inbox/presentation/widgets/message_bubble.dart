@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -127,7 +128,7 @@ class MessageBubble extends StatelessWidget {
                           margin: const EdgeInsets.only(bottom: 6),
                           decoration: BoxDecoration(
                             color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                             border: Border(
                               left: BorderSide(
                                 color: isMe ? (isDark ? Colors.white38 : Colors.black38) : Colors.teal,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:campusassistant/core/theme/tokens/app_radius.dart';
 
 class DateSeparator extends StatelessWidget {
   final String date;
@@ -15,7 +16,7 @@ class DateSeparator extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
             color: isDark ? Colors.white10 : Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
           ),
           child: Text(
             date,

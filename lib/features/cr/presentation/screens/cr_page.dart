@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/core/widgets/smooth_tab_control.dart';
+import '/core/widgets/pill_tab_bar.dart';
+import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/cr_model.dart';
 import '../providers/cr_provider.dart';
 import 'cr_card.dart';
@@ -47,8 +48,8 @@ class _CrPageState extends ConsumerState<CrPage>
 
           return Column(
             children: [
-              SmoothTabControl(
-                tabController: _tabController,
+              PillTabBar(
+                controller: _tabController,
                 labels: const ['Active', 'Archived'],
               ),
               Expanded(
@@ -123,7 +124,7 @@ class _CrList extends StatelessWidget {
                 return CrCard(cr: cr);
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: Spacing.lg),
           ],
         );
       },

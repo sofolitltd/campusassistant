@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart' hide Share;
 import '../data/models/content_model.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
 import 'resource_info_sheet.dart';
 
 class ContentCard extends ConsumerStatefulWidget {
@@ -99,7 +100,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         color: theme.cardColor,
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade200,
@@ -453,7 +454,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         padding: .only(right: 10),
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
           ),
@@ -924,7 +925,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(RadiusToken.sm)),
         title: const Text(
           "Pro Content 🔒",
           style: TextStyle(fontWeight: FontWeight.bold),

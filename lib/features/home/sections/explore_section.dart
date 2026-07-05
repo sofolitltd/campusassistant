@@ -1,9 +1,9 @@
 import 'package:campusassistant/routes/app_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../university/presentation/providers/university_provider.dart';
@@ -20,9 +20,9 @@ class ExploreSection extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
 
     return userAsync.when(
-      loading: () => const Skeletonizer(
-        enabled: true,
-        child: _ExploreSkeleton(),
+      loading: () => const SizedBox(
+        height: 300,
+        child: Center(child: CupertinoActivityIndicator()),
       ),
       error: (err, stack) => Center(child: Text('Error: $err')),
       data: (user) {
@@ -193,120 +193,6 @@ class _ExploreCard extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ExploreSkeleton extends StatelessWidget {
-  const _ExploreSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _SkeletonCard(isDark: isDark, theme: theme),
-          const SizedBox(height: Spacing.md),
-          _SkeletonCard(isDark: isDark, theme: theme),
-          const SizedBox(height: Spacing.md),
-          _SkeletonCard(isDark: isDark, theme: theme, showChevron: true),
-        ],
-      ),
-    );
-  }
-}
-
-class _SkeletonCard extends StatelessWidget {
-  final bool isDark;
-  final ThemeData theme;
-  final bool showChevron;
-
-  const _SkeletonCard({
-    required this.isDark,
-    required this.theme,
-    this.showChevron = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(RadiusToken.xl),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(Spacing.lg),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(RadiusToken.sm),
-              ),
-            ),
-            const SizedBox(width: Spacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 70,
-                    height: 11,
-                    margin: const EdgeInsets.only(bottom: 6),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  Container(
-                    width: 160,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (showChevron)
-              Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                ),
-              ),
-          ],
         ),
       ),
     );

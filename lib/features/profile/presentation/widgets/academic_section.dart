@@ -16,47 +16,49 @@ class AcademicSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(studentProfileProvider).when(
-      data: (student) {
-        if (student == null) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.only(top: 16),
-          child: Column(
-            children: [
-              SectionHeader(
-                title: 'Academic Info',
-                subtitle: 'Batch, session & student ID',
-                icon: LucideIcons.graduationCap,
-              ),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Theme.of(context).cardColor
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(RadiusToken.md),
-                  border: Border.all(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white10
-                        : Colors.grey.shade200,
+    return ref
+        .watch(studentProfileProvider)
+        .when(
+          data: (student) {
+            if (student == null) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Column(
+                children: [
+                  SectionHeader(
+                    title: 'Academic Info',
+                    subtitle: 'Batch, session & student ID',
+                    icon: LucideIcons.graduationCap,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).cardColor
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(RadiusToken.md),
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white10
+                            : Colors.grey.shade200,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: _AcademicRow(student: student),
+                    child: _AcademicRow(student: student),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (err, _) => const SizedBox.shrink(),
         );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (err, _) => const SizedBox.shrink(),
-    );
   }
 }
 
@@ -134,10 +136,7 @@ class _AcademicBadge extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(fontSize: 10, color: mutedColor),
-          ),
+          Text(label, style: TextStyle(fontSize: 10, color: mutedColor)),
         ],
       ),
     );

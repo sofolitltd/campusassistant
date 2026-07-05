@@ -1,8 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -16,9 +16,9 @@ class ShortcutSection extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
 
     return userAsync.when(
-      loading: () => const Skeletonizer(
-        enabled: true,
-        child: _ShortcutSkeleton(),
+      loading: () => const SizedBox(
+        height: 200,
+        child: Center(child: CupertinoActivityIndicator()),
       ),
       error: (e, _) =>
           SizedBox(height: 200, child: Center(child: Text("Error: $e"))),
@@ -145,77 +145,6 @@ class _GridItem extends StatelessWidget {
                   ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ShortcutSkeleton extends StatelessWidget {
-  const _ShortcutSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.sm),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.xl),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(Spacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: Spacing.sm),
-                child: Container(
-                  width: 80,
-                  height: 13,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1.3,
-                  crossAxisSpacing: 6,
-                  mainAxisSpacing: 4,
-                ),
-                itemCount: 6,
-                itemBuilder: (_, _) => Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(RadiusToken.xl),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

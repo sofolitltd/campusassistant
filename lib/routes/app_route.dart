@@ -68,6 +68,14 @@ class AppRoute {
     name: 'universityHalls',
     path: 'halls',
   );
+  static const universityDepartments = AppRoute(
+    name: 'universityDepartments',
+    path: 'departments',
+  );
+  static const universityFaculties = AppRoute(
+    name: 'universityFaculties',
+    path: 'faculties',
+  );
   static const department = AppRoute(name: 'department', path: '/department');
   static const teacher = AppRoute(name: 'teacher', path: '/teacher');
   static const student = AppRoute(name: 'student', path: '/student');
@@ -119,6 +127,10 @@ class AppRoute {
     path: '/my-submissions',
   );
   static const noticeGroup = AppRoute(name: 'noticeGroup', path: '/notices');
+  static const contributors = AppRoute(
+    name: 'contributors',
+    path: '/contributors',
+  );
 
   //login
   static const login = AppRoute(name: 'login', path: '/login');

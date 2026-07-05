@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +13,7 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/inbox/data/services/message_queue_service.dart';
 import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
+import '/routes/scaffold_with_navbar.dart';
 import '/core/theme/tokens/app_radius.dart';
 
 class InboxPage extends ConsumerStatefulWidget {
@@ -23,7 +23,8 @@ class InboxPage extends ConsumerStatefulWidget {
   ConsumerState<InboxPage> createState() => _InboxPageState();
 }
 
-class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserver {
+class _InboxPageState extends ConsumerState<InboxPage>
+    with WidgetsBindingObserver {
   final _searchController = TextEditingController();
   String _filterText = '';
 
@@ -74,24 +75,83 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final conversationsAsync = ref.watch(conversationsProvider);
+    final primaryRed = const Color(
+      0xFFD32F2F,
+    ); // Matching the red from screenshot
 
     return Scaffold(
+      backgroundColor: primaryRed,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: false,
         scrolledUnderElevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () => ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
         title: Text(
           'Inbox',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
       ),
-      body: conversationsAsync.when(
-        data: (conversations) =>
-            _buildConversationList(conversations, isDark),
-        loading: () => _buildLoading(),
-        error: (e, _) => Center(child: Text('Error: $e')),
+      body: Column(
+        children: [
+          _buildSearchBar(isDark),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Theme.of(context).scaffoldBackgroundColor
+                    : const Color(0xFFF8F9FA),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                child: conversationsAsync.when(
+                  data: (conversations) =>
+                      _buildConversationList(conversations, isDark),
+                  loading: () => _buildLoading(),
+                  error: (e, _) => Center(child: Text('Error: $e')),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.pushNamed(AppRoute.newChat.name),
+        backgroundColor: const Color(0xFF387C44), // Green from screenshot
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(LucideIcons.pencil),
       ),
     );
@@ -103,155 +163,150 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
 
   Widget _buildSearchBar(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.7)
-                  : Colors.white.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade300,
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              controller: _searchController,
-              style: const TextStyle(fontSize: 14),
-              decoration: InputDecoration(
-                hintText: 'Search conversations...',
-                hintStyle: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 13,
-                ),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 14, right: 10),
-                  child: Icon(
-                    LucideIcons.search,
-                    size: 16,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-                prefixIconConstraints: const BoxConstraints(minWidth: 40),
-                suffixIcon: _filterText.isNotEmpty
-                    ? GestureDetector(
-                        onTap: () {
-                          _searchController.clear();
-                          setState(() => _filterText = '');
-                        },
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
-                          child: Icon(
-                            LucideIcons.circleX,
-                            size: 16,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      )
-                    : null,
-                suffixIconConstraints: const BoxConstraints(maxHeight: 32),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              ),
-              onChanged: (v) => setState(() => _filterText = v),
-            ),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: TextField(
+          controller: _searchController,
+          style: TextStyle(
+            fontSize: 15,
+            color: isDark ? Colors.white : Colors.black87,
           ),
+          decoration: InputDecoration(
+            hintText: 'Search',
+            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 15),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 8),
+              child: Icon(
+                LucideIcons.search,
+                size: 20,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            prefixIconConstraints: const BoxConstraints(minWidth: 40),
+            suffixIcon: _filterText.isNotEmpty
+                ? GestureDetector(
+                    onTap: () {
+                      _searchController.clear();
+                      setState(() => _filterText = '');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Icon(
+                        LucideIcons.circleX,
+                        size: 18,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  )
+                : null,
+            suffixIconConstraints: const BoxConstraints(maxHeight: 32),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          onChanged: (v) => setState(() => _filterText = v),
         ),
       ),
     );
   }
 
   Widget _buildConversationList(
-      List<Map<String, dynamic>> conversations, bool isDark) {
+    List<Map<String, dynamic>> conversations,
+    bool isDark,
+  ) {
     final userId = ref.watch(currentUserProvider).asData?.value?.id;
 
     final filtered = _filterText.isEmpty
         ? conversations
         : conversations.where((c) {
-            final data =
-                c['participantData'] as Map<String, dynamic>? ?? {};
-            final otherName = data.entries
-                .firstWhere(
-                  (e) => e.key != userId,
-                  orElse: () => MapEntry('', {'name': ''}),
-                )
-                .value['name'] as String? ?? '';
-            return otherName
-                .toLowerCase()
-                .contains(_filterText.toLowerCase());
+            final data = c['participantData'] as Map<String, dynamic>? ?? {};
+            final otherName =
+                data.entries
+                        .firstWhere(
+                          (e) => e.key != userId,
+                          orElse: () => MapEntry('', {'name': ''}),
+                        )
+                        .value['name']
+                    as String? ??
+                '';
+            return otherName.toLowerCase().contains(_filterText.toLowerCase());
           }).toList();
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _buildSearchBar(isDark)),
-          if (filtered.isEmpty)
-            SliverFillRemaining(
-              child: Center(
-                child: Text(
-                  _filterText.isNotEmpty
-                      ? 'No conversations found'
-                      : 'No conversations yet',
-                  style: TextStyle(color: Colors.grey.shade500),
-                ),
-              ),
-            )
-          else
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-          final conv = filtered[index];
-          final convId = conv['id'] as String;
-          final participantData =
-              conv['participantData'] as Map<String, dynamic>? ?? {};
-          final otherEntry = participantData.entries.firstWhere(
-            (e) => e.key != userId,
-            orElse: () => MapEntry('', const {'name': 'Unknown'}),
-          );
-          final otherName = otherEntry.value['name'] as String? ?? 'Unknown';
-          final otherImage = otherEntry.value['image'] as String? ?? '';
-          final lastMessage = conv['lastMessage'] as String? ?? '';
-          final lastMessageTime = conv['lastMessageTime'] as String? ?? '';
-          final lastMessageSender = conv['lastMessageSender'] as String? ?? '';
-          final isSentByMe = lastMessageSender == userId;
-          final unreadCount = conv['unreadCount'] as int? ?? 0;
-          final timeAgo = _timeAgo(lastMessageTime);
-          final status = conv['status'] as String? ?? 'accepted';
-          final initiatorId = conv['initiatorId'] as String?;
-          final isPending = status == 'pending' && initiatorId != userId;
+    if (filtered.isEmpty) {
+      return Center(
+        child: Text(
+          _filterText.isNotEmpty
+              ? 'No conversations found'
+              : 'No conversations yet',
+          style: TextStyle(
+            color: Colors.grey.shade400,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+    }
 
-          return _ConversationTile(
-            convId: convId,
-            name: otherName,
-            imageUrl: otherImage,
-            lastMessage: lastMessage,
-            time: timeAgo,
-            isSentByMe: isSentByMe,
-            isDark: isDark,
-            otherUserId: otherEntry.key,
-            unreadCount: unreadCount,
-            isPending: isPending,
-            status: status,
-            initiatorId: initiatorId,
-            onLongPress: () => _showConversationActions(context, convId, otherName, otherEntry.key, isDark),
-          );
-        },
-                childCount: filtered.length,
-              ),
-            ),
-          ],
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: filtered.length,
+      itemBuilder: (context, index) {
+        final conv = filtered[index];
+        final convId = conv['id'] as String;
+        final participantData =
+            conv['participantData'] as Map<String, dynamic>? ?? {};
+        final otherEntry = participantData.entries.firstWhere(
+          (e) => e.key != userId,
+          orElse: () => MapEntry('', const {'name': 'Unknown'}),
+        );
+        final otherName = otherEntry.value['name'] as String? ?? 'Unknown';
+        final otherImage = otherEntry.value['image'] as String? ?? '';
+        final lastMessage = conv['lastMessage'] as String? ?? '';
+        final lastMessageTime = conv['lastMessageTime'] as String? ?? '';
+        final lastMessageSender = conv['lastMessageSender'] as String? ?? '';
+        final isSentByMe = lastMessageSender == userId;
+        final unreadCount = conv['unreadCount'] as int? ?? 0;
+        final timeAgo = _timeAgo(lastMessageTime);
+        final status = conv['status'] as String? ?? 'accepted';
+        final initiatorId = conv['initiatorId'] as String?;
+        final isPending = status == 'pending' && initiatorId != userId;
+
+        return _ConversationTile(
+          convId: convId,
+          name: otherName,
+          imageUrl: otherImage,
+          lastMessage: lastMessage,
+          time: timeAgo,
+          isSentByMe: isSentByMe,
+          isDark: isDark,
+          otherUserId: otherEntry.key,
+          unreadCount: unreadCount,
+          isPending: isPending,
+          status: status,
+          initiatorId: initiatorId,
+          onLongPress: () => _showConversationActions(
+            context,
+            convId,
+            otherName,
+            otherEntry.key,
+            isDark,
+          ),
+        );
+      },
     );
   }
 
-  void _showConversationActions(BuildContext ctx, String convId, String name,
-      String otherUserId, bool isDark) {
+  void _showConversationActions(
+    BuildContext ctx,
+    String convId,
+    String name,
+    String otherUserId,
+    bool isDark,
+  ) {
     final cs = Theme.of(context).colorScheme;
     showModalBottomSheet(
       context: ctx,
@@ -283,20 +338,29 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
                       color: Colors.grey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(LucideIcons.archive, color: Colors.grey, size: 22),
+                    child: const Icon(
+                      LucideIcons.archive,
+                      color: Colors.grey,
+                      size: 22,
+                    ),
                   ),
                   title: const Text('Archive'),
                   onTap: () async {
                     Navigator.pop(sheetCtx);
                     try {
-                      await ref.read(chatRepositoryProvider).archiveConversation(convId);
-                      await ChatDatabase.tryDbVoid(() => ChatDatabase.deleteConversation(convId));
+                      await ref
+                          .read(chatRepositoryProvider)
+                          .archiveConversation(convId);
+                      await ChatDatabase.tryDbVoid(
+                        () => ChatDatabase.deleteConversation(convId),
+                      );
                       ref.read(conversationsRefreshProvider.notifier).trigger();
                       if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Conversation archived'),
-                            duration: Duration(seconds: 2)),
+                          content: Text('Conversation archived'),
+                          duration: Duration(seconds: 2),
+                        ),
                       );
                     } catch (e) {
                       if (!mounted) return;
@@ -314,8 +378,11 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child:
-                        const Icon(Icons.delete_outline, color: Colors.red, size: 22),
+                    child: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                      size: 22,
+                    ),
                   ),
                   title: const Text('Delete chat'),
                   onTap: () async {
@@ -326,20 +393,26 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) => const Center(child: CupertinoActivityIndicator()),
+                      builder: (_) =>
+                          const Center(child: CupertinoActivityIndicator()),
                     );
 
                     try {
-                      await ref.read(chatRepositoryProvider).deleteConversation(convId);
-                      await ChatDatabase.tryDbVoid(() => ChatDatabase.deleteConversation(convId));
+                      await ref
+                          .read(chatRepositoryProvider)
+                          .deleteConversation(convId);
+                      await ChatDatabase.tryDbVoid(
+                        () => ChatDatabase.deleteConversation(convId),
+                      );
                       ref.read(conversationsRefreshProvider.notifier).trigger();
                       if (!mounted) return;
                       Navigator.of(context).pop(); // dismiss loading
                       if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Chat deleted'),
-                            duration: Duration(seconds: 2)),
+                          content: Text('Chat deleted'),
+                          duration: Duration(seconds: 2),
+                        ),
                       );
                     } catch (e) {
                       if (!mounted) return;
@@ -359,7 +432,11 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(LucideIcons.ban, color: Colors.red, size: 22),
+                    child: const Icon(
+                      LucideIcons.ban,
+                      color: Colors.red,
+                      size: 22,
+                    ),
                   ),
                   title: const Text('Block'),
                   onTap: () {
@@ -370,8 +447,9 @@ class _InboxPageState extends ConsumerState<InboxPage> with WidgetsBindingObserv
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('User blocked'),
-                          duration: Duration(seconds: 2)),
+                        content: Text('User blocked'),
+                        duration: Duration(seconds: 2),
+                      ),
                     );
                   },
                 ),
@@ -462,8 +540,9 @@ class _ConversationTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundImage:
-                    imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+                backgroundImage: imageUrl.isNotEmpty
+                    ? NetworkImage(imageUrl)
+                    : null,
                 backgroundColor: isPending
                     ? Colors.orange.withValues(alpha: 0.2)
                     : Colors.teal.withValues(alpha: 0.2),
@@ -501,7 +580,9 @@ class _ConversationTile extends StatelessWidget {
                             time,
                             style: TextStyle(
                               fontSize: 11,
-                              color: unreadCount > 0 ? Colors.teal : Colors.grey,
+                              color: unreadCount > 0
+                                  ? Colors.teal
+                                  : Colors.grey,
                             ),
                           ),
                       ],
@@ -530,7 +611,9 @@ class _ConversationTile extends StatelessWidget {
                         Expanded(
                           child: Text(
                             lastMessage.isNotEmpty
-                                ? (isSentByMe ? 'You: $lastMessage' : lastMessage)
+                                ? (isSentByMe
+                                      ? 'You: $lastMessage'
+                                      : lastMessage)
                                 : (isSentByMe ? 'You: ' : ''),
                             style: TextStyle(
                               fontSize: 13,

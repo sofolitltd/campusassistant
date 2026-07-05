@@ -61,7 +61,8 @@ class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
                   children: [
                     InlineSearchBar(
                       hintText: 'Search by name, id, hall or blood',
-                      onChanged: (value) => setState(() => _searchQuery = value),
+                      onChanged: (value) =>
+                          setState(() => _searchQuery = value),
                       dense: true,
                     ),
                     const SizedBox(height: 8),

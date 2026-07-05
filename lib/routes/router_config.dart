@@ -21,6 +21,7 @@ import '/features/inbox/presentation/screens/new_chat_page.dart';
 import '/features/inbox/presentation/screens/request_confirmation_page.dart';
 import '/features/cr/presentation/screens/cr_page.dart';
 import '/features/department/presentation/screens/department_page.dart';
+import '/features/notice/presentation/screens/department_notices_page.dart';
 import '/features/emergency/presentation/screens/emergency_page.dart';
 import '/features/home/home_page.dart';
 import '/features/routine/presentation/screens/routine_page.dart';
@@ -35,6 +36,8 @@ import '/features/transport/presentation/screens/transport_page.dart';
 import '/features/university/presentation/screens/university_page.dart';
 import '/features/university/presentation/screens/university_location_page.dart';
 import '/features/university/presentation/screens/university_halls_page.dart';
+import '/features/university/presentation/screens/university_departments_page.dart';
+import '/features/university/presentation/screens/university_faculties_page.dart';
 import '/features/course/presentation/screens/course_page.dart';
 import '/features/study/details/chapter_notes_screen.dart';
 import '/features/study/details/course_details_page.dart';
@@ -54,6 +57,7 @@ import '/features/profile/presentation/screens/downloaded_files_page.dart';
 import '/features/profile/presentation/screens/edit_profile_page.dart';
 import '/features/profile/presentation/screens/my_submissions_page.dart';
 import '/features/profile/presentation/screens/profile_page.dart';
+import '/features/contributor/presentation/screens/contributor_page.dart';
 import '/features/notice/notice_group.dart';
 import '/features/notification/presentation/screens/notification_detail_screen.dart';
 import '/features/notification/presentation/screens/notification_screen.dart';
@@ -459,6 +463,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: UniversityHallsPage()),
           ),
+          GoRoute(
+            name: AppRoute.universityDepartments.name,
+            path: AppRoute.universityDepartments.path,
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: UniversityDepartmentsPage()),
+          ),
+          GoRoute(
+            name: AppRoute.universityFaculties.name,
+            path: AppRoute.universityFaculties.path,
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: UniversityFacultiesPage()),
+          ),
         ],
       ),
       GoRoute(
@@ -467,6 +485,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: DepartmentPage()),
+        routes: [
+          GoRoute(
+            name: 'departmentNotices',
+            path: 'notices',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: DepartmentNoticesPage()),
+          ),
+        ],
       ),
       GoRoute(
         name: AppRoute.teacher.name,
@@ -715,6 +742,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           );
         },
+      ),
+      GoRoute(
+        name: AppRoute.contributors.name,
+        path: AppRoute.contributors.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: ContributorPage()),
       ),
 
     ],

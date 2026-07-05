@@ -8,6 +8,7 @@ import '/routes/app_route.dart';
 import '/features/transport/presentation/providers/transport_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class TransportPage extends ConsumerWidget {
   const TransportPage({super.key});
@@ -16,11 +17,9 @@ class TransportPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final transportAsync = ref.watch(myTransportsProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transport Service'),
-        centerTitle: true,
-      ),
+    return RedHeaderLayout(
+      title: 'Transport Service',
+      showSearchBar: false,
       body: transportAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
@@ -36,9 +35,9 @@ class TransportPage extends ConsumerWidget {
               Text(
                 'Something went wrong',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -58,22 +57,24 @@ class TransportPage extends ConsumerWidget {
                   Icon(
                     LucideIcons.bus,
                     size: 64,
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: Spacing.lg),
                   Text(
                     'No Transports Found',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Check back later for updates.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                 ],
               ),
@@ -110,7 +111,9 @@ class TransportPage extends ConsumerWidget {
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Theme.of(context).dividerColor.withValues(alpha: 0.08),
+                      color: Theme.of(
+                        context,
+                      ).dividerColor.withValues(alpha: 0.08),
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -132,36 +135,50 @@ class TransportPage extends ConsumerWidget {
                           child: Container(
                             height: 220,
                             width: double.infinity,
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withValues(alpha: 0.3),
                             child: CachedNetworkImage(
                               imageUrl: resolvedUrl,
                               fadeInDuration: const Duration(milliseconds: 300),
-                              imageBuilder: (context, imageProvider) => Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
                               placeholder: (context, url) => const Center(
                                 child: CupertinoActivityIndicator(),
                               ),
                               errorWidget: (context, url, error) => Container(
-                                color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.1),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .errorContainer
+                                    .withValues(alpha: 0.1),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
                                       LucideIcons.image,
-                                      color: Theme.of(context).colorScheme.error,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
                                       size: 36,
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Could not load transport image',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                            color: Theme.of(context).colorScheme.error,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.error,
                                           ),
                                     ),
                                   ],
@@ -179,7 +196,8 @@ class TransportPage extends ConsumerWidget {
                             children: [
                               Text(
                                 transport.title,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       height: 1.2,
@@ -205,7 +223,10 @@ class TransportPage extends ConsumerWidget {
                                   Expanded(
                                     child: Text(
                                       transport.time,
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w500,
                                           ),

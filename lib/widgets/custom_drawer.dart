@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/utils/constants.dart';
@@ -298,14 +298,8 @@ class CustomDrawer extends StatelessWidget {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Fluttertoast.showToast(
-                                    msg: 'Update coming soon...',
-                                  );
-                                  // Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //         builder: (context) =>
-                                  //             const ContributorsScreen()));
+                                  Navigator.pop(context);
+                                  context.push('/contributors');
                                 },
                                 child: const Text('Our Contributors'),
                               ),

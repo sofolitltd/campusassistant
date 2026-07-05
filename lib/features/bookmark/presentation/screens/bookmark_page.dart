@@ -7,6 +7,7 @@ import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class BookmarkPage extends ConsumerStatefulWidget {
   const BookmarkPage({super.key});
@@ -25,11 +26,9 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
 
     final bookmarksAsync = ref.watch(userBookmarksProvider(userId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved Bookmarks'),
-        centerTitle: true,
-      ),
+    return RedHeaderLayout(
+      title: 'Saved Bookmarks',
+      showSearchBar: false,
       body: bookmarksAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(

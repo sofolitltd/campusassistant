@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '/features/subscription/presentation/providers/subscription_provider.dart' show userSubscriptionProvider;
+import '/features/subscription/presentation/providers/subscription_provider.dart'
+    show userSubscriptionProvider;
 import '/core/theme/tokens/app_radius.dart';
 
 class SubscriptionCard extends ConsumerWidget {

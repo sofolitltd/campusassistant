@@ -48,7 +48,10 @@ class SectionHeader extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
     );

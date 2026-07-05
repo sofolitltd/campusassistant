@@ -6,8 +6,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class DownloadedFilesPage extends StatefulWidget {
   const DownloadedFilesPage({super.key});
@@ -32,10 +34,8 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
       final directory = await getApplicationDocumentsDirectory();
       final List<FileSystemEntity> allFiles = directory.listSync();
 
-      // Filter for PDF files specifically (or any other types you use)
       _files = allFiles.where((file) => file.path.endsWith('.pdf')).toList();
 
-      // Sort by modification date (newest first)
       _files.sort(
         (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
       );
@@ -60,8 +60,9 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Downloaded Files'), centerTitle: true),
+    return RedHeaderLayout(
+      title: 'Downloaded Files',
+      showSearchBar: false,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _files.isEmpty
@@ -95,18 +96,15 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
                     onTap: () => OpenFilex.open(file.path),
                     child: Stack(
                       children: [
-                        //
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
-                            crossAxisAlignment: .start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 spacing: 10,
-
-                                crossAxisAlignment: .start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  //
                                   Container(
                                     height: 40,
                                     width: 40,
@@ -122,13 +120,10 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
                                       size: 20,
                                     ),
                                   ),
-
-                                  //
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: .start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        //
                                         Text(
                                           fileName,
                                           style: TextStyle(
@@ -137,8 +132,6 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
                                             color: theme.colorScheme.onSurface,
                                           ),
                                         ),
-
-                                        //
                                         Text(
                                           '$sizeMb MB • ${stats.modified.day}/${stats.modified.month}/${stats.modified.year}',
                                           style: TextStyle(
@@ -155,7 +148,6 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
                           ),
                         ),
 
-                        //
                         Positioned(
                           right: -4,
                           top: -4,
@@ -217,8 +209,7 @@ class _DownloadedFilesPageState extends State<DownloadedFilesPage> {
   }
 
   Widget _buildEmptyState() {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

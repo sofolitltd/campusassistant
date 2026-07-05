@@ -8,9 +8,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/department/presentation/providers/department_provider.dart';
 import '/widgets/open_app.dart';
-import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/features/teacher/presentation/providers/teacher_provider.dart';
+import '/features/staff/presentation/providers/staff_provider.dart';
 
 class DepartmentPage extends ConsumerWidget {
   const DepartmentPage({super.key});
@@ -18,11 +19,12 @@ class DepartmentPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final departmentAsync = ref.watch(myDepartmentProvider);
-    final userAsync = ref.watch(currentUserProvider);
+    final teachersAsync = ref.watch(teachersListProvider(null));
+    final staffAsync = ref.watch(staffListProvider);
     final width = MediaQuery.of(context).size.width;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // appBar: AppBar(title: const Text('Department Details'), centerTitle: true),
       body: departmentAsync.when(
         data: (department) => SingleChildScrollView(
           child: Column(
@@ -82,7 +84,6 @@ class DepartmentPage extends ConsumerWidget {
                               );
                             }
                           },
-
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white.withValues(alpha: 0.8),
                             foregroundColor: Colors.black,
@@ -94,7 +95,6 @@ class DepartmentPage extends ConsumerWidget {
                               vertical: -4,
                               horizontal: -4,
                             ),
-
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 0,
@@ -110,78 +110,51 @@ class DepartmentPage extends ConsumerWidget {
                 ],
               ),
 
-              // const SizedBox(height: Spacing.lg),
+              const SizedBox(height: 24),
 
-              // Quick Actions Grid
+              // 🔹 Stats Table (Teachers & Staff)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: width > 600 ? 4 : 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 2.8,
-                      children: [
-                        _QuickActionCard(
-                          title: 'Teachers',
-                          icon: LucideIcons.users,
-                          onTap: () => context.push(AppRoute.teacher.path),
-                        ),
-                        _QuickActionCard(
-                          title: 'Students',
-                          icon: LucideIcons.graduationCap,
-                          onTap: () {
-                            userAsync.whenData((user) {
-                              if (user == null) return;
-                              final bId = user.batch?.trim();
-                              if (bId == null || bId == '' || bId == '0') {
-                                context.pushNamed('allStudents');
-                              } else {
-                                context.pushNamed(
-                                  'batchStudents',
-                                  pathParameters: {'batch': bId},
-                                );
-                              }
-                            });
-                          },
-                        ),
-                   
-                        _QuickActionCard(
-                          title: 'CR List',
-                          icon: LucideIcons.userCheck,
-                          onTap: () => context.push(AppRoute.cr.path),
-                        ),
-                        _QuickActionCard(
-                          title: 'Staffs',
-                          icon: LucideIcons.briefcase,
-                          onTap: () => context.push(AppRoute.staff.path),
-                        ),
-                             _QuickActionCard(
-                          title: 'Routine',
-                          icon: LucideIcons.calendarClock,
-                          onTap: () => context.push(AppRoute.routine.path),
-                        ),
-                        _QuickActionCard(
-                          title: 'Notice',
-                          icon: LucideIcons.info,
-                          onTap: () {
-                            context.push(AppRoute.routine.path);
-                          },
-                        ),
-                      ],
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
+                    border: Border.all(
+                      color: isDark ? Colors.white10 : Colors.grey.shade200,
                     ),
-                  ],
+                  ),
+                  child: Column(
+                    children: [
+                      _StatTile(
+                        label: 'Teachers',
+                        value: teachersAsync.when(
+                          data: (t) => '${t.length}',
+                          loading: () => '...',
+                          error: (_, __) => '0',
+                        ),
+                        isDark: isDark,
+                        border: true,
+                      ),
+                      _StatTile(
+                        label: 'Staffs',
+                        value: staffAsync.when(
+                          data: (s) => '${s.length}',
+                          loading: () => '...',
+                          error: (_, __) => '0',
+                        ),
+                        isDark: isDark,
+                        border: false,
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
-              // const SizedBox(height: Spacing.lg),
+              const SizedBox(height: 24),
 
-              // About section
-              Padding(
+              // 🔹 About Section (full width)
+              Container(
+                width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,20 +166,14 @@ class DepartmentPage extends ConsumerWidget {
                         fontSize: 18,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(RadiusToken.md),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Text(
-                        department.about,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade800,
-                          height: 1.6,
-                        ),
+                    const SizedBox(height: 8),
+                    Text(
+                      department.about,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isDark
+                            ? Colors.white70
+                            : Colors.grey.shade800,
+                        height: 1.5,
                       ),
                     ),
                   ],
@@ -224,69 +191,58 @@ class DepartmentPage extends ConsumerWidget {
   }
 }
 
-class _QuickActionCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final VoidCallback onTap;
+class _StatTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isDark;
+  final bool border;
 
-  const _QuickActionCard({
-    required this.title,
-    required this.icon,
-    required this.onTap,
+  const _StatTile({
+    required this.label,
+    required this.value,
+    required this.isDark,
+    required this.border,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
-          borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        border: border
+            ? Border(
+                bottom: BorderSide(
+                  color: isDark ? Colors.white10 : Colors.grey.shade200,
+                ),
+              )
+            : null,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(LucideIcons.user, size: 16, color: Color(0xFFD32F2F)),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: isDark ? Colors.white70 : Colors.grey.shade700,
+                ),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: isDark ? Colors.white : Colors.black87,
             ),
-          ],
-        ),
-        child: Row(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.white10 : Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(RadiusToken.sm),
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: isDark ? Colors.white : Colors.blueGrey.shade700,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

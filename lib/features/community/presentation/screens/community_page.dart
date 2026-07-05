@@ -1,15 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '/core/di.dart';
 import '/features/community/data/models/community_post.dart';
 import '/core/widgets/pill_tab_bar.dart';
 import '/features/community/presentation/widgets/create_post_sheet.dart';
 import '/features/community/presentation/widgets/discussion_card.dart';
-import '/core/theme/tokens/app_radius.dart';
 
 class CommunityPage extends ConsumerStatefulWidget {
   const CommunityPage({super.key});
@@ -149,10 +148,7 @@ class _CommunityFeedState extends ConsumerState<_CommunityFeed> {
         children: [
           Expanded(
             child: _isLoading
-                ? const Skeletonizer(
-                    enabled: true,
-                    child: _FeedSkeleton(),
-                  )
+                ? const Center(child: CupertinoActivityIndicator())
                 : _error != null
                 ? Center(child: Text('Error: $_error'))
                 : _posts.isEmpty
@@ -178,88 +174,6 @@ class _CommunityFeedState extends ConsumerState<_CommunityFeed> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _FeedSkeleton extends StatelessWidget {
-  const _FeedSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      itemCount: 4,
-      itemBuilder: (_, _) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isDark ? Theme.of(context).cardColor : Colors.white,
-            borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Author row
-              Row(
-                children: [
-                  CircleAvatar(radius: 16, backgroundColor: isDark ? Colors.white10 : Colors.grey.shade200),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Author Name', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
-                        Text('2m ago', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                      ],
-                    ),
-                  ),
-                  Icon(LucideIcons.ellipsisVertical, size: 16, color: Colors.grey),
-                ],
-              ),
-              const SizedBox(height: 10),
-              // Content
-              Text('This is a sample discussion post content that appears here as a placeholder for the skeleton loading shimmer effect.'),
-              const SizedBox(height: 12),
-              // Interaction buttons
-              Row(
-                children: [
-                  _interactionSkeleton(isDark),
-                  const Spacer(),
-                  _interactionSkeleton(isDark),
-                  const SizedBox(width: 16),
-                  _interactionSkeleton(isDark),
-                  const SizedBox(width: 16),
-                  _interactionSkeleton(isDark),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _interactionSkeleton(bool isDark) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: 16, width: 16,
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        const SizedBox(width: 4),
-        Text('0', style: TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
     );
   }
 }

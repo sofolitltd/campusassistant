@@ -9,6 +9,7 @@ import '../../features/auth/presentation/providers/user_profile_provider.dart';
 import 'sections/banner_section.dart';
 import 'sections/subscription_section.dart';
 import 'sections/quick_favorites_section.dart';
+import 'widgets/home_drawer.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -43,6 +44,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      drawer: const HomeDrawer(),
       body: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -88,13 +90,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                 ),
                                 onPressed: () {},
                               ),
-                              IconButton(
-                                icon: const Icon(
-                                  LucideIcons.trophy,
-                                  color: Colors.white,
-                                ),
-                                onPressed: () {},
-                              ),
+                              const SizedBox(width: 4),
                               Stack(
                                 children: [
                                   IconButton(
@@ -126,6 +122,25 @@ class _HomePageState extends ConsumerState<HomePage>
                                     ),
                                   ),
                                 ],
+                              ),
+                              GestureDetector(
+                                onTap: () => Scaffold.of(context).openDrawer(),
+                                child: Container(
+                                  width: 28,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(4),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Image.asset(
+                                      'assets/images/logo.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -223,9 +238,7 @@ class _HomePageState extends ConsumerState<HomePage>
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 32,
-                    ), // space before the white section overlap
+                    SizedBox(height: 32),
                   ],
                 ),
               ),
@@ -244,10 +257,8 @@ class _HomePageState extends ConsumerState<HomePage>
                 child: Column(
                   children: [
                     const SizedBox(height: Spacing.sm),
-                    // Subscription Banner
                     const SubscriptionSection(),
                     const SizedBox(height: Spacing.sm),
-                    // Quick Favorites Section
                     const QuickFavoritesSection(),
                     const SizedBox(height: Spacing.sm),
                     const BannerSection(),

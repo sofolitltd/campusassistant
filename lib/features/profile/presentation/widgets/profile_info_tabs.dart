@@ -41,7 +41,7 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
     final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.only(top: Spacing.xs),
       child: Container(
         decoration: BoxDecoration(
           color: theme.cardColor,

@@ -9,6 +9,7 @@ import '/features/university/domain/entities/university.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class UniversityLocationPage extends ConsumerStatefulWidget {
   const UniversityLocationPage({super.key});
@@ -33,13 +34,11 @@ class _UniversityLocationPageState
     final universityAsync = ref.watch(myUniversityProvider);
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('University Location'),
-        centerTitle: true,
-      ),
-      body: universityAsync.when(
-        data: (university) => Column(
+    return universityAsync.when(
+      data: (university) => RedHeaderLayout(
+        title: 'Campus Map',
+        showSearchBar: false,
+        body: Column(
           children: [
             // Map
             Expanded(
@@ -141,9 +140,6 @@ class _UniversityLocationPageState
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
               ),
               child: SafeArea(
                 top: false,
@@ -205,9 +201,14 @@ class _UniversityLocationPageState
             ),
           ],
         ),
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+      ),
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text('Campus Map'), centerTitle: true),
+        body: const Center(child: CircularProgressIndicator.adaptive()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: const Text('Campus Map'), centerTitle: true),
+        body: Center(child: Text('Error: $e')),
       ),
     );
   }

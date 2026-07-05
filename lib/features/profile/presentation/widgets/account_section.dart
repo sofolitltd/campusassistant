@@ -3,102 +3,164 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/core/theme/app_colors.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
-import 'package:campusassistant/routes/app_route.dart';
-import 'section_header.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class AccountSection extends ConsumerWidget {
   const AccountSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final appColors = Theme.of(context).appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
-        children: [
-          SectionHeader(
-            title: 'Account',
-            subtitle: 'Manage your account',
-            icon: LucideIcons.shield,
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Theme.of(context).cardColor
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(RadiusToken.md),
-              border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white10
-                    : Colors.grey.shade200,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: appColors.logoutButtonBg,
-                  foregroundColor: cs.error,
-                  elevation: 0,
-                ),
-                onPressed: () => _logOutDialog(context, ref),
-                child: Text('Log out'.toUpperCase()),
-              ),
+      padding: const EdgeInsets.only(top: 16),
+      child: GestureDetector(
+        onTap: () => _showLogoutBottomSheet(context, ref),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(RadiusToken.lg),
+            border: Border.all(
+              color: isDark ? Colors.white10 : Colors.grey.shade200,
             ),
           ),
-        ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'LOGOUT',
+                style: const TextStyle(
+                  color: Color(0xFFD32F2F),
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                LucideIcons.logOut,
+                color: Color(0xFFD32F2F),
+                size: 18,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Future _logOutDialog(BuildContext context, WidgetRef ref) {
-    return showDialog(
+  void _showLogoutBottomSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Log out'),
-          content: const Text('Are you sure to log out?'),
-          actions: [
-            OutlinedButton(
-              onPressed: context.pop,
-              child: Text('Cancel'.toUpperCase()),
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 36),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Warning icon circle
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFC107),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    LucideIcons.alertTriangle,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Are you sure you want to log out?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'You will need to log in again to continue using your account.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                // Yes, Log Out button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      try {
+                        await ref.read(currentUserProvider.notifier).logout();
+                        if (context.mounted) {
+                          context.go(AppRoute.login.path);
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to log out: $e')),
+                          );
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade600,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Yes, Log Out',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Cancel button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 4),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await ref.read(currentUserProvider.notifier).logout();
-                  if (context.mounted) {
-                    context.go(AppRoute.login.path);
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to log out: $e')),
-                    );
-                  }
-                }
-              },
-              style:
-                  const ButtonStyle(visualDensity: VisualDensity.compact),
-              child: Text('Log out'.toUpperCase()),
-            ),
-          ],
+          ),
         );
       },
     );

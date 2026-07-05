@@ -60,11 +60,13 @@ class _ContactInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (user.role == 'student') {
-      return ref.watch(studentProfileProvider).when(
-        data: (student) => _buildContactList(student: student),
-        loading: () => _buildContactList(student: null),
-        error: (err, _) => _buildContactList(student: null),
-      );
+      return ref
+          .watch(studentProfileProvider)
+          .when(
+            data: (student) => _buildContactList(student: student),
+            loading: () => _buildContactList(student: null),
+            error: (err, _) => _buildContactList(student: null),
+          );
     }
     return _buildContactList(student: null);
   }
@@ -87,7 +89,8 @@ class _ContactInfo extends ConsumerWidget {
           const Divider(thickness: .5),
           _ContactItem(
             label: 'Hall',
-            value: (student as dynamic).hallName ??
+            value:
+                (student as dynamic).hallName ??
                 (student as dynamic).hallId ??
                 'N/A',
           ),
@@ -115,10 +118,9 @@ class _ContactItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: cs.onSurfaceVariant),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
         ),
         const SizedBox(height: 2),
         Text(value, style: Theme.of(context).textTheme.titleMedium),

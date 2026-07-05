@@ -87,7 +87,7 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
             ),
             const SizedBox(height: Spacing.xl),
             SizedBox(
-              height: 188, // Fixed height to accommodate grid
+              height: 188,
               child: TabBarView(
                 controller: _tabController,
                 children: [
@@ -177,37 +177,37 @@ class _FavoriteItem {
   });
 }
 
-// University items
+// University tab items — updated to user's requested set
 const List<_FavoriteItem> _universityItems = [
   _FavoriteItem(
-    name: 'Departments',
-    icon: LucideIcons.building2,
-    color: Color(0xFF3B82F6),
-    route: '/university/departments',
-  ),
-  _FavoriteItem(
-    name: 'Hall',
-    icon: LucideIcons.home,
-    color: Color(0xFF8B5CF6),
-    route: '/university/halls',
-  ),
-  _FavoriteItem(
     name: 'Faculties',
-    icon: LucideIcons.users,
-    color: Color(0xFFEC4899),
+    icon: LucideIcons.building,
+    color: Color(0xFF3B82F6),
     route: '/university/faculties',
   ),
   _FavoriteItem(
-    name: 'Maps',
-    icon: LucideIcons.map,
-    color: Color(0xFF10B981),
-    route: '/university/location',
+    name: 'Departments',
+    icon: LucideIcons.building2,
+    color: Color(0xFF8B5CF6),
+    route: '/university/departments',
+  ),
+  _FavoriteItem(
+    name: 'Halls',
+    icon: LucideIcons.home,
+    color: Color(0xFFEC4899),
+    route: '/university/halls',
   ),
   _FavoriteItem(
     name: 'Alumni',
     icon: LucideIcons.graduationCap,
     color: Color(0xFFF59E0B),
     route: '/alumni',
+  ),
+  _FavoriteItem(
+    name: 'Maps',
+    icon: LucideIcons.map,
+    color: Color(0xFF10B981),
+    route: '/university/location',
   ),
   _FavoriteItem(
     name: 'About',
@@ -217,7 +217,7 @@ const List<_FavoriteItem> _universityItems = [
   ),
 ];
 
-// Department items
+// Department tab items — same as before
 const List<_FavoriteItem> _departmentItems = [
   _FavoriteItem(
     name: 'Teachers',

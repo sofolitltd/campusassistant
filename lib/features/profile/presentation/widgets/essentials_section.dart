@@ -15,52 +15,87 @@ class EssentialsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        children: [
-          SectionHeader(
-            title: 'Essentials',
-            subtitle: 'Notice Group, Bookmarks',
-            icon: LucideIcons.layers,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
+          border: Border.all(
+            color: isDark ? Colors.white10 : Colors.grey.shade200,
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Theme.of(context).cardColor
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(RadiusToken.md),
-              border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white10
-                    : Colors.grey.shade200,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Text(
+                'Essentials',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white70 : Colors.grey.shade800,
+                ),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
-            child: Column(
-              children: [
-                ListTile(
-                  onTap: () => context.push(AppRoute.mySubmissions.path),
-                  title: const Text('My Submissions'),
-                  trailing: const Icon(LucideIcons.cloudUpload, size: 16),
+            const SizedBox(height: 4),
+            ListTile(
+              onTap: () => context.push(AppRoute.mySubmissions.path),
+              leading: Icon(
+                LucideIcons.fileText,
+                color: isDark ? Colors.white70 : Colors.black87,
+                size: 20,
+              ),
+              title: Text(
+                'My Submissions',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w500,
                 ),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                ListTile(
-                  onTap: () =>
-                      context.push(AppRoute.noticeGroup.path, extra: user),
-                  title: const Text('Notice Group'),
-                  trailing: const Icon(LucideIcons.chevronRight, size: 16),
-                ),
-              ],
+              ),
+              trailing: Icon(
+                LucideIcons.chevronRight,
+                size: 18,
+                color: isDark ? Colors.white54 : Colors.grey.shade500,
+              ),
             ),
-          ),
-        ],
+            Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.grey.shade300,
+            ),
+            ListTile(
+              onTap: () => context.push(AppRoute.noticeGroup.path, extra: user),
+              leading: Icon(
+                LucideIcons.megaphone,
+                color: isDark ? Colors.white70 : Colors.black87,
+                size: 20,
+              ),
+              title: Text(
+                'Notice Group',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              trailing: Icon(
+                LucideIcons.chevronRight,
+                size: 18,
+                color: isDark ? Colors.white54 : Colors.grey.shade500,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

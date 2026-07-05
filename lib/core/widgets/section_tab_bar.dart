@@ -23,6 +23,7 @@ class SectionTabBar extends StatelessWidget {
     required this.tabs,
     this.labelStyle,
     this.unselectedLabelStyle,
+    this.isScrollable = false,
   });
 
   /// The shared [TabController] driving selection and animation.
@@ -37,6 +38,9 @@ class SectionTabBar extends StatelessWidget {
   /// Optional override for the inactive tab label style.
   final TextStyle? unselectedLabelStyle;
 
+  /// Whether the tabs are scrollable (default: false).
+  final bool isScrollable;
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -49,6 +53,8 @@ class SectionTabBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(RadiusToken.md),
       ),
       child: TabBar(
+        isScrollable: isScrollable,
+        tabAlignment: isScrollable ? TabAlignment.start : null,
         controller: controller,
         indicatorSize: TabBarIndicatorSize.tab,
         indicator: BoxDecoration(

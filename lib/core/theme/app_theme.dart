@@ -7,7 +7,7 @@ import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
 /// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFF00C853);
+const Color _brandPrimary = Color(0xFFD32F2F);
 const Color _darkBg = Color(0xFF121212);
 const Color _darkCard = Color(0xFF1E1E1E);
 const Color _darkSurfaceAlt = Color(0xFF2A2A2A);
@@ -55,7 +55,7 @@ ThemeData buildLightTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        borderSide: const BorderSide(color: Color(0xFF00C853), width: 1.5),
+        borderSide: const BorderSide(color: Color(0xFFD32F2F), width: 1.5),
       ),
     ),
 
@@ -63,7 +63,7 @@ ThemeData buildLightTheme() {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
-        backgroundColor: const Color(0xFF00C853),
+        backgroundColor: const Color(0xFFD32F2F),
         foregroundColor: Colors.white,
         elevation: 0,
         visualDensity: VisualDensity.compact,
@@ -81,7 +81,7 @@ ThemeData buildLightTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: const Color(0xFF00C853),
+        foregroundColor: const Color(0xFFD32F2F),
         side: BorderSide(color: colorScheme.outline),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
@@ -96,7 +96,7 @@ ThemeData buildLightTheme() {
       style: TextButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: const Color(0xFF00C853),
+        foregroundColor: const Color(0xFFD32F2F),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
@@ -283,7 +283,7 @@ ThemeData buildDarkTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        borderSide: const BorderSide(color: Color(0xFF00C853), width: 1.5),
+        borderSide: const BorderSide(color: Color(0xFFD32F2F), width: 1.5),
       ),
     ),
 
@@ -291,7 +291,7 @@ ThemeData buildDarkTheme() {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
-        backgroundColor: const Color(0xFF00C853),
+        backgroundColor: const Color(0xFFD32F2F),
         foregroundColor: Colors.white,
         elevation: 0,
         visualDensity: VisualDensity.compact,
@@ -309,7 +309,7 @@ ThemeData buildDarkTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: const Color(0xFF00C853),
+        foregroundColor: const Color(0xFFD32F2F),
         side: const BorderSide(color: Color(0xFF333333)),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
@@ -324,7 +324,7 @@ ThemeData buildDarkTheme() {
       style: TextButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: const Color(0xFF00C853),
+        foregroundColor: const Color(0xFFD32F2F),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
@@ -335,7 +335,7 @@ ThemeData buildDarkTheme() {
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: const Color(0xFF00C853),
+      backgroundColor: const Color(0xFFD32F2F),
       foregroundColor: Colors.white,
     ),
 
@@ -413,7 +413,7 @@ ThemeData buildDarkTheme() {
 
     // --- Progress ---
     progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: const Color(0xFF00C853),
+      color: const Color(0xFFD32F2F),
       linearTrackColor: _darkSurfaceAlt,
     ),
 
@@ -442,8 +442,8 @@ ThemeData buildDarkTheme() {
 
     // --- Tabs ---
     tabBarTheme: TabBarThemeData(
-      indicatorColor: const Color(0xFF00C853),
-      labelColor: const Color(0xFF00C853),
+      indicatorColor: const Color(0xFFD32F2F),
+      labelColor: const Color(0xFFD32F2F),
       unselectedLabelColor: darkColorScheme.onSurfaceVariant,
       labelStyle: const TextStyle(
         fontSize: 12,

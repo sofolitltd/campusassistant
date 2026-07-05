@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
 import '/widgets/common_text_field_widget.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class ForgotPassword extends ConsumerStatefulWidget {
   const ForgotPassword({super.key});
@@ -40,7 +41,23 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
             ),
             child: Container(
               constraints: const BoxConstraints(minWidth: 350, maxWidth: 400),
-              child: Card(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(RadiusToken.xl),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white10
+                        : Colors.grey.shade200,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(

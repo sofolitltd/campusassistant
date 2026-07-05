@@ -118,8 +118,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                         const SizedBox(height: 24),
 
-                        // login
-                        Card(
+                        // login form
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(RadiusToken.xl),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white10
+                                  : Colors.grey.shade200,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                             child: Column(
@@ -254,11 +270,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const SizedBox(height: 32),
 
                         // sign up
-                        Card(
-                          elevation: 6,
-                          margin: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(RadiusToken.sm),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(RadiusToken.xl),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white10
+                                  : Colors.grey.shade200,
+                            ),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(

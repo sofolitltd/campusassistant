@@ -1,12 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:campusassistant/features/course/domain/entities/course.dart';
-import 'package:campusassistant/features/course/presentation/providers/course_provider.dart';
-import 'package:campusassistant/features/batch/presentation/providers/selected_batch_provider.dart';
-import 'package:campusassistant/features/batch/presentation/providers/batch_list_provider.dart';
-import 'package:campusassistant/features/study/semester/presentation/providers/semester_provider.dart';
-import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/course/domain/entities/course.dart';
+import '/features/course/presentation/providers/course_provider.dart';
+import '/features/batch/domain/entities/batch.dart';
+import '/features/batch/presentation/providers/selected_batch_provider.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
+import '/features/study/semester/presentation/providers/semester_provider.dart';
+import '/features/study/semester/domain/entities/semester.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/widgets/breadcrumbs.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -21,7 +24,8 @@ import 'course_card.dart';
 //   - Batch and semester selections live in global Riverpod notifiers.
 //   - URL query params (batch, semesterName, semesterId) are read ONCE in
 //     initState via a post-frame callback with a _initialized guard.
-//   - After that single init, all changes come from the dropdowns on this page.
+//   - After that single init, all changes come from the filter buttons on
+//     this page.
 //   - No auto-reset of semester when batch changes — user controls both.
 // ---------------------------------------------------------------------------
 class CoursesPage extends ConsumerStatefulWidget {
@@ -47,8 +51,6 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
   @override
   void initState() {
     super.initState();
-    // Use a single post-frame callback to sync URL params into global state.
-    // This runs only once because of the _initialized guard.
     WidgetsBinding.instance.addPostFrameCallback((_) => _syncFromUrl());
   }
 
@@ -66,8 +68,6 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
       if (widget.batch == 'all' || widget.batch == 'all_batches') {
         batchNotifier.setAll();
       } else {
-        // batches are almost always loaded since we arrive from semester_page
-        // which already has them. Read and match directly.
         final batches = ref.read(batchProviderStudy).value ?? [];
         final match = batches
             .where(
@@ -88,7 +88,6 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
       final name = widget.semesterName ?? widget.semesterId!;
       semesterNotifier.setSemester(widget.semesterId!, name);
     } else if (widget.semesterName != null && widget.semesterName!.isNotEmpty) {
-      // Only name provided — resolve ID from loaded semesters
       final semesters = ref.read(semestersProvider).value;
       if (semesters != null) {
         final match = semesters
@@ -101,13 +100,9 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final selectedBatch = ref.watch(resolvedBatchProvider);
     final selectedSemester = ref.watch(selectedSemesterNotifierProvider);
-
-    final batchNotifier = ref.read(selectedBatchNotifierProvider.notifier);
-    final semesterNotifier = ref.read(
-      selectedSemesterNotifierProvider.notifier,
-    );
 
     final userAsync = ref.watch(userProvider);
     final batchesAsync = ref.watch(batchProviderStudy);
@@ -116,253 +111,295 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
 
     final currentSemesterName = selectedSemester?.name ?? '';
     final currentSemesterId = selectedSemester?.id;
+    final primaryRed = const Color(0xFFD32F2F);
 
     return userAsync.when(
       data: (user) {
         return Scaffold(
+          backgroundColor: primaryRed,
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            iconTheme: const IconThemeData(color: Colors.white),
             centerTitle: true,
             title: Text(
               currentSemesterName.isNotEmpty
                   ? 'Courses ($currentSemesterName)'
                   : 'Courses',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ),
           body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
-              const Breadcrumbs(),
+              // ── Breadcrumbs (red area) ──────────────────────────────
+              Theme(
+                data: theme.copyWith(
+                  colorScheme: theme.colorScheme.copyWith(
+                    onSurface: Colors.white,
+                    onSurfaceVariant: Colors.white70,
+                  ),
+                ),
+                child: const Breadcrumbs(),
+              ),
 
-              // ── Filter row ──────────────────────────────────────────────
-              Container(
-                color: Theme.of(context).cardColor,
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              // ── Filter row (red area) ───────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
                 child: Row(
                   children: [
-                    const Text('Filter:'),
+                    const Text(
+                      'Filter:',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const Spacer(),
-
-                    // ── Semester Dropdown ────────────────────────────────
                     if (semestersProviderState.isLoading)
                       const SizedBox(
-                        width: 110,
+                        width: 100,
                         height: 32,
                         child: Center(
-                          child: SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CupertinoActivityIndicator(
+                            color: Colors.white,
                           ),
                         ),
                       )
                     else
-                      _BatchOrSemesterDropdown(
-                        key: ValueKey('sem-${selectedBatch?.id ?? 'all'}-${selectedSemester?.id ?? 'null'}'),
-                        width: 110,
-                        initialSelection: selectedSemester?.id,
-                        hintText: 'All',
-                        entries: [
-                          const DropdownMenuEntry(value: null, label: 'All'),
-                          ...filteredSemesters.map(
-                            (s) =>
-                                DropdownMenuEntry(value: s.id, label: s.name),
-                          ),
-                        ],
-                        onSelected: (id) {
-                          if (id == null) {
-                            semesterNotifier.clear();
-                          } else {
-                            final sem = filteredSemesters
-                                .where((s) => s.id == id)
-                                .firstOrNull;
-                            if (sem != null) {
-                              semesterNotifier.setFromSemester(sem);
-                            }
-                          }
-                        },
+                      _SemesterButton(
+                        semesters: filteredSemesters,
+                        selectedSemester: selectedSemester,
                       ),
-
                     const SizedBox(width: 12),
-
-                    // ── Batch Dropdown ───────────────────────────────────
                     batchesAsync.when(
-                      data: (batches) => _BatchOrSemesterDropdown(
-                        key: ValueKey('batch-${selectedBatch?.id ?? 'null'}'),
-                        width: 110,
-                        initialSelection: selectedBatch?.id,
-                        hintText: 'All Batches',
-                        entries: [
-                          const DropdownMenuEntry(
-                            value: 'all_batches',
-                            label: 'All Batches',
+                      data: (batches) {
+                        if (batches.isEmpty) return const SizedBox();
+                        return _BatchButton(
+                          batches: batches,
+                          selectedBatch: selectedBatch,
+                        );
+                      },
+                      loading: () => const SizedBox(
+                        width: 100,
+                        height: 32,
+                        child: Center(
+                          child: CupertinoActivityIndicator(
+                            color: Colors.white,
                           ),
-                          ...batches.map(
-                            (b) => DropdownMenuEntry<String?>(
-                              value: b.id,
-                              label: b.name,
-                            ),
-                          ),
-                        ],
-                        onSelected: (id) {
-                          if (id == 'all_batches' || id == null) {
-                            batchNotifier.setAll();
-                          } else {
-                            final match = batches
-                                .where((b) => b.id == id)
-                                .firstOrNull;
-                            if (match != null) {
-                              batchNotifier.setSelectedBatch(match);
-                              // Clear semester when batch changes so user picks
-                              // a semester valid for the new batch.
-                              semesterNotifier.clear();
-                            }
-                          }
-                        },
+                        ),
                       ),
-                      loading: () => const SizedBox(width: 110, height: 32),
-                      error: (e, _) => const Text("Failed"),
+                      error: (_, _) => const SizedBox(),
                     ),
                   ],
                 ),
               ),
 
-              // ── Course List ──────────────────────────────────────────────
+              // ── White rounded container ─────────────────────────────
               Expanded(
-                child: (() {
-                  final uid = user.information.universityId;
-                  final did = user.information.departmentId;
-                  if (uid == null || uid.isEmpty || did == null || did.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(LucideIcons.userX, size: 48, color: Colors.grey),
-                          const SizedBox(height: Spacing.lg),
-                          const Text('User profile incomplete'),
-                          const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: () => ref.invalidate(userProvider),
-                            child: const Text('Retry'),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                    child: (() {
+                      final uid = user.information.universityId;
+                      final did = user.information.departmentId;
+                      if (uid == null ||
+                          uid.isEmpty ||
+                          did == null ||
+                          did.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                LucideIcons.userX,
+                                size: 48,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: Spacing.lg),
+                              const Text('User profile incomplete'),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () => ref.invalidate(userProvider),
+                                child: const Text('Retry'),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  }
-                  return ref
-                      .watch(
-                        coursesProvider(
-                          universityId: uid,
-                          departmentId: did,
-                          courseYear: currentSemesterId,
-                          batchId: isAllBatches(selectedBatch)
-                              ? null
-                              : selectedBatch?.id,
-                        ),
-                      )
-                      .when(
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (e, _) => Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
-                                const SizedBox(height: Spacing.lg),
-                                Text('Error: $e', textAlign: TextAlign.center),
-                                const SizedBox(height: Spacing.lg),
-                                ElevatedButton.icon(
-                                  onPressed: () => ref.invalidate(coursesProvider(
+                        );
+                      }
+                      return ref
+                          .watch(
+                            coursesProvider(
+                              universityId: uid,
+                              departmentId: did,
+                              courseYear: currentSemesterId,
+                              batchId: isAllBatches(selectedBatch)
+                                  ? null
+                                  : selectedBatch?.id,
+                            ),
+                          )
+                          .when(
+                            loading: () => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            error: (e, _) => Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.error_outline,
+                                      size: 48,
+                                      color: Colors.red[300],
+                                    ),
+                                    const SizedBox(height: Spacing.lg),
+                                    Text(
+                                      'Error: $e',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: Spacing.lg),
+                                    ElevatedButton.icon(
+                                      onPressed: () => ref.invalidate(
+                                        coursesProvider(
+                                          universityId: uid,
+                                          departmentId: did,
+                                          courseYear: currentSemesterId,
+                                          batchId: isAllBatches(selectedBatch)
+                                              ? null
+                                              : selectedBatch?.id,
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.refresh, size: 18),
+                                      label: const Text('Retry'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            data: (coursesList) {
+                              Future<void> refresh() async {
+                                ref.invalidate(
+                                  coursesProvider(
                                     universityId: uid,
                                     departmentId: did,
                                     courseYear: currentSemesterId,
                                     batchId: isAllBatches(selectedBatch)
                                         ? null
                                         : selectedBatch?.id,
-                                  )),
-                                  icon: const Icon(Icons.refresh, size: 18),
-                                  label: const Text('Retry'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        data: (coursesList) {
-                          Future<void> refresh() async {
-                            ref.invalidate(coursesProvider(
-                              universityId: uid,
-                              departmentId: did,
-                              courseYear: currentSemesterId,
-                              batchId: isAllBatches(selectedBatch)
-                                  ? null
-                                  : selectedBatch?.id,
-                            ));
-                            await ref.read(coursesProvider(
-                              universityId: uid,
-                              departmentId: did,
-                              courseYear: currentSemesterId,
-                              batchId: isAllBatches(selectedBatch)
-                                  ? null
-                                  : selectedBatch?.id,
-                            ).future);
-                          }
-
-                          if (coursesList.isEmpty) {
-                            return RefreshIndicator(
-                              onRefresh: refresh,
-                              child: ListView(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                children: [
-                                  SizedBox(
-                                    height: 200,
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(LucideIcons.bookOpen, size: 48, color: Colors.grey),
-                                          const SizedBox(height: Spacing.lg),
-                                          const Text('No courses available'),
-                                        ],
-                                      ),
-                                    ),
                                   ),
-                                ],
-                              ),
-                            );
-                          }
+                                );
+                                await ref.read(
+                                  coursesProvider(
+                                    universityId: uid,
+                                    departmentId: did,
+                                    courseYear: currentSemesterId,
+                                    batchId: isAllBatches(selectedBatch)
+                                        ? null
+                                        : selectedBatch?.id,
+                                  ).future,
+                                );
+                              }
 
-                          final Map<String, List<Course>> coursesByCategory = {};
-                          for (final course in coursesList) {
-                            final category = course.courseCategory?.name ??
-                                course.courseCategoryId ?? 'Unknown';
-                            coursesByCategory.putIfAbsent(category, () => []).add(course);
-                          }
+                              if (coursesList.isEmpty) {
+                                return RefreshIndicator(
+                                  onRefresh: refresh,
+                                  child: ListView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    children: [
+                                      SizedBox(
+                                        height: 200,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                LucideIcons.bookOpen,
+                                                size: 48,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(
+                                                height: Spacing.lg,
+                                              ),
+                                              const Text(
+                                                'No courses available',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
 
-                          final categories = coursesByCategory.keys.toList()..sort();
+                              final Map<String, List<Course>>
+                              coursesByCategory = {};
+                              for (final course in coursesList) {
+                                final category =
+                                    course.courseCategory?.name ??
+                                    course.courseCategoryId ??
+                                    'Unknown';
+                                coursesByCategory
+                                    .putIfAbsent(category, () => [])
+                                    .add(course);
+                              }
 
-                          return RefreshIndicator(
-                            onRefresh: refresh,
-                            child: ListView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
-                              children: categories.map(
-                                (cat) => CourseCard(
-                                  courseCategory: cat,
-                                  courses: coursesByCategory[cat]!,
-                                  selectedBatch: isAllBatches(selectedBatch)
-                                      ? ''
-                                      : (selectedBatch?.slug ??
-                                            selectedBatch?.id ??
-                                            ''),
-                                  selectedSemester: currentSemesterName,
+                              final categories = coursesByCategory.keys.toList()
+                                ..sort();
+
+                              return RefreshIndicator(
+                                onRefresh: refresh,
+                                child: ListView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    8,
+                                    8,
+                                    8,
+                                    16,
+                                  ),
+                                  children: categories
+                                      .map(
+                                        (cat) => CourseCard(
+                                          courseCategory: cat,
+                                          courses: coursesByCategory[cat]!,
+                                          selectedBatch:
+                                              isAllBatches(selectedBatch)
+                                              ? ''
+                                              : (selectedBatch?.slug ??
+                                                    selectedBatch?.id ??
+                                                    ''),
+                                          selectedSemester: currentSemesterName,
+                                        ),
+                                      )
+                                      .toList(),
                                 ),
-                              ).toList(),
-                            ),
+                              );
+                            },
                           );
-                        },
-                      );
-                }()),
+                    }()),
+                  ),
+                ),
               ),
             ],
           ),
@@ -392,68 +429,431 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _BatchOrSemesterDropdown
-//
-// A keyed wrapper around DropdownMenu so Flutter fully rebuilds it (and
-// resets initialSelection) whenever the external state changes.
-// This fixes the Flutter bug where DropdownMenu ignores initialSelection
-// after the first build.
-// ---------------------------------------------------------------------------
-class _BatchOrSemesterDropdown extends StatelessWidget {
-  final double width;
-  final String? initialSelection;
-  final String hintText;
-  final List<DropdownMenuEntry<String?>> entries;
-  final void Function(String? id) onSelected;
+// ── _SemesterButton ─────────────────────────────────────────────────────
+class _SemesterButton extends ConsumerWidget {
+  final List<Semester> semesters;
+  final SelectedSemester? selectedSemester;
 
-  const _BatchOrSemesterDropdown({
-    super.key,
-    required this.width,
-    required this.initialSelection,
-    required this.hintText,
-    required this.entries,
-    required this.onSelected,
+  const _SemesterButton({
+    required this.semesters,
+    required this.selectedSemester,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () => _showSemesterSheet(context, ref),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.15),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              selectedSemester?.name ?? 'All',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              size: 16,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showSemesterSheet(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final notifier = ref.read(selectedSemesterNotifierProvider.notifier);
+    String searchText = '';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final filtered = searchText.isEmpty
+                ? semesters
+                : semesters
+                      .where(
+                        (s) => s.name.toLowerCase().contains(
+                          searchText.toLowerCase(),
+                        ),
+                      )
+                      .toList();
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.65,
+              padding: const EdgeInsets.only(top: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white24 : Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select Semester',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Icon(
+                            LucideIcons.x,
+                            size: 20,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withAlpha(12)
+                            : Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                        ),
+                      ),
+                      child: TextField(
+                        onChanged: (v) => setState(() => searchText = v),
+                        decoration: InputDecoration(
+                          hintText: 'Search semester...',
+                          hintStyle: TextStyle(
+                            color: isDark
+                                ? Colors.white54
+                                : Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
+                          prefixIcon: Icon(
+                            LucideIcons.search,
+                            size: 18,
+                            color: isDark
+                                ? Colors.white54
+                                : Colors.grey.shade400,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      children: [
+                        if (searchText.isEmpty)
+                          _FilterTile(
+                            title: 'All',
+                            isSelected: selectedSemester == null,
+                            onTap: () {
+                              notifier.clear();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ...filtered.map(
+                          (s) => _FilterTile(
+                            title: s.name,
+                            isSelected: selectedSemester?.id == s.id,
+                            onTap: () {
+                              notifier.setFromSemester(s);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+// ── _BatchButton ────────────────────────────────────────────────────────
+class _BatchButton extends ConsumerWidget {
+  final List<Batch> batches;
+  final Batch? selectedBatch;
+
+  const _BatchButton({required this.batches, required this.selectedBatch});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () => _showBatchSheet(context, ref),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.15),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              selectedBatch?.name ?? 'All Batches',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              size: 16,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBatchSheet(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    String searchText = '';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final filteredBatches = searchText.isEmpty
+                ? batches
+                : batches
+                      .where(
+                        (b) => b.name.toLowerCase().contains(
+                          searchText.toLowerCase(),
+                        ),
+                      )
+                      .toList();
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: const EdgeInsets.only(top: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white24 : Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select Batch',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Icon(
+                            LucideIcons.x,
+                            size: 20,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withAlpha(12)
+                            : Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                        ),
+                      ),
+                      child: TextField(
+                        onChanged: (v) => setState(() => searchText = v),
+                        decoration: InputDecoration(
+                          hintText: 'Search batch...',
+                          hintStyle: TextStyle(
+                            color: isDark
+                                ? Colors.white54
+                                : Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
+                          prefixIcon: Icon(
+                            LucideIcons.search,
+                            size: 18,
+                            color: isDark
+                                ? Colors.white54
+                                : Colors.grey.shade400,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      children: [
+                        if (searchText.isEmpty)
+                          _FilterTile(
+                            title: 'All Batches',
+                            isSelected: selectedBatch == null,
+                            onTap: () {
+                              ref
+                                  .read(selectedBatchNotifierProvider.notifier)
+                                  .setAll();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ...filteredBatches.map(
+                          (b) => _FilterTile(
+                            title: b.name,
+                            isSelected: selectedBatch?.id == b.id,
+                            onTap: () {
+                              ref
+                                  .read(selectedBatchNotifierProvider.notifier)
+                                  .setSelectedBatch(b);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+// ── _FilterTile ─────────────────────────────────────────────────────────
+class _FilterTile extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _FilterTile({
+    required this.title,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          right: 4,
-          top: 0,
-          bottom: 0,
-          child: IgnorePointer(
-            ignoring: true,
-            child: Icon(Icons.keyboard_arrow_down_rounded, size: 16),
-          ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark
+                    ? Colors.red.shade900.withAlpha(50)
+                    : const Color(0xFFFDE8E8))
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
         ),
-        DropdownMenu<String?>(
-          width: width,
-          initialSelection: initialSelection,
-          hintText: hintText,
-          textStyle: const TextStyle(fontSize: 14),
-          requestFocusOnTap: false,
-          showTrailingIcon: false,
-          inputDecorationTheme: InputDecorationTheme(
-            contentPadding: const EdgeInsets.only(left: 6, top: 4, bottom: 6),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-            constraints: const BoxConstraints(maxHeight: 32),
-            isDense: true,
-            isCollapsed: true,
-          ),
-          alignmentOffset: const Offset(0, 8),
-          onSelected: onSelected,
-          dropdownMenuEntries: entries,
-            menuStyle: MenuStyle(
-            fixedSize: WidgetStateProperty.all(Size.fromWidth(width)),
-            backgroundColor: WidgetStateProperty.all(Theme.of(context).cardColor),
-            visualDensity: VisualDensity.compact,
-            padding: WidgetStateProperty.all(EdgeInsets.zero),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 15,
+                color: isSelected
+                    ? (isDark ? Colors.red.shade300 : Colors.red.shade700)
+                    : (isDark ? Colors.white : Colors.black87),
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                LucideIcons.check,
+                color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                size: 20,
+              ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

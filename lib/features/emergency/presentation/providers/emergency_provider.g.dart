@@ -300,7 +300,7 @@ final class EmergencyPaginationProvider
 }
 
 String _$emergencyPaginationHash() =>
-    r'a2b16b5b3fb14527f27de3b7b9d518c3a14153fd';
+    r'575c1d71e5a75cc9846528d185d8bd23fe4d8428';
 
 final class EmergencyPaginationFamily extends $Family
     with

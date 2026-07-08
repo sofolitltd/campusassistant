@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ResourceModel {
 
- String get id; String get type; String get title; String get description;@JsonKey(name: 'course_code') String get courseCode;@JsonKey(name: 'file_url') String get fileUrl;@JsonKey(name: 'thumbnail_url') String get thumbnailUrl;@JsonKey(name: 'lesson_no') int get lessonNo; String get status;@JsonKey(name: 'access_level') String get accessLevel;@JsonKey(name: 'rejected_note') String get rejectedNote;@JsonKey(name: 'reviewed_by_id') String get reviewedBy;@JsonKey(name: 'reviewed_at') DateTime? get reviewedAt;@JsonKey(name: 'uploader_id') String get uploaderId;@JsonKey(name: 'uploader_uid') String get uploaderUid;@JsonKey(name: 'uploader_name') String get uploaderName;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;@JsonKey(name: 'file_size_bytes') int get fileSizeBytes;@JsonKey(name: 'page_count') int get pageCount;@JsonKey(name: 'download_count') int get downloadCount;@JsonKey(name: 'view_count') int get viewCount;@JsonKey(name: 'rating_avg') double get ratingAvg;@JsonKey(name: 'rating_count') int get ratingCount;@JsonKey(name: 'is_verified') bool get isVerified; List<String> get tags;@JsonKey(name: 'is_public') bool get isPublic; Map<String, dynamic> get metadata;@JsonKey(name: 'course_title') String get courseTitle; List<String> get years; List<dynamic> get batches;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt;
+ String get id; String get type; String get title; String get description;@JsonKey(name: 'course_code') String get courseCode;@JsonKey(name: 'file_url') String get fileUrl;@JsonKey(name: 'thumbnail_url') String get thumbnailUrl;@JsonKey(name: 'lesson_no') int get lessonNo; String get status;@JsonKey(name: 'access_level') String get accessLevel;@JsonKey(name: 'rejected_note') String? get rejectedNote;@JsonKey(name: 'reviewed_by_id') String? get reviewedBy;@JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? get reviewedAt;@JsonKey(name: 'uploader_id') String? get uploaderId;@JsonKey(name: 'uploader_uid') String get uploaderUid;@JsonKey(name: 'uploader_name') String get uploaderName;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;@JsonKey(name: 'file_size_bytes') int get fileSizeBytes;@JsonKey(name: 'page_count') int get pageCount;@JsonKey(name: 'download_count') int get downloadCount;@JsonKey(name: 'view_count') int get viewCount;@JsonKey(name: 'rating_avg') double get ratingAvg;@JsonKey(name: 'rating_count') int get ratingCount;@JsonKey(name: 'is_verified') bool get isVerified; List<String> get tags;@JsonKey(name: 'is_public') bool get isPublic; Map<String, dynamic>? get metadata;@JsonKey(name: 'course_title') String? get courseTitle; List<String>? get years; List<dynamic>? get batches;@JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? get updatedAt;
 /// Create a copy of ResourceModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $ResourceModelCopyWith<$Res>  {
   factory $ResourceModelCopyWith(ResourceModel value, $Res Function(ResourceModel) _then) = _$ResourceModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String type, String title, String description,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'thumbnail_url') String thumbnailUrl,@JsonKey(name: 'lesson_no') int lessonNo, String status,@JsonKey(name: 'access_level') String accessLevel,@JsonKey(name: 'rejected_note') String rejectedNote,@JsonKey(name: 'reviewed_by_id') String reviewedBy,@JsonKey(name: 'reviewed_at') DateTime? reviewedAt,@JsonKey(name: 'uploader_id') String uploaderId,@JsonKey(name: 'uploader_uid') String uploaderUid,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId,@JsonKey(name: 'file_size_bytes') int fileSizeBytes,@JsonKey(name: 'page_count') int pageCount,@JsonKey(name: 'download_count') int downloadCount,@JsonKey(name: 'view_count') int viewCount,@JsonKey(name: 'rating_avg') double ratingAvg,@JsonKey(name: 'rating_count') int ratingCount,@JsonKey(name: 'is_verified') bool isVerified, List<String> tags,@JsonKey(name: 'is_public') bool isPublic, Map<String, dynamic> metadata,@JsonKey(name: 'course_title') String courseTitle, List<String> years, List<dynamic> batches,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
+ String id, String type, String title, String description,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'thumbnail_url') String thumbnailUrl,@JsonKey(name: 'lesson_no') int lessonNo, String status,@JsonKey(name: 'access_level') String accessLevel,@JsonKey(name: 'rejected_note') String? rejectedNote,@JsonKey(name: 'reviewed_by_id') String? reviewedBy,@JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? reviewedAt,@JsonKey(name: 'uploader_id') String? uploaderId,@JsonKey(name: 'uploader_uid') String uploaderUid,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId,@JsonKey(name: 'file_size_bytes') int fileSizeBytes,@JsonKey(name: 'page_count') int pageCount,@JsonKey(name: 'download_count') int downloadCount,@JsonKey(name: 'view_count') int viewCount,@JsonKey(name: 'rating_avg') double ratingAvg,@JsonKey(name: 'rating_count') int ratingCount,@JsonKey(name: 'is_verified') bool isVerified, List<String> tags,@JsonKey(name: 'is_public') bool isPublic, Map<String, dynamic>? metadata,@JsonKey(name: 'course_title') String? courseTitle, List<String>? years, List<dynamic>? batches,@JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? updatedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$ResourceModelCopyWithImpl<$Res>
 
 /// Create a copy of ResourceModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = null,Object? reviewedBy = null,Object? reviewedAt = freezed,Object? uploaderId = null,Object? uploaderUid = null,Object? uploaderName = null,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = null,Object? courseTitle = null,Object? years = null,Object? batches = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = freezed,Object? reviewedBy = freezed,Object? reviewedAt = freezed,Object? uploaderId = freezed,Object? uploaderUid = null,Object? uploaderName = null,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = freezed,Object? courseTitle = freezed,Object? years = freezed,Object? batches = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -77,11 +77,11 @@ as String,thumbnailUrl: null == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl
 as String,lessonNo: null == lessonNo ? _self.lessonNo : lessonNo // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,accessLevel: null == accessLevel ? _self.accessLevel : accessLevel // ignore: cast_nullable_to_non_nullable
-as String,rejectedNote: null == rejectedNote ? _self.rejectedNote : rejectedNote // ignore: cast_nullable_to_non_nullable
-as String,reviewedBy: null == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
-as String,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,uploaderId: null == uploaderId ? _self.uploaderId : uploaderId // ignore: cast_nullable_to_non_nullable
-as String,uploaderUid: null == uploaderUid ? _self.uploaderUid : uploaderUid // ignore: cast_nullable_to_non_nullable
+as String,rejectedNote: freezed == rejectedNote ? _self.rejectedNote : rejectedNote // ignore: cast_nullable_to_non_nullable
+as String?,reviewedBy: freezed == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
+as String?,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,uploaderId: freezed == uploaderId ? _self.uploaderId : uploaderId // ignore: cast_nullable_to_non_nullable
+as String?,uploaderUid: null == uploaderUid ? _self.uploaderUid : uploaderUid // ignore: cast_nullable_to_non_nullable
 as String,uploaderName: null == uploaderName ? _self.uploaderName : uploaderName // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
@@ -94,11 +94,11 @@ as double,ratingCount: null == ratingCount ? _self.ratingCount : ratingCount // 
 as int,isVerified: null == isVerified ? _self.isVerified : isVerified // ignore: cast_nullable_to_non_nullable
 as bool,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,isPublic: null == isPublic ? _self.isPublic : isPublic // ignore: cast_nullable_to_non_nullable
-as bool,metadata: null == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
-as Map<String, dynamic>,courseTitle: null == courseTitle ? _self.courseTitle : courseTitle // ignore: cast_nullable_to_non_nullable
-as String,years: null == years ? _self.years : years // ignore: cast_nullable_to_non_nullable
-as List<String>,batches: null == batches ? _self.batches : batches // ignore: cast_nullable_to_non_nullable
-as List<dynamic>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool,metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,courseTitle: freezed == courseTitle ? _self.courseTitle : courseTitle // ignore: cast_nullable_to_non_nullable
+as String?,years: freezed == years ? _self.years : years // ignore: cast_nullable_to_non_nullable
+as List<String>?,batches: freezed == batches ? _self.batches : batches // ignore: cast_nullable_to_non_nullable
+as List<dynamic>?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -185,7 +185,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'thumbnail_url')  String thumbnailUrl, @JsonKey(name: 'lesson_no')  int lessonNo,  String status, @JsonKey(name: 'access_level')  String accessLevel, @JsonKey(name: 'rejected_note')  String rejectedNote, @JsonKey(name: 'reviewed_by_id')  String reviewedBy, @JsonKey(name: 'reviewed_at')  DateTime? reviewedAt, @JsonKey(name: 'uploader_id')  String uploaderId, @JsonKey(name: 'uploader_uid')  String uploaderUid, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId, @JsonKey(name: 'file_size_bytes')  int fileSizeBytes, @JsonKey(name: 'page_count')  int pageCount, @JsonKey(name: 'download_count')  int downloadCount, @JsonKey(name: 'view_count')  int viewCount, @JsonKey(name: 'rating_avg')  double ratingAvg, @JsonKey(name: 'rating_count')  int ratingCount, @JsonKey(name: 'is_verified')  bool isVerified,  List<String> tags, @JsonKey(name: 'is_public')  bool isPublic,  Map<String, dynamic> metadata, @JsonKey(name: 'course_title')  String courseTitle,  List<String> years,  List<dynamic> batches, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'thumbnail_url')  String thumbnailUrl, @JsonKey(name: 'lesson_no')  int lessonNo,  String status, @JsonKey(name: 'access_level')  String accessLevel, @JsonKey(name: 'rejected_note')  String? rejectedNote, @JsonKey(name: 'reviewed_by_id')  String? reviewedBy, @JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? reviewedAt, @JsonKey(name: 'uploader_id')  String? uploaderId, @JsonKey(name: 'uploader_uid')  String uploaderUid, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId, @JsonKey(name: 'file_size_bytes')  int fileSizeBytes, @JsonKey(name: 'page_count')  int pageCount, @JsonKey(name: 'download_count')  int downloadCount, @JsonKey(name: 'view_count')  int viewCount, @JsonKey(name: 'rating_avg')  double ratingAvg, @JsonKey(name: 'rating_count')  int ratingCount, @JsonKey(name: 'is_verified')  bool isVerified,  List<String> tags, @JsonKey(name: 'is_public')  bool isPublic,  Map<String, dynamic>? metadata, @JsonKey(name: 'course_title')  String? courseTitle,  List<String>? years,  List<dynamic>? batches, @JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ResourceModel() when $default != null:
 return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.uploaderId,_that.uploaderUid,_that.uploaderName,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
@@ -206,7 +206,7 @@ return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'thumbnail_url')  String thumbnailUrl, @JsonKey(name: 'lesson_no')  int lessonNo,  String status, @JsonKey(name: 'access_level')  String accessLevel, @JsonKey(name: 'rejected_note')  String rejectedNote, @JsonKey(name: 'reviewed_by_id')  String reviewedBy, @JsonKey(name: 'reviewed_at')  DateTime? reviewedAt, @JsonKey(name: 'uploader_id')  String uploaderId, @JsonKey(name: 'uploader_uid')  String uploaderUid, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId, @JsonKey(name: 'file_size_bytes')  int fileSizeBytes, @JsonKey(name: 'page_count')  int pageCount, @JsonKey(name: 'download_count')  int downloadCount, @JsonKey(name: 'view_count')  int viewCount, @JsonKey(name: 'rating_avg')  double ratingAvg, @JsonKey(name: 'rating_count')  int ratingCount, @JsonKey(name: 'is_verified')  bool isVerified,  List<String> tags, @JsonKey(name: 'is_public')  bool isPublic,  Map<String, dynamic> metadata, @JsonKey(name: 'course_title')  String courseTitle,  List<String> years,  List<dynamic> batches, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'thumbnail_url')  String thumbnailUrl, @JsonKey(name: 'lesson_no')  int lessonNo,  String status, @JsonKey(name: 'access_level')  String accessLevel, @JsonKey(name: 'rejected_note')  String? rejectedNote, @JsonKey(name: 'reviewed_by_id')  String? reviewedBy, @JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? reviewedAt, @JsonKey(name: 'uploader_id')  String? uploaderId, @JsonKey(name: 'uploader_uid')  String uploaderUid, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId, @JsonKey(name: 'file_size_bytes')  int fileSizeBytes, @JsonKey(name: 'page_count')  int pageCount, @JsonKey(name: 'download_count')  int downloadCount, @JsonKey(name: 'view_count')  int viewCount, @JsonKey(name: 'rating_avg')  double ratingAvg, @JsonKey(name: 'rating_count')  int ratingCount, @JsonKey(name: 'is_verified')  bool isVerified,  List<String> tags, @JsonKey(name: 'is_public')  bool isPublic,  Map<String, dynamic>? metadata, @JsonKey(name: 'course_title')  String? courseTitle,  List<String>? years,  List<dynamic>? batches, @JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _ResourceModel():
 return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.uploaderId,_that.uploaderUid,_that.uploaderName,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
@@ -226,7 +226,7 @@ return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String type,  String title,  String description, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'thumbnail_url')  String thumbnailUrl, @JsonKey(name: 'lesson_no')  int lessonNo,  String status, @JsonKey(name: 'access_level')  String accessLevel, @JsonKey(name: 'rejected_note')  String rejectedNote, @JsonKey(name: 'reviewed_by_id')  String reviewedBy, @JsonKey(name: 'reviewed_at')  DateTime? reviewedAt, @JsonKey(name: 'uploader_id')  String uploaderId, @JsonKey(name: 'uploader_uid')  String uploaderUid, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId, @JsonKey(name: 'file_size_bytes')  int fileSizeBytes, @JsonKey(name: 'page_count')  int pageCount, @JsonKey(name: 'download_count')  int downloadCount, @JsonKey(name: 'view_count')  int viewCount, @JsonKey(name: 'rating_avg')  double ratingAvg, @JsonKey(name: 'rating_count')  int ratingCount, @JsonKey(name: 'is_verified')  bool isVerified,  List<String> tags, @JsonKey(name: 'is_public')  bool isPublic,  Map<String, dynamic> metadata, @JsonKey(name: 'course_title')  String courseTitle,  List<String> years,  List<dynamic> batches, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String type,  String title,  String description, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'thumbnail_url')  String thumbnailUrl, @JsonKey(name: 'lesson_no')  int lessonNo,  String status, @JsonKey(name: 'access_level')  String accessLevel, @JsonKey(name: 'rejected_note')  String? rejectedNote, @JsonKey(name: 'reviewed_by_id')  String? reviewedBy, @JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? reviewedAt, @JsonKey(name: 'uploader_id')  String? uploaderId, @JsonKey(name: 'uploader_uid')  String uploaderUid, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId, @JsonKey(name: 'file_size_bytes')  int fileSizeBytes, @JsonKey(name: 'page_count')  int pageCount, @JsonKey(name: 'download_count')  int downloadCount, @JsonKey(name: 'view_count')  int viewCount, @JsonKey(name: 'rating_avg')  double ratingAvg, @JsonKey(name: 'rating_count')  int ratingCount, @JsonKey(name: 'is_verified')  bool isVerified,  List<String> tags, @JsonKey(name: 'is_public')  bool isPublic,  Map<String, dynamic>? metadata, @JsonKey(name: 'course_title')  String? courseTitle,  List<String>? years,  List<dynamic>? batches, @JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson)  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ResourceModel() when $default != null:
 return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.uploaderId,_that.uploaderUid,_that.uploaderName,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
@@ -241,7 +241,7 @@ return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCo
 @JsonSerializable()
 
 class _ResourceModel extends ResourceModel {
-  const _ResourceModel({required this.id, required this.type, required this.title, required this.description, @JsonKey(name: 'course_code') required this.courseCode, @JsonKey(name: 'file_url') required this.fileUrl, @JsonKey(name: 'thumbnail_url') required this.thumbnailUrl, @JsonKey(name: 'lesson_no') required this.lessonNo, required this.status, @JsonKey(name: 'access_level') required this.accessLevel, @JsonKey(name: 'rejected_note') required this.rejectedNote, @JsonKey(name: 'reviewed_by_id') required this.reviewedBy, @JsonKey(name: 'reviewed_at') this.reviewedAt, @JsonKey(name: 'uploader_id') required this.uploaderId, @JsonKey(name: 'uploader_uid') required this.uploaderUid, @JsonKey(name: 'uploader_name') required this.uploaderName, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, @JsonKey(name: 'file_size_bytes') required this.fileSizeBytes, @JsonKey(name: 'page_count') required this.pageCount, @JsonKey(name: 'download_count') required this.downloadCount, @JsonKey(name: 'view_count') required this.viewCount, @JsonKey(name: 'rating_avg') required this.ratingAvg, @JsonKey(name: 'rating_count') required this.ratingCount, @JsonKey(name: 'is_verified') required this.isVerified, required final  List<String> tags, @JsonKey(name: 'is_public') required this.isPublic, required final  Map<String, dynamic> metadata, @JsonKey(name: 'course_title') required this.courseTitle, required final  List<String> years, required final  List<dynamic> batches, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt}): _tags = tags,_metadata = metadata,_years = years,_batches = batches,super._();
+  const _ResourceModel({required this.id, required this.type, required this.title, required this.description, @JsonKey(name: 'course_code') required this.courseCode, @JsonKey(name: 'file_url') required this.fileUrl, @JsonKey(name: 'thumbnail_url') required this.thumbnailUrl, @JsonKey(name: 'lesson_no') required this.lessonNo, required this.status, @JsonKey(name: 'access_level') required this.accessLevel, @JsonKey(name: 'rejected_note') this.rejectedNote, @JsonKey(name: 'reviewed_by_id') this.reviewedBy, @JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) this.reviewedAt, @JsonKey(name: 'uploader_id') this.uploaderId, @JsonKey(name: 'uploader_uid') required this.uploaderUid, @JsonKey(name: 'uploader_name') required this.uploaderName, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, @JsonKey(name: 'file_size_bytes') required this.fileSizeBytes, @JsonKey(name: 'page_count') required this.pageCount, @JsonKey(name: 'download_count') required this.downloadCount, @JsonKey(name: 'view_count') required this.viewCount, @JsonKey(name: 'rating_avg') required this.ratingAvg, @JsonKey(name: 'rating_count') required this.ratingCount, @JsonKey(name: 'is_verified') required this.isVerified, required final  List<String> tags, @JsonKey(name: 'is_public') required this.isPublic, final  Map<String, dynamic>? metadata, @JsonKey(name: 'course_title') this.courseTitle, final  List<String>? years, final  List<dynamic>? batches, @JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) this.updatedAt}): _tags = tags,_metadata = metadata,_years = years,_batches = batches,super._();
   factory _ResourceModel.fromJson(Map<String, dynamic> json) => _$ResourceModelFromJson(json);
 
 @override final  String id;
@@ -254,10 +254,10 @@ class _ResourceModel extends ResourceModel {
 @override@JsonKey(name: 'lesson_no') final  int lessonNo;
 @override final  String status;
 @override@JsonKey(name: 'access_level') final  String accessLevel;
-@override@JsonKey(name: 'rejected_note') final  String rejectedNote;
-@override@JsonKey(name: 'reviewed_by_id') final  String reviewedBy;
-@override@JsonKey(name: 'reviewed_at') final  DateTime? reviewedAt;
-@override@JsonKey(name: 'uploader_id') final  String uploaderId;
+@override@JsonKey(name: 'rejected_note') final  String? rejectedNote;
+@override@JsonKey(name: 'reviewed_by_id') final  String? reviewedBy;
+@override@JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) final  DateTime? reviewedAt;
+@override@JsonKey(name: 'uploader_id') final  String? uploaderId;
 @override@JsonKey(name: 'uploader_uid') final  String uploaderUid;
 @override@JsonKey(name: 'uploader_name') final  String uploaderName;
 @override@JsonKey(name: 'university_id') final  String universityId;
@@ -277,30 +277,36 @@ class _ResourceModel extends ResourceModel {
 }
 
 @override@JsonKey(name: 'is_public') final  bool isPublic;
- final  Map<String, dynamic> _metadata;
-@override Map<String, dynamic> get metadata {
+ final  Map<String, dynamic>? _metadata;
+@override Map<String, dynamic>? get metadata {
+  final value = _metadata;
+  if (value == null) return null;
   if (_metadata is EqualUnmodifiableMapView) return _metadata;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableMapView(_metadata);
+  return EqualUnmodifiableMapView(value);
 }
 
-@override@JsonKey(name: 'course_title') final  String courseTitle;
- final  List<String> _years;
-@override List<String> get years {
+@override@JsonKey(name: 'course_title') final  String? courseTitle;
+ final  List<String>? _years;
+@override List<String>? get years {
+  final value = _years;
+  if (value == null) return null;
   if (_years is EqualUnmodifiableListView) return _years;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_years);
+  return EqualUnmodifiableListView(value);
 }
 
- final  List<dynamic> _batches;
-@override List<dynamic> get batches {
+ final  List<dynamic>? _batches;
+@override List<dynamic>? get batches {
+  final value = _batches;
+  if (value == null) return null;
   if (_batches is EqualUnmodifiableListView) return _batches;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_batches);
+  return EqualUnmodifiableListView(value);
 }
 
-@override@JsonKey(name: 'created_at') final  DateTime? createdAt;
-@override@JsonKey(name: 'updated_at') final  DateTime? updatedAt;
+@override@JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) final  DateTime? createdAt;
+@override@JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) final  DateTime? updatedAt;
 
 /// Create a copy of ResourceModel
 /// with the given fields replaced by the non-null parameter values.
@@ -335,7 +341,7 @@ abstract mixin class _$ResourceModelCopyWith<$Res> implements $ResourceModelCopy
   factory _$ResourceModelCopyWith(_ResourceModel value, $Res Function(_ResourceModel) _then) = __$ResourceModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String type, String title, String description,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'thumbnail_url') String thumbnailUrl,@JsonKey(name: 'lesson_no') int lessonNo, String status,@JsonKey(name: 'access_level') String accessLevel,@JsonKey(name: 'rejected_note') String rejectedNote,@JsonKey(name: 'reviewed_by_id') String reviewedBy,@JsonKey(name: 'reviewed_at') DateTime? reviewedAt,@JsonKey(name: 'uploader_id') String uploaderId,@JsonKey(name: 'uploader_uid') String uploaderUid,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId,@JsonKey(name: 'file_size_bytes') int fileSizeBytes,@JsonKey(name: 'page_count') int pageCount,@JsonKey(name: 'download_count') int downloadCount,@JsonKey(name: 'view_count') int viewCount,@JsonKey(name: 'rating_avg') double ratingAvg,@JsonKey(name: 'rating_count') int ratingCount,@JsonKey(name: 'is_verified') bool isVerified, List<String> tags,@JsonKey(name: 'is_public') bool isPublic, Map<String, dynamic> metadata,@JsonKey(name: 'course_title') String courseTitle, List<String> years, List<dynamic> batches,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
+ String id, String type, String title, String description,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'thumbnail_url') String thumbnailUrl,@JsonKey(name: 'lesson_no') int lessonNo, String status,@JsonKey(name: 'access_level') String accessLevel,@JsonKey(name: 'rejected_note') String? rejectedNote,@JsonKey(name: 'reviewed_by_id') String? reviewedBy,@JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? reviewedAt,@JsonKey(name: 'uploader_id') String? uploaderId,@JsonKey(name: 'uploader_uid') String uploaderUid,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId,@JsonKey(name: 'file_size_bytes') int fileSizeBytes,@JsonKey(name: 'page_count') int pageCount,@JsonKey(name: 'download_count') int downloadCount,@JsonKey(name: 'view_count') int viewCount,@JsonKey(name: 'rating_avg') double ratingAvg,@JsonKey(name: 'rating_count') int ratingCount,@JsonKey(name: 'is_verified') bool isVerified, List<String> tags,@JsonKey(name: 'is_public') bool isPublic, Map<String, dynamic>? metadata,@JsonKey(name: 'course_title') String? courseTitle, List<String>? years, List<dynamic>? batches,@JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? updatedAt
 });
 
 
@@ -352,7 +358,7 @@ class __$ResourceModelCopyWithImpl<$Res>
 
 /// Create a copy of ResourceModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = null,Object? reviewedBy = null,Object? reviewedAt = freezed,Object? uploaderId = null,Object? uploaderUid = null,Object? uploaderName = null,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = null,Object? courseTitle = null,Object? years = null,Object? batches = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = freezed,Object? reviewedBy = freezed,Object? reviewedAt = freezed,Object? uploaderId = freezed,Object? uploaderUid = null,Object? uploaderName = null,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = freezed,Object? courseTitle = freezed,Object? years = freezed,Object? batches = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_ResourceModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -364,11 +370,11 @@ as String,thumbnailUrl: null == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl
 as String,lessonNo: null == lessonNo ? _self.lessonNo : lessonNo // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,accessLevel: null == accessLevel ? _self.accessLevel : accessLevel // ignore: cast_nullable_to_non_nullable
-as String,rejectedNote: null == rejectedNote ? _self.rejectedNote : rejectedNote // ignore: cast_nullable_to_non_nullable
-as String,reviewedBy: null == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
-as String,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,uploaderId: null == uploaderId ? _self.uploaderId : uploaderId // ignore: cast_nullable_to_non_nullable
-as String,uploaderUid: null == uploaderUid ? _self.uploaderUid : uploaderUid // ignore: cast_nullable_to_non_nullable
+as String,rejectedNote: freezed == rejectedNote ? _self.rejectedNote : rejectedNote // ignore: cast_nullable_to_non_nullable
+as String?,reviewedBy: freezed == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
+as String?,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,uploaderId: freezed == uploaderId ? _self.uploaderId : uploaderId // ignore: cast_nullable_to_non_nullable
+as String?,uploaderUid: null == uploaderUid ? _self.uploaderUid : uploaderUid // ignore: cast_nullable_to_non_nullable
 as String,uploaderName: null == uploaderName ? _self.uploaderName : uploaderName // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
@@ -381,11 +387,11 @@ as double,ratingCount: null == ratingCount ? _self.ratingCount : ratingCount // 
 as int,isVerified: null == isVerified ? _self.isVerified : isVerified // ignore: cast_nullable_to_non_nullable
 as bool,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,isPublic: null == isPublic ? _self.isPublic : isPublic // ignore: cast_nullable_to_non_nullable
-as bool,metadata: null == metadata ? _self._metadata : metadata // ignore: cast_nullable_to_non_nullable
-as Map<String, dynamic>,courseTitle: null == courseTitle ? _self.courseTitle : courseTitle // ignore: cast_nullable_to_non_nullable
-as String,years: null == years ? _self._years : years // ignore: cast_nullable_to_non_nullable
-as List<String>,batches: null == batches ? _self._batches : batches // ignore: cast_nullable_to_non_nullable
-as List<dynamic>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool,metadata: freezed == metadata ? _self._metadata : metadata // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,courseTitle: freezed == courseTitle ? _self.courseTitle : courseTitle // ignore: cast_nullable_to_non_nullable
+as String?,years: freezed == years ? _self._years : years // ignore: cast_nullable_to_non_nullable
+as List<String>?,batches: freezed == batches ? _self._batches : batches // ignore: cast_nullable_to_non_nullable
+as List<dynamic>?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

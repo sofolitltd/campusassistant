@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'network/api_client.dart';
 import 'network/api_endpoints.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
+import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/community/data/repositories/community_repository.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) {
-  const storage = FlutterSecureStorage();
+  final storage = ref.watch(secureStorageProvider);
 
   return ApiClient(
     baseUrl: ApiEndpoints.baseUrl,

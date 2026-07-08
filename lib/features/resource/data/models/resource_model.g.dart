@@ -18,12 +18,10 @@ _ResourceModel _$ResourceModelFromJson(Map<String, dynamic> json) =>
       lessonNo: (json['lesson_no'] as num).toInt(),
       status: json['status'] as String,
       accessLevel: json['access_level'] as String,
-      rejectedNote: json['rejected_note'] as String,
-      reviewedBy: json['reviewed_by_id'] as String,
-      reviewedAt: json['reviewed_at'] == null
-          ? null
-          : DateTime.parse(json['reviewed_at'] as String),
-      uploaderId: json['uploader_id'] as String,
+      rejectedNote: json['rejected_note'] as String?,
+      reviewedBy: json['reviewed_by_id'] as String?,
+      reviewedAt: _parseDateTime(json['reviewed_at'] as String?),
+      uploaderId: json['uploader_id'] as String?,
       uploaderUid: json['uploader_uid'] as String,
       uploaderName: json['uploader_name'] as String,
       universityId: json['university_id'] as String,
@@ -37,16 +35,14 @@ _ResourceModel _$ResourceModelFromJson(Map<String, dynamic> json) =>
       isVerified: json['is_verified'] as bool,
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
       isPublic: json['is_public'] as bool,
-      metadata: json['metadata'] as Map<String, dynamic>,
-      courseTitle: json['course_title'] as String,
-      years: (json['years'] as List<dynamic>).map((e) => e as String).toList(),
-      batches: json['batches'] as List<dynamic>,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+      metadata: json['metadata'] as Map<String, dynamic>?,
+      courseTitle: json['course_title'] as String?,
+      years: (json['years'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      batches: json['batches'] as List<dynamic>?,
+      createdAt: _parseDateTime(json['created_at'] as String?),
+      updatedAt: _parseDateTime(json['updated_at'] as String?),
     );
 
 Map<String, dynamic> _$ResourceModelToJson(_ResourceModel instance) =>
@@ -61,10 +57,10 @@ Map<String, dynamic> _$ResourceModelToJson(_ResourceModel instance) =>
       'lesson_no': instance.lessonNo,
       'status': instance.status,
       'access_level': instance.accessLevel,
-      'rejected_note': instance.rejectedNote,
-      'reviewed_by_id': instance.reviewedBy,
-      'reviewed_at': ?instance.reviewedAt?.toIso8601String(),
-      'uploader_id': instance.uploaderId,
+      'rejected_note': ?instance.rejectedNote,
+      'reviewed_by_id': ?instance.reviewedBy,
+      'reviewed_at': ?_dateTimeToJson(instance.reviewedAt),
+      'uploader_id': ?instance.uploaderId,
       'uploader_uid': instance.uploaderUid,
       'uploader_name': instance.uploaderName,
       'university_id': instance.universityId,
@@ -78,10 +74,10 @@ Map<String, dynamic> _$ResourceModelToJson(_ResourceModel instance) =>
       'is_verified': instance.isVerified,
       'tags': instance.tags,
       'is_public': instance.isPublic,
-      'metadata': instance.metadata,
-      'course_title': instance.courseTitle,
-      'years': instance.years,
-      'batches': instance.batches,
-      'created_at': ?instance.createdAt?.toIso8601String(),
-      'updated_at': ?instance.updatedAt?.toIso8601String(),
+      'metadata': ?instance.metadata,
+      'course_title': ?instance.courseTitle,
+      'years': ?instance.years,
+      'batches': ?instance.batches,
+      'created_at': ?_dateTimeToJson(instance.createdAt),
+      'updated_at': ?_dateTimeToJson(instance.updatedAt),
     };

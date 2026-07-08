@@ -90,25 +90,24 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final userAsync = ref.watch(userProvider);
-    // Use reactive selection
+    // Only filter by batch when user explicitly chose one
+    final explicitBatch = ref.watch(selectedBatchNotifierProvider);
     final selectedBatch = ref.watch(resolvedBatchProvider);
+    final effectiveBatch = explicitBatch != null ? selectedBatch : null;
 
     final params = (
       universityId:
-          widget.universityId ??
-          userAsync.value?.information.universityId ??
-          '',
+          widget.universityId ?? widget.courseModel.universityId,
       departmentId:
-          widget.departmentId ??
-          userAsync.value?.information.departmentId ??
-          '',
+          widget.departmentId ?? widget.courseModel.departmentId,
       type: 'video',
       courseCode: widget.courseModel.courseCode,
-      batch: isAllBatches(selectedBatch) ? null : selectedBatch?.name,
-      batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
+      batch: isAllBatches(effectiveBatch) ? null : effectiveBatch?.name,
+      batchId: isAllBatches(effectiveBatch) ? null : effectiveBatch?.id,
       lessonNo: null,
       uploaderUid: null,
       status: null,
+      limit: 100,
     );
 
     final videosAsync = ref.watch(resourcesListProvider(
@@ -121,6 +120,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
       lessonNo: params.lessonNo,
       uploaderUid: params.uploaderUid,
       status: params.status,
+      limit: params.limit,
     ));
 
     final isModerator = userAsync.value?.information.status?.moderator ?? false;

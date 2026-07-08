@@ -22,6 +22,8 @@ typedef ResourceParams = ({
   int? lessonNo,
   String? uploaderUid,
   String? status,
+  int? limit,
+  int? offset,
 });
 
 @riverpod
@@ -36,6 +38,8 @@ Future<List<Resource>> resourcesList(
   int? lessonNo,
   String? uploaderUid,
   String? status,
+  int? limit,
+  int? offset,
 }) async {
   final repo = ref.watch(resourceRepositoryProvider);
   final result = await repo.getResources(
@@ -48,8 +52,10 @@ Future<List<Resource>> resourcesList(
     lessonNo: lessonNo,
     uploaderUid: uploaderUid,
     status: status,
+    limit: limit,
+    offset: offset,
   );
-  return result.fold((failure) => [], (p) => p.resources);
+  return result.fold((failure) => throw failure, (p) => p.resources);
 }
 
 @riverpod

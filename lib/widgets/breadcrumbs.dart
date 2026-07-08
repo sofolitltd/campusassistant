@@ -23,8 +23,16 @@ class Breadcrumbs extends ConsumerWidget {
 
     if (segments.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8, top: 8, left: leftPadding ?? 16),
+    final cs = Theme.of(context).colorScheme;
+
+    return Container(
+      width: .infinity,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: .circular(4),
+      ),
+      padding: EdgeInsets.only(left: 6, right: 6),
+      margin: EdgeInsets.only(left: 16, right: 16),
       child: Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
@@ -44,9 +52,13 @@ class Breadcrumbs extends ConsumerWidget {
               ),
             ),
             if (i < segments.length - 1)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Icon(Icons.chevron_right, size: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Icon(
+                  Icons.chevron_right,
+                  size: 16,
+                  color: cs.onSurfaceVariant,
+                ),
               ),
           ],
         ],

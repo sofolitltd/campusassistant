@@ -49,7 +49,7 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
         universityId: widget.courseModel.universityId,
         departmentId: widget.courseModel.departmentId,
         courseCode: widget.courseModel.courseCode,
-        batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
+        batchId: null, // Client-side filter below handles batching
       ),
     );
 
@@ -106,10 +106,8 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
                               'batch': selectedBatch.name,
                             if (selectedSemester != null)
                               'semester': selectedSemester.name,
-                            if (widget.universityId != null)
-                              'universityId': widget.universityId,
-                            if (widget.departmentId != null)
-                              'departmentId': widget.departmentId,
+                            'universityId': widget.courseModel.universityId,
+                            'departmentId': widget.courseModel.departmentId,
                           },
                         ).toString(),
                       );

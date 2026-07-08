@@ -142,4 +142,4 @@ final class DepartmentNoticesProvider
   }
 }
 
-String _$departmentNoticesHash() => r'0cafa673f7175c1552de236d751e8088adb32657';
+String _$departmentNoticesHash() => r'd11f6e74b9f6c67c510cc4a2b38a6cad1d09f35b';

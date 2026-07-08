@@ -1,4 +1,5 @@
 import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import 'package:campusassistant/features/notification/presentation/widgets/notification_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -40,8 +41,6 @@ class _HomePageState extends ConsumerState<HomePage>
     final userAsync = ref.watch(userProvider);
     final userName = userAsync.value?.name ?? 'Loading...';
     final initial = userName.isNotEmpty ? userName[0].toUpperCase() : 'M';
-    final primaryRed = const Color(0xFFD32F2F);
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       drawer: const HomeDrawer(),
@@ -49,9 +48,9 @@ class _HomePageState extends ConsumerState<HomePage>
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            // Red Header Section
+            // Header Section
             Container(
-              decoration: BoxDecoration(color: primaryRed),
+              decoration: const BoxDecoration(color: Color(0xFFD32F2F)),
               child: SafeArea(
                 bottom: false,
                 child: Column(
@@ -91,37 +90,14 @@ class _HomePageState extends ConsumerState<HomePage>
                                 onPressed: () {},
                               ),
                               const SizedBox(width: 4),
-                              Stack(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(
-                                      LucideIcons.bell,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () => context.push(
-                                      AppRoute.notifications.path,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    right: 8,
-                                    top: 8,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.amber,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Text(
-                                        '1',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              NotificationBadge(
+                                icon: const Icon(
+                                  LucideIcons.bell,
+                                  color: Colors.white,
+                                ),
+                                onTap: () => context.push(
+                                  AppRoute.notifications.path,
+                                ),
                               ),
                               GestureDetector(
                                 onTap: () => Scaffold.of(context).openDrawer(),

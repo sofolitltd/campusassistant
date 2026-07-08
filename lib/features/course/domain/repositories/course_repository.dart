@@ -6,7 +6,7 @@ abstract class CourseRepository {
   Future<Either<Failure, List<Course>>> getCourses({
     required String universityId,
     required String departmentId,
-    String? courseYear, // e.g. semester
+    String? semesterId,
     String? batchId,
   });
 
@@ -14,6 +14,8 @@ abstract class CourseRepository {
     required String universityId,
     required String departmentId,
     required String courseCode,
+    String? batchId,
+    String? semesterId,
   });
 
   Future<Either<Failure, Course>> createCourse(Course course);

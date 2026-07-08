@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme/tokens/app_radius.dart';
-
 const kAppName = 'Campus Assistant';
 
 // theme color
@@ -68,16 +66,3 @@ const kDevEmail = 'sofolitltd@gmail.com';
 const kDevYoutube = 'https://youtube.com/@sofolitltd';
 
 //
-final boxStyle = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(RadiusToken.sm),
-  border: Border.all(color: Colors.grey.shade300, width: .2),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.grey.withValues(alpha: 0.05),
-      spreadRadius: 4,
-      blurRadius: 8,
-      offset: const Offset(0, 4),
-    ),
-  ],
-);

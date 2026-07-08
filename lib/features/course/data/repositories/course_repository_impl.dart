@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/api_client.dart';
@@ -14,7 +15,7 @@ class CourseRepositoryImpl implements CourseRepository {
   Future<Either<Failure, List<Course>>> getCourses({
     required String universityId,
     required String departmentId,
-    String? courseYear,
+    String? semesterId,
     String? batchId,
   }) async {
     try {
@@ -22,15 +23,17 @@ class CourseRepositoryImpl implements CourseRepository {
         'university_id': universityId,
         'department_id': departmentId,
       };
-      if (courseYear != null) queryParams['semester_id'] = courseYear;
+      if (semesterId != null) queryParams['semester_id'] = semesterId;
       if (batchId != null) queryParams['batch_id'] = batchId;
 
+      debugPrint('[getCourses] queryParams=$queryParams');
       final response = await apiClient.get(
         '/courses',
         queryParameters: queryParams,
       );
       final body = response.data as Map<String, dynamic>;
       final List<dynamic> data = body['data'] ?? [];
+      debugPrint('[getCourses] returned ${data.length} courses');
       return Right(data.map((json) => CourseModel.fromJson(json).toEntity()).toList());
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -42,13 +45,18 @@ class CourseRepositoryImpl implements CourseRepository {
     required String universityId,
     required String departmentId,
     required String courseCode,
+    String? batchId,
+    String? semesterId,
   }) async {
     try {
-      final queryParams = {
+      final queryParams = <String, dynamic>{
         'university_id': universityId,
         'department_id': departmentId,
         'course_code': courseCode,
       };
+      if (batchId != null) queryParams['batch_id'] = batchId;
+      if (semesterId != null) queryParams['semester_id'] = semesterId;
+
       final response = await apiClient.get(
         '/courses',
         queryParameters: queryParams,
@@ -58,6 +66,7 @@ class CourseRepositoryImpl implements CourseRepository {
       if (data.isEmpty) {
         return Left(ServerFailure('Course not found'));
       }
+      // When filters are applied, the first match is the correct one
       return Right(CourseModel.fromJson(data.first).toEntity());
     } catch (e) {
       return Left(ServerFailure(e.toString()));

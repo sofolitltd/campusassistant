@@ -68,7 +68,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
       if (widget.batch == 'all' || widget.batch == 'all_batches') {
         batchNotifier.setAll();
       } else {
-        final batches = ref.read(batchProviderStudy).value ?? [];
+        final batches = ref.read(batchProviderAll).value ?? [];
         final match = batches
             .where(
               (b) =>
@@ -122,7 +122,8 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
             elevation: 0,
             scrolledUnderElevation: 0,
             iconTheme: const IconThemeData(color: Colors.white),
-            centerTitle: true,
+            centerTitle: false,
+            titleSpacing: 0,
             title: Text(
               currentSemesterName.isNotEmpty
                   ? 'Courses ($currentSemesterName)'
@@ -130,7 +131,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 18,
               ),
             ),
           ),
@@ -152,7 +153,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 6,
+                  vertical: 10,
                 ),
                 child: Row(
                   children: [
@@ -164,22 +165,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                       ),
                     ),
                     const Spacer(),
-                    if (semestersProviderState.isLoading)
-                      const SizedBox(
-                        width: 100,
-                        height: 32,
-                        child: Center(
-                          child: CupertinoActivityIndicator(
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    else
-                      _SemesterButton(
-                        semesters: filteredSemesters,
-                        selectedSemester: selectedSemester,
-                      ),
-                    const SizedBox(width: 12),
+                    // Batch filter (first)
                     batchesAsync.when(
                       data: (batches) {
                         if (batches.isEmpty) return const SizedBox();
@@ -199,6 +185,23 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                       ),
                       error: (_, _) => const SizedBox(),
                     ),
+                    const SizedBox(width: 12),
+                    // Semester/Year filter (second)
+                    if (semestersProviderState.isLoading)
+                      const SizedBox(
+                        width: 100,
+                        height: 32,
+                        child: Center(
+                          child: CupertinoActivityIndicator(
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    else
+                      _SemesterButton(
+                        semesters: filteredSemesters,
+                        selectedSemester: selectedSemester,
+                      ),
                   ],
                 ),
               ),
@@ -249,7 +252,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                             coursesProvider(
                               universityId: uid,
                               departmentId: did,
-                              courseYear: currentSemesterId,
+                              semesterId: currentSemesterId,
                               batchId: isAllBatches(selectedBatch)
                                   ? null
                                   : selectedBatch?.id,
@@ -281,7 +284,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                         coursesProvider(
                                           universityId: uid,
                                           departmentId: did,
-                                          courseYear: currentSemesterId,
+                                          semesterId: currentSemesterId,
                                           batchId: isAllBatches(selectedBatch)
                                               ? null
                                               : selectedBatch?.id,
@@ -300,7 +303,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                   coursesProvider(
                                     universityId: uid,
                                     departmentId: did,
-                                    courseYear: currentSemesterId,
+                                    semesterId: currentSemesterId,
                                     batchId: isAllBatches(selectedBatch)
                                         ? null
                                         : selectedBatch?.id,
@@ -310,7 +313,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                   coursesProvider(
                                     universityId: uid,
                                     departmentId: did,
-                                    courseYear: currentSemesterId,
+                                    semesterId: currentSemesterId,
                                     batchId: isAllBatches(selectedBatch)
                                         ? null
                                         : selectedBatch?.id,
@@ -522,7 +525,7 @@ class _SemesterButton extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Select Semester',
+                          'Select Level',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -557,7 +560,7 @@ class _SemesterButton extends ConsumerWidget {
                       child: TextField(
                         onChanged: (v) => setState(() => searchText = v),
                         decoration: InputDecoration(
-                          hintText: 'Search semester...',
+                          hintText: 'Search level...',
                           hintStyle: TextStyle(
                             color: isDark
                                 ? Colors.white54

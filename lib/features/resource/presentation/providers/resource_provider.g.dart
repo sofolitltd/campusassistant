@@ -80,6 +80,8 @@ final class ResourcesListProvider
       int? lessonNo,
       String? uploaderUid,
       String? status,
+      int? limit,
+      int? offset,
     })
     super.argument,
   }) : super(
@@ -120,6 +122,8 @@ final class ResourcesListProvider
               int? lessonNo,
               String? uploaderUid,
               String? status,
+              int? limit,
+              int? offset,
             });
     return resourcesList(
       ref,
@@ -132,6 +136,8 @@ final class ResourcesListProvider
       lessonNo: argument.lessonNo,
       uploaderUid: argument.uploaderUid,
       status: argument.status,
+      limit: argument.limit,
+      offset: argument.offset,
     );
   }
 
@@ -146,7 +152,7 @@ final class ResourcesListProvider
   }
 }
 
-String _$resourcesListHash() => r'8d69ff7246a37f194b6596403df6b91a484ccc56';
+String _$resourcesListHash() => r'e7d1c88dc282e9c13f60623e0a881c478b27d6e3';
 
 final class ResourcesListFamily extends $Family
     with
@@ -162,6 +168,8 @@ final class ResourcesListFamily extends $Family
             int? lessonNo,
             String? uploaderUid,
             String? status,
+            int? limit,
+            int? offset,
           })
         > {
   ResourcesListFamily._()
@@ -183,6 +191,8 @@ final class ResourcesListFamily extends $Family
     int? lessonNo,
     String? uploaderUid,
     String? status,
+    int? limit,
+    int? offset,
   }) => ResourcesListProvider._(
     argument: (
       universityId: universityId,
@@ -194,6 +204,8 @@ final class ResourcesListFamily extends $Family
       lessonNo: lessonNo,
       uploaderUid: uploaderUid,
       status: status,
+      limit: limit,
+      offset: offset,
     ),
     from: this,
   );

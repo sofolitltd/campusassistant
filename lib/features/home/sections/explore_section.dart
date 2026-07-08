@@ -8,7 +8,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../university/presentation/providers/university_provider.dart';
 import '../../department/presentation/providers/department_provider.dart';
-import '../../batch/presentation/providers/batch_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_radius.dart';
 
@@ -38,18 +37,6 @@ class ExploreSection extends ConsumerWidget {
                 departmentNameProvider('${user.universityId}|${user.departmentId}'),
               )
             : 'Department';
-
-        if (user.departmentId != null) {
-          final bId = user.batch?.trim();
-          if (bId != null && bId != '' && bId != '0') {
-            ref.watch(
-              batchNameProvider(
-                departmentId: user.departmentId!,
-                id: bId,
-              ),
-            );
-          }
-        }
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),

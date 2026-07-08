@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+                import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:campusassistant/routes/router_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -53,15 +53,33 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
-    final themeMode = ref.watch(themeProvider);
+    final themeModeAsync = ref.watch(themeProvider);
 
-    return MaterialApp.router(
-      title: 'Campus Assistant',
-      debugShowCheckedModeBanner: false,
-      themeMode: themeMode,
-      theme: buildLightTheme(),
-      darkTheme: buildDarkTheme(),
-      routerConfig: router,
+    return themeModeAsync.when(
+      data: (themeMode) => MaterialApp.router(
+        title: 'Campus Assistant',
+        debugShowCheckedModeBanner: false,
+        themeMode: themeMode,
+        theme: buildLightTheme(),
+        darkTheme: buildDarkTheme(),
+        routerConfig: router,
+      ),
+      loading: () => MaterialApp.router(
+        title: 'Campus Assistant',
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system,
+        theme: buildLightTheme(),
+        darkTheme: buildDarkTheme(),
+        routerConfig: router,
+      ),
+      error: (_, _) => MaterialApp.router(
+        title: 'Campus Assistant',
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system,
+        theme: buildLightTheme(),
+        darkTheme: buildDarkTheme(),
+        routerConfig: router,
+      ),
     );
   }
 }

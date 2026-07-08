@@ -109,22 +109,23 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userProvider);
-    final userUId = userAsync.value?.information.universityId ?? '';
-    final userDId = userAsync.value?.information.departmentId ?? '';
 
-    // Enterprise Reactive Selection: Fallback to profile if not overridden
-    final selectedBatch = ref.watch(resolvedBatchProvider);
+    // Only filter by batch when user explicitly chose one
+    final explicitBatch = ref.watch(selectedBatchNotifierProvider);
+    final resolvedBatch = ref.watch(resolvedBatchProvider);
+    final effectiveBatch = explicitBatch != null ? resolvedBatch : null;
 
     final params = (
-      universityId: widget.universityId ?? userUId,
-      departmentId: widget.departmentId ?? userDId,
+      universityId: widget.universityId ?? widget.courseModel.universityId,
+      departmentId: widget.departmentId ?? widget.courseModel.departmentId,
       type: _resourceType,
       courseCode: widget.courseModel.courseCode,
-      batch: isAllBatches(selectedBatch) ? null : selectedBatch?.name,
-      batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
+      batch: isAllBatches(effectiveBatch) ? null : effectiveBatch?.name,
+      batchId: isAllBatches(effectiveBatch) ? null : effectiveBatch?.id,
       lessonNo: null,
       uploaderUid: null,
       status: null,
+      limit: 100,
     );
 
     final contentAsync = ref.watch(resourcesListProvider(
@@ -137,6 +138,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
       lessonNo: params.lessonNo,
       uploaderUid: params.uploaderUid,
       status: params.status,
+      limit: params.limit,
     ));
 
     return Scaffold(
@@ -169,7 +171,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                         userAsync.value != null &&
                         userAsync.value!.information.status?.cr == true &&
                         userAsync.value!.information.batch ==
-                            selectedBatch?.name;
+                            resolvedBatch?.name;
 
                     final canEdit =
                         _isAdminMode ||
@@ -205,7 +207,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
           ),
         ],
       ),
-      floatingActionButton: _buildFAB(context, ref, selectedBatch, params),
+      floatingActionButton: _buildFAB(context, ref, resolvedBatch, params),
     );
   }
 

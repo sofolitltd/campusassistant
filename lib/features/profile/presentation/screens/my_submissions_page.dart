@@ -34,6 +34,8 @@ class MySubmissionsPage extends ConsumerWidget {
       lessonNo: null,
       uploaderUid: user.uid,
       status: null,
+      limit: 100,
+      offset: null,
     );
 
     final submissionsAsync = ref.watch(resourcesListProvider(
@@ -46,6 +48,8 @@ class MySubmissionsPage extends ConsumerWidget {
       lessonNo: params.lessonNo,
       uploaderUid: params.uploaderUid,
       status: params.status,
+      limit: params.limit,
+      offset: params.offset,
     ));
 
     return Scaffold(

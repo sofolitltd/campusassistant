@@ -25,7 +25,7 @@ class ChapterRemoteDataSourceImpl implements ChapterRemoteDataSource {
       '/chapters',
       queryParameters: queryParams,
     );
-    final List data = response.data['data'];
+    final List data = (response.data['data'] as List?) ?? [];
     return data.map((e) => ChapterModel.fromJson(e)).toList();
   }
 

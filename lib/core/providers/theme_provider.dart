@@ -2,32 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
 
-class ThemeNotifier extends Notifier<ThemeMode> {
+class ThemeNotifier extends AsyncNotifier<ThemeMode> {
   static const _key = 'theme_mode';
 
   @override
-  ThemeMode build() {
-    _loadTheme();
-    return ThemeMode.system;
-  }
-
-  Future<void> _loadTheme() async {
-    final secureStorage = ref.read(secureStorageProvider);
+  Future<ThemeMode> build() async {
+    final secureStorage = ref.watch(secureStorageProvider);
     final savedTheme = await secureStorage.read(key: _key);
     if (savedTheme != null) {
-      final mode = ThemeMode.values.firstWhere(
+      return ThemeMode.values.firstWhere(
         (e) => e.name == savedTheme,
         orElse: () => ThemeMode.system,
       );
-      state = mode;
     }
+    return ThemeMode.system;
   }
 
   Future<void> setTheme(ThemeMode mode) async {
-    state = mode;
+    state = AsyncValue.data(mode);
     final secureStorage = ref.read(secureStorageProvider);
     await secureStorage.write(key: _key, value: mode.name);
   }
 }
 
-final themeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(ThemeNotifier.new);
+final themeProvider =
+    AsyncNotifierProvider<ThemeNotifier, ThemeMode>(ThemeNotifier.new);

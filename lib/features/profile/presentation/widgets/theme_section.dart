@@ -12,7 +12,7 @@ class ThemeSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+    final themeMode = ref.watch(themeProvider).value ?? ThemeMode.system;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(

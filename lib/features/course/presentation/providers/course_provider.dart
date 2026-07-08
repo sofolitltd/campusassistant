@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/di.dart';
 import '../../../../core/providers/app_refresh_provider.dart';
@@ -18,15 +19,18 @@ Future<List<Course>> courses(
   Ref ref, {
   required String universityId,
   required String departmentId,
-  String? courseYear,
+  String? semesterId,
   String? batchId,
 }) async {
   ref.watch(appRefreshProvider);
+  debugPrint(
+    '[courses] Fetching: semesterId=$semesterId batchId=$batchId',
+  );
   final repo = ref.watch(courseRepositoryProvider);
   final result = await repo.getCourses(
     universityId: universityId,
     departmentId: departmentId,
-    courseYear: courseYear,
+    semesterId: semesterId,
     batchId: batchId,
   );
   return result.fold((failure) => throw failure, (courses) => courses);
@@ -38,12 +42,16 @@ Future<Course?> courseByCode(
   required String universityId,
   required String departmentId,
   required String courseCode,
+  String? batchId,
+  String? semesterId,
 }) async {
   final repo = ref.watch(courseRepositoryProvider);
   final result = await repo.getCourseByCode(
     universityId: universityId,
     departmentId: departmentId,
     courseCode: courseCode,
+    batchId: batchId,
+    semesterId: semesterId,
   );
   return result.fold((failure) => null, (course) => course);
 }
@@ -53,14 +61,14 @@ Future<Map<String, List<Course>>> groupedCourses(
   Ref ref, {
   required String universityId,
   required String departmentId,
-  String? courseYear,
+  String? semesterId,
   String? batchId,
 }) async {
   final coursesList = await ref.watch(
     coursesProvider(
       universityId: universityId,
       departmentId: departmentId,
-      courseYear: courseYear,
+      semesterId: semesterId,
       batchId: batchId,
     ).future,
   );

@@ -64,6 +64,7 @@ import '/features/notification/presentation/screens/notification_screen.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/features/resource/domain/entities/resource.dart';
+import '/features/auth/presentation/screens/new_splash_screen.dart';
 import 'app_route.dart';
 import 'scaffold_with_navbar.dart';
 
@@ -84,16 +85,23 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoute.home.path,
+    initialLocation: '/splash',
     refreshListenable: notifier,
     redirect: (BuildContext context, GoRouterState state) {
       final userAsync = ref.read(currentUserProvider);
       final bool isLoggedIn = userAsync.value != null;
       final bool isLoading = userAsync.isLoading;
-
-      if (isLoading && !isLoggedIn) return null;
-
       final matchedLocation = state.matchedLocation;
+
+      // ── Splash screen: wait for auth resolution ──
+      if (matchedLocation == '/splash') {
+        if (isLoading) return null; // stay on splash while checking auth
+        if (!isLoggedIn) return AppRoute.login.path;
+        return AppRoute.home.path; // logged in → go to home
+      }
+
+      // ── During auth loading on any other route, just wait ──
+      if (isLoading) return null;
 
       final isGuestRoute = matchedLocation == AppRoute.login.path ||
           matchedLocation == AppRoute.forgotPassword.path ||
@@ -108,17 +116,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null; // Stay on guest routes
       }
 
-      // Regular User Session
-      if (isLoggedIn) {
-        if (isGuestRoute) {
-          return AppRoute.home.path;
-        }
-        return null;
+      // Logged in — redirect away from guest routes
+      if (isLoggedIn && isGuestRoute) {
+        return AppRoute.home.path;
       }
 
       return null;
     },
     routes: [
+      // Splash screen shown during initial auth check
+      GoRoute(
+        path: '/splash',
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: NewSplashScreen()),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return ScaffoldWithNavBar(navigationShell: navigationShell);

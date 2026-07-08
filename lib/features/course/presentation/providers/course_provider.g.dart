@@ -71,7 +71,7 @@ final class CoursesProvider
     required ({
       String universityId,
       String departmentId,
-      String? courseYear,
+      String? semesterId,
       String? batchId,
     })
     super.argument,
@@ -106,14 +106,14 @@ final class CoursesProvider
             as ({
               String universityId,
               String departmentId,
-              String? courseYear,
+              String? semesterId,
               String? batchId,
             });
     return courses(
       ref,
       universityId: argument.universityId,
       departmentId: argument.departmentId,
-      courseYear: argument.courseYear,
+      semesterId: argument.semesterId,
       batchId: argument.batchId,
     );
   }
@@ -129,7 +129,7 @@ final class CoursesProvider
   }
 }
 
-String _$coursesHash() => r'881b8175e7507d8d27bc35e29329bf540a9f9188';
+String _$coursesHash() => r'92565ec2accf4b62cef876273add151b0b41bc0d';
 
 final class CoursesFamily extends $Family
     with
@@ -138,7 +138,7 @@ final class CoursesFamily extends $Family
           ({
             String universityId,
             String departmentId,
-            String? courseYear,
+            String? semesterId,
             String? batchId,
           })
         > {
@@ -154,13 +154,13 @@ final class CoursesFamily extends $Family
   CoursesProvider call({
     required String universityId,
     required String departmentId,
-    String? courseYear,
+    String? semesterId,
     String? batchId,
   }) => CoursesProvider._(
     argument: (
       universityId: universityId,
       departmentId: departmentId,
-      courseYear: courseYear,
+      semesterId: semesterId,
       batchId: batchId,
     ),
     from: this,
@@ -178,7 +178,13 @@ final class CourseByCodeProvider
     with $FutureModifier<Course?>, $FutureProvider<Course?> {
   CourseByCodeProvider._({
     required CourseByCodeFamily super.from,
-    required ({String universityId, String departmentId, String courseCode})
+    required ({
+      String universityId,
+      String departmentId,
+      String courseCode,
+      String? batchId,
+      String? semesterId,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -207,12 +213,20 @@ final class CourseByCodeProvider
   FutureOr<Course?> create(Ref ref) {
     final argument =
         this.argument
-            as ({String universityId, String departmentId, String courseCode});
+            as ({
+              String universityId,
+              String departmentId,
+              String courseCode,
+              String? batchId,
+              String? semesterId,
+            });
     return courseByCode(
       ref,
       universityId: argument.universityId,
       departmentId: argument.departmentId,
       courseCode: argument.courseCode,
+      batchId: argument.batchId,
+      semesterId: argument.semesterId,
     );
   }
 
@@ -227,13 +241,19 @@ final class CourseByCodeProvider
   }
 }
 
-String _$courseByCodeHash() => r'909601589a144583424b8ab2ae9c0acce3366a30';
+String _$courseByCodeHash() => r'd59905632f2b60cf2a1e28fa4bf149db4b6dea4c';
 
 final class CourseByCodeFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<Course?>,
-          ({String universityId, String departmentId, String courseCode})
+          ({
+            String universityId,
+            String departmentId,
+            String courseCode,
+            String? batchId,
+            String? semesterId,
+          })
         > {
   CourseByCodeFamily._()
     : super(
@@ -248,11 +268,15 @@ final class CourseByCodeFamily extends $Family
     required String universityId,
     required String departmentId,
     required String courseCode,
+    String? batchId,
+    String? semesterId,
   }) => CourseByCodeProvider._(
     argument: (
       universityId: universityId,
       departmentId: departmentId,
       courseCode: courseCode,
+      batchId: batchId,
+      semesterId: semesterId,
     ),
     from: this,
   );
@@ -279,7 +303,7 @@ final class GroupedCoursesProvider
     required ({
       String universityId,
       String departmentId,
-      String? courseYear,
+      String? semesterId,
       String? batchId,
     })
     super.argument,
@@ -314,14 +338,14 @@ final class GroupedCoursesProvider
             as ({
               String universityId,
               String departmentId,
-              String? courseYear,
+              String? semesterId,
               String? batchId,
             });
     return groupedCourses(
       ref,
       universityId: argument.universityId,
       departmentId: argument.departmentId,
-      courseYear: argument.courseYear,
+      semesterId: argument.semesterId,
       batchId: argument.batchId,
     );
   }
@@ -337,7 +361,7 @@ final class GroupedCoursesProvider
   }
 }
 
-String _$groupedCoursesHash() => r'52606ebccb8bb32378d045ac08fc512bc850447f';
+String _$groupedCoursesHash() => r'b74047c17be9fa22be622618625e26f761a7be34';
 
 final class GroupedCoursesFamily extends $Family
     with
@@ -346,7 +370,7 @@ final class GroupedCoursesFamily extends $Family
           ({
             String universityId,
             String departmentId,
-            String? courseYear,
+            String? semesterId,
             String? batchId,
           })
         > {
@@ -362,13 +386,13 @@ final class GroupedCoursesFamily extends $Family
   GroupedCoursesProvider call({
     required String universityId,
     required String departmentId,
-    String? courseYear,
+    String? semesterId,
     String? batchId,
   }) => GroupedCoursesProvider._(
     argument: (
       universityId: universityId,
       departmentId: departmentId,
-      courseYear: courseYear,
+      semesterId: semesterId,
       batchId: batchId,
     ),
     from: this,

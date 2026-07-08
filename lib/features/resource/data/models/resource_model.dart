@@ -4,6 +4,23 @@ import '../../domain/entities/resource.dart';
 part 'resource_model.freezed.dart';
 part 'resource_model.g.dart';
 
+/// Custom DateTime converter that handles Go zero time values (0001-01-01)
+DateTime? _parseDateTime(String? value) {
+  if (value == null || value.isEmpty) return null;
+  // Go zero time (0001-01-01) or invalid dates return null
+  if (value.startsWith('0001-01-01') || value.startsWith('0000-01-01')) {
+    return null;
+  }
+  try {
+    return DateTime.parse(value);
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Custom DateTime? to JSON converter
+String? _dateTimeToJson(DateTime? value) => value?.toIso8601String();
+
 @freezed
 abstract class ResourceModel with _$ResourceModel {
   const ResourceModel._();
@@ -19,10 +36,10 @@ abstract class ResourceModel with _$ResourceModel {
     @JsonKey(name: 'lesson_no') required int lessonNo,
     required String status,
     @JsonKey(name: 'access_level') required String accessLevel,
-    @JsonKey(name: 'rejected_note') required String rejectedNote,
-    @JsonKey(name: 'reviewed_by_id') required String reviewedBy,
-    @JsonKey(name: 'reviewed_at') DateTime? reviewedAt,
-    @JsonKey(name: 'uploader_id') required String uploaderId,
+    @JsonKey(name: 'rejected_note') String? rejectedNote,
+    @JsonKey(name: 'reviewed_by_id') String? reviewedBy,
+    @JsonKey(name: 'reviewed_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? reviewedAt,
+    @JsonKey(name: 'uploader_id') String? uploaderId,
     @JsonKey(name: 'uploader_uid') required String uploaderUid,
     @JsonKey(name: 'uploader_name') required String uploaderName,
     @JsonKey(name: 'university_id') required String universityId,
@@ -36,12 +53,12 @@ abstract class ResourceModel with _$ResourceModel {
     @JsonKey(name: 'is_verified') required bool isVerified,
     required List<String> tags,
     @JsonKey(name: 'is_public') required bool isPublic,
-    required Map<String, dynamic> metadata,
-    @JsonKey(name: 'course_title') required String courseTitle,
-    required List<String> years,
-    required List<dynamic> batches, // Keep dynamic for flexible parsing if needed, but repository maps to String ids
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    Map<String, dynamic>? metadata,
+    @JsonKey(name: 'course_title') String? courseTitle,
+    List<String>? years,
+    List<dynamic>? batches,
+    @JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? createdAt,
+    @JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? updatedAt,
   }) = _ResourceModel;
 
   factory ResourceModel.fromJson(Map<String, dynamic> json) =>
@@ -58,10 +75,10 @@ abstract class ResourceModel with _$ResourceModel {
         lessonNo: lessonNo,
         status: status,
         accessLevel: accessLevel,
-        rejectedNote: rejectedNote,
-        reviewedBy: reviewedBy,
+        rejectedNote: rejectedNote ?? '',
+        reviewedBy: reviewedBy ?? '',
         reviewedAt: reviewedAt,
-        uploaderId: uploaderId,
+        uploaderId: uploaderId ?? '',
         uploaderUid: uploaderUid,
         uploaderName: uploaderName,
         universityId: universityId,
@@ -75,10 +92,10 @@ abstract class ResourceModel with _$ResourceModel {
         isVerified: isVerified,
         tags: tags,
         isPublic: isPublic,
-        metadata: metadata,
-        courseTitle: courseTitle,
-        years: years,
-        batches: batches.map((e) {
+        metadata: metadata ?? <String, dynamic>{},
+        courseTitle: courseTitle ?? '',
+        years: years ?? <String>[],
+        batches: (batches ?? <dynamic>[]).map((e) {
           if (e is Map && e.containsKey('id')) return e['id'].toString();
           return e.toString();
         }).toList(),

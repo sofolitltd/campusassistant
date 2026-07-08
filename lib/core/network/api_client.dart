@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -5,7 +7,7 @@ class ApiClient {
   final Dio dio;
   final Future<String?> Function() getToken;
   final Future<bool> Function()? onUnauthorized;
-  bool _isRefreshing = false;
+  Completer<bool>? _refreshCompleter;
 
   ApiClient({
     required String baseUrl,
@@ -44,23 +46,33 @@ class ApiClient {
               onUnauthorized != null &&
               !error.requestOptions.path.contains('/auth/login') &&
               !error.requestOptions.path.contains('/auth/refresh')) {
-            if (_isRefreshing) {
-              return handler.next(error);
-            }
-            _isRefreshing = true;
-            try {
-              final refreshed = await onUnauthorized!();
+            // If a refresh is already in-flight, await it instead of dropping the request
+            if (_refreshCompleter != null) {
+              final refreshed = await _refreshCompleter!.future;
               if (refreshed) {
                 final token = await getToken();
                 error.requestOptions.headers['Authorization'] = 'Bearer $token';
                 final response = await dio.fetch(error.requestOptions);
-                _isRefreshing = false;
+                return handler.resolve(response);
+              }
+              return handler.next(error);
+            }
+
+            _refreshCompleter = Completer<bool>();
+            try {
+              final refreshed = await onUnauthorized!();
+              _refreshCompleter!.complete(refreshed);
+              if (refreshed) {
+                final token = await getToken();
+                error.requestOptions.headers['Authorization'] = 'Bearer $token';
+                final response = await dio.fetch(error.requestOptions);
                 return handler.resolve(response);
               }
             } catch (_) {
-              // refresh failed
+              _refreshCompleter!.complete(false);
+            } finally {
+              _refreshCompleter = null;
             }
-            _isRefreshing = false;
           }
           return handler.next(error);
         },
@@ -72,37 +84,16 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) async {
-    try {
-      final response = await dio.get(
-        path,
-        queryParameters: queryParameters,
-        options: options,
-      );
-      return response;
-    } on DioException {
-      rethrow;
-    }
-  }
+  }) =>
+      dio.get(path, queryParameters: queryParameters, options: options);
 
   Future<Response> post(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) async {
-    try {
-      final response = await dio.post(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      );
-      return response;
-    } on DioException {
-      rethrow;
-    }
-  }
+  }) =>
+      dio.post(path, data: data, queryParameters: queryParameters, options: options);
 
   Future<Response> uploadFile(
     String path, {
@@ -111,17 +102,11 @@ class ApiClient {
     Map<String, dynamic>? data,
     Options? options,
   }) async {
-    try {
-      final formData = FormData.fromMap({
-        fieldName: await MultipartFile.fromFile(filePath),
-        ...?data,
-      });
-
-      final response = await dio.post(path, data: formData, options: options);
-      return response;
-    } on DioException {
-      rethrow;
-    }
+    final formData = FormData.fromMap({
+      fieldName: await MultipartFile.fromFile(filePath),
+      ...?data,
+    });
+    return dio.post(path, data: formData, options: options);
   }
 
   Future<Response> uploadBytes(
@@ -132,17 +117,11 @@ class ApiClient {
     Map<String, dynamic>? data,
     Options? options,
   }) async {
-    try {
-      final formData = FormData.fromMap({
-        fieldName: MultipartFile.fromBytes(bytes, filename: fileName),
-        ...?data,
-      });
-
-      final response = await dio.post(path, data: formData, options: options);
-      return response;
-    } on DioException {
-      rethrow;
-    }
+    final formData = FormData.fromMap({
+      fieldName: MultipartFile.fromBytes(bytes, filename: fileName),
+      ...?data,
+    });
+    return dio.post(path, data: formData, options: options);
   }
 
   Future<Response> put(
@@ -150,36 +129,14 @@ class ApiClient {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) async {
-    try {
-      final response = await dio.put(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      );
-      return response;
-    } on DioException {
-      rethrow;
-    }
-  }
+  }) =>
+      dio.put(path, data: data, queryParameters: queryParameters, options: options);
 
   Future<Response> delete(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) async {
-    try {
-      final response = await dio.delete(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      );
-      return response;
-    } on DioException {
-      rethrow;
-    }
-  }
+  }) =>
+      dio.delete(path, data: data, queryParameters: queryParameters, options: options);
 }

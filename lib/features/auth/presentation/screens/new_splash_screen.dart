@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:campusassistant/widgets/app_logo.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
 
 class NewSplashScreen extends ConsumerStatefulWidget {
   const NewSplashScreen({super.key});
@@ -41,37 +39,6 @@ class _NewSplashScreenState extends ConsumerState<NewSplashScreen>
 
     // Start the animation
     _controller.forward();
-
-    // Navigate after delay
-    Future.delayed(const Duration(milliseconds: 2000)).then((value) {
-      if (mounted) {
-        _navigateBasedOnAuth();
-      }
-    });
-  }
-
-  void _navigateBasedOnAuth() {
-    final userAsync = ref.read(currentUserProvider);
-
-    userAsync.when(
-      data: (user) {
-        if (user != null) {
-          // User is logged in, navigate to home
-          context.go('/home');
-        } else {
-          // User is not logged in, navigate to login
-          context.go('/login');
-        }
-      },
-      loading: () {
-        // Still loading, navigate to login as fallback
-        context.go('/login');
-      },
-      error: (_, _) {
-        // Error occurred, navigate to login
-        context.go('/login');
-      },
-    );
   }
 
   @override

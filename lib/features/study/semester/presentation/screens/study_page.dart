@@ -202,7 +202,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                     child: SectionTabBar(
                       controller: _tabController,
                       tabs: const [
-                        Tab(text: 'Semesters/Years'),
+                        Tab(text: 'Levels'),
                         Tab(text: 'Resources'),
                       ],
                     ),

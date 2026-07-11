@@ -47,7 +47,8 @@ class ApiEndpoints {
 
   static const String universities = '/universities';
   static const String departments = '/departments';
-  static const String semesters = '/semesters';
+  static const String semesters = '/levels';
+  static const String levels = '/levels';
   static const String sessions = '/sessions';
   static const String batches = '/batches';
   static const String halls = '/halls';

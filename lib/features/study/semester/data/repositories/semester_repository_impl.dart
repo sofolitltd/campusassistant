@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../../../../core/network/api_client.dart';
+import '../../../../../core/network/api_endpoints.dart';
 import '../../../../../core/error/failures.dart';
 import '../../domain/entities/semester.dart';
 import '../../domain/repositories/semester_repository.dart';
@@ -24,7 +25,7 @@ class SemesterRepositoryImpl implements SemesterRepository {
       if (batch != null) queryParams['batch'] = batch;
 
       final response = await apiClient.get(
-        '/semesters',
+        ApiEndpoints.levels,
         queryParameters: queryParams,
       );
 
@@ -43,7 +44,7 @@ class SemesterRepositoryImpl implements SemesterRepository {
     try {
       final model = SemesterModel.fromEntity(semester);
 
-      final response = await apiClient.post('/semesters', data: model.toJson());
+      final response = await apiClient.post(ApiEndpoints.levels, data: model.toJson());
       return Right(SemesterModel.fromJson(response.data).toEntity());
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -56,7 +57,7 @@ class SemesterRepositoryImpl implements SemesterRepository {
       final model = SemesterModel.fromEntity(semester);
 
       final response = await apiClient.put(
-        '/semesters/${semester.id}',
+        '${ApiEndpoints.levels}/${semester.id}',
         data: model.toJson(),
       );
       return Right(SemesterModel.fromJson(response.data).toEntity());
@@ -68,7 +69,7 @@ class SemesterRepositoryImpl implements SemesterRepository {
   @override
   Future<Either<Failure, void>> deleteSemester(String id) async {
     try {
-      await apiClient.delete('/semesters/$id');
+      await apiClient.delete('${ApiEndpoints.levels}/$id');
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

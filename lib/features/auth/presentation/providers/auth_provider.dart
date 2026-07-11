@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/di.dart';
+import '../../../../core/error/failures.dart';
 import '../../data/datasources/auth_local_data_source.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -49,6 +50,8 @@ LoginUsecase loginUser(Ref ref) {
   return LoginUsecase(repository);
 }
 
+bool _isNetworkError(Failure f) => f is NetworkFailure;
+
 @Riverpod(keepAlive: true)
 class CurrentUser extends _$CurrentUser {
   late final AuthRepository _repository;
@@ -62,22 +65,26 @@ class CurrentUser extends _$CurrentUser {
   Future<User?> _checkAuthStatus() async {
     final isAuthenticated = await _repository.isAuthenticated();
     if (isAuthenticated) {
-      // Try to get user with current access token
       final result = await _repository.getCurrentUser();
       return result.fold((failure) async {
-        // Access token likely expired — try refreshing silently
+        if (_isNetworkError(failure)) {
+          throw failure;
+        }
+
         final refreshResult = await _repository.refreshAccessToken();
         return refreshResult.fold(
           (refreshFailure) {
-            // Refresh token also expired/invalid → force logout
-            _repository.logout();
+            if (!_isNetworkError(refreshFailure)) {
+              _repository.logout();
+            }
             return null;
           },
           (_) async {
-            // Got a new access token — retry getting user
             final retryResult = await _repository.getCurrentUser();
             return retryResult.fold((e) {
-              _repository.logout();
+              if (!_isNetworkError(e)) {
+                _repository.logout();
+              }
               return null;
             }, (user) => user);
           },

@@ -30,6 +30,7 @@ class StudyPage extends ConsumerStatefulWidget {
 class _StudyPageState extends ConsumerState<StudyPage>
     with SingleTickerProviderStateMixin {
   bool isGridView = false;
+  bool _sortAscending = false;
   final _searchController = TextEditingController();
   final _batchSearchController = TextEditingController();
   String _filterText = '';
@@ -56,13 +57,17 @@ class _StudyPageState extends ConsumerState<StudyPage>
     final batchesAsync = ref.watch(batchProviderStudy);
     final semesters = ref.watch(filteredSemestersProvider);
 
-    final displaySemesters = _filterText.isEmpty
+    var displaySemesters = _filterText.isEmpty
         ? semesters
         : semesters
               .where(
                 (s) => s.name.toLowerCase().contains(_filterText.toLowerCase()),
               )
               .toList();
+    displaySemesters = List.from(displaySemesters)
+      ..sort((a, b) => _sortAscending
+          ? a.order.compareTo(b.order)
+          : b.order.compareTo(a.order));
 
     final bookmarksAsync = ref.watch(
       userBookmarksProvider(userAsync.value?.uid ?? ''),
@@ -277,10 +282,32 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                                 ),
                                               ],
                                             ),
-                                            _BatchDropdown(
-                                              batchesAsync: batchesAsync,
-                                              currentBatch: currentBatch,
-                                              theme: theme,
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () => setState(
+                                                    () => _sortAscending =
+                                                        !_sortAscending,
+                                                  ),
+                                                  child: Icon(
+                                                    _sortAscending
+                                                        ? LucideIcons
+                                                            .arrowUpWideNarrow
+                                                        : LucideIcons
+                                                            .arrowDownWideNarrow,
+                                                    size: 20,
+                                                    color: theme
+                                                        .colorScheme.onSurface,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                _BatchDropdown(
+                                                  batchesAsync: batchesAsync,
+                                                  currentBatch: currentBatch,
+                                                  theme: theme,
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),

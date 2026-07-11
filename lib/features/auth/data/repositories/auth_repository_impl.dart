@@ -1,10 +1,22 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
+
+Failure _classifyError(Object e) {
+  if (e is DioException &&
+      (e.type == DioExceptionType.connectionTimeout ||
+       e.type == DioExceptionType.connectionError ||
+       e.type == DioExceptionType.receiveTimeout ||
+       e.type == DioExceptionType.sendTimeout)) {
+    return NetworkFailure('No internet connection');
+  }
+  return ServerFailure(e.toString());
+}
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -24,7 +36,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final userModel = await remoteDataSource.login(email, password);
       return Right(userModel.toEntity());
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(_classifyError(e));
     }
   }
 
@@ -52,7 +64,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       return Right(userModel.toEntity());
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(_classifyError(e));
     }
   }
 
@@ -79,7 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = await remoteDataSource.getCurrentUser();
       return Right(user.toEntity());
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(_classifyError(e));
     }
   }
 
@@ -89,7 +101,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await remoteDataSource.forgotPassword(email);
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(_classifyError(e));
     }
   }
 
@@ -103,7 +115,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final newAccessToken = await remoteDataSource.refreshToken(refreshToken);
       return Right(newAccessToken);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(_classifyError(e));
     }
   }
 }

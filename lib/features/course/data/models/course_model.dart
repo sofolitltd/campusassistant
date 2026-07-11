@@ -22,12 +22,18 @@ abstract class CourseModel with _$CourseModel {
     @JsonKey(name: 'thumbnail_url') @Default('') String thumbnailURL,
     @JsonKey(name: 'course_category_id') String? courseCategoryId,
     @JsonKey(name: 'course_category') CourseCategoryModel? courseCategory,
-    @JsonKey(name: 'semester_id') String? semesterId,
-    @JsonKey(name: 'semester_name') String? semesterName,
+    @JsonKey(name: 'level_id') String? semesterId,
+    String? semesterName,
   }) = _CourseModel;
 
-  factory CourseModel.fromJson(Map<String, dynamic> json) =>
-      _$CourseModelFromJson(json);
+  factory CourseModel.fromJson(Map<String, dynamic> json) {
+    final level = json['level'];
+    String? name;
+    if (level is Map<String, dynamic>) {
+      name = level['name'] as String?;
+    }
+    return _$CourseModelFromJson(json).copyWith(semesterName: name);
+  }
 
   Course toEntity() => Course(
         id: id,

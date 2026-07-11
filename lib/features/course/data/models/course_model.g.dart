@@ -26,7 +26,7 @@ _CourseModel _$CourseModelFromJson(Map<String, dynamic> json) => _CourseModel(
       : CourseCategoryModel.fromJson(
           json['course_category'] as Map<String, dynamic>,
         ),
-  semesterId: json['semester_id'] as String?,
+  semesterId: json['level_id'] as String?,
   semesterName: json['semester_name'] as String?,
 );
 
@@ -43,6 +43,6 @@ Map<String, dynamic> _$CourseModelToJson(_CourseModel instance) =>
       'thumbnail_url': instance.thumbnailURL,
       'course_category_id': ?instance.courseCategoryId,
       'course_category': ?instance.courseCategory,
-      'semester_id': ?instance.semesterId,
+      'level_id': ?instance.semesterId,
       'semester_name': ?instance.semesterName,
     };

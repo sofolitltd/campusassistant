@@ -62,7 +62,7 @@ class UniversityRemoteDataSourceImpl implements UniversityRemoteDataSource {
   @override
   Future<String> uploadLogo(String filePath, {String? folder}) async {
     final response = await apiClient.uploadFile(
-      '/upload', // Specific endpoint for uploading images
+      '/upload',
       filePath: filePath,
       fieldName: 'image',
       data: folder != null ? {'folder': folder} : null,

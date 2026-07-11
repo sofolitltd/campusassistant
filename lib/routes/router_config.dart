@@ -90,18 +90,19 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (BuildContext context, GoRouterState state) {
       final userAsync = ref.read(currentUserProvider);
       final bool isLoggedIn = userAsync.value != null;
-      final bool isLoading = userAsync.isLoading;
+      final bool isLoading = userAsync.isLoading || userAsync.isRefreshing;
+      final bool hasError = userAsync.hasError;
       final matchedLocation = state.matchedLocation;
 
       // ── Splash screen: wait for auth resolution ──
       if (matchedLocation == '/splash') {
-        if (isLoading) return null; // stay on splash while checking auth
+        if (isLoading || hasError) return null; // stay on splash while checking auth or on network error
         if (!isLoggedIn) return AppRoute.login.path;
         return AppRoute.home.path; // logged in → go to home
       }
 
       // ── During auth loading on any other route, just wait ──
-      if (isLoading) return null;
+      if (isLoading || hasError) return null;
 
       final isGuestRoute = matchedLocation == AppRoute.login.path ||
           matchedLocation == AppRoute.forgotPassword.path ||

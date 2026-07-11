@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CourseModel {
 
- String get id;@JsonKey(name: 'course_code') String get courseCode;@JsonKey(name: 'course_title') String get courseTitle;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId; List<BatchModel> get batches;@JsonKey(name: 'total_credits') double get totalCredits;@JsonKey(name: 'total_marks') int get totalMarks;@JsonKey(name: 'thumbnail_url') String get thumbnailURL;@JsonKey(name: 'course_category_id') String? get courseCategoryId;@JsonKey(name: 'course_category') CourseCategoryModel? get courseCategory;@JsonKey(name: 'semester_id') String? get semesterId;@JsonKey(name: 'semester_name') String? get semesterName;
+ String get id;@JsonKey(name: 'course_code') String get courseCode;@JsonKey(name: 'course_title') String get courseTitle;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId; List<BatchModel> get batches;@JsonKey(name: 'total_credits') double get totalCredits;@JsonKey(name: 'total_marks') int get totalMarks;@JsonKey(name: 'thumbnail_url') String get thumbnailURL;@JsonKey(name: 'course_category_id') String? get courseCategoryId;@JsonKey(name: 'course_category') CourseCategoryModel? get courseCategory;@JsonKey(name: 'level_id') String? get semesterId; String? get semesterName;
 /// Create a copy of CourseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $CourseModelCopyWith<$Res>  {
   factory $CourseModelCopyWith(CourseModel value, $Res Function(CourseModel) _then) = _$CourseModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String courseTitle,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId, List<BatchModel> batches,@JsonKey(name: 'total_credits') double totalCredits,@JsonKey(name: 'total_marks') int totalMarks,@JsonKey(name: 'thumbnail_url') String thumbnailURL,@JsonKey(name: 'course_category_id') String? courseCategoryId,@JsonKey(name: 'course_category') CourseCategoryModel? courseCategory,@JsonKey(name: 'semester_id') String? semesterId,@JsonKey(name: 'semester_name') String? semesterName
+ String id,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String courseTitle,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId, List<BatchModel> batches,@JsonKey(name: 'total_credits') double totalCredits,@JsonKey(name: 'total_marks') int totalMarks,@JsonKey(name: 'thumbnail_url') String thumbnailURL,@JsonKey(name: 'course_category_id') String? courseCategoryId,@JsonKey(name: 'course_category') CourseCategoryModel? courseCategory,@JsonKey(name: 'level_id') String? semesterId, String? semesterName
 });
 
 
@@ -177,7 +177,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String courseTitle, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId,  List<BatchModel> batches, @JsonKey(name: 'total_credits')  double totalCredits, @JsonKey(name: 'total_marks')  int totalMarks, @JsonKey(name: 'thumbnail_url')  String thumbnailURL, @JsonKey(name: 'course_category_id')  String? courseCategoryId, @JsonKey(name: 'course_category')  CourseCategoryModel? courseCategory, @JsonKey(name: 'semester_id')  String? semesterId, @JsonKey(name: 'semester_name')  String? semesterName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String courseTitle, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId,  List<BatchModel> batches, @JsonKey(name: 'total_credits')  double totalCredits, @JsonKey(name: 'total_marks')  int totalMarks, @JsonKey(name: 'thumbnail_url')  String thumbnailURL, @JsonKey(name: 'course_category_id')  String? courseCategoryId, @JsonKey(name: 'course_category')  CourseCategoryModel? courseCategory, @JsonKey(name: 'level_id')  String? semesterId,  String? semesterName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CourseModel() when $default != null:
 return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_that.departmentId,_that.batches,_that.totalCredits,_that.totalMarks,_that.thumbnailURL,_that.courseCategoryId,_that.courseCategory,_that.semesterId,_that.semesterName);case _:
@@ -198,7 +198,7 @@ return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String courseTitle, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId,  List<BatchModel> batches, @JsonKey(name: 'total_credits')  double totalCredits, @JsonKey(name: 'total_marks')  int totalMarks, @JsonKey(name: 'thumbnail_url')  String thumbnailURL, @JsonKey(name: 'course_category_id')  String? courseCategoryId, @JsonKey(name: 'course_category')  CourseCategoryModel? courseCategory, @JsonKey(name: 'semester_id')  String? semesterId, @JsonKey(name: 'semester_name')  String? semesterName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String courseTitle, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId,  List<BatchModel> batches, @JsonKey(name: 'total_credits')  double totalCredits, @JsonKey(name: 'total_marks')  int totalMarks, @JsonKey(name: 'thumbnail_url')  String thumbnailURL, @JsonKey(name: 'course_category_id')  String? courseCategoryId, @JsonKey(name: 'course_category')  CourseCategoryModel? courseCategory, @JsonKey(name: 'level_id')  String? semesterId,  String? semesterName)  $default,) {final _that = this;
 switch (_that) {
 case _CourseModel():
 return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_that.departmentId,_that.batches,_that.totalCredits,_that.totalMarks,_that.thumbnailURL,_that.courseCategoryId,_that.courseCategory,_that.semesterId,_that.semesterName);case _:
@@ -218,7 +218,7 @@ return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String courseTitle, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId,  List<BatchModel> batches, @JsonKey(name: 'total_credits')  double totalCredits, @JsonKey(name: 'total_marks')  int totalMarks, @JsonKey(name: 'thumbnail_url')  String thumbnailURL, @JsonKey(name: 'course_category_id')  String? courseCategoryId, @JsonKey(name: 'course_category')  CourseCategoryModel? courseCategory, @JsonKey(name: 'semester_id')  String? semesterId, @JsonKey(name: 'semester_name')  String? semesterName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String courseTitle, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId,  List<BatchModel> batches, @JsonKey(name: 'total_credits')  double totalCredits, @JsonKey(name: 'total_marks')  int totalMarks, @JsonKey(name: 'thumbnail_url')  String thumbnailURL, @JsonKey(name: 'course_category_id')  String? courseCategoryId, @JsonKey(name: 'course_category')  CourseCategoryModel? courseCategory, @JsonKey(name: 'level_id')  String? semesterId,  String? semesterName)?  $default,) {final _that = this;
 switch (_that) {
 case _CourseModel() when $default != null:
 return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_that.departmentId,_that.batches,_that.totalCredits,_that.totalMarks,_that.thumbnailURL,_that.courseCategoryId,_that.courseCategory,_that.semesterId,_that.semesterName);case _:
@@ -233,7 +233,7 @@ return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_
 @JsonSerializable()
 
 class _CourseModel extends CourseModel {
-  const _CourseModel({required this.id, @JsonKey(name: 'course_code') required this.courseCode, @JsonKey(name: 'course_title') required this.courseTitle, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, final  List<BatchModel> batches = const [], @JsonKey(name: 'total_credits') this.totalCredits = 0.0, @JsonKey(name: 'total_marks') this.totalMarks = 0, @JsonKey(name: 'thumbnail_url') this.thumbnailURL = '', @JsonKey(name: 'course_category_id') this.courseCategoryId, @JsonKey(name: 'course_category') this.courseCategory, @JsonKey(name: 'semester_id') this.semesterId, @JsonKey(name: 'semester_name') this.semesterName}): _batches = batches,super._();
+  const _CourseModel({required this.id, @JsonKey(name: 'course_code') required this.courseCode, @JsonKey(name: 'course_title') required this.courseTitle, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, final  List<BatchModel> batches = const [], @JsonKey(name: 'total_credits') this.totalCredits = 0.0, @JsonKey(name: 'total_marks') this.totalMarks = 0, @JsonKey(name: 'thumbnail_url') this.thumbnailURL = '', @JsonKey(name: 'course_category_id') this.courseCategoryId, @JsonKey(name: 'course_category') this.courseCategory, @JsonKey(name: 'level_id') this.semesterId, this.semesterName}): _batches = batches,super._();
   factory _CourseModel.fromJson(Map<String, dynamic> json) => _$CourseModelFromJson(json);
 
 @override final  String id;
@@ -253,8 +253,8 @@ class _CourseModel extends CourseModel {
 @override@JsonKey(name: 'thumbnail_url') final  String thumbnailURL;
 @override@JsonKey(name: 'course_category_id') final  String? courseCategoryId;
 @override@JsonKey(name: 'course_category') final  CourseCategoryModel? courseCategory;
-@override@JsonKey(name: 'semester_id') final  String? semesterId;
-@override@JsonKey(name: 'semester_name') final  String? semesterName;
+@override@JsonKey(name: 'level_id') final  String? semesterId;
+@override final  String? semesterName;
 
 /// Create a copy of CourseModel
 /// with the given fields replaced by the non-null parameter values.
@@ -289,7 +289,7 @@ abstract mixin class _$CourseModelCopyWith<$Res> implements $CourseModelCopyWith
   factory _$CourseModelCopyWith(_CourseModel value, $Res Function(_CourseModel) _then) = __$CourseModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String courseTitle,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId, List<BatchModel> batches,@JsonKey(name: 'total_credits') double totalCredits,@JsonKey(name: 'total_marks') int totalMarks,@JsonKey(name: 'thumbnail_url') String thumbnailURL,@JsonKey(name: 'course_category_id') String? courseCategoryId,@JsonKey(name: 'course_category') CourseCategoryModel? courseCategory,@JsonKey(name: 'semester_id') String? semesterId,@JsonKey(name: 'semester_name') String? semesterName
+ String id,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String courseTitle,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId, List<BatchModel> batches,@JsonKey(name: 'total_credits') double totalCredits,@JsonKey(name: 'total_marks') int totalMarks,@JsonKey(name: 'thumbnail_url') String thumbnailURL,@JsonKey(name: 'course_category_id') String? courseCategoryId,@JsonKey(name: 'course_category') CourseCategoryModel? courseCategory,@JsonKey(name: 'level_id') String? semesterId, String? semesterName
 });
 
 

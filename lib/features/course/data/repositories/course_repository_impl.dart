@@ -23,7 +23,7 @@ class CourseRepositoryImpl implements CourseRepository {
         'university_id': universityId,
         'department_id': departmentId,
       };
-      if (semesterId != null) queryParams['semester_id'] = semesterId;
+      if (semesterId != null) queryParams['level_id'] = semesterId;
       if (batchId != null) queryParams['batch_id'] = batchId;
 
       debugPrint('[getCourses] queryParams=$queryParams');
@@ -55,7 +55,7 @@ class CourseRepositoryImpl implements CourseRepository {
         'course_code': courseCode,
       };
       if (batchId != null) queryParams['batch_id'] = batchId;
-      if (semesterId != null) queryParams['semester_id'] = semesterId;
+      if (semesterId != null) queryParams['level_id'] = semesterId;
 
       final response = await apiClient.get(
         '/courses',

@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Resource {
 
- String get id; String get type; String get title; String get description; String get courseCode; String get fileUrl; String get thumbnailUrl; int get lessonNo; String get status; String get accessLevel; String get rejectedNote; String get reviewedBy; DateTime? get reviewedAt; String get uploaderId; String get uploaderUid; String get uploaderName; String get universityId; String get departmentId; int get fileSizeBytes; int get pageCount; int get downloadCount; int get viewCount; double get ratingAvg; int get ratingCount; bool get isVerified; List<String> get tags; bool get isPublic; Map<String, dynamic> get metadata; String get courseTitle; List<String> get years; List<String> get batches; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String get type; String get title; String get description; String get courseCode; String get fileUrl; String get thumbnailUrl; int get lessonNo; String get status; String get accessLevel; String get rejectedNote; String get reviewedBy; DateTime? get reviewedAt; String get uploaderId; String get uploaderUid; String get uploaderName; String get universityId; String get departmentId; int get fileSizeBytes; int get pageCount; int get downloadCount; int get viewCount; double get ratingAvg; int get ratingCount; bool get isVerified; List<String> get tags; bool get isPublic; Map<String, dynamic> get metadata;// Legacy support fields
+ String get courseTitle; List<String> get years; List<String> get batches; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of Resource
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -281,6 +282,7 @@ class _Resource implements Resource {
   return EqualUnmodifiableMapView(_metadata);
 }
 
+// Legacy support fields
 @override final  String courseTitle;
  final  List<String> _years;
 @override List<String> get years {

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
@@ -34,6 +35,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final userModel = await remoteDataSource.login(email, password);
+      // Cache user profile for offline access
+      await localDataSource.cacheUser(userModel);
       return Right(userModel.toEntity());
     } catch (e) {
       return Left(_classifyError(e));
@@ -62,6 +65,8 @@ class AuthRepositoryImpl implements AuthRepository {
         universityId,
         departmentId,
       );
+      // Cache user profile for offline access
+      await localDataSource.cacheUser(userModel);
       return Right(userModel.toEntity());
     } catch (e) {
       return Left(_classifyError(e));
@@ -73,6 +78,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await localDataSource.deleteToken();
       await localDataSource.deleteRefreshToken();
+      await localDataSource.deleteCachedUser();
       return const Right(null);
     } catch (e) {
       return Left(CacheFailure(e.toString()));
@@ -89,9 +95,24 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
       final user = await remoteDataSource.getCurrentUser();
+      // Cache user profile for offline access
+      await localDataSource.cacheUser(user);
       return Right(user.toEntity());
     } catch (e) {
       return Left(_classifyError(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> getCachedUser() async {
+    try {
+      final user = await localDataSource.getCachedUser();
+      if (user == null) {
+        return const Left(CacheFailure('No cached user profile'));
+      }
+      return Right(user.toEntity());
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
     }
   }
 

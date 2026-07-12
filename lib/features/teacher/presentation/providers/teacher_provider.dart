@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../data/datasources/teacher_remote_data_source.dart';
 import '../../data/repositories/teacher_repository_impl.dart';
@@ -20,7 +22,14 @@ TeacherRemoteDataSource teacherRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 TeacherRepository teacherRepository(Ref ref) {
   final remoteDataSource = ref.watch(teacherRemoteDataSourceProvider);
-  return TeacherRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+
+  return TeacherRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @Riverpod(keepAlive: true)
@@ -37,7 +46,6 @@ Future<List<Teacher>> teachersList(Ref ref, bool? isPresent) async {
   if (university.id.isEmpty || department.id.isEmpty) {
     return [];
   }
-
 
   final getTeachers = ref.watch(getTeachersProvider);
   final result = await getTeachers(

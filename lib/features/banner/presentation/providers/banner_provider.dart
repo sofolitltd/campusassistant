@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
+import '../../../../core/cache/sync_manager.dart';
 import '../../../../core/di.dart';
 import '../../data/datasources/banner_remote_data_source.dart';
 import '../../data/repositories/banner_repository_impl.dart';
@@ -18,7 +21,16 @@ final bannerRemoteDataSourceProvider = Provider<BannerRemoteDataSource>((ref) {
 // Repository
 final bannerRepositoryProvider = Provider<BannerRepository>((ref) {
   final remoteDataSource = ref.watch(bannerRemoteDataSourceProvider);
-  return BannerRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  final syncManager = ref.watch(syncManagerProvider);
+
+  return BannerRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+    syncManager: syncManager,
+  );
 });
 
 // UseCase

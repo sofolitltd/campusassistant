@@ -102,7 +102,7 @@ final class TeacherRepositoryProvider
   }
 }
 
-String _$teacherRepositoryHash() => r'53a6bc1a6603ed9fc00ae0bf4267a9038d0423e7';
+String _$teacherRepositoryHash() => r'c24dcedd6b7274451279730d08f946778b101e88';
 
 @ProviderFor(getTeachers)
 final getTeachersProvider = GetTeachersProvider._();

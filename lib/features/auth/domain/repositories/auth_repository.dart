@@ -23,6 +23,9 @@ abstract class AuthRepository {
 
   Future<Either<Failure, User>> getCurrentUser();
 
+  /// Get the locally cached user profile (for offline use).
+  Future<Either<Failure, User>> getCachedUser();
+
   // Method to check if user is authenticated (e.g. valid token exists)
   Future<bool> isAuthenticated();
 

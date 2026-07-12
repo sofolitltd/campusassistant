@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SemesterModel {
 
- String get id; String get name; int get order; String get status;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;@JsonKey(name: 'total_courses') int get totalCourses;@JsonKey(name: 'total_credits') double get totalCredits;@JsonKey(name: 'total_marks') int get totalMarks; List<dynamic> get batches;@JsonKey(name: 'created_by_id') String? get createdById;@JsonKey(name: 'updated_by_id') String? get updatedById;
+ String get id; String get name; int get order; String get status;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;@JsonKey(name: 'total_courses') int get totalCourses;@JsonKey(name: 'total_credits') double get totalCredits;@JsonKey(name: 'total_marks') int get totalMarks; List<dynamic> get batches;// Use dynamic to handle flexible parsing
+@JsonKey(name: 'created_by_id') String? get createdById;@JsonKey(name: 'updated_by_id') String? get updatedById;
 /// Create a copy of SemesterModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -239,6 +240,7 @@ class _SemesterModel extends SemesterModel {
   return EqualUnmodifiableListView(_batches);
 }
 
+// Use dynamic to handle flexible parsing
 @override@JsonKey(name: 'created_by_id') final  String? createdById;
 @override@JsonKey(name: 'updated_by_id') final  String? updatedById;
 

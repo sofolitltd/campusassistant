@@ -102,7 +102,7 @@ final class ChapterRepositoryProvider
   }
 }
 
-String _$chapterRepositoryHash() => r'76373eed52bc0845964af61741f06c988951d3d4';
+String _$chapterRepositoryHash() => r'ec119d098ff4205bfc6be82c7993a2ef0084bfd2';
 
 @ProviderFor(chaptersForCourse)
 final chaptersForCourseProvider = ChaptersForCourseFamily._();

@@ -54,7 +54,346 @@ final class StudentRepositoryProvider
   }
 }
 
-String _$studentRepositoryHash() => r'0da05bbea6ee99fd197ff024101745d0484bd415';
+String _$studentRepositoryHash() => r'6798ad12cab5031814f7dc33dadc5d7aaaf08d30';
+
+@ProviderFor(studentCountByBatch)
+final studentCountByBatchProvider = StudentCountByBatchFamily._();
+
+final class StudentCountByBatchProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  StudentCountByBatchProvider._({
+    required StudentCountByBatchFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'studentCountByBatchProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$studentCountByBatchHash();
+
+  @override
+  String toString() {
+    return r'studentCountByBatchProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    final argument = this.argument as String;
+    return studentCountByBatch(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is StudentCountByBatchProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$studentCountByBatchHash() =>
+    r'c5a092d8532e91e9d8ac0e4fc2ecf50fa1e93a8b';
+
+final class StudentCountByBatchFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<int>, String> {
+  StudentCountByBatchFamily._()
+    : super(
+        retry: null,
+        name: r'studentCountByBatchProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StudentCountByBatchProvider call(String batchId) =>
+      StudentCountByBatchProvider._(argument: batchId, from: this);
+
+  @override
+  String toString() => r'studentCountByBatchProvider';
+}
+
+@ProviderFor(studentCountAll)
+final studentCountAllProvider = StudentCountAllFamily._();
+
+final class StudentCountAllProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  StudentCountAllProvider._({
+    required StudentCountAllFamily super.from,
+    required ({String? universityId, String? departmentId}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'studentCountAllProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$studentCountAllHash();
+
+  @override
+  String toString() {
+    return r'studentCountAllProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    final argument =
+        this.argument as ({String? universityId, String? departmentId});
+    return studentCountAll(
+      ref,
+      universityId: argument.universityId,
+      departmentId: argument.departmentId,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is StudentCountAllProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$studentCountAllHash() => r'1176dd08f2fddfd368599a44ba90479ada786d5f';
+
+final class StudentCountAllFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<int>,
+          ({String? universityId, String? departmentId})
+        > {
+  StudentCountAllFamily._()
+    : super(
+        retry: null,
+        name: r'studentCountAllProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StudentCountAllProvider call({String? universityId, String? departmentId}) =>
+      StudentCountAllProvider._(
+        argument: (universityId: universityId, departmentId: departmentId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'studentCountAllProvider';
+}
+
+@ProviderFor(studentsByBatchPaginated)
+final studentsByBatchPaginatedProvider = StudentsByBatchPaginatedFamily._();
+
+final class StudentsByBatchPaginatedProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Student>>,
+          List<Student>,
+          FutureOr<List<Student>>
+        >
+    with $FutureModifier<List<Student>>, $FutureProvider<List<Student>> {
+  StudentsByBatchPaginatedProvider._({
+    required StudentsByBatchPaginatedFamily super.from,
+    required ({String batchId, int limit, int offset}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'studentsByBatchPaginatedProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$studentsByBatchPaginatedHash();
+
+  @override
+  String toString() {
+    return r'studentsByBatchPaginatedProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Student>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Student>> create(Ref ref) {
+    final argument = this.argument as ({String batchId, int limit, int offset});
+    return studentsByBatchPaginated(
+      ref,
+      batchId: argument.batchId,
+      limit: argument.limit,
+      offset: argument.offset,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is StudentsByBatchPaginatedProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$studentsByBatchPaginatedHash() =>
+    r'225cd8866edb81d2ea77b721e10e150da0a6d6ab';
+
+final class StudentsByBatchPaginatedFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<Student>>,
+          ({String batchId, int limit, int offset})
+        > {
+  StudentsByBatchPaginatedFamily._()
+    : super(
+        retry: null,
+        name: r'studentsByBatchPaginatedProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StudentsByBatchPaginatedProvider call({
+    required String batchId,
+    required int limit,
+    required int offset,
+  }) => StudentsByBatchPaginatedProvider._(
+    argument: (batchId: batchId, limit: limit, offset: offset),
+    from: this,
+  );
+
+  @override
+  String toString() => r'studentsByBatchPaginatedProvider';
+}
+
+@ProviderFor(studentsWithTotalByBatchPaginated)
+final studentsWithTotalByBatchPaginatedProvider =
+    StudentsWithTotalByBatchPaginatedFamily._();
+
+final class StudentsWithTotalByBatchPaginatedProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaginatedStudents>,
+          PaginatedStudents,
+          FutureOr<PaginatedStudents>
+        >
+    with
+        $FutureModifier<PaginatedStudents>,
+        $FutureProvider<PaginatedStudents> {
+  StudentsWithTotalByBatchPaginatedProvider._({
+    required StudentsWithTotalByBatchPaginatedFamily super.from,
+    required ({String batchId, int limit, int offset}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'studentsWithTotalByBatchPaginatedProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$studentsWithTotalByBatchPaginatedHash();
+
+  @override
+  String toString() {
+    return r'studentsWithTotalByBatchPaginatedProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PaginatedStudents> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaginatedStudents> create(Ref ref) {
+    final argument = this.argument as ({String batchId, int limit, int offset});
+    return studentsWithTotalByBatchPaginated(
+      ref,
+      batchId: argument.batchId,
+      limit: argument.limit,
+      offset: argument.offset,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is StudentsWithTotalByBatchPaginatedProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$studentsWithTotalByBatchPaginatedHash() =>
+    r'5b7cccda02aa6d28d41de4857a0e0b04886148fc';
+
+final class StudentsWithTotalByBatchPaginatedFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<PaginatedStudents>,
+          ({String batchId, int limit, int offset})
+        > {
+  StudentsWithTotalByBatchPaginatedFamily._()
+    : super(
+        retry: null,
+        name: r'studentsWithTotalByBatchPaginatedProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StudentsWithTotalByBatchPaginatedProvider call({
+    required String batchId,
+    required int limit,
+    required int offset,
+  }) => StudentsWithTotalByBatchPaginatedProvider._(
+    argument: (batchId: batchId, limit: limit, offset: offset),
+    from: this,
+  );
+
+  @override
+  String toString() => r'studentsWithTotalByBatchPaginatedProvider';
+}
 
 @ProviderFor(studentsByBatch)
 final studentsByBatchProvider = StudentsByBatchFamily._();
@@ -111,7 +450,7 @@ final class StudentsByBatchProvider
   }
 }
 
-String _$studentsByBatchHash() => r'14dc6ebb12008fcf46847c9a65aa29da5cb5443e';
+String _$studentsByBatchHash() => r'4310942820f50c5fefa4719eae888f6758354d4d';
 
 final class StudentsByBatchFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Student>>, String> {
@@ -435,7 +774,7 @@ final class AllStudentsProvider
   }
 }
 
-String _$allStudentsHash() => r'a5f0707808b27d023d1bfba1f34a2304ce7bd0ad';
+String _$allStudentsHash() => r'01319833812169e739bf2cce9dff63f15850a7db';
 
 final class AllStudentsFamily extends $Family
     with
@@ -460,4 +799,119 @@ final class AllStudentsFamily extends $Family
 
   @override
   String toString() => r'allStudentsProvider';
+}
+
+@ProviderFor(studentsWithTotalAllPaginated)
+final studentsWithTotalAllPaginatedProvider =
+    StudentsWithTotalAllPaginatedFamily._();
+
+final class StudentsWithTotalAllPaginatedProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaginatedStudents>,
+          PaginatedStudents,
+          FutureOr<PaginatedStudents>
+        >
+    with
+        $FutureModifier<PaginatedStudents>,
+        $FutureProvider<PaginatedStudents> {
+  StudentsWithTotalAllPaginatedProvider._({
+    required StudentsWithTotalAllPaginatedFamily super.from,
+    required ({
+      String? universityId,
+      String? departmentId,
+      int limit,
+      int offset,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'studentsWithTotalAllPaginatedProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$studentsWithTotalAllPaginatedHash();
+
+  @override
+  String toString() {
+    return r'studentsWithTotalAllPaginatedProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PaginatedStudents> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaginatedStudents> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({
+              String? universityId,
+              String? departmentId,
+              int limit,
+              int offset,
+            });
+    return studentsWithTotalAllPaginated(
+      ref,
+      universityId: argument.universityId,
+      departmentId: argument.departmentId,
+      limit: argument.limit,
+      offset: argument.offset,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is StudentsWithTotalAllPaginatedProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$studentsWithTotalAllPaginatedHash() =>
+    r'ef35462b47360fefcccfbbabe21aee20be7f592a';
+
+final class StudentsWithTotalAllPaginatedFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<PaginatedStudents>,
+          ({String? universityId, String? departmentId, int limit, int offset})
+        > {
+  StudentsWithTotalAllPaginatedFamily._()
+    : super(
+        retry: null,
+        name: r'studentsWithTotalAllPaginatedProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StudentsWithTotalAllPaginatedProvider call({
+    required String? universityId,
+    required String? departmentId,
+    required int limit,
+    required int offset,
+  }) => StudentsWithTotalAllPaginatedProvider._(
+    argument: (
+      universityId: universityId,
+      departmentId: departmentId,
+      limit: limit,
+      offset: offset,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'studentsWithTotalAllPaginatedProvider';
 }

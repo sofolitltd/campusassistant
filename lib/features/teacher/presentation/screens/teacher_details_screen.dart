@@ -3,16 +3,17 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import '/widgets/open_app.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
 import '/features/teacher/domain/entities/teacher.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
-import '/core/widgets/pill_tab_bar.dart';
+import '/core/widgets/red_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
-import '/core/theme/tokens/app_spacing.dart';
 
 class TeacherDetailsScreen extends ConsumerStatefulWidget {
   const TeacherDetailsScreen({super.key, required this.teacherId});
@@ -23,71 +24,57 @@ class TeacherDetailsScreen extends ConsumerStatefulWidget {
   ConsumerState<TeacherDetailsScreen> createState() => _TeacherDetailsScreenState();
 }
 
-class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen>
-    with TickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
+class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final teacherAsync = ref.watch(singleTeacherProvider(widget.teacherId));
 
-    return teacherAsync.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stack) =>
-          Scaffold(body: Center(child: Text('Error: $error'))),
-      data: (teacherModel) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Faculty Profile'),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: () async => _shareProfile(teacherModel),
-              ),
-            ],
-          ),
-          body: Column(
-            children: [
-              // Fixed Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                child: _HeaderCard(teacher: teacherModel),
-              ),
-
-              // Custom Tabs
-              PillTabBar(
-                controller: _tabController,
-                labels: const ['Contact', 'Academic'],
-              ),
-
-              // Tab Content
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _ContactTab(teacher: teacherModel),
-                    _AcademicTab(teacher: teacherModel),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+    return RedHeaderLayout(
+      title: 'Faculty Profile',
+      actionIcon: LucideIcons.share2,
+      onActionTap: () async {
+        final teacherModel = teacherAsync.asData?.value;
+        if (teacherModel != null) _shareProfile(teacherModel);
       },
+      showSearchBar: false,
+      body: teacherAsync.when(
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(error.toString(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
+          ),
+        ),
+        data: (teacherModel) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _HeaderCard(teacher: teacherModel),
+              const SizedBox(height: 16),
+              _DetailCard(
+                children: [
+                  _InfoRow(label: 'Mobile', value: teacherModel.mobile.isNotEmpty ? teacherModel.mobile : '—'),
+                  const Divider(height: 24),
+                  _InfoRow(label: 'Email', value: teacherModel.email.isNotEmpty ? teacherModel.email : '—'),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _AcademicSection(
+                title: 'Publications',
+                content: teacherModel.publications.isNotEmpty ? teacherModel.publications : 'No publications available.',
+                isLink: teacherModel.publications.isNotEmpty,
+              ),
+              const SizedBox(height: 16),
+              _AcademicSection(
+                title: 'Research Interests',
+                isInterests: true,
+                interests: teacherModel.interests,
+                content: '',
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -120,66 +107,34 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen>
   }
 }
 
-class _ContactTab extends StatelessWidget {
-  final Teacher teacher;
-  const _ContactTab({required this.teacher});
+class _DetailCard extends StatelessWidget {
+  final List<Widget> children;
+  const _DetailCard({required this.children});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+          width: 1,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _InfoRow(label: 'Mobile', value: teacher.mobile.isNotEmpty ? teacher.mobile : '—'),
-              const Divider(height: 24),
-              _InfoRow(label: 'Email', value: teacher.email.isNotEmpty ? teacher.email : '—'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AcademicTab extends StatelessWidget {
-  final Teacher teacher;
-  const _AcademicTab({required this.teacher});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _AcademicSection(
-            title: 'Publications',
-            content: teacher.publications.isNotEmpty ? teacher.publications : 'No publications available.',
-            isLink: teacher.publications.isNotEmpty,
-          ),
-          const SizedBox(height: Spacing.lg),
-          _AcademicSection(
-            title: 'Research Interests',
-            isInterests: true,
-            interests: teacher.interests,
-            content: '',
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }
@@ -202,12 +157,16 @@ class _AcademicSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Theme.of(context).cardColor : Colors.white,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -246,6 +205,7 @@ class _AcademicSection extends StatelessWidget {
                   fontSize: 13,
                   color: isLink ? Colors.blue : Colors.grey.shade700,
                   decoration: isLink ? TextDecoration.underline : null,
+                  decorationColor: isLink ? Colors.blue : null,
                 ),
               ),
             ),
@@ -264,10 +224,14 @@ class _HeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -292,7 +256,13 @@ class _HeaderCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: teacher.imageUrl,
                   fit: BoxFit.cover,
-                  errorWidget: (context, url, error) => Image.asset('assets/images/pp_placeholder.png', fit: BoxFit.cover),
+                  placeholder: (context, url) =>
+                      const Center(child: CupertinoActivityIndicator(radius: 6)),
+                  errorWidget: (context, url, error) => Icon(
+                    LucideIcons.user,
+                    color: Colors.grey.shade300,
+                    size: 24,
+                  ),
                 ),
               ),
             ),

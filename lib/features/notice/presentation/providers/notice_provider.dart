@@ -1,11 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../data/datasources/notice_remote_data_source.dart';
 import '../../data/repositories/notice_repository_impl.dart';
 import '../../domain/repositories/notice_repository.dart';
 import '../../data/models/notice_model.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../university/presentation/providers/university_provider.dart';
 import '../../../department/presentation/providers/department_provider.dart';
 
@@ -20,7 +21,13 @@ NoticeRemoteDataSource noticeRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 NoticeRepository noticeRepository(Ref ref) {
   final remoteDataSource = ref.watch(noticeRemoteDataSourceProvider);
-  return NoticeRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return NoticeRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @riverpod

@@ -55,7 +55,7 @@ final class ResourceRepositoryProvider
 }
 
 String _$resourceRepositoryHash() =>
-    r'1f6161fd29c0aa34c2d2fba43b8a4ac27ffe7e3e';
+    r'c075fb7c4b74f94b6ce9ceaaf96d7cba1a85108f';
 
 @ProviderFor(resourcesList)
 final resourcesListProvider = ResourcesListFamily._();

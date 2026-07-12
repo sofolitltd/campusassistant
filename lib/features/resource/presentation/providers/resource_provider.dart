@@ -1,4 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
+import '../../../../core/cache/sync_manager.dart';
 import '../../../../core/di.dart';
 import '../../domain/entities/resource.dart';
 import '../../domain/repositories/resource_repository.dart';
@@ -9,7 +13,16 @@ part 'resource_provider.g.dart';
 @Riverpod(keepAlive: true)
 ResourceRepository resourceRepository(Ref ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return ResourceRepositoryImpl(apiClient: apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  final syncManager = ref.watch(syncManagerProvider);
+
+  return ResourceRepositoryImpl(
+    apiClient: apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+    syncManager: syncManager,
+  );
 }
 
 typedef ResourceParams = ({

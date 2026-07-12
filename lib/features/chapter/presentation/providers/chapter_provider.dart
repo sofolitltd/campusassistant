@@ -3,6 +3,8 @@ import '../../domain/entities/chapter.dart';
 import '../../data/datasources/chapter_remote_data_source.dart';
 import '../../data/repositories/chapter_repository_impl.dart';
 import '../../domain/repositories/chapter_repository.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 
 part 'chapter_provider.g.dart';
@@ -16,7 +18,13 @@ ChapterRemoteDataSource chapterRemoteDataSource(Ref ref) {
 @riverpod
 ChapterRepository chapterRepository(Ref ref) {
   final remoteDataSource = ref.watch(chapterRemoteDataSourceProvider);
-  return ChapterRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return ChapterRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @riverpod

@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../../core/providers/app_refresh_provider.dart';
 import '../../domain/entities/course.dart';
@@ -11,7 +13,13 @@ part 'course_provider.g.dart';
 @Riverpod(keepAlive: true)
 CourseRepository courseRepository(Ref ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return CourseRepositoryImpl(apiClient: apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return CourseRepositoryImpl(
+    apiClient: apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @riverpod

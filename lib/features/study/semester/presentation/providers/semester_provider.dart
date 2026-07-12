@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/cache/cache_manager.dart';
+import '../../../../../core/cache/connectivity_service.dart';
 import '../../../../../core/di.dart';
 import '../../../../../core/providers/app_refresh_provider.dart';
 import '../../domain/entities/semester.dart';
@@ -9,7 +11,13 @@ import 'package:campusassistant/features/batch/presentation/providers/selected_b
 
 final semesterRepositoryProvider = Provider<SemesterRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return SemesterRepositoryImpl(apiClient: apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return SemesterRepositoryImpl(
+    apiClient: apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 });
 
 // ---------------------------------------------------------------------------

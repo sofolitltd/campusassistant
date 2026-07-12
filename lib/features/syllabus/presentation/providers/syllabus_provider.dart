@@ -1,4 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../auth/presentation/providers/user_profile_provider.dart';
 import '../../domain/entities/syllabus.dart';
@@ -10,7 +12,13 @@ part 'syllabus_provider.g.dart';
 @riverpod
 SyllabusRepository syllabusRepository(Ref ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return SyllabusRepositoryImpl(apiClient: apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return SyllabusRepositoryImpl(
+    apiClient: apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @riverpod
@@ -59,7 +67,7 @@ class SyllabusPagination extends _$SyllabusPagination {
     final profile = await ref.watch(userProvider.future);
 
     final repo = ref.watch(syllabusRepositoryProvider);
-    final paginated = await repo.getSyllabi(
+    final result = await repo.getSyllabi(
       universityId: profile.information.universityId ?? '',
       departmentId: profile.information.departmentId ?? '',
       search: search.isEmpty ? null : search,
@@ -67,10 +75,13 @@ class SyllabusPagination extends _$SyllabusPagination {
       offset: 0,
     );
 
-    return SyllabusState(
-      syllabi: paginated.syllabi,
-      total: paginated.total,
-      hasMore: paginated.syllabi.length < paginated.total,
+    return result.fold(
+      (failure) => throw failure,
+      (paginated) => SyllabusState(
+        syllabi: paginated.syllabi,
+        total: paginated.total,
+        hasMore: paginated.syllabi.length < paginated.total,
+      ),
     );
   }
 
@@ -89,24 +100,25 @@ class SyllabusPagination extends _$SyllabusPagination {
     if (profile == null) return;
 
     final repo = ref.read(syllabusRepositoryProvider);
-    try {
-      final paginated = await repo.getSyllabi(
-        universityId: profile.information.universityId ?? '',
-        departmentId: profile.information.departmentId ?? '',
-        search: search.isEmpty ? null : search,
-        limit: _limit,
-        offset: currentState.syllabi.length,
-      );
-      final newSyllabi = [...currentState.syllabi, ...paginated.syllabi];
-      state = AsyncValue.data(
-        currentState.copyWith(
-          syllabi: newSyllabi,
-          isLoadingMore: false,
-          hasMore: newSyllabi.length < paginated.total,
-        ),
-      );
-    } catch (_) {
-      state = AsyncValue.data(currentState.copyWith(isLoadingMore: false));
-    }
+    final result = await repo.getSyllabi(
+      universityId: profile.information.universityId ?? '',
+      departmentId: profile.information.departmentId ?? '',
+      search: search.isEmpty ? null : search,
+      limit: _limit,
+      offset: currentState.syllabi.length,
+    );
+    result.fold(
+      (_) => state = AsyncValue.data(currentState.copyWith(isLoadingMore: false)),
+      (paginated) {
+        final newSyllabi = [...currentState.syllabi, ...paginated.syllabi];
+        state = AsyncValue.data(
+          currentState.copyWith(
+            syllabi: newSyllabi,
+            isLoadingMore: false,
+            hasMore: newSyllabi.length < paginated.total,
+          ),
+        );
+      },
+    );
   }
 }

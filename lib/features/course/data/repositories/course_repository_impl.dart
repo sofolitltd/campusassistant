@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:dartz/dartz.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/api_client.dart';
 import '../../domain/entities/course.dart';
@@ -8,8 +10,29 @@ import '../models/course_model.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
   final ApiClient apiClient;
+  final CacheManager cacheManager;
+  final ConnectivityService connectivity;
 
-  CourseRepositoryImpl({required this.apiClient});
+  CourseRepositoryImpl({
+    required this.apiClient,
+    required this.cacheManager,
+    required this.connectivity,
+  });
+
+  String _buildCacheKey({
+    required String universityId,
+    required String departmentId,
+    String? semesterId,
+    String? batchId,
+  }) {
+    final parts = <String>[
+      'uni_$universityId',
+      'dept_$departmentId',
+      if (semesterId != null) 'sem_$semesterId',
+      if (batchId != null) 'batch_$batchId',
+    ];
+    return parts.join('_');
+  }
 
   @override
   Future<Either<Failure, List<Course>>> getCourses({
@@ -18,26 +41,73 @@ class CourseRepositoryImpl implements CourseRepository {
     String? semesterId,
     String? batchId,
   }) async {
-    try {
-      final queryParams = {
-        'university_id': universityId,
-        'department_id': departmentId,
-      };
-      if (semesterId != null) queryParams['level_id'] = semesterId;
-      if (batchId != null) queryParams['batch_id'] = batchId;
+    final cacheKey = _buildCacheKey(
+      universityId: universityId,
+      departmentId: departmentId,
+      semesterId: semesterId,
+      batchId: batchId,
+    );
 
-      debugPrint('[getCourses] queryParams=$queryParams');
-      final response = await apiClient.get(
-        '/courses',
-        queryParameters: queryParams,
-      );
-      final body = response.data as Map<String, dynamic>;
-      final List<dynamic> data = body['data'] ?? [];
-      debugPrint('[getCourses] returned ${data.length} courses');
-      return Right(data.map((json) => CourseModel.fromJson(json).toEntity()).toList());
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    // 1. Try remote if online
+    if (connectivity.isConnected) {
+      try {
+        final queryParams = {
+          'university_id': universityId,
+          'department_id': departmentId,
+        };
+        if (semesterId != null) queryParams['level_id'] = semesterId;
+        if (batchId != null) queryParams['batch_id'] = batchId;
+
+        debugPrint('[getCourses] queryParams=$queryParams');
+        final response = await apiClient.get(
+          '/courses',
+          queryParameters: queryParams,
+        );
+        final body = response.data as Map<String, dynamic>;
+        final List<dynamic> data = body['data'] ?? [];
+        debugPrint('[getCourses] returned ${data.length} courses');
+
+        final courses = data
+            .map((json) => CourseModel.fromJson(json).toEntity())
+            .toList();
+
+        // Cache the result
+        await cacheManager.cacheList(
+          entityType: 'course_$cacheKey',
+          items: data.cast<Map<String, dynamic>>(),
+          ttl: CacheTTL.course,
+        );
+
+        return Right(courses);
+      } catch (e) {
+        debugPrint('[CourseRepo] Remote fetch failed: $e');
+      }
     }
+
+    // 2. Try cached data
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'course_$cacheKey',
+      );
+      if (cachedData.isNotEmpty) {
+        final courses = cachedData
+            .map((json) => CourseModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint('[CourseRepo] Returning ${courses.length} cached courses');
+        return Right(courses);
+      }
+    } catch (e) {
+      debugPrint('[CourseRepo] Cache read failed: $e');
+    }
+
+    // 3. No data
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure(
+        'No internet connection and no cached course data available',
+      ));
+    }
+
+    return Left(ServerFailure('Failed to fetch courses'));
   }
 
   @override
@@ -48,29 +118,71 @@ class CourseRepositoryImpl implements CourseRepository {
     String? batchId,
     String? semesterId,
   }) async {
-    try {
-      final queryParams = <String, dynamic>{
-        'university_id': universityId,
-        'department_id': departmentId,
-        'course_code': courseCode,
-      };
-      if (batchId != null) queryParams['batch_id'] = batchId;
-      if (semesterId != null) queryParams['level_id'] = semesterId;
+    final cacheKey = _buildCacheKey(
+      universityId: universityId,
+      departmentId: departmentId,
+      semesterId: semesterId,
+      batchId: batchId,
+    );
 
-      final response = await apiClient.get(
-        '/courses',
-        queryParameters: queryParams,
-      );
-      final body = response.data as Map<String, dynamic>;
-      final List<dynamic> data = body['data'] ?? [];
-      if (data.isEmpty) {
-        return Left(ServerFailure('Course not found'));
+    // 1. Try remote if online
+    if (connectivity.isConnected) {
+      try {
+        final queryParams = <String, dynamic>{
+          'university_id': universityId,
+          'department_id': departmentId,
+          'course_code': courseCode,
+        };
+        if (batchId != null) queryParams['batch_id'] = batchId;
+        if (semesterId != null) queryParams['level_id'] = semesterId;
+
+        final response = await apiClient.get(
+          '/courses',
+          queryParameters: queryParams,
+        );
+        final body = response.data as Map<String, dynamic>;
+        final List<dynamic> data = body['data'] ?? [];
+        if (data.isEmpty) {
+          return Left(ServerFailure('Course not found'));
+        }
+
+        // Cache individual courses
+        for (final json in data) {
+          final course = CourseModel.fromJson(json);
+          await cacheManager.cacheSingle(
+            entityType: 'course_detail',
+            entityKey: course.courseCode,
+            data: json,
+            ttl: CacheTTL.course,
+          );
+        }
+
+        return Right(CourseModel.fromJson(data.first).toEntity());
+      } catch (e) {
+        debugPrint('[CourseRepo] Remote fetch by code failed: $e');
       }
-      // When filters are applied, the first match is the correct one
-      return Right(CourseModel.fromJson(data.first).toEntity());
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
     }
+
+    // 2. Try cache by course code
+    try {
+      final cached = await cacheManager.getCachedSingle(
+        entityType: 'course_detail',
+        entityKey: courseCode,
+      );
+      if (cached != null) {
+        return Right(CourseModel.fromJson(cached).toEntity());
+      }
+    } catch (e) {
+      debugPrint('[CourseRepo] Cache read by code failed: $e');
+    }
+
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure(
+        'No internet connection and no cached course data available',
+      ));
+    }
+
+    return Left(ServerFailure('Course not found'));
   }
 
   @override

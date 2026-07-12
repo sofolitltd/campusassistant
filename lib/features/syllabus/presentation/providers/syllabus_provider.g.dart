@@ -55,7 +55,7 @@ final class SyllabusRepositoryProvider
 }
 
 String _$syllabusRepositoryHash() =>
-    r'6b576b1b02b8a5a612a0ba7f49ce7dc82fd87cb2';
+    r'5845e22b92a3a1654bd6013552ae375454c3b4db';
 
 @ProviderFor(SyllabusSearchQuery)
 final syllabusSearchQueryProvider = SyllabusSearchQueryProvider._();
@@ -135,7 +135,7 @@ final class SyllabusPaginationProvider
 }
 
 String _$syllabusPaginationHash() =>
-    r'88e1ef3974980c711a6ed6066d38e14e5e5009db';
+    r'd6445c7285baa16abc9e5d4fcc53d80a62120786';
 
 abstract class _$SyllabusPagination extends $AsyncNotifier<SyllabusState> {
   FutureOr<SyllabusState> build();

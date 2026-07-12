@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../domain/entities/bookmark.dart';
 import '../../domain/repositories/bookmark_repository.dart';
@@ -6,7 +8,13 @@ import '../../data/repositories/bookmark_repository_impl.dart';
 
 final bookmarkRepositoryProvider = Provider<BookmarkRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return BookmarkRepositoryImpl(apiClient: apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return BookmarkRepositoryImpl(
+    apiClient: apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 });
 
 final userBookmarksProvider = FutureProvider.family<List<Bookmark>, String>((

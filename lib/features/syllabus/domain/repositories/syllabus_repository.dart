@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+
+import '../../../../core/error/failures.dart';
 import '../entities/syllabus.dart';
 
 class PaginatedSyllabi {
@@ -7,7 +10,7 @@ class PaginatedSyllabi {
 }
 
 abstract class SyllabusRepository {
-  Future<PaginatedSyllabi> getSyllabi({
+  Future<Either<Failure, PaginatedSyllabi>> getSyllabi({
     required String universityId,
     required String departmentId,
     String? search,

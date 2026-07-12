@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../../core/providers/app_refresh_provider.dart';
 import '../../data/datasources/session_remote_data_source.dart';
@@ -18,7 +20,13 @@ final sessionRemoteDataSourceProvider = Provider<SessionRemoteDataSource>((
 
 final sessionRepositoryProvider = Provider<SessionRepository>((ref) {
   final remoteDataSource = ref.watch(sessionRemoteDataSourceProvider);
-  return SessionRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return SessionRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 });
 
 final createSessionProvider = Provider<CreateSession>((ref) {

@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/hall.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/datasources/university_remote_data_source.dart';
@@ -18,7 +20,13 @@ UniversityRemoteDataSource universityRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 UniversityRepository universityRepository(Ref ref) {
   final remoteDataSource = ref.watch(universityRemoteDataSourceProvider);
-  return UniversityRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return UniversityRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @Riverpod(keepAlive: true)

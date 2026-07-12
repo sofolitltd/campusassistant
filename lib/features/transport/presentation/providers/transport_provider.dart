@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../data/datasources/transport_remote_data_source.dart';
 import '../../data/repositories/transport_repository_impl.dart';
@@ -19,7 +21,14 @@ final transportRemoteDataSourceProvider = Provider<TransportRemoteDataSource>((
 // Repository
 final transportRepositoryProvider = Provider<TransportRepository>((ref) {
   final remoteDataSource = ref.watch(transportRemoteDataSourceProvider);
-  return TransportRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+
+  return TransportRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 });
 
 // UseCase

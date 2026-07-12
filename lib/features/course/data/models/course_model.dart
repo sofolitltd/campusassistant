@@ -6,7 +6,7 @@ import '../../../batch/data/models/batch_model.dart';
 part 'course_model.freezed.dart';
 part 'course_model.g.dart';
 
-@freezed
+@Freezed(fromJson: true, toJson: true)
 abstract class CourseModel with _$CourseModel {
   const CourseModel._();
 

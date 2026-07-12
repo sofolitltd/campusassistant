@@ -5,7 +5,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
-import '/core/theme/tokens/app_radius.dart';
 
 class HomeDrawer extends ConsumerWidget {
   const HomeDrawer({super.key});

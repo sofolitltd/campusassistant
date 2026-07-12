@@ -1,5 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/university.dart';
 import '../../domain/repositories/university_repository.dart';
@@ -10,17 +13,62 @@ import '../../domain/entities/hall.dart';
 
 class UniversityRepositoryImpl implements UniversityRepository {
   final UniversityRemoteDataSource remoteDataSource;
+  final CacheManager cacheManager;
+  final ConnectivityService connectivity;
 
-  UniversityRepositoryImpl({required this.remoteDataSource});
+  UniversityRepositoryImpl({
+    required this.remoteDataSource,
+    required this.cacheManager,
+    required this.connectivity,
+  });
 
   @override
   Future<Either<Failure, List<University>>> getUniversities() async {
-    try {
-      final remoteUniversities = await remoteDataSource.getUniversities();
-      return Right(remoteUniversities.map((m) => m.toEntity()).toList());
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    final cacheKey = 'all_universities';
+
+    // Try remote if online
+    if (connectivity.isConnected) {
+      try {
+        final remoteUniversities = await remoteDataSource.getUniversities();
+        final entities = remoteUniversities.map((m) => m.toEntity()).toList();
+
+        // Cache the result
+        final cacheItems = remoteUniversities.map((m) => m.toJson()).toList();
+        await cacheManager.cacheList(
+          entityType: cacheKey,
+          items: cacheItems,
+          ttl: CacheTTL.university,
+        );
+
+        return Right(entities);
+      } catch (e) {
+        debugPrint('[UniversityRepo] Remote fetch failed: $e');
+      }
     }
+
+    // Try cached data
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: cacheKey,
+      );
+      if (cachedData.isNotEmpty) {
+        final universities = cachedData
+            .map((json) => UniversityModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint('[UniversityRepo] Returning ${universities.length} cached universities');
+        return Right(universities);
+      }
+    } catch (e) {
+      debugPrint('[UniversityRepo] Cache read failed: $e');
+    }
+
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure(
+        'No internet connection and no cached university data available',
+      ));
+    }
+
+    return Left(ServerFailure('Failed to fetch universities'));
   }
 
   @override
@@ -92,12 +140,51 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
   @override
   Future<Either<Failure, List<Hall>>> getHalls(String universityId) async {
-    try {
-      final halls = await remoteDataSource.getHalls(universityId);
-      return Right(halls.map((m) => m.toEntity()).toList());
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    final cacheKey = 'hall_$universityId';
+
+    // Try remote if online
+    if (connectivity.isConnected) {
+      try {
+        final halls = await remoteDataSource.getHalls(universityId);
+        final entities = halls.map((m) => m.toEntity()).toList();
+
+        // Cache the result
+        final cacheItems = halls.map((m) => m.toJson()).toList();
+        await cacheManager.cacheList(
+          entityType: cacheKey,
+          items: cacheItems,
+          ttl: CacheTTL.hall,
+        );
+
+        return Right(entities);
+      } catch (e) {
+        debugPrint('[UniversityRepo] Remote fetch halls failed: $e');
+      }
     }
+
+    // Try cached data
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: cacheKey,
+      );
+      if (cachedData.isNotEmpty) {
+        final halls = cachedData
+            .map((json) => HallModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint('[UniversityRepo] Returning ${halls.length} cached halls');
+        return Right(halls);
+      }
+    } catch (e) {
+      debugPrint('[UniversityRepo] Cache read halls failed: $e');
+    }
+
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure(
+        'No internet connection and no cached hall data available',
+      ));
+    }
+
+    return Left(ServerFailure('Failed to fetch halls'));
   }
 
   @override

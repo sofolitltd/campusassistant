@@ -1,4 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../batch/presentation/providers/batch_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
@@ -15,23 +18,61 @@ part 'student_provider.g.dart';
 @Riverpod(keepAlive: true)
 StudentRepository studentRepository(Ref ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return StudentRepositoryImpl(apiClient: apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+
+  return StudentRepositoryImpl(
+    apiClient: apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
+// ---------------------------------------------------------------------------
+// studentCountByBatchProvider — lightweight: returns only total count
+// ---------------------------------------------------------------------------
 @riverpod
-Future<List<Student>> studentsByBatch(Ref ref, String batchId) async {
+Future<int> studentCountByBatch(Ref ref, String batchId) async {
   final repository = ref.watch(studentRepositoryProvider);
-  final paginated = await repository.getStudents(batchId: batchId);
-  final students = paginated.students;
+  final paginated = await repository.getStudents(batchId: batchId, limit: 1);
+  return paginated.total;
+}
 
+// ---------------------------------------------------------------------------
+// studentCountAllProvider — lightweight: returns total count for all students
+// ---------------------------------------------------------------------------
+@riverpod
+Future<int> studentCountAll(
+  Ref ref, {
+  String? universityId,
+  String? departmentId,
+}) async {
+  final repository = ref.watch(studentRepositoryProvider);
+  final paginated = await repository.getStudents(
+    universityId: universityId,
+    departmentId: departmentId,
+    limit: 1,
+  );
+  return paginated.total;
+}
+
+// ---------------------------------------------------------------------------
+// _enrichStudents — helper to resolve hall/batch/session names
+// ---------------------------------------------------------------------------
+Future<List<Student>> _enrichStudents(
+  Ref ref,
+  List<Student> students, {
+  String? universityId,
+  String? departmentId,
+}) async {
   if (students.isEmpty) return students;
 
-  final universityId = students.first.universityId;
-  final departmentId = students.first.departmentId;
+  final effectiveUniversityId = universityId ?? students.first.universityId;
+  final effectiveDepartmentId = departmentId ?? students.first.departmentId;
 
-  final halls = await ref.watch(hallsByUniversityProvider(universityId).future);
-  final batches = await ref.watch(batchesByDepartmentProvider(departmentId).future);
-  final sessions = await ref.watch(sessionsByUniversityProvider(universityId).future);
+  final halls = await ref.watch(hallsByUniversityProvider(effectiveUniversityId).future);
+  final batches = await ref.watch(batchesByDepartmentProvider(effectiveDepartmentId).future);
+  final sessions = await ref.watch(sessionsByUniversityProvider(effectiveUniversityId).future);
 
   return students.map((s) {
     final hall = halls.firstWhereOrNull((h) => h.id == s.hallId);
@@ -44,6 +85,56 @@ Future<List<Student>> studentsByBatch(Ref ref, String batchId) async {
       sessionName: session?.name,
     );
   }).toList();
+}
+
+// ---------------------------------------------------------------------------
+// studentsByBatchPaginatedProvider — server-side pagination
+// ---------------------------------------------------------------------------
+@riverpod
+Future<List<Student>> studentsByBatchPaginated(
+  Ref ref, {
+  required String batchId,
+  required int limit,
+  required int offset,
+}) async {
+  final repository = ref.watch(studentRepositoryProvider);
+  final paginated = await repository.getStudents(
+    batchId: batchId,
+    limit: limit,
+    offset: offset,
+  );
+  return _enrichStudents(ref, paginated.students);
+}
+
+// ---------------------------------------------------------------------------
+// studentsWithTotalByBatchPaginatedProvider — like above but also returns total
+// ---------------------------------------------------------------------------
+@riverpod
+Future<PaginatedStudents> studentsWithTotalByBatchPaginated(
+  Ref ref, {
+  required String batchId,
+  required int limit,
+  required int offset,
+}) async {
+  final repository = ref.watch(studentRepositoryProvider);
+  final paginated = await repository.getStudents(
+    batchId: batchId,
+    limit: limit,
+    offset: offset,
+  );
+
+  final enriched = await _enrichStudents(ref, paginated.students);
+  return PaginatedStudents(students: enriched, total: paginated.total);
+}
+
+// ---------------------------------------------------------------------------
+// studentsByBatchProvider — fetches ALL students for a batch (used by others)
+// ---------------------------------------------------------------------------
+@riverpod
+Future<List<Student>> studentsByBatch(Ref ref, String batchId) async {
+  final repository = ref.watch(studentRepositoryProvider);
+  final paginated = await repository.getStudents(batchId: batchId, limit: 2000);
+  return _enrichStudents(ref, paginated.students);
 }
 
 @riverpod
@@ -140,29 +231,40 @@ Future<List<Student>> allStudents(
     departmentId: departmentId,
     limit: 2000,
   );
-  final students = paginated.students;
+  final effectiveUniversityId = universityId ?? paginated.students.firstOrNull?.universityId;
+  final effectiveDepartmentId = departmentId ?? paginated.students.firstOrNull?.departmentId;
+  return _enrichStudents(
+    ref,
+    paginated.students,
+    universityId: effectiveUniversityId,
+    departmentId: effectiveDepartmentId,
+  );
+}
 
-  if (students.isEmpty) return students;
+// ---------------------------------------------------------------------------
+// studentsWithTotalAllPaginated — server-side pagination for "All" tab
+// ---------------------------------------------------------------------------
+@riverpod
+Future<PaginatedStudents> studentsWithTotalAllPaginated(
+  Ref ref, {
+  required String? universityId,
+  required String? departmentId,
+  required int limit,
+  required int offset,
+}) async {
+  final repository = ref.watch(studentRepositoryProvider);
+  final paginated = await repository.getStudents(
+    universityId: universityId,
+    departmentId: departmentId,
+    limit: limit,
+    offset: offset,
+  );
 
-  final effectiveUniversityId = universityId ?? students.first.universityId;
-  final effectiveDepartmentId = departmentId ?? students.first.departmentId;
-
-  final halls =
-      await ref.watch(hallsByUniversityProvider(effectiveUniversityId).future);
-  final batches =
-      await ref.watch(batchesByDepartmentProvider(effectiveDepartmentId).future);
-  final sessions =
-      await ref.watch(sessionsByUniversityProvider(effectiveUniversityId).future);
-
-  return students.map((s) {
-    final hall = halls.firstWhereOrNull((h) => h.id == s.hallId);
-    final batch = batches.firstWhereOrNull((b) => b.id == s.batchId);
-    final session = sessions.firstWhereOrNull((ses) => ses.id == s.sessionId);
-
-    return s.copyWith(
-      hallName: hall?.name,
-      batchName: batch?.name,
-      sessionName: session?.name,
-    );
-  }).toList();
+  final enriched = await _enrichStudents(
+    ref,
+    paginated.students,
+    universityId: universityId ?? paginated.students.firstOrNull?.universityId,
+    departmentId: departmentId ?? paginated.students.firstOrNull?.departmentId,
+  );
+  return PaginatedStudents(students: enriched, total: paginated.total);
 }

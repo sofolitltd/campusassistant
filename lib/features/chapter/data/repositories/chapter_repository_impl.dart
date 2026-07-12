@@ -1,4 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/chapter.dart';
 import '../../domain/repositories/chapter_repository.dart';
@@ -7,23 +10,69 @@ import '../models/chapter_model.dart';
 
 class ChapterRepositoryImpl implements ChapterRepository {
   final ChapterRemoteDataSource remoteDataSource;
+  final CacheManager cacheManager;
+  final ConnectivityService connectivity;
 
-  ChapterRepositoryImpl({required this.remoteDataSource});
+  ChapterRepositoryImpl({
+    required this.remoteDataSource,
+    required this.cacheManager,
+    required this.connectivity,
+  });
 
   @override
   Future<Either<Failure, List<Chapter>>> getChapters(
     String courseCode, {
     String? batchId,
   }) async {
-    try {
-      final chapters = await remoteDataSource.getChapters(
-        courseCode,
-        batchId: batchId,
-      );
-      return Right(chapters.map((m) => m.toEntity()).toList());
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    final cacheKey = 'chapter_${courseCode}_batch_${batchId ?? 'all'}';
+
+    // 1. Try remote if online
+    if (connectivity.isConnected) {
+      try {
+        final chapters = await remoteDataSource.getChapters(
+          courseCode,
+          batchId: batchId,
+        );
+        final entities = chapters.map((m) => m.toEntity()).toList();
+
+        // Cache the result
+        final cacheItems = chapters.map((m) => m.toJson()).toList();
+        await cacheManager.cacheList(
+          entityType: cacheKey,
+          items: cacheItems,
+          ttl: CacheTTL.chapter,
+        );
+
+        return Right(entities);
+      } catch (e) {
+        debugPrint('[ChapterRepo] Remote fetch failed: $e');
+      }
     }
+
+    // 2. Try cached data
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: cacheKey,
+      );
+      if (cachedData.isNotEmpty) {
+        final chapters = cachedData
+            .map((json) => ChapterModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint('[ChapterRepo] Returning ${chapters.length} cached chapters');
+        return Right(chapters);
+      }
+    } catch (e) {
+      debugPrint('[ChapterRepo] Cache read failed: $e');
+    }
+
+    // 3. No data
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure(
+        'No internet connection and no cached chapter data available',
+      ));
+    }
+
+    return Left(ServerFailure('Failed to fetch chapters'));
   }
 
   @override

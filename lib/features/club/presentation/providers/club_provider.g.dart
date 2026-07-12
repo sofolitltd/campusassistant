@@ -96,7 +96,7 @@ final class ClubRepositoryProvider
   }
 }
 
-String _$clubRepositoryHash() => r'95cc70bb0dcda728d40613d6706e9df70481bec6';
+String _$clubRepositoryHash() => r'706508e2ee02fedf44dbca5950bee439b50c817e';
 
 @ProviderFor(getClubs)
 final getClubsProvider = GetClubsProvider._();

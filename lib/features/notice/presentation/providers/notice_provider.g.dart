@@ -101,7 +101,7 @@ final class NoticeRepositoryProvider
   }
 }
 
-String _$noticeRepositoryHash() => r'e86cf440333bbff6922f2dec1146ec9305d5541d';
+String _$noticeRepositoryHash() => r'6ed7dacf822602826a2b945c03fbe1662ca1d5cf';
 
 @ProviderFor(departmentNotices)
 final departmentNoticesProvider = DepartmentNoticesProvider._();

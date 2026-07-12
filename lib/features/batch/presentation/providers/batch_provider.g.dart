@@ -97,7 +97,7 @@ final class BatchRepositoryProvider
   }
 }
 
-String _$batchRepositoryHash() => r'880650bf593c0d52eeaed98557321be06ca7c8ca';
+String _$batchRepositoryHash() => r'a9b8c6d2592c11abed8faa0967513e552295ccc7';
 
 @ProviderFor(createBatch)
 final createBatchProvider = CreateBatchProvider._();

@@ -1,18 +1,285 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
-import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart' as sqflite;
+
+part 'app_database.g.dart';
+
+// ─── Drift Tables ───
+
+/// Cache entries for offline data storage.
+/// Each row stores a JSON-serialized entity with TTL-based expiration.
+class CacheEntries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get entityType => text()();
+  TextColumn get entityKey => text()();
+  TextColumn get data => text()();
+  DateTimeColumn get cachedAt => dateTime()();
+  DateTimeColumn get expiresAt => dateTime()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [{entityType, entityKey}];
+}
+
+/// Queue for write operations performed while offline.
+/// Synced to server when connection is restored.
+class SyncQueue extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get operation => text()(); // CREATE, UPDATE, DELETE
+  TextColumn get entityType => text()();
+  TextColumn get entityKey => text()();
+  TextColumn get payload => text()(); // JSON-encoded request body
+  TextColumn get endpoint => text()(); // API endpoint to call
+  TextColumn get method => text()(); // HTTP method
+  TextColumn get status => text().withDefault(const Constant<String>('pending'))();
+  DateTimeColumn get createdAt => dateTime()();
+  IntColumn get retryCount => integer().withDefault(const Constant<int>(0))();
+}
+
+// ─── Drift Database (Cache + Sync) ───
+
+@DriftDatabase(tables: [CacheEntries, SyncQueue])
+class OfflineDatabase extends _$OfflineDatabase {
+  OfflineDatabase() : super(_openConnection());
+
+  // Bump version when changing schema
+  @override
+  int get schemaVersion => 1;
+
+  // ── Cache Operations ──
+
+  /// Store or update a cache entry. If an entry with the same entityType+entityKey
+  /// exists, it is replaced.
+  Future<void> cacheEntity({
+    required String entityType,
+    required String entityKey,
+    required Map<String, dynamic> data,
+    required Duration ttl,
+  }) async {
+    final now = DateTime.now();
+    await into(cacheEntries).insert(
+      CacheEntriesCompanion(
+        entityType: Value(entityType),
+        entityKey: Value(entityKey),
+        data: Value(jsonEncode(data)),
+        cachedAt: Value(now),
+        expiresAt: Value(now.add(ttl)),
+      ),
+      mode: InsertMode.replace,
+    );
+  }
+
+  /// Cache a list of entities under the same entityType.
+  /// Each item is keyed by its 'id' field.
+  Future<void> cacheEntities({
+    required String entityType,
+    required List<Map<String, dynamic>> items,
+    required Duration ttl,
+  }) async {
+    final now = DateTime.now();
+    await batch((batch) {
+      for (final item in items) {
+        final key = item['id']?.toString() ?? '';
+        if (key.isEmpty) continue;
+        batch.insert(
+          cacheEntries,
+          CacheEntriesCompanion(
+            entityType: Value(entityType),
+            entityKey: Value(key),
+            data: Value(jsonEncode(item)),
+            cachedAt: Value(now),
+            expiresAt: Value(now.add(ttl)),
+          ),
+          mode: InsertMode.replace,
+        );
+      }
+    });
+  }
+
+  /// Get a single cached entity. Returns null if expired or not found.
+  Future<Map<String, dynamic>?> getCachedEntity({
+    required String entityType,
+    required String entityKey,
+  }) async {
+    final query = select(cacheEntries)
+      ..where((t) =>
+          t.entityType.equals(entityType) &
+          t.entityKey.equals(entityKey) &
+          t.expiresAt.isBiggerThanValue(DateTime.now()));
+    final result = await query.getSingleOrNull();
+    if (result == null) return null;
+    return jsonDecode(result.data) as Map<String, dynamic>;
+  }
+
+  /// Get all cached entities of a type that haven't expired.
+  Future<List<Map<String, dynamic>>> getCachedEntities({
+    required String entityType,
+  }) async {
+    final now = DateTime.now();
+    final query = select(cacheEntries)
+      ..where((t) =>
+          t.entityType.equals(entityType) &
+          t.expiresAt.isBiggerThanValue(now));
+    final results = await query.get();
+    return results
+        .map((r) => jsonDecode(r.data) as Map<String, dynamic>)
+        .toList();
+  }
+
+  /// Check if a cache entry exists and is fresh (not expired).
+  Future<bool> isCacheFresh({
+    required String entityType,
+    required String entityKey,
+  }) async {
+    final now = DateTime.now();
+    final query = select(cacheEntries)
+      ..where((t) =>
+          t.entityType.equals(entityType) &
+          t.entityKey.equals(entityKey) &
+          t.expiresAt.isBiggerThanValue(now));
+    final result = await query.getSingleOrNull();
+    return result != null;
+  }
+
+  /// Check if any cache entry of this type is still fresh.
+  Future<bool> hasFreshCache({required String entityType}) async {
+    final now = DateTime.now();
+    final query = select(cacheEntries)
+      ..where((t) =>
+          t.entityType.equals(entityType) &
+          t.expiresAt.isBiggerThanValue(now))
+      ..limit(1);
+    final result = await query.getSingleOrNull();
+    return result != null;
+  }
+
+  /// Invalidate (delete) all cache entries for an entity type.
+  Future<void> invalidateCache(String entityType) async {
+    await (delete(cacheEntries)..where((t) => t.entityType.equals(entityType))).go();
+  }
+
+  /// Invalidate a specific cache entry.
+  Future<void> invalidateCacheEntry({
+    required String entityType,
+    required String entityKey,
+  }) async {
+    await (delete(cacheEntries)
+          ..where((t) =>
+              t.entityType.equals(entityType) &
+              t.entityKey.equals(entityKey)))
+        .go();
+  }
+
+  /// Clear all expired cache entries.
+  Future<int> pruneExpiredCache() async {
+    final now = DateTime.now();
+    return (delete(cacheEntries)
+          ..where((t) => t.expiresAt.isSmallerThanValue(now)))
+        .go();
+  }
+
+  /// Clear all cache entries.
+  Future<void> clearAllCache() async {
+    await delete(cacheEntries).go();
+  }
+
+  // ── Sync Queue Operations ──
+
+  /// Add an operation to the sync queue.
+  Future<void> enqueueSync({
+    required String operation,
+    required String entityType,
+    required String entityKey,
+    required Map<String, dynamic> payload,
+    required String endpoint,
+    required String method,
+  }) async {
+    await into(syncQueue).insert(SyncQueueCompanion.insert(
+      operation: operation,
+      entityType: entityType,
+      entityKey: entityKey,
+      payload: jsonEncode(payload),
+      endpoint: endpoint,
+      method: method,
+      createdAt: DateTime.now(),
+    ));
+  }
+
+  /// Get all pending sync operations, ordered by creation time.
+  Future<List<SyncQueueData>> getPendingSyncs() async {
+    final query = select(syncQueue)
+      ..where((t) => t.status.equals('pending'))
+      ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]);
+    return query.get();
+  }
+
+  /// Mark a sync operation as completed and remove it.
+  Future<void> completeSync(int id) async {
+    await (delete(syncQueue)..where((t) => t.id.equals(id))).go();
+  }
+
+  /// Mark a sync operation as failed and increment retry count.
+  Future<void> failSync(int id) async {
+    final query = select(syncQueue)..where((t) => t.id.equals(id));
+    final result = await query.getSingleOrNull();
+    if (result != null) {
+      await (update(syncQueue)..where((t) => t.id.equals(id))).write(
+        SyncQueueCompanion(
+          status: const Value('failed'),
+          retryCount: Value(result.retryCount + 1),
+        ),
+      );
+    }
+  }
+
+  /// Reset failed operations back to pending for retry.
+  Future<void> retryFailedSyncs() async {
+    await (update(syncQueue)..where((t) => t.status.equals('failed'))).write(
+      const SyncQueueCompanion(status: Value('pending')),
+    );
+  }
+
+  /// Clear all sync queue entries.
+  Future<void> clearSyncQueue() async {
+    await delete(syncQueue).go();
+  }
+
+  /// Get count of pending sync operations.
+  Future<int> getPendingSyncCount() async {
+    final query = select(syncQueue)
+      ..where((t) => t.status.equals('pending'));
+    final results = await query.get();
+    return results.length;
+  }
+}
+
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    if (kIsWeb) {
+      throw UnsupportedError('Drift database not available on web');
+    }
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dir.path, 'campusassistant_offline.db'));
+    return NativeDatabase.createInBackground(file);
+  });
+}
+
+// ─── Existing Chat Database (sqflite) ───
 
 class ChatDatabase {
-  static Database? _instance;
+  static sqflite.Database? _instance;
 
-  static Future<Database> get instance async {
+  static Future<sqflite.Database> get instance async {
     if (kIsWeb) throw UnsupportedError('Local database not available on web');
     if (_instance != null) return _instance!;
-    final dbPath = await getDatabasesPath();
-    _instance = await openDatabase(
+    final dbPath = await sqflite.getDatabasesPath();
+    _instance = await sqflite.openDatabase(
       p.join(dbPath, 'campusassistant_chat.db'),
       version: 3,
       onCreate: _onCreate,
@@ -21,11 +288,11 @@ class ChatDatabase {
     return _instance!;
   }
 
-  static Future<void> _onCreate(Database db, int version) async {
+  static Future<void> _onCreate(sqflite.Database db, int version) async {
     await _createTables(db);
   }
 
-  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  static Future<void> _onUpgrade(sqflite.Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE outgoing_messages (
@@ -51,7 +318,7 @@ class ChatDatabase {
     }
   }
 
-  static Future<void> _createTables(Database db) async {
+  static Future<void> _createTables(sqflite.Database db) async {
     await db.execute('''
       CREATE TABLE conversations (
         id TEXT PRIMARY KEY,
@@ -128,7 +395,7 @@ class ChatDatabase {
   static Future<void> upsertConversation(Map<String, dynamic> json) async {
     final db = await instance;
     await db.insert('conversations', _flattenConversation(json),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+        conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
   }
 
   static Future<void> upsertConversations(List<Map<String, dynamic>> list) async {
@@ -136,7 +403,7 @@ class ChatDatabase {
     final batch = db.batch();
     for (final json in list) {
       batch.insert('conversations', _flattenConversation(json),
-          conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
     }
     await batch.commit(noResult: true);
   }
@@ -196,7 +463,7 @@ class ChatDatabase {
   static Future<void> upsertMessage(Map<String, dynamic> json) async {
     final db = await instance;
     await db.insert('messages', _flattenMessage(json),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+        conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
   }
 
   static Future<void> upsertMessages(List<Map<String, dynamic>> list) async {
@@ -204,7 +471,7 @@ class ChatDatabase {
     final batch = db.batch();
     for (final json in list) {
       batch.insert('messages', _flattenMessage(json),
-          conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
     }
     await batch.commit(noResult: true);
   }
@@ -228,7 +495,7 @@ class ChatDatabase {
       'id': id,
       'conversation_id': '',
       'deleted_at': DateTime.now().toIso8601String(),
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    }, conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
   }
 
   static Future<void> addDeletedMessages(List<String> ids) async {
@@ -240,7 +507,7 @@ class ChatDatabase {
         'id': id,
         'conversation_id': '',
         'deleted_at': now,
-      }, conflictAlgorithm: ConflictAlgorithm.replace);
+      }, conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
     }
     await batch.commit(noResult: true);
   }
@@ -326,7 +593,7 @@ class ChatDatabase {
   static Future<void> insertOutgoing(Map<String, dynamic> row) async {
     final db = await instance;
     await db.insert('outgoing_messages', row,
-        conflictAlgorithm: ConflictAlgorithm.replace);
+        conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
   }
 
   static Future<void> deleteOutgoing(String tempId) async {
@@ -394,3 +661,13 @@ class ChatDatabase {
 }
 
 final chatDatabaseProvider = Provider<ChatDatabase>((ref) => ChatDatabase());
+
+// ─── Riverpod Providers ───
+
+/// Provider for the Drift offline database instance.
+final offlineDatabaseProvider = Provider<OfflineDatabase>((ref) {
+  if (kIsWeb) {
+    throw UnsupportedError('Drift database not available on web');
+  }
+  return OfflineDatabase();
+});

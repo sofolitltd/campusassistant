@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../data/datasources/club_remote_data_source.dart';
 import '../../data/repositories/club_repository_impl.dart';
@@ -20,7 +22,14 @@ ClubRemoteDataSource clubRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 ClubRepository clubRepository(Ref ref) {
   final remoteDataSource = ref.watch(clubRemoteDataSourceProvider);
-  return ClubRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+
+  return ClubRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @Riverpod(keepAlive: true)

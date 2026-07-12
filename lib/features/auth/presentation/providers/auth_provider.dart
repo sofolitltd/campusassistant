@@ -68,7 +68,10 @@ class CurrentUser extends _$CurrentUser {
       final result = await _repository.getCurrentUser();
       return result.fold((failure) async {
         if (_isNetworkError(failure)) {
-          throw failure;
+          // Offline: try to return cached user profile so the app
+          // can still show profile data with cached info.
+          final cached = await _repository.getCachedUser();
+          return cached.fold((_) => null, (user) => user);
         }
 
         final refreshResult = await _repository.refreshAccessToken();

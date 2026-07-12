@@ -1,4 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
+import '../../../../core/cache/sync_manager.dart';
 import '../../../../core/di.dart';
 import '../../../university/presentation/providers/university_provider.dart';
 import '../../../department/presentation/providers/department_provider.dart';
@@ -19,7 +23,16 @@ EmergencyRemoteDataSource emergencyRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 EmergencyRepository emergencyRepository(Ref ref) {
   final remoteDataSource = ref.watch(emergencyRemoteDataSourceProvider);
-  return EmergencyRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  final syncManager = ref.watch(syncManagerProvider);
+
+  return EmergencyRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+    syncManager: syncManager,
+  );
 }
 
 @Riverpod(keepAlive: true)

@@ -6,6 +6,9 @@ import 'network/api_endpoints.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
 import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/community/data/repositories/community_repository.dart';
+import 'cache/cache_manager.dart';
+import 'cache/connectivity_service.dart';
+import 'websocket/websocket_service.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final storage = ref.watch(secureStorageProvider);
@@ -50,7 +53,16 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 
 final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
-  return CommunityRepository(apiClient);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  final wsService = ref.watch(websocketServiceProvider);
+
+  return CommunityRepository(
+    apiClient,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+    webSocketService: wsService,
+  );
 });
 
 // Syllabus repository is provided via riverpod_generator in

@@ -103,7 +103,7 @@ final class EmergencyRepositoryProvider
 }
 
 String _$emergencyRepositoryHash() =>
-    r'6f253f907e00d098c904b86fde739675ed6bf489';
+    r'c68d38ed24aafe423f29d40936359eb360474ca3';
 
 @ProviderFor(getEmergencyContacts)
 final getEmergencyContactsProvider = GetEmergencyContactsProvider._();

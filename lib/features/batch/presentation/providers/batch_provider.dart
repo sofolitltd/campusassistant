@@ -1,4 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../../core/providers/app_refresh_provider.dart';
 import '../../data/datasources/batch_remote_data_source.dart';
@@ -18,7 +20,13 @@ BatchRemoteDataSource batchRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 BatchRepository batchRepository(Ref ref) {
   final remoteDataSource = ref.watch(batchRemoteDataSourceProvider);
-  return BatchRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return BatchRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @Riverpod(keepAlive: true)

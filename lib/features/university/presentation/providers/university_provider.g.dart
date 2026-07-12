@@ -104,7 +104,7 @@ final class UniversityRepositoryProvider
 }
 
 String _$universityRepositoryHash() =>
-    r'ac092824340958b6207c49d29fc89c878d92dfd0';
+    r'7305d4c49f18ea3b703bd372626a16cc0d5cfb47';
 
 @ProviderFor(allUniversities)
 final allUniversitiesProvider = AllUniversitiesProvider._();

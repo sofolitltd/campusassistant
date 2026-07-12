@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../core/widgets/offline_banner.dart';
 import '../widgets/custom_drawer.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
@@ -19,77 +20,84 @@ class ScaffoldWithNavBar extends StatelessWidget {
     if (isLargeScreen) {
       // --- 🖥️ Large Screen Layout: NavigationRail ---
       return Scaffold(
-        body: Row(
+        body: Column(
           children: [
-            NavigationRail(
-              selectedIndex: navigationShell.currentIndex,
-              groupAlignment: 0,
-              onDestinationSelected: (index) {
-                navigationShell.goBranch(
-                  index,
-                  initialLocation: index == navigationShell.currentIndex,
-                );
-              },
-              labelType: NavigationRailLabelType.all,
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      opaque: false,
-                      barrierDismissible: true,
-                      barrierColor: Colors.black38,
-                      pageBuilder: (_, _, _) => const CustomDrawer(),
-                      transitionsBuilder: (_, anim, _, child) {
-                        final offset = Tween<Offset>(
-                          begin: const Offset(-1, 0),
-                          end: Offset.zero,
-                        ).animate(anim);
+            const OfflineBannerSimple(),
+            Expanded(
+              child: Row(
+                children: [
+                  NavigationRail(
+                    selectedIndex: navigationShell.currentIndex,
+                    groupAlignment: 0,
+                    onDestinationSelected: (index) {
+                      navigationShell.goBranch(
+                        index,
+                        initialLocation: index == navigationShell.currentIndex,
+                      );
+                    },
+                    labelType: NavigationRailLabelType.all,
+                    leading: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            opaque: false,
+                            barrierDismissible: true,
+                            barrierColor: Colors.black38,
+                            pageBuilder: (_, _, _) => const CustomDrawer(),
+                            transitionsBuilder: (_, anim, _, child) {
+                              final offset = Tween<Offset>(
+                                begin: const Offset(-1, 0),
+                                end: Offset.zero,
+                              ).animate(anim);
 
-                        return SlideTransition(
-                          position: offset,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              width: 300,
-                              child: child,
-                            ),
+                              return SlideTransition(
+                                position: offset,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: SizedBox(
+                                    width: 300,
+                                    child: child,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         );
                       },
+                      icon: const Icon(Icons.menu),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.menu),
-              ),
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: Text('Home'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.school_outlined),
-                  selectedIcon: Icon(Icons.school),
-                  label: Text('Study'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.chat_bubble_outline),
-                  selectedIcon: Icon(Icons.chat_bubble),
-                  label: Text('Inbox'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person),
-                  label: Text('Profile'),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Center(
-                child: Container(
-                  constraints: BoxConstraints(maxWidth: 700),
-                  child: navigationShell,
-                ),
+                    destinations: const [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home_outlined),
+                        selectedIcon: Icon(Icons.home),
+                        label: Text('Home'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.school_outlined),
+                        selectedIcon: Icon(Icons.school),
+                        label: Text('Study'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.chat_bubble_outline),
+                        selectedIcon: Icon(Icons.chat_bubble),
+                        label: Text('Inbox'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.person_outline),
+                        selectedIcon: Icon(Icons.person),
+                        label: Text('Profile'),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Container(
+                        constraints: BoxConstraints(maxWidth: 700),
+                        child: navigationShell,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -100,7 +108,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
       return Scaffold(
         key: scaffoldKey,
         drawer: const CustomDrawer(),
-        body: navigationShell,
+        body: Column(
+          children: [
+            const OfflineBannerSimple(),
+            Expanded(child: navigationShell),
+          ],
+        ),
         bottomNavigationBar: _BlurryBottomNavBar(
           currentIndex: navigationShell.currentIndex,
           onDestinationSelected: (index) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -21,6 +23,7 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -48,10 +51,18 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
     }
   }
 
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      ref.read(alumniSearchQueryProvider.notifier).update(value);
+    });
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
     _scrollController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
   }
 
@@ -64,6 +75,7 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
       searchHint: 'Search alumni...',
       actionIcon: LucideIcons.building2,
       onActionTap: () => showOrganizationFilterSheet(context, ref),
+      onSearchChanged: _onSearchChanged,
       body: Column(
         children: [
           Padding(

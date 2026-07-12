@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/content_model.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
@@ -65,6 +66,16 @@ class QuestionsYearNotifier extends Notifier<String?> {
   set state(String? value) => super.state = value;
 }
 
+final questionsSelectedCourseProvider =
+    NotifierProvider<QuestionsCourseNotifier, String?>(QuestionsCourseNotifier.new);
+
+class QuestionsCourseNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+  @override
+  set state(String? value) => super.state = value;
+}
+
 // Fixed list of years for now (Enterprise should ideally fetch this)
 final questionYearsProvider = Provider<List<String>>((ref) {
   return List.generate(12, (index) => (2026 - index).toString());
@@ -83,8 +94,15 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
     final search = ref.watch(questionsSearchQueryProvider);
     final isUni = ref.watch(questionsScopeUniversityProvider);
     final year = ref.watch(questionsSelectedYearProvider);
+    final courseCode = ref.watch(questionsSelectedCourseProvider);
 
-    return _fetchPage(offset: 0, search: search, isUni: isUni, year: year);
+    return _fetchPage(
+      offset: 0,
+      search: search,
+      isUni: isUni,
+      year: year,
+      courseCode: courseCode,
+    );
   }
 
   Future<QuestionsState> _fetchPage({
@@ -92,6 +110,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
     required String search,
     required bool isUni,
     String? year,
+    String? courseCode,
   }) async {
     final user = ref.read(userProvider).value;
     if (user == null) return QuestionsState(docs: [], totalCount: 0);
@@ -108,11 +127,15 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
       offset: offset,
       search: search.isEmpty ? null : search,
       year: year,
+      courseCode: courseCode,
       status: 'published',
     );
 
     return result.fold(
-      (failure) => QuestionsState(docs: [], totalCount: 0, hasMore: false),
+      (failure) {
+        debugPrint('[QuestionsRepo] fetch failed: $failure');
+        return QuestionsState(docs: [], totalCount: 0, hasMore: false);
+      },
       (paginated) {
         final newDocs = paginated.resources
             .map((r) => _mapToContentModel(r))
@@ -140,6 +163,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
     final search = ref.read(questionsSearchQueryProvider);
     final isUni = ref.read(questionsScopeUniversityProvider);
     final year = ref.read(questionsSelectedYearProvider);
+    final courseCode = ref.read(questionsSelectedCourseProvider);
 
     final user = ref.read(userProvider).value;
     if (user == null) return;
@@ -156,6 +180,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
       offset: nextOffset,
       search: search.isEmpty ? null : search,
       year: year,
+      courseCode: courseCode,
       status: 'published',
     );
 
@@ -167,6 +192,12 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
         final newDocs = paginated.resources
             .map((r) => _mapToContentModel(r))
             .toList();
+        if (newDocs.isEmpty) {
+          state = AsyncValue.data(
+            currentState.copyWith(isLoadingMore: false, hasMore: false),
+          );
+          return;
+        }
         state = AsyncValue.data(
           currentState.copyWith(
             docs: [...currentState.docs, ...newDocs],

@@ -1,30 +1,77 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/network/api_client.dart';
+import 'package:flutter/foundation.dart';
+import '/core/cache/cache_manager.dart';
+import '/core/cache/connectivity_service.dart';
+import '/core/error/failures.dart';
+import '/core/network/api_client.dart';
 import '../../domain/entities/bookmark.dart';
 import '../../domain/repositories/bookmark_repository.dart';
 import '../models/bookmark_model.dart';
 
 class BookmarkRepositoryImpl implements BookmarkRepository {
   final ApiClient apiClient;
+  final CacheManager cacheManager;
+  final ConnectivityService connectivity;
 
-  BookmarkRepositoryImpl({required this.apiClient});
+  BookmarkRepositoryImpl({
+    required this.apiClient,
+    required this.cacheManager,
+    required this.connectivity,
+  });
 
   @override
   Future<Either<Failure, List<Bookmark>>> getBookmarks(String userId) async {
-    try {
-      final response = await apiClient.get(
-        '/bookmarks',
-        queryParameters: {'user_id': userId},
-      );
-      final List<dynamic> data = response.data;
-      final bookmarks = data
-          .map((json) => BookmarkModel.fromJson(json))
-          .toList();
-      return Right(List<Bookmark>.from(bookmarks));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    final cacheKey = 'bookmark_user_$userId';
+
+    // 1. Try remote if online
+    if (connectivity.isConnected) {
+      try {
+        final response = await apiClient.get(
+          '/bookmarks',
+          queryParameters: {'user_id': userId},
+        );
+        final List<dynamic> data = response.data;
+        final bookmarks = data
+            .map((json) => BookmarkModel.fromJson(json))
+            .toList();
+
+        // Cache the result
+        await cacheManager.cacheList(
+          entityType: cacheKey,
+          items: data.cast<Map<String, dynamic>>(),
+          ttl: CacheTTL.bookmark,
+        );
+
+        return Right(bookmarks.map((m) => m.toEntity()).toList());
+      } catch (e) {
+        debugPrint('[BookmarkRepo] Remote fetch failed: $e');
+      }
     }
+
+    // 2. Try cached data
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: cacheKey,
+      );
+      if (cachedData.isNotEmpty) {
+        final bookmarks = cachedData
+            .map((json) => BookmarkModel.fromJson(json))
+            .toList();
+        debugPrint('[BookmarkRepo] Returning ${bookmarks.length} cached bookmarks');
+        return Right(bookmarks.map((m) => m.toEntity()).toList());
+      }
+    } catch (e) {
+      debugPrint('[BookmarkRepo] Cache read failed: $e');
+    }
+
+    // 3. No data
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure(
+        'No internet connection and no cached bookmark data available',
+      ));
+    }
+
+    return Left(ServerFailure('Failed to fetch bookmarks'));
   }
 
   @override

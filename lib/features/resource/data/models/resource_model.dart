@@ -21,6 +21,25 @@ DateTime? _parseDateTime(String? value) {
 /// Custom DateTime? to JSON converter
 String? _dateTimeToJson(DateTime? value) => value?.toIso8601String();
 
+/// Converts a list of dynamic items to List<String> via .toString()
+List<String> _parseStringList(dynamic value) {
+  if (value is List) {
+    return value.map((e) => e.toString()).toList();
+  }
+  return [];
+}
+
+/// Converts bool-like values from int (0/1) or string to bool
+bool _parseBool(dynamic value) {
+  if (value is bool) return value;
+  if (value is int) return value == 1;
+  if (value is String) return value.toLowerCase() == 'true' || value == '1';
+  return false;
+}
+
+/// JSON serializer for List<String> — just passes through
+List<String>? _stringListToJson(List<String>? value) => value;
+
 @freezed
 abstract class ResourceModel with _$ResourceModel {
   const ResourceModel._();
@@ -50,12 +69,12 @@ abstract class ResourceModel with _$ResourceModel {
     @JsonKey(name: 'view_count') required int viewCount,
     @JsonKey(name: 'rating_avg') required double ratingAvg,
     @JsonKey(name: 'rating_count') required int ratingCount,
-    @JsonKey(name: 'is_verified') required bool isVerified,
-    required List<String> tags,
-    @JsonKey(name: 'is_public') required bool isPublic,
+    @JsonKey(name: 'is_verified', fromJson: _parseBool) required bool isVerified,
+    @JsonKey(fromJson: _parseStringList, toJson: _stringListToJson) required List<String> tags,
+    @JsonKey(name: 'is_public', fromJson: _parseBool) required bool isPublic,
     Map<String, dynamic>? metadata,
     @JsonKey(name: 'course_title') String? courseTitle,
-    List<String>? years,
+    @JsonKey(fromJson: _parseStringList, toJson: _stringListToJson) List<String>? years,
     List<dynamic>? batches,
     @JsonKey(name: 'created_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? createdAt,
     @JsonKey(name: 'updated_at', fromJson: _parseDateTime, toJson: _dateTimeToJson) DateTime? updatedAt,

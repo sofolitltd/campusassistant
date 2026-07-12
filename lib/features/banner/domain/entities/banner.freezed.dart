@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Banner {
 
- String get id; String get title; String get imageUrl; String get clickUrl; int get priority; bool get isActive; DateTime get startAt; DateTime get endAt; String get targetScope; List<BannerTarget> get targets;
+ String get id; String get title; String get imageUrl; String get clickUrl; int get priority; bool get isActive; DateTime get startAt; DateTime get endAt; String get targetScope;// National, University, Department
+ List<BannerTarget> get targets;
 /// Create a copy of Banner
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -227,7 +228,9 @@ class _Banner implements Banner {
 @override final  DateTime startAt;
 @override final  DateTime endAt;
 @override final  String targetScope;
+// National, University, Department
  final  List<BannerTarget> _targets;
+// National, University, Department
 @override@JsonKey() List<BannerTarget> get targets {
   if (_targets is EqualUnmodifiableListView) return _targets;
   // ignore: implicit_dynamic_type

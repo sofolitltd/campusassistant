@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/features/university/presentation/providers/university_provider.dart';
@@ -6,12 +7,12 @@ import '/features/batch/presentation/providers/batch_provider.dart'
     as new_batch;
 import '/features/student/presentation/providers/student_provider.dart'
     as new_student;
-import 'package:campusassistant/utils/constants.dart';
+import '/utils/constants.dart';
 import 'package:go_router/go_router.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import 'package:campusassistant/widgets/open_app.dart';
+import '/widgets/open_app.dart';
 
 class GetVerificationCodeScreen extends StatelessWidget {
   const GetVerificationCodeScreen({super.key});
@@ -503,7 +504,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                         );
                       },
                       loading: () =>
-                          const Center(child: CircularProgressIndicator()),
+                          const Center(child: CupertinoActivityIndicator()),
                       error: (e, _) => Text('Error: $e'),
                     )
               else

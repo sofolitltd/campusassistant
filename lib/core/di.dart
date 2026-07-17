@@ -19,8 +19,9 @@ final apiClientProvider = Provider<ApiClient>((ref) {
       return await storage.read(key: AuthLocalDataSourceImpl.cachedTokenKey);
     },
     onUnauthorized: () async {
-      final refreshToken =
-          await storage.read(key: AuthLocalDataSourceImpl.cachedRefreshTokenKey);
+      final refreshToken = await storage.read(
+        key: AuthLocalDataSourceImpl.cachedRefreshTokenKey,
+      );
       if (refreshToken == null || refreshToken.isEmpty) return false;
       try {
         final apiKey = dotenv.env['API_KEY'];
@@ -74,4 +75,7 @@ class CommunityRefreshNotifier extends Notifier<int> {
   void increment() => state++;
 }
 
-final communityRefreshProvider = NotifierProvider<CommunityRefreshNotifier, int>(CommunityRefreshNotifier.new);
+final communityRefreshProvider =
+    NotifierProvider<CommunityRefreshNotifier, int>(
+      CommunityRefreshNotifier.new,
+    );

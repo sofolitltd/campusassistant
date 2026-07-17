@@ -30,7 +30,15 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
           '/bookmarks',
           queryParameters: {'user_id': userId},
         );
-        final List<dynamic> data = response.data;
+        final dynamic responseData = response.data;
+        final List<dynamic> data;
+        if (responseData is List) {
+          data = responseData;
+        } else if (responseData is Map<String, dynamic>) {
+          data = (responseData['data'] as List<dynamic>?) ?? [];
+        } else {
+          data = [];
+        }
         final bookmarks = data
             .map((json) => BookmarkModel.fromJson(json))
             .toList();
@@ -84,6 +92,7 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
         entityId: bookmark.entityId,
       );
       await apiClient.post('/bookmarks', data: model.toJson());
+      await cacheManager.invalidate('bookmark_user_${bookmark.userId}');
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

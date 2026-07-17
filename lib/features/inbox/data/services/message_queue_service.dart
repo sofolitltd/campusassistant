@@ -22,19 +22,22 @@ class MessageQueueService {
     String? repliedToId,
     String? repliedToText,
   }) async {
-    final tempId = messageId ??
+    final tempId =
+        messageId ??
         'temp_${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecondsSinceEpoch & 0xFFFF}';
 
     // Save to outgoing queue
-    await ChatDatabase.tryDbVoid(() => ChatDatabase.insertOutgoing({
-      'temp_id': tempId,
-      'conversation_id': conversationId,
-      'sender_id': senderId,
-      'text': text,
-      'replied_to_id': repliedToId,
-      'status': 'pending',
-      'created_at': DateTime.now().toIso8601String(),
-    }));
+    await ChatDatabase.tryDbVoid(
+      () => ChatDatabase.insertOutgoing({
+        'temp_id': tempId,
+        'conversation_id': conversationId,
+        'sender_id': senderId,
+        'text': text,
+        'replied_to_id': repliedToId,
+        'status': 'pending',
+        'created_at': DateTime.now().toIso8601String(),
+      }),
+    );
 
     // Write optimistic message to DB
     final optimistic = <String, dynamic>{
@@ -51,7 +54,12 @@ class MessageQueueService {
     ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessage(optimistic));
 
     // Attempt to send
-    final result = await _attemptSend(tempId, conversationId, text, repliedToId);
+    final result = await _attemptSend(
+      tempId,
+      conversationId,
+      text,
+      repliedToId,
+    );
 
     if (result != null) {
       result['timestamp'] ??= DateTime.now().toIso8601String();
@@ -71,7 +79,9 @@ class MessageQueueService {
     String? repliedToId,
   ) async {
     try {
-      await ChatDatabase.tryDbVoid(() => ChatDatabase.markOutgoingStatus(tempId, 'sending'));
+      await ChatDatabase.tryDbVoid(
+        () => ChatDatabase.markOutgoingStatus(tempId, 'sending'),
+      );
       final repo = _ref.read(chatRepositoryProvider);
       final result = await repo.sendMessage(
         conversationId: conversationId,
@@ -80,23 +90,31 @@ class MessageQueueService {
       );
 
       if (result['id'] != null) {
-        await ChatDatabase.tryDbVoid(() => ChatDatabase.markOutgoingStatus(tempId, 'sent'));
+        await ChatDatabase.tryDbVoid(
+          () => ChatDatabase.markOutgoingStatus(tempId, 'sent'),
+        );
         return result;
       }
     } catch (_) {}
 
-    await ChatDatabase.tryDbVoid(() => ChatDatabase.markOutgoingStatus(tempId, 'failed'));
-    ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessage({
-      'id': tempId,
-      'conversationId': conversationId,
-      'messageStatus': 'failed',
-    }));
+    await ChatDatabase.tryDbVoid(
+      () => ChatDatabase.markOutgoingStatus(tempId, 'failed'),
+    );
+    ChatDatabase.tryDbVoid(
+      () => ChatDatabase.upsertMessage({
+        'id': tempId,
+        'conversationId': conversationId,
+        'messageStatus': 'failed',
+      }),
+    );
     return null;
   }
 
   /// Retry a specific failed message by tempId.
   Future<Map<String, dynamic>?> retry(String tempId) async {
-    final pending = await ChatDatabase.tryDb(() => ChatDatabase.getOutgoingPending());
+    final pending = await ChatDatabase.tryDb(
+      () => ChatDatabase.getOutgoingPending(),
+    );
     final entry = pending?.where((e) => e['temp_id'] == tempId).firstOrNull;
     if (entry == null) return null;
 
@@ -110,7 +128,8 @@ class MessageQueueService {
 
   /// Retry all pending/failed messages.
   Future<void> retryAll() async {
-    final pending = await ChatDatabase.tryDb(() => ChatDatabase.getOutgoingPending()) ?? [];
+    final pending =
+        await ChatDatabase.tryDb(() => ChatDatabase.getOutgoingPending()) ?? [];
     for (final entry in pending) {
       _attemptSend(
         entry['temp_id'] as String,

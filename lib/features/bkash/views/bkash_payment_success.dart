@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   final String paymentID;

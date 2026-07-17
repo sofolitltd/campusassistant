@@ -102,7 +102,7 @@ class ContributorPage extends StatelessWidget {
 
   Color _avatarColor(int index) {
     const colors = [
-      Color(0xFFD32F2F),
+      Color(0xFF00897B),
       Color(0xFF3B82F6),
       Color(0xFF8B5CF6),
       Color(0xFFEC4899),

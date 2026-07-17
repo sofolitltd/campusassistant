@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
+
 import '/features/batch/presentation/providers/batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
 import '/features/course/presentation/providers/course_provider.dart';
@@ -454,7 +456,9 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                           ? Stack(
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(RadiusToken.md),
+                                  borderRadius: BorderRadius.circular(
+                                    RadiusToken.md,
+                                  ),
                                   child: Image.file(
                                     _localThumbnailFile!,
                                     fit: BoxFit.cover,
@@ -485,7 +489,9 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                             )
                           : InkWell(
                               onTap: _pickFile,
-                              borderRadius: BorderRadius.circular(RadiusToken.md),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -739,7 +745,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                   elevation: 2,
                 ),
                 child: _isUploading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const CupertinoActivityIndicator(color: Colors.white)
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -822,7 +828,9 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                     .toList();
 
                 return DropdownButtonFormField<String>(
-                  initialValue: controller.text.isNotEmpty ? controller.text : null,
+                  initialValue: controller.text.isNotEmpty
+                      ? controller.text
+                      : null,
                   decoration: const InputDecoration(
                     labelText: 'Chapter',
                     border: OutlineInputBorder(),

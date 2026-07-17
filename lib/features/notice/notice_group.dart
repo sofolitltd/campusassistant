@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/core/theme/tokens/app_spacing.dart';
 
 class NoticeGroup extends StatelessWidget {
   final user_entity.User user;

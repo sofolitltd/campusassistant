@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
-import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/features/student/presentation/providers/student_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,12 +11,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campusassistant/routes/app_route.dart';
+import '/routes/app_route.dart';
 
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
-
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({
@@ -125,7 +125,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                     height: 116,
                                     width: 116,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(RadiusToken.sm),
+                                      borderRadius: BorderRadius.circular(
+                                        RadiusToken.sm,
+                                      ),
                                       color: Colors.grey.shade200,
                                     ),
                                     padding: const EdgeInsets.all(8),
@@ -139,7 +141,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                     height: 116,
                                     width: 116,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(RadiusToken.sm),
+                                      borderRadius: BorderRadius.circular(
+                                        RadiusToken.sm,
+                                      ),
                                       border: Border.all(
                                         color: Colors.blueGrey.shade100,
                                       ),
@@ -239,7 +243,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 54),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(RadiusToken.md),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
                             ),
                             elevation: 2,
                           ),
@@ -293,10 +299,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                               hallId: widget.hallId,
                                               batchId: widget.batchId,
                                               sessionId: widget.sessionId,
-                                              departmentId:
-                                                  widget.departmentId,
-                                              universityId:
-                                                  widget.universityId,
+                                              departmentId: widget.departmentId,
+                                              universityId: widget.universityId,
                                             );
 
                                             Fluttertoast.showToast(
@@ -306,23 +310,17 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                             );
 
                                             // Force refresh current user to trigger router redirect
-                                            ref.invalidate(
-                                              currentUserProvider,
-                                            );
+                                            ref.invalidate(currentUserProvider);
 
                                             if (!context.mounted) return;
-                                            context.goNamed(
-                                              AppRoute.home.name,
-                                            );
+                                            context.goNamed(AppRoute.home.name);
                                           } catch (claimError) {
                                             Fluttertoast.showToast(
                                               msg:
                                                   'Profile setup failed: $claimError',
                                               backgroundColor: Colors.orange,
                                             );
-                                            setState(
-                                              () => _isLoading = false,
-                                            );
+                                            setState(() => _isLoading = false);
                                           }
                                         },
                                       );
@@ -338,8 +336,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                               ? const SizedBox(
                                   height: 24,
                                   width: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                  child: CupertinoActivityIndicator(
                                     color: Colors.white,
                                   ),
                                 )

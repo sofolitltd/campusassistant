@@ -1,5 +1,6 @@
-import 'package:campusassistant/features/batch/domain/entities/batch.dart';
-import 'package:campusassistant/features/student/domain/entities/student.dart';
+import '/features/batch/domain/entities/batch.dart';
+import '/features/student/domain/entities/student.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -96,18 +97,18 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                   tabs: displayBatches.map((b) {
                     // Lightweight count for tab label
                     final countAsync = b.id == 'all'
-                        ? ref.watch(studentCountAllProvider(
-                            universityId: b.universityId,
-                            departmentId: b.departmentId,
-                          ))
+                        ? ref.watch(
+                            studentCountAllProvider(
+                              universityId: b.universityId,
+                              departmentId: b.departmentId,
+                            ),
+                          )
                         : ref.watch(studentCountByBatchProvider(b.id));
                     final count = countAsync.maybeWhen(
                       data: (d) => d,
                       orElse: () => 0,
                     );
-                    return Tab(
-                      text: count > 0 ? '${b.name} ($count)' : b.name,
-                    );
+                    return Tab(text: count > 0 ? '${b.name} ($count)' : b.name);
                   }).toList(),
                 ),
               ),
@@ -131,7 +132,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
       },
       loading: () => Scaffold(
         appBar: AppBar(title: const Text('All Students'), centerTitle: true),
-        body: const Center(child: CircularProgressIndicator()),
+        body: const Center(child: CupertinoActivityIndicator()),
       ),
       error: (e, st) => Scaffold(
         appBar: AppBar(title: const Text('All Students'), centerTitle: true),
@@ -147,12 +148,14 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
     final currentPage = _getPage('all');
     final offset = (currentPage - 1) * _pageSize;
 
-    final paginatedAsync = ref.watch(studentsWithTotalAllPaginatedProvider(
-      universityId: batch.universityId,
-      departmentId: batch.departmentId,
-      limit: _pageSize,
-      offset: offset,
-    ));
+    final paginatedAsync = ref.watch(
+      studentsWithTotalAllPaginatedProvider(
+        universityId: batch.universityId,
+        departmentId: batch.departmentId,
+        limit: _pageSize,
+        offset: offset,
+      ),
+    );
 
     return paginatedAsync.when(
       data: (paginated) {
@@ -161,23 +164,23 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
 
         final displayedStudents = _searchQuery.isEmpty
             ? _sortByRollNumber(students)
-            : _sortByRollNumber(students.where((s) {
-                final query = _searchQuery.toLowerCase();
-                return s.name.toLowerCase().contains(query) ||
-                    s.studentId.toLowerCase().contains(query) ||
-                    s.hall.toLowerCase().contains(query) ||
-                    s.batch.toLowerCase().contains(query) ||
-                    s.session.toLowerCase().contains(query) ||
-                    s.blood.toLowerCase().contains(query);
-              }).toList());
+            : _sortByRollNumber(
+                students.where((s) {
+                  final query = _searchQuery.toLowerCase();
+                  return s.name.toLowerCase().contains(query) ||
+                      s.studentId.toLowerCase().contains(query) ||
+                      s.hall.toLowerCase().contains(query) ||
+                      s.batch.toLowerCase().contains(query) ||
+                      s.session.toLowerCase().contains(query) ||
+                      s.blood.toLowerCase().contains(query);
+                }).toList(),
+              );
 
         if (displayedStudents.isEmpty && _searchQuery.isEmpty) {
           return _buildEmptyState(isDark);
         }
 
-        final totalPages = totalCount > 0
-            ? (totalCount / _pageSize).ceil()
-            : 0;
+        final totalPages = totalCount > 0 ? (totalCount / _pageSize).ceil() : 0;
         final clampedPage = totalPages > 0
             ? currentPage.clamp(1, totalPages)
             : 1;
@@ -196,7 +199,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           onPageChanged: (page) => _setPage('all', page),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CupertinoActivityIndicator()),
       error: (e, s) => Center(child: Text(e.toString())),
     );
   }
@@ -209,11 +212,13 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
     final offset = (currentPage - 1) * _pageSize;
 
     // Single combined provider: returns students + total count together
-    final paginatedAsync = ref.watch(studentsWithTotalByBatchPaginatedProvider(
-      batchId: batch.id,
-      limit: _pageSize,
-      offset: offset,
-    ));
+    final paginatedAsync = ref.watch(
+      studentsWithTotalByBatchPaginatedProvider(
+        batchId: batch.id,
+        limit: _pageSize,
+        offset: offset,
+      ),
+    );
 
     return paginatedAsync.when(
       data: (paginated) {
@@ -223,23 +228,23 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         // Client-side search within current page (or fetch all for search)
         final displayedStudents = _searchQuery.isEmpty
             ? _sortByRollNumber(students, ascending: true)
-            : _sortByRollNumber(students.where((s) {
-                final query = _searchQuery.toLowerCase();
-                return s.name.toLowerCase().contains(query) ||
-                    s.studentId.toLowerCase().contains(query) ||
-                    s.hall.toLowerCase().contains(query) ||
-                    s.batch.toLowerCase().contains(query) ||
-                    s.session.toLowerCase().contains(query) ||
-                    s.blood.toLowerCase().contains(query);
-              }).toList());
+            : _sortByRollNumber(
+                students.where((s) {
+                  final query = _searchQuery.toLowerCase();
+                  return s.name.toLowerCase().contains(query) ||
+                      s.studentId.toLowerCase().contains(query) ||
+                      s.hall.toLowerCase().contains(query) ||
+                      s.batch.toLowerCase().contains(query) ||
+                      s.session.toLowerCase().contains(query) ||
+                      s.blood.toLowerCase().contains(query);
+                }).toList(),
+              );
 
         if (displayedStudents.isEmpty && _searchQuery.isEmpty) {
           return _buildEmptyState(isDark);
         }
 
-        final totalPages = totalCount > 0
-            ? (totalCount / _pageSize).ceil()
-            : 0;
+        final totalPages = totalCount > 0 ? (totalCount / _pageSize).ceil() : 0;
         final clampedPage = totalPages > 0
             ? currentPage.clamp(1, totalPages)
             : 1;
@@ -258,7 +263,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           onPageChanged: (page) => _setPage(batch.id, page),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CupertinoActivityIndicator()),
       error: (e, s) => Center(child: Text(e.toString())),
     );
   }
@@ -272,9 +277,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            _searchQuery.isNotEmpty
-                ? LucideIcons.searchX
-                : LucideIcons.users,
+            _searchQuery.isNotEmpty ? LucideIcons.searchX : LucideIcons.users,
             size: 48,
             color: Colors.grey.shade300,
           ),
@@ -314,9 +317,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                   width: 3,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.blue.shade400
-                        : Colors.blue.shade700,
+                    color: isDark ? Colors.blue.shade400 : Colors.blue.shade700,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -326,9 +327,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 12,
-                    color: isDark
-                        ? Colors.grey.shade300
-                        : Colors.grey.shade800,
+                    color: isDark ? Colors.grey.shade300 : Colors.grey.shade800,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -337,13 +336,8 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           ),
         Expanded(
           child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(
-              16, 8, 16,
-              totalPages > 1 ? 0 : 8,
-            ),
-            itemCount: totalPages > 1
-                ? students.length + 1
-                : students.length,
+            padding: EdgeInsets.fromLTRB(16, 8, 16, totalPages > 1 ? 0 : 8),
+            itemCount: totalPages > 1 ? students.length + 1 : students.length,
             separatorBuilder: (_, index) {
               if (index == students.length - 1 && totalPages > 1) {
                 return const SizedBox(height: 0);
@@ -376,7 +370,10 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
   /// Sort students by roll number
   /// `ascending: true` → oldest first (2501, 2502...) — used in batch tabs
   /// `ascending: false` → newest first (25040, 25039...) — used in "All" tab
-  List<Student> _sortByRollNumber(List<Student> students, {bool ascending = false}) {
+  List<Student> _sortByRollNumber(
+    List<Student> students, {
+    bool ascending = false,
+  }) {
     return List<Student>.from(students)..sort((a, b) {
       final numA = int.tryParse(a.studentId) ?? 0;
       final numB = int.tryParse(b.studentId) ?? 0;
@@ -449,15 +446,17 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                 onTap: () => onPageChanged(currentPage - 1),
               ),
               const SizedBox(width: 4),
-              ...pageNumbers.map((page) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: _buildPageNumberButton(
-                  page: page,
-                  isSelected: page == currentPage,
-                  isDark: isDark,
-                  onTap: () => onPageChanged(page),
+              ...pageNumbers.map(
+                (page) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _buildPageNumberButton(
+                    page: page,
+                    isSelected: page == currentPage,
+                    isDark: isDark,
+                    onTap: () => onPageChanged(page),
+                  ),
                 ),
-              )),
+              ),
               const SizedBox(width: 4),
               _buildPageButton(
                 icon: Icons.chevron_right,

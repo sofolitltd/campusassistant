@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:campusassistant/features/teacher/domain/entities/teacher.dart';
+import '/features/teacher/domain/entities/teacher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -269,11 +269,8 @@ class _TeacherCard extends StatelessWidget {
               fit: BoxFit.cover,
               placeholder: (context, url) =>
                   const Center(child: CupertinoActivityIndicator(radius: 6)),
-              errorWidget: (context, url, error) => Icon(
-                LucideIcons.user,
-                color: Colors.grey.shade300,
-                size: 24,
-              ),
+              errorWidget: (context, url, error) =>
+                  Icon(LucideIcons.user, color: Colors.grey.shade300, size: 24),
             ),
           ),
         ),

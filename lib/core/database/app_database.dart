@@ -189,6 +189,45 @@ class OfflineDatabase extends _$OfflineDatabase {
     await delete(cacheEntries).go();
   }
 
+  /// Clear cache entries for a specific entity type.
+  Future<void> clearEntityCache(String entityType) async {
+    await (delete(cacheEntries)..where((t) => t.entityType.equals(entityType)))
+        .go();
+  }
+
+  /// Delete a single cache entry by entity type and key.
+  Future<void> deleteSingleCache(String entityType, String entityKey) async {
+    await (delete(cacheEntries)
+          ..where((t) => t.entityType.equals(entityType))
+          ..where((t) => t.entityKey.equals(entityKey)))
+        .go();
+  }
+
+  /// Get cache statistics: entity type, entry count, and total data size.
+  Future<List<CacheStat>> getCacheStats() async {
+    final results = await (select(cacheEntries)
+          ..orderBy([(t) => OrderingTerm.asc(t.entityType)]))
+        .get();
+    final grouped = <String, int>{};
+    final sizeByType = <String, int>{};
+    for (final entry in results) {
+      grouped[entry.entityType] = (grouped[entry.entityType] ?? 0) + 1;
+      sizeByType[entry.entityType] =
+          (sizeByType[entry.entityType] ?? 0) + entry.data.length;
+    }
+    return grouped.entries.map((e) => CacheStat(
+          entityType: e.key,
+          entryCount: e.value,
+          totalBytes: sizeByType[e.key] ?? 0,
+        )).toList()
+      ..sort((a, b) => b.entryCount.compareTo(a.entryCount));
+  }
+
+  /// Get total number of cache entries.
+  Future<int> getTotalCacheCount() async {
+    return (select(cacheEntries)).get().then((r) => r.length);
+  }
+
   // ── Sync Queue Operations ──
 
   /// Add an operation to the sync queue.
@@ -256,6 +295,25 @@ class OfflineDatabase extends _$OfflineDatabase {
       ..where((t) => t.status.equals('pending'));
     final results = await query.get();
     return results.length;
+  }
+}
+
+/// Statistics for a cached entity type.
+class CacheStat {
+  final String entityType;
+  final int entryCount;
+  final int totalBytes;
+
+  const CacheStat({
+    required this.entityType,
+    required this.entryCount,
+    required this.totalBytes,
+  });
+
+  String get formattedSize {
+    if (totalBytes < 1024) return '$totalBytes B';
+    if (totalBytes < 1024 * 1024) return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
+    return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }
 

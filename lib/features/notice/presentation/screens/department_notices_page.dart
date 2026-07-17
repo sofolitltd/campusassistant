@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../data/models/notice_model.dart';
 import '../providers/notice_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
 import '/core/widgets/red_header_layout.dart';
 
 class DepartmentNoticesPage extends ConsumerWidget {
@@ -99,16 +100,16 @@ class _NoticeCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD32F2F).withValues(alpha: 0.1),
+                  color: Theme.of(context).appColors.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
-                child: const Icon(
+                child: Icon(
                   LucideIcons.megaphone,
                   size: 20,
-                  color: Color(0xFFD32F2F),
+                  color: Theme.of(context).appColors.primaryColor,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

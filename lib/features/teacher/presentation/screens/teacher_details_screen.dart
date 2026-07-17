@@ -21,7 +21,8 @@ class TeacherDetailsScreen extends ConsumerStatefulWidget {
   final String teacherId;
 
   @override
-  ConsumerState<TeacherDetailsScreen> createState() => _TeacherDetailsScreenState();
+  ConsumerState<TeacherDetailsScreen> createState() =>
+      _TeacherDetailsScreenState();
 }
 
 class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
@@ -42,7 +43,11 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Text(error.toString(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
+            child: Text(
+              error.toString(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+            ),
           ),
         ),
         data: (teacherModel) => SingleChildScrollView(
@@ -53,15 +58,27 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
               const SizedBox(height: 16),
               _DetailCard(
                 children: [
-                  _InfoRow(label: 'Mobile', value: teacherModel.mobile.isNotEmpty ? teacherModel.mobile : '—'),
+                  _InfoRow(
+                    label: 'Mobile',
+                    value: teacherModel.mobile.isNotEmpty
+                        ? teacherModel.mobile
+                        : '—',
+                  ),
                   const Divider(height: 24),
-                  _InfoRow(label: 'Email', value: teacherModel.email.isNotEmpty ? teacherModel.email : '—'),
+                  _InfoRow(
+                    label: 'Email',
+                    value: teacherModel.email.isNotEmpty
+                        ? teacherModel.email
+                        : '—',
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
               _AcademicSection(
                 title: 'Publications',
-                content: teacherModel.publications.isNotEmpty ? teacherModel.publications : 'No publications available.',
+                content: teacherModel.publications.isNotEmpty
+                    ? teacherModel.publications
+                    : 'No publications available.',
                 isLink: teacherModel.publications.isNotEmpty,
               ),
               const SizedBox(height: 16),
@@ -82,24 +99,24 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
     try {
       final url = teacherModel.imageUrl;
       final dio = Dio();
-      final response = await dio.get(url,
-          options: Options(responseType: ResponseType.bytes));
+      final response = await dio.get(
+        url,
+        options: Options(responseType: ResponseType.bytes),
+      );
       final bytes = response.data;
 
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/${teacherModel.name}.png');
       await file.writeAsBytes(bytes);
 
-      final text = "${teacherModel.name}\n${teacherModel.post}\n${teacherModel.phd}\n\n"
+      final text =
+          "${teacherModel.name}\n${teacherModel.post}\n${teacherModel.phd}\n\n"
           "Mobile: ${teacherModel.mobile}\nEmail: ${teacherModel.email}\n\n"
           "Publications: ${teacherModel.publications}\n\n"
           "Interests: ${teacherModel.interests}";
 
       await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path)],
-          text: text,
-        ),
+        ShareParams(files: [XFile(file.path)], text: text),
       );
     } catch (e) {
       debugPrint('Error sharing profile: $e');
@@ -179,23 +196,44 @@ class _AcademicSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
           const SizedBox(height: 12),
           if (isInterests)
             interests.isEmpty
-              ? const Text('No research interests listed.', style: TextStyle(color: Colors.grey, fontSize: 13))
-              : Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: interests.split(',').map((interest) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey.shade50,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(interest.trim(), style: TextStyle(color: Colors.blueGrey.shade800, fontSize: 11, fontWeight: FontWeight.w600)),
-                  )).toList(),
-                )
+                ? const Text(
+                    'No research interests listed.',
+                    style: TextStyle(color: Colors.grey, fontSize: 13),
+                  )
+                : Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: interests
+                        .split(',')
+                        .map(
+                          (interest) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey.shade50,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              interest.trim(),
+                              style: TextStyle(
+                                color: Colors.blueGrey.shade800,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  )
           else
             GestureDetector(
               onTap: isLink ? () => OpenApp.withUrl(content) : null,
@@ -249,15 +287,19 @@ class _HeaderCard extends StatelessWidget {
               width: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade100, width: 1.5),
+                border: Border.all(
+                  color: isDark ? Colors.white10 : Colors.grey.shade100,
+                  width: 1.5,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
                 child: CachedNetworkImage(
                   imageUrl: teacher.imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      const Center(child: CupertinoActivityIndicator(radius: 6)),
+                  placeholder: (context, url) => const Center(
+                    child: CupertinoActivityIndicator(radius: 6),
+                  ),
                   errorWidget: (context, url, error) => Icon(
                     LucideIcons.user,
                     color: Colors.grey.shade300,
@@ -271,20 +313,52 @@ class _HeaderCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(teacher.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    teacher.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(teacher.post, style: TextStyle(color: Colors.grey.shade700, fontSize: 13, fontWeight: FontWeight.w500)),
+                  Text(
+                    teacher.post,
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   if (teacher.phd.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text(teacher.phd, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                      child: Text(
+                        teacher.phd,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
                   if (teacher.chairman)
                     Container(
                       margin: const EdgeInsets.only(top: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: Colors.teal, borderRadius: BorderRadius.circular(4)),
-                      child: const Text('CHAIRMAN', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.teal,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'CHAIRMAN',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -307,7 +381,17 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(width: 60, child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey))),
+        SizedBox(
+          width: 60,
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: Colors.grey,
+            ),
+          ),
+        ),
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -317,7 +401,16 @@ class _InfoRow extends StatelessWidget {
                 OpenApp.withNumber(value);
               }
             },
-            child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, decoration: TextDecoration.underline, decorationColor: Colors.blue, color: Colors.blue)),
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.blue,
+                color: Colors.blue,
+              ),
+            ),
           ),
         ),
       ],

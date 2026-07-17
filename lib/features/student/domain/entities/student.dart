@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:campusassistant/features/auth/domain/entities/user.dart';
+import '/features/auth/domain/entities/user.dart';
 
 part 'student.freezed.dart';
 

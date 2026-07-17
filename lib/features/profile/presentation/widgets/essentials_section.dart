@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
-import 'package:campusassistant/routes/app_route.dart';
+import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/routes/app_route.dart';
 import 'section_header.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class EssentialsSection extends StatelessWidget {
   final user_entity.User user;
@@ -82,6 +81,30 @@ class EssentialsSection extends StatelessWidget {
               ),
               title: Text(
                 'Notice Group',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              trailing: Icon(
+                LucideIcons.chevronRight,
+                size: 18,
+                color: isDark ? Colors.white54 : Colors.grey.shade500,
+              ),
+            ),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.grey.shade300,
+            ),
+            ListTile(
+              onTap: () => context.push(AppRoute.cacheManagement.path),
+              leading: Icon(
+                LucideIcons.database,
+                color: isDark ? Colors.white70 : Colors.black87,
+                size: 20,
+              ),
+              title: Text(
+                'Manage Cache',
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.black87,
                   fontWeight: FontWeight.w500,

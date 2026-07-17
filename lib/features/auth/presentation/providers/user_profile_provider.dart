@@ -4,7 +4,8 @@ import '/features/profile/data/models/profile_model.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 
 final userProvider = FutureProvider<ProfileModel>((ref) async {
-  final user = await ref.watch(currentUserProvider.future)
+  final user = await ref
+      .watch(currentUserProvider.future)
       .timeout(const Duration(seconds: 10));
 
   if (user == null) {
@@ -39,7 +40,6 @@ final userProvider = FutureProvider<ProfileModel>((ref) async {
     ),
   );
 });
-
 
 final userProfileByUidProvider = FutureProvider.family<ProfileModel, String>((
   ref,

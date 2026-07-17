@@ -74,7 +74,7 @@ class SubscriptionCard extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: SizedBox()),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => Center(child: Text('Error: $err')),
     );
   }

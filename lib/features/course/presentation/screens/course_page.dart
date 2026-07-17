@@ -7,12 +7,13 @@ import '/features/course/presentation/providers/course_provider.dart';
 import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
-import '/features/study/semester/presentation/providers/semester_provider.dart';
-import '/features/study/semester/domain/entities/semester.dart';
+import '../../../study/levels/presentation/providers/semester_provider.dart';
+import '../../../study/levels/domain/entities/semester.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '/widgets/breadcrumbs.dart';
+
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 import 'course_card.dart';
 
 // ---------------------------------------------------------------------------
@@ -111,18 +112,18 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
 
     final currentSemesterName = selectedSemester?.name ?? '';
     final currentSemesterId = selectedSemester?.id;
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return userAsync.when(
       data: (user) {
         return Scaffold(
-          backgroundColor: primaryRed,
+          backgroundColor: primaryColor,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
             scrolledUnderElevation: 0,
             iconTheme: const IconThemeData(color: Colors.white),
-            centerTitle: false,
+            centerTitle: true,
             titleSpacing: 0,
             title: Text(
               currentSemesterName.isNotEmpty
@@ -138,23 +139,9 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
           body: Column(
             crossAxisAlignment: .start,
             children: [
-              // ── Breadcrumbs (red area) ──────────────────────────────
-              Theme(
-                data: theme.copyWith(
-                  colorScheme: theme.colorScheme.copyWith(
-                    onSurface: Colors.white,
-                    onSurfaceVariant: Colors.white70,
-                  ),
-                ),
-                child: const Breadcrumbs(),
-              ),
-
-              // ── Filter row (red area) ───────────────────────────────
+// ── Filter row (red area) ───────────────────────────────
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
+                padding: const .fromLTRB(16, 16, 16, 16),
                 child: Row(
                   children: [
                     const Text(
@@ -183,7 +170,19 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                           ),
                         ),
                       ),
-                      error: (_, _) => const SizedBox(),
+                      error: (_, _) => const SizedBox(
+                        width: 100,
+                        height: 32,
+                        child: Center(
+                          child: Text(
+                            'Failed',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     // Semester/Year filter (second)
@@ -260,7 +259,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                           )
                           .when(
                             loading: () => const Center(
-                              child: CircularProgressIndicator(),
+                              child: CupertinoActivityIndicator(),
                             ),
                             error: (e, _) => Center(
                               child: Padding(
@@ -409,7 +408,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
         );
       },
       loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
+          const Scaffold(body: Center(child: CupertinoActivityIndicator())),
       error: (e, _) => Scaffold(
         body: Center(
           child: Column(

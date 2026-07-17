@@ -82,7 +82,7 @@ class RoutinePage extends ConsumerWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 20),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

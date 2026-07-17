@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../core/widgets/offline_banner.dart';
 import '../widgets/custom_drawer.dart';
+import '../core/theme/app_colors.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
   const ScaffoldWithNavBar({super.key, required this.navigationShell});
@@ -22,7 +22,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
       return Scaffold(
         body: Column(
           children: [
-            const OfflineBannerSimple(),
             Expanded(
               child: Row(
                 children: [
@@ -108,12 +107,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
       return Scaffold(
         key: scaffoldKey,
         drawer: const CustomDrawer(),
-        body: Column(
-          children: [
-            const OfflineBannerSimple(),
-            Expanded(child: navigationShell),
-          ],
-        ),
+        body: navigationShell,
         bottomNavigationBar: _BlurryBottomNavBar(
           currentIndex: navigationShell.currentIndex,
           onDestinationSelected: (index) {
@@ -159,7 +153,7 @@ class _BlurryBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryRed = Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return Container(
       decoration: BoxDecoration(
@@ -215,7 +209,7 @@ class _BlurryBottomNavBar extends StatelessWidget {
                               height: 3,
                               width: isSelected ? 32 : 0,
                               decoration: BoxDecoration(
-                                color: primaryRed,
+                                color: primaryColor,
                                 borderRadius: const BorderRadius.only(
                                   bottomLeft: Radius.circular(4),
                                   bottomRight: Radius.circular(4),
@@ -226,7 +220,7 @@ class _BlurryBottomNavBar extends StatelessWidget {
                             Icon(
                               isSelected ? item.selectedIcon : item.icon,
                               size: 22,
-                              color: isSelected ? primaryRed : Colors.grey,
+                              color: isSelected ? primaryColor : Colors.grey,
                             ),
                             const SizedBox(height: 2),
                             Text(
@@ -234,7 +228,7 @@ class _BlurryBottomNavBar extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                                color: isSelected ? primaryRed : Colors.grey,
+                                color: isSelected ? primaryColor : Colors.grey,
                               ),
                             ),
                           ],

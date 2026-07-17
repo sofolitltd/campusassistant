@@ -13,7 +13,7 @@
 //     final profile = ref.watch(userProvider).value;
 
 //     if (profile == null) {
-//       return const Center(child: CircularProgressIndicator());
+//       return const Center(child: CupertinoActivityIndicator());
 //     }
 //     return Scaffold(
 //       appBar: AppBar(title: const Text('DB Migration')),

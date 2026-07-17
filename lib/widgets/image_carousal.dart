@@ -128,9 +128,8 @@ class _ImageCarouselState extends State<ImageCarousel> {
                       child: CachedNetworkImage(
                         imageUrl: banner.imageUrl,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey.shade200,
-                        ),
+                        placeholder: (context, url) =>
+                            Container(color: Colors.grey.shade200),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey.shade100,
                           child: Icon(
@@ -174,5 +173,3 @@ class _ImageCarouselState extends State<ImageCarousel> {
     );
   }
 }
-
-

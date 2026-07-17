@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
-import 'package:campusassistant/routes/app_route.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/routes/app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
 
 import '../../../../core/theme/tokens/app_spacing.dart';
 
@@ -68,10 +68,10 @@ class HeaderCard extends StatelessWidget {
                           queryParameters: {'uid': user.id},
                         );
                       },
-                      child: const Icon(
+                      child: Icon(
                         LucideIcons.pencil,
                         size: 18,
-                        color: Color(0xFFD32F2F),
+                        color: Theme.of(context).appColors.primaryColor,
                       ),
                     ),
                   ],
@@ -166,10 +166,10 @@ class _ProfileImage extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: Colors.grey.shade200, width: 1),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.camera_alt_outlined,
               size: 14,
-              color: Color(0xFFD32F2F),
+              color: Theme.of(context).appColors.primaryColor,
             ),
           ),
         ),

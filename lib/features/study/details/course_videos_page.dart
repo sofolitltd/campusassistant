@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,8 +11,9 @@ import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
-import '../semester/presentation/providers/semester_provider.dart';
+import '../levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
+import '/utils/constants.dart';
 import '/core/theme/tokens/app_radius.dart';
 
 class CourseVideos extends ConsumerStatefulWidget {
@@ -96,10 +98,8 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
     final effectiveBatch = explicitBatch != null ? selectedBatch : null;
 
     final params = (
-      universityId:
-          widget.universityId ?? widget.courseModel.universityId,
-      departmentId:
-          widget.departmentId ?? widget.courseModel.departmentId,
+      universityId: widget.universityId ?? widget.courseModel.universityId,
+      departmentId: widget.departmentId ?? widget.courseModel.departmentId,
       type: 'video',
       courseCode: widget.courseModel.courseCode,
       batch: isAllBatches(effectiveBatch) ? null : effectiveBatch?.name,
@@ -107,21 +107,23 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
       lessonNo: null,
       uploaderUid: null,
       status: null,
-      limit: 100,
+      limit: kDefaultPageSize,
     );
 
-    final videosAsync = ref.watch(resourcesListProvider(
-      universityId: params.universityId,
-      departmentId: params.departmentId,
-      type: params.type,
-      courseCode: params.courseCode,
-      batch: params.batch,
-      batchId: params.batchId,
-      lessonNo: params.lessonNo,
-      uploaderUid: params.uploaderUid,
-      status: params.status,
-      limit: params.limit,
-    ));
+    final videosAsync = ref.watch(
+      resourcesListProvider(
+        universityId: params.universityId,
+        departmentId: params.departmentId,
+        type: params.type,
+        courseCode: params.courseCode,
+        batch: params.batch,
+        batchId: params.batchId,
+        lessonNo: params.lessonNo,
+        uploaderUid: params.uploaderUid,
+        status: params.status,
+        limit: params.limit,
+      ),
+    );
 
     final isModerator = userAsync.value?.information.status?.moderator ?? false;
     final isCrForCurrentBatch =
@@ -217,11 +219,14 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
                                       color: isDark
-                                          ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                                          ? theme.colorScheme.surface
+                                                .withValues(alpha: 0.5)
                                           : Colors.grey.shade100,
                                       child: Icon(
                                         LucideIcons.video,
-                                        color: isDark ? Colors.white38 : Colors.grey,
+                                        color: isDark
+                                            ? Colors.white38
+                                            : Colors.grey,
                                       ),
                                     ),
                               ),
@@ -276,7 +281,9 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                                         .textTheme
                                         .labelSmall!
                                         .copyWith(
-                                          color: isDark ? Colors.white70 : Colors.grey,
+                                          color: isDark
+                                              ? Colors.white70
+                                              : Colors.grey,
                                         ),
                                   ),
                                 ],
@@ -360,7 +367,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) =>
             const Center(child: Text('Error loading videos.')),
       ),

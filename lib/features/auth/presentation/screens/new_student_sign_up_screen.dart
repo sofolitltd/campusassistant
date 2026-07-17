@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/features/department/presentation/providers/department_provider.dart';
@@ -122,7 +123,9 @@ class _NewStudentSignUpScreenState
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(RadiusToken.sm),
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.sm,
+                                ),
                                 border: Border.all(color: Colors.blue.shade100),
                               ),
                               child: Row(
@@ -252,7 +255,7 @@ class _NewStudentSignUpScreenState
                               loading: () => const Center(
                                 child: Padding(
                                   padding: EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(),
+                                  child: CupertinoActivityIndicator(),
                                 ),
                               ),
                               error: (err, stack) => Text(
@@ -338,7 +341,7 @@ class _NewStudentSignUpScreenState
         );
       },
       loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
+          const Scaffold(body: Center(child: CupertinoActivityIndicator())),
       error: (error, stack) => Scaffold(
         appBar: AppBar(title: const Text('Error')),
         body: Center(

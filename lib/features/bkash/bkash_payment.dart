@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:go_router/go_router.dart';
-import 'package:campusassistant/routes/app_route.dart';
+import '/routes/app_route.dart';
 import 'apis/bkash_apis.dart';
 
 class Bkash {

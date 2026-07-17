@@ -78,7 +78,7 @@ final class CoursesProvider
   }) : super(
          retry: null,
          name: r'coursesProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -129,7 +129,7 @@ final class CoursesProvider
   }
 }
 
-String _$coursesHash() => r'92565ec2accf4b62cef876273add151b0b41bc0d';
+String _$coursesHash() => r'3ac4b2139d8a79518336ae66e7e49074bc36fa86';
 
 final class CoursesFamily extends $Family
     with
@@ -148,7 +148,7 @@ final class CoursesFamily extends $Family
         name: r'coursesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   CoursesProvider call({
@@ -189,7 +189,7 @@ final class CourseByCodeProvider
   }) : super(
          retry: null,
          name: r'courseByCodeProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -241,7 +241,7 @@ final class CourseByCodeProvider
   }
 }
 
-String _$courseByCodeHash() => r'd59905632f2b60cf2a1e28fa4bf149db4b6dea4c';
+String _$courseByCodeHash() => r'd27c3c319a459aa7094465e211765862b25e4f39';
 
 final class CourseByCodeFamily extends $Family
     with
@@ -261,7 +261,7 @@ final class CourseByCodeFamily extends $Family
         name: r'courseByCodeProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   CourseByCodeProvider call({

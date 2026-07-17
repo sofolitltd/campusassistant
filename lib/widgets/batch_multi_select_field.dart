@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../features/batch/domain/entities/batch.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/features/batch/domain/entities/batch.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class BatchMultiSelectField extends StatelessWidget {
   final List<Batch> batches;

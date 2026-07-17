@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '/core/theme/app_colors.dart';
 
 class RedHeaderLayout extends StatelessWidget {
   final String title;
@@ -31,10 +32,10 @@ class RedHeaderLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return Scaffold(
-      backgroundColor: primaryRed,
+      backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -65,34 +66,34 @@ class RedHeaderLayout extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Container(
                 height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                onChanged: onSearchChanged,
-                style: const TextStyle(color: Colors.black87),
-                decoration: InputDecoration(
-                  hintText: searchHint,
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 15,
-                  ),
-                  prefixIcon: Icon(
-                    LucideIcons.search,
-                    color: Colors.grey.shade400,
-                    size: 20,
-                  ),
-                  suffixIcon: searchTrailing,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  onChanged: onSearchChanged,
+                  style: const TextStyle(color: Colors.black87),
+                  decoration: InputDecoration(
+                    hintText: searchHint,
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 15,
+                    ),
+                    prefixIcon: Icon(
+                      LucideIcons.search,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
+                    suffixIcon: searchTrailing,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
           // White Body Area
           Expanded(
@@ -130,7 +131,7 @@ class RedHeaderLayout extends StatelessWidget {
                         child: TabBar(
                           controller: tabController,
                           isScrollable: tabs!.length > 3,
-                          indicatorColor: primaryRed,
+                          indicatorColor: primaryColor,
                           indicatorWeight: 3,
                           indicatorSize: TabBarIndicatorSize.label,
                           labelColor: isDark ? Colors.white : Colors.black87,

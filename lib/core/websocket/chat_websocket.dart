@@ -33,7 +33,9 @@ class ChatWebSocketEvent {
       type: json['type'] as String? ?? '',
       conversationId: json['conversationId'] as String?,
       userId: json['userId'] as String?,
-      message: json['message'] is Map ? json['message'] as Map<String, dynamic>? : null,
+      message: json['message'] is Map
+          ? json['message'] as Map<String, dynamic>?
+          : null,
       messageId: json['messageId'] as String?,
       text: json['text'] as String?,
       isTyping: json['isTyping'] as bool?,
@@ -59,15 +61,18 @@ class ChatWebSocketService {
         .replaceFirst('/api/v1', '');
     final isSecure = base.startsWith('https://');
     final scheme = isSecure ? 'wss' : 'ws';
-    return Uri.parse('$scheme://$host/ws/chat/$conversationId')
-        .replace(queryParameters: {'token': token});
+    return Uri.parse(
+      '$scheme://$host/ws/chat/$conversationId',
+    ).replace(queryParameters: {'token': token});
   }
 
   Future<void> connect(String conversationId) async {
     await disconnect();
 
     final storage = FlutterSecureStorage();
-    final token = await storage.read(key: AuthLocalDataSourceImpl.cachedTokenKey);
+    final token = await storage.read(
+      key: AuthLocalDataSourceImpl.cachedTokenKey,
+    );
     if (token == null || token.isEmpty) return;
 
     final uri = _wsUri(conversationId, token);
@@ -106,17 +111,14 @@ class ChatWebSocketService {
 
   void sendTyping() {
     if (!_connected || _channel == null) return;
-    _channel!.sink.add(jsonEncode({
-      'type': 'typing',
-    }));
+    _channel!.sink.add(jsonEncode({'type': 'typing'}));
   }
 
   void sendMarkRead(String conversationId) {
     if (!_connected || _channel == null) return;
-    _channel!.sink.add(jsonEncode({
-      'type': 'mark_read',
-      'conversationId': conversationId,
-    }));
+    _channel!.sink.add(
+      jsonEncode({'type': 'mark_read', 'conversationId': conversationId}),
+    );
   }
 
   void send(Map<String, dynamic> data) {

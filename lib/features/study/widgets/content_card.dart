@@ -11,9 +11,13 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
+import 'package:uuid/uuid.dart';
+
 import '../data/models/content_model.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/bookmark/domain/entities/bookmark.dart';
+import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import 'resource_info_sheet.dart';
 
@@ -38,7 +42,8 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   bool _isPaused = false;
   double _downloadProgress = 0;
   bool _isDownloaded = false;
-  final bool _isBookmarked = false;
+  bool _isBookmarked = false;
+  String? _bookmarkId;
   String _localPath = '';
   CancelToken? _cancelToken;
 
@@ -46,7 +51,6 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   void initState() {
     super.initState();
     _checkFileStatus();
-    _checkBookmarkStatus();
   }
 
   Future<void> _checkFileStatus() async {
@@ -60,23 +64,6 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         });
       }
     }
-  }
-
-  Future<void> _checkBookmarkStatus() async {
-    // TODO: Refactor to use backend API bookmark endpoint
-    // final uid = FirebaseAuth.instance.currentUser?.uid;
-    // if (uid == null) return;
-
-    // final doc = await FirebaseFirestore.instance
-    //     .collection('bookmarks')
-    //     .doc(widget.contentModel.contentId)
-    //     .get();
-
-    // if (mounted) {
-    //   setState(() {
-    //     _isBookmarked = doc.exists;
-    //   });
-    // }
   }
 
   String _getFileName() {
@@ -97,6 +84,25 @@ class _ContentCardState extends ConsumerState<ContentCard> {
 
     final isProUser = profileData?.information.status?.subscriber == 'pro';
     final isProContent = widget.contentModel.status == 'pro';
+
+    final userId = profileData?.uid ?? '';
+    ref.listen(userBookmarksProvider(userId), (_, next) {
+      if (userId.isEmpty) return;
+      next.whenOrNull(data: (bookmarks) {
+        final match = bookmarks.where(
+          (b) => b.entityType == 'content' && b.entityId == widget.contentModel.contentId,
+        );
+        final found = match.isNotEmpty;
+        if (found != _isBookmarked || (found && _bookmarkId != match.first.id)) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = found;
+              _bookmarkId = found ? match.first.id : null;
+            });
+          }
+        }
+      });
+    });
 
     return Container(
       decoration: BoxDecoration(
@@ -145,8 +151,12 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                               width: 80,
                               height: 90,
                               color: isDark
-                                  ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                                  : Colors.blueAccent.shade100.withValues(alpha: 0.1),
+                                  ? theme.colorScheme.surface.withValues(
+                                      alpha: 0.5,
+                                    )
+                                  : Colors.blueAccent.shade100.withValues(
+                                      alpha: 0.1,
+                                    ),
                               child: widget.contentModel.imageUrl == ''
                                   ? Image.asset(
                                       'assets/images/placeholder.png',
@@ -195,13 +205,12 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                     ? '${widget.contentModel.courseCode.toUpperCase()}: ${widget.contentModel.lessonNo}'
                                     : widget.contentModel.courseCode
                                           .toUpperCase(),
-                                style: theme.textTheme.bodySmall!
-                                    .copyWith(
-                                      height: 1,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                                style: theme.textTheme.bodySmall!.copyWith(
+                                  height: 1,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -221,23 +230,23 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                 widget.contentModel.contentTitle,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.2,
-                                    ),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.2,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 widget.contentModel.contentSubtitle,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.labelMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: isDark ? Colors.white70 : Colors.grey.shade600,
-                                      height: 1,
-                                    ),
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.grey.shade600,
+                                  height: 1,
+                                ),
                               ),
                               const Spacer(),
                               Row(
@@ -509,7 +518,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                   child: CircularProgressIndicator(
                     value: _downloadProgress,
                     strokeWidth: 3,
-                    backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.5),
+                    backgroundColor: theme.colorScheme.surface.withValues(
+                      alpha: 0.5,
+                    ),
                   ),
                 ),
                 Text(
@@ -550,7 +561,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       onPressed: _handleBookmarkToggle,
       icon: Icon(
         _isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
-        color: _isBookmarked ? Colors.teal : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+        color: _isBookmarked
+            ? Colors.teal
+            : theme.colorScheme.onSurface.withValues(alpha: 0.4),
         size: 18,
       ),
     );
@@ -564,7 +577,11 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         visualDensity: VisualDensity.compact,
       ),
       onPressed: _showInfoBottomSheet,
-      icon: Icon(LucideIcons.info, color: theme.colorScheme.onSurface.withValues(alpha: 0.4), size: 18),
+      icon: Icon(
+        LucideIcons.info,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+        size: 18,
+      ),
     );
   }
 
@@ -574,7 +591,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.5) : Colors.grey.shade50,
+        color: isDark
+            ? theme.colorScheme.surface.withValues(alpha: 0.5)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade100,
@@ -642,45 +661,52 @@ class _ContentCardState extends ConsumerState<ContentCard> {
 
   //
   Future<void> _handleBookmarkToggle() async {
-    // TODO: Refactor to use backend API bookmark endpoint
-    Fluttertoast.showToast(msg: 'Bookmark feature coming soon');
-    // final uid = FirebaseAuth.instance.currentUser?.uid;
-    // if (uid == null) {
-    //   Fluttertoast.showToast(msg: 'Please log in to bookmark');
-    //   return;
-    // }
+    final userAsync = ref.read(userProvider);
+    final userId = userAsync.value?.uid ?? '';
+    if (userId.isEmpty) {
+      Fluttertoast.showToast(msg: 'Please login to bookmark');
+      return;
+    }
 
-    // final bookmarkRef = FirebaseFirestore.instance
-    //     .collection('bookmarks')
-    //     .doc(widget.contentModel.contentId);
-
-    // // Optimistic UI update
-    // setState(() {
-    //   _isBookmarked = !_isBookmarked;
-    // });
-
-    // try {
-    //   if (_isBookmarked) {
-    //     // Logic to add bookmark: set the document with uid and contentId
-    //     await bookmarkRef.set({
-    //       'uid': uid,
-    //       'contentType': widget.contentModel.contentType,
-    //       "contentId": widget.contentModel.contentId,
-    //     });
-    //     Fluttertoast.showToast(msg: 'Added to bookmarks');
-    //   } else {
-    //     // Logic to remove bookmark
-    //     await bookmarkRef.delete();
-    //     Fluttertoast.showToast(msg: 'Removed from bookmarks');
-    //   }
-    // } catch (e) {
-    //   // Revert if failed
-    //   setState(() {
-    //     _isBookmarked = !_isBookmarked;
-    //   });
-    //   log('Bookmark toggle error: $e');
-    //   Fluttertoast.showToast(msg: 'Failed to update bookmark');
-    // }
+    if (_isBookmarked && _bookmarkId != null) {
+      final repo = ref.read(bookmarkRepositoryProvider);
+      final result = await repo.removeBookmark(_bookmarkId!);
+      result.fold(
+        (failure) => Fluttertoast.showToast(msg: 'Failed to remove bookmark'),
+        (_) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = false;
+              _bookmarkId = null;
+            });
+          }
+          ref.invalidate(userBookmarksProvider);
+          Fluttertoast.showToast(msg: 'Bookmark removed');
+        },
+      );
+    } else {
+      final bookmark = Bookmark(
+        id: Uuid().v4(),
+        userId: userId,
+        entityType: 'content',
+        entityId: widget.contentModel.contentId,
+      );
+      final repo = ref.read(bookmarkRepositoryProvider);
+      final result = await repo.addBookmark(bookmark);
+      result.fold(
+        (failure) => Fluttertoast.showToast(msg: 'Failed to add bookmark'),
+        (_) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = true;
+              _bookmarkId = bookmark.id;
+            });
+          }
+          ref.invalidate(userBookmarksProvider);
+          Fluttertoast.showToast(msg: 'Bookmarked');
+        },
+      );
+    }
   }
 
   //
@@ -925,7 +951,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(RadiusToken.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
+        ),
         title: const Text(
           "Pro Content 🔒",
           style: TextStyle(fontWeight: FontWeight.bold),

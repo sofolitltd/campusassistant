@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 const kAppName = 'Campus Assistant';
 
+/// Default number of items per page for paginated API requests.
+const kDefaultPageSize = 20;
+
 // theme color
 const Color kPrimaryColor = Color(0xFFFFFFFF);
 const Color kSecondaryColor = Color(0xFF000000);

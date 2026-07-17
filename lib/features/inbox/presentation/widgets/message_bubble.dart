@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -22,7 +22,8 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onTapRetry;
 
-  const MessageBubble({super.key, 
+  const MessageBubble({
+    super.key,
     required this.text,
     required this.time,
     required this.isMe,
@@ -48,7 +49,9 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           if (selectMode && !isMe)
             Padding(
@@ -56,7 +59,9 @@ class MessageBubble extends StatelessWidget {
               child: GestureDetector(
                 onTap: onTap,
                 child: Icon(
-                  isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                  isSelected
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
                   size: 22,
                   color: isSelected ? Colors.teal : Colors.grey.shade500,
                 ),
@@ -86,7 +91,9 @@ class MessageBubble extends StatelessWidget {
               child: GestureDetector(
                 onTap: onTap,
                 child: Icon(
-                  isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                  isSelected
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
                   size: 22,
                   color: isSelected ? Colors.teal : Colors.grey.shade500,
                 ),
@@ -97,25 +104,40 @@ class MessageBubble extends StatelessWidget {
               onTap: selectMode ? onTap : null,
               onLongPress: selectMode ? null : () => onLongPress?.call(context),
               onHorizontalDragEnd: (details) {
-                if (!selectMode && details.primaryVelocity != null && details.primaryVelocity! > 300) {
+                if (!selectMode &&
+                    details.primaryVelocity != null &&
+                    details.primaryVelocity! > 300) {
                   onSwipeReply?.call();
                 }
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? (isDark ? Colors.teal.withValues(alpha: 0.3) : Colors.teal.withValues(alpha: 0.15))
+                      ? (isDark
+                            ? Colors.teal.withValues(alpha: 0.3)
+                            : Colors.teal.withValues(alpha: 0.15))
                       : (isMe
-                          ? (isDark ? const Color(0xFF005C4B) : const Color(0xFFDCF8C6))
-                          : (isDark ? const Color(0xFF1F2C33) : Colors.white)),
+                            ? (isDark
+                                  ? const Color(0xFF005C4B)
+                                  : const Color(0xFFDCF8C6))
+                            : (isDark
+                                  ? const Color(0xFF1F2C33)
+                                  : Colors.white)),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(12),
                     topRight: const Radius.circular(12),
                     bottomLeft: Radius.circular(isMe ? 12 : 4),
                     bottomRight: Radius.circular(isMe ? 4 : 12),
                   ),
-                  border: isMe ? null : Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+                  border: isMe
+                      ? null
+                      : Border.all(
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                        ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,11 +149,15 @@ class MessageBubble extends StatelessWidget {
                           padding: const EdgeInsets.all(8),
                           margin: const EdgeInsets.only(bottom: 6),
                           decoration: BoxDecoration(
-                            color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                            color: isDark
+                                ? Colors.white10
+                                : Colors.black.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             border: Border(
                               left: BorderSide(
-                                color: isMe ? (isDark ? Colors.white38 : Colors.black38) : Colors.teal,
+                                color: isMe
+                                    ? (isDark ? Colors.white38 : Colors.black38)
+                                    : Colors.teal,
                                 width: 3,
                               ),
                             ),
@@ -144,7 +170,11 @@ class MessageBubble extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: isMe ? (isDark ? Colors.white60 : Colors.black54) : Colors.teal,
+                                  color: isMe
+                                      ? (isDark
+                                            ? Colors.white60
+                                            : Colors.black54)
+                                      : Colors.teal,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -155,8 +185,12 @@ class MessageBubble extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: isMe
-                                      ? (isDark ? Colors.white60 : Colors.black54)
-                                      : (isDark ? Colors.white60 : Colors.grey.shade700),
+                                      ? (isDark
+                                            ? Colors.white60
+                                            : Colors.black54)
+                                      : (isDark
+                                            ? Colors.white60
+                                            : Colors.grey.shade700),
                                 ),
                               ),
                             ],

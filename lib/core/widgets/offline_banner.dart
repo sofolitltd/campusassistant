@@ -8,108 +8,49 @@ import '../cache/connectivity_service.dart';
 class OfflineBanner extends ConsumerWidget {
   final Widget child;
 
-  const OfflineBanner({
-    super.key,
-    required this.child,
-  });
+  const OfflineBanner({super.key, required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final connectivity = ref.watch(connectivityServiceProvider);
+    final isConnected = ref.watch(isConnectedProvider);
 
-    return StreamBuilder<bool>(
-      stream: connectivity.onConnectivityChanged,
-      initialData: connectivity.isConnected,
-      builder: (context, snapshot) {
-        final isConnected = snapshot.data ?? true;
+    if (isConnected) return child;
 
-        return Column(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: isConnected ? 0 : 40,
-              child: isConnected
-                  ? const SizedBox.shrink()
-                  : Container(
-                      width: double.infinity,
-                      color: Colors.orange.shade700,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.wifi_off,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'You\'re offline. Showing cached data.',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            color: Colors.orange.shade700,
+            child: const SizedBox(
+              height: 24,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.wifi_off, color: Colors.white, size: 14),
+                  SizedBox(width: 8),
+                  Text(
+                    'You\'re offline.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
+                  ),
+                ],
+              ),
             ),
-            Expanded(child: child),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// Simpler version: just a conditional banner widget.
-class OfflineBannerSimple extends ConsumerWidget {
-  const OfflineBannerSimple({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final connectivity = ref.watch(connectivityServiceProvider);
-
-    return StreamBuilder<bool>(
-      stream: connectivity.onConnectivityChanged,
-      initialData: connectivity.isConnected,
-      builder: (context, snapshot) {
-        final isConnected = snapshot.data ?? true;
-
-        if (isConnected) return const SizedBox.shrink();
-
-        return Container(
-          width: double.infinity,
-          color: Colors.orange.shade700,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
           ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.wifi_off,
-                color: Colors.white,
-                size: 16,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'You\'re offline. Showing cached data.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          Expanded(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: child,
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:campusassistant/widgets/app_logo.dart';
+import '/widgets/app_logo.dart';
 
 class NewSplashScreen extends ConsumerStatefulWidget {
   const NewSplashScreen({super.key});

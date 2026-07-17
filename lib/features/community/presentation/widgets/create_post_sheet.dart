@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/core/di.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart'
+import '/core/di.dart';
+import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 
 class CreatePostSheet extends ConsumerStatefulWidget {
@@ -116,7 +116,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).primaryColor.withValues(alpha: 0.1),
                 backgroundImage: ref
                     .watch(currentUserProvider)
                     .maybeWhen(
@@ -162,10 +164,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                   ),
                   Text(
                     'Posting to Community',
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
@@ -189,18 +188,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
           ),
           Row(
             children: [
-              IconButton(
-                icon: const Icon(LucideIcons.image),
-                onPressed: () {},
-              ),
+              IconButton(icon: const Icon(LucideIcons.image), onPressed: () {}),
               IconButton(
                 icon: const Icon(LucideIcons.paperclip),
                 onPressed: () {},
               ),
-              IconButton(
-                icon: const Icon(LucideIcons.smile),
-                onPressed: () {},
-              ),
+              IconButton(icon: const Icon(LucideIcons.smile), onPressed: () {}),
             ],
           ),
           SizedBox(height: MediaQuery.of(context).viewInsets.bottom),

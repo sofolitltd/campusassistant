@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:campusassistant/core/cache/cache_manager.dart';
-import 'package:campusassistant/core/cache/connectivity_service.dart';
-import 'package:campusassistant/core/network/api_client.dart';
-import 'package:campusassistant/core/network/api_endpoints.dart';
-import 'package:campusassistant/core/websocket/websocket_service.dart';
-import 'package:campusassistant/features/community/data/models/community_post.dart';
-import 'package:campusassistant/features/community/data/models/community_comment.dart';
+import '/core/cache/cache_manager.dart';
+import '/core/cache/connectivity_service.dart';
+import '/core/network/api_client.dart';
+import '/core/network/api_endpoints.dart';
+import '/core/websocket/websocket_service.dart';
+import '/features/community/data/models/community_post.dart';
+import '/features/community/data/models/community_comment.dart';
 
 class CommunityRepository {
   final ApiClient apiClient;
@@ -49,11 +49,7 @@ class CommunityRepository {
       try {
         final response = await apiClient.get(
           ApiEndpoints.communityPosts,
-          queryParameters: {
-            'scope': scope,
-            'page': page,
-            'page_size': 20,
-          },
+          queryParameters: {'scope': scope, 'page': page, 'page_size': 20},
         );
         final List<dynamic> data = response.data ?? [];
         final posts = data.map((json) => CommunityPost.fromJson(json)).toList();
@@ -80,8 +76,12 @@ class CommunityRepository {
           entityType: cacheKey,
         );
         if (cachedData.isNotEmpty) {
-          debugPrint('[CommunityRepo] Returning ${cachedData.length} cached posts');
-          return cachedData.map((json) => CommunityPost.fromJson(json)).toList();
+          debugPrint(
+            '[CommunityRepo] Returning ${cachedData.length} cached posts',
+          );
+          return cachedData
+              .map((json) => CommunityPost.fromJson(json))
+              .toList();
         }
       } catch (e) {
         debugPrint('[CommunityRepo] Cache read failed: $e');
@@ -102,10 +102,7 @@ class CommunityRepository {
     }
     final response = await apiClient.post(
       ApiEndpoints.communityPosts,
-      data: {
-        'content': content,
-        'scope': scope,
-      },
+      data: {'content': content, 'scope': scope},
     );
     return CommunityPost.fromJson(response.data);
   }
@@ -130,10 +127,7 @@ class CommunityRepository {
     }
     await apiClient.post(
       ApiEndpoints.communitySave(id),
-      data: {
-        'entity_type': 'community_post',
-        'entity_id': id,
-      },
+      data: {'entity_type': 'community_post', 'entity_id': id},
     );
   }
 
@@ -148,21 +142,24 @@ class CommunityRepository {
     if (!connectivity.isConnected) {
       return [];
     }
-    final response = await apiClient.get(ApiEndpoints.communityComments(postId));
+    final response = await apiClient.get(
+      ApiEndpoints.communityComments(postId),
+    );
     final List<dynamic> data = response.data ?? [];
     return data.map((json) => CommunityComment.fromJson(json)).toList();
   }
 
-  Future<CommunityComment> addComment(String postId, String content, {String? parentId}) async {
+  Future<CommunityComment> addComment(
+    String postId,
+    String content, {
+    String? parentId,
+  }) async {
     if (!connectivity.isConnected) {
       throw Exception('Internet connection required to add a comment');
     }
     final response = await apiClient.post(
       ApiEndpoints.communityComments(postId),
-      data: {
-        'content': content,
-        'parent_id': parentId,
-      },
+      data: {'content': content, 'parent_id': parentId},
     );
     return CommunityComment.fromJson(response.data);
   }

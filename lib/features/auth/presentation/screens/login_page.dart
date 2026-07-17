@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,8 +27,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   );
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController(text: "asifreyad1@gmail.com");
-  final TextEditingController _passwordController = TextEditingController(text: "12345678");
+  final TextEditingController _emailController = TextEditingController(
+    text: "asifreyad1@gmail.com",
+  );
+  final TextEditingController _passwordController = TextEditingController(
+    text: "12345678",
+  );
 
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
@@ -124,7 +129,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(RadiusToken.xl),
                             border: Border.all(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white10
                                   : Colors.grey.shade200,
                             ),
@@ -221,9 +228,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         ? const SizedBox(
                                             height: 32,
                                             width: 32,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
+                                            child: CupertinoActivityIndicator(),
                                           )
                                         : Text(
                                             'Login'.toUpperCase(),
@@ -261,7 +266,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 ),
 
                                 const SizedBox(height: 10),
-
                               ],
                             ),
                           ),
@@ -275,7 +279,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(RadiusToken.xl),
                             border: Border.all(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white10
                                   : Colors.grey.shade200,
                             ),

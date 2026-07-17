@@ -13,7 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../syllabus/domain/entities/syllabus.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class SyllabusCard extends StatefulWidget {
   const SyllabusCard({super.key, required this.syllabus});

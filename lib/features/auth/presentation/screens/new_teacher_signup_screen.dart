@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '/features/auth/presentation/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -224,8 +226,7 @@ class _NewTeacherSignupScreenState
                               ? const SizedBox(
                                   height: 24,
                                   width: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                  child: CupertinoActivityIndicator(
                                     color: Colors.white,
                                   ),
                                 )

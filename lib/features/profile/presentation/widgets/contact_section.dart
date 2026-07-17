@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
-import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
+import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/features/student/presentation/providers/student_provider.dart';
 import 'section_header.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class ContactSection extends ConsumerWidget {
   final user_entity.User user;

@@ -6,7 +6,8 @@ import '../../../../core/theme/tokens/app_spacing.dart';
 import '../../../../routes/scaffold_with_navbar.dart';
 import '../widgets/header_card.dart';
 import '../widgets/profile_card.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/core/theme/app_colors.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -14,10 +15,10 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return Scaffold(
-      backgroundColor: primaryRed,
+      backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -27,7 +28,8 @@ class ProfilePage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
-              onTap: () => ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+              onTap: () =>
+                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
               child: Container(
                 width: 28,
                 height: 28,

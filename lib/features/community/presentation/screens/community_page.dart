@@ -55,22 +55,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _CommunityFeed(
-                  scope: 'Batch',
-                  tabIndex: 0,
-                ),
-                _CommunityFeed(
-                  scope: 'Department',
-                  tabIndex: 1,
-                ),
-                _CommunityFeed(
-                  scope: 'University',
-                  tabIndex: 2,
-                ),
-                _CommunityFeed(
-                  scope: 'Saved',
-                  tabIndex: 3,
-                ),
+                _CommunityFeed(scope: 'Batch', tabIndex: 0),
+                _CommunityFeed(scope: 'Department', tabIndex: 1),
+                _CommunityFeed(scope: 'University', tabIndex: 2),
+                _CommunityFeed(scope: 'Saved', tabIndex: 3),
               ],
             ),
           ),
@@ -88,10 +76,8 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CreatePostSheet(
-        tabIndex: _tabController.index,
-        onPostCreated: () {},
-      ),
+      builder: (context) =>
+          CreatePostSheet(tabIndex: _tabController.index, onPostCreated: () {}),
     );
   }
 }

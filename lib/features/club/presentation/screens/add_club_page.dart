@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -312,7 +313,7 @@ class _AddClubPageState extends ConsumerState<AddClubPage> {
                     onPressed: isLoading ? null : _submit,
                     icon: const Icon(Icons.check),
                     label: isLoading
-                        ? const CircularProgressIndicator()
+                        ? const CupertinoActivityIndicator()
                         : const Text('Add Club'),
                   ),
                   const SizedBox(height: 24),
@@ -321,7 +322,7 @@ class _AddClubPageState extends ConsumerState<AddClubPage> {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class DateSeparator extends StatelessWidget {
   final String date;

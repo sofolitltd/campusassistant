@@ -1,5 +1,5 @@
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
-import 'package:campusassistant/features/notification/presentation/widgets/notification_badge.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/features/notification/presentation/widgets/notification_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -50,7 +50,11 @@ class _HomePageState extends ConsumerState<HomePage>
           children: [
             // Header Section
             Container(
-              decoration: const BoxDecoration(color: Color(0xFFD32F2F)),
+              decoration: BoxDecoration(
+                // color: Color(0xFFD32F2F),
+                color: Color(0xFF00897B),
+                //  color: Colors.teal.shade600,
+              ),
               child: SafeArea(
                 bottom: false,
                 child: Column(
@@ -95,9 +99,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                   LucideIcons.bell,
                                   color: Colors.white,
                                 ),
-                                onTap: () => context.push(
-                                  AppRoute.notifications.path,
-                                ),
+                                onTap: () =>
+                                    context.push(AppRoute.notifications.path),
                               ),
                               GestureDetector(
                                 onTap: () => Scaffold.of(context).openDrawer(),
@@ -151,11 +154,30 @@ class _HomePageState extends ConsumerState<HomePage>
                         ],
                       ),
                     ),
-                    SizedBox(height: Spacing.sm),
 
-                    // Shortcut Cards
+                  SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
+
+            // White Section below
+            Transform.translate(
+              offset: const Offset(0, -20),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: theme.scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                                        SizedBox(height: Spacing.sm),
+
+                      // Shortcut Cards
                     SizedBox(
-                      height: 96,
+                      height: 100,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(
@@ -214,24 +236,7 @@ class _HomePageState extends ConsumerState<HomePage>
                         ],
                       ),
                     ),
-                    SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ),
-
-            // White Section below
-            Transform.translate(
-              offset: const Offset(0, -20),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: theme.scaffoldBackgroundColor,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ),
-                child: Column(
-                  children: [
+                    
                     const SizedBox(height: Spacing.sm),
                     const SubscriptionSection(),
                     const SizedBox(height: Spacing.sm),
@@ -269,9 +274,9 @@ class _HomePageState extends ConsumerState<HomePage>
     return GestureDetector(
       onTap: () => context.push(route),
       child: Container(
-        width: 200,
+        width: 140,
         margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+        padding: const EdgeInsets.fromLTRB(12, 11, 12, 10),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -285,12 +290,15 @@ class _HomePageState extends ConsumerState<HomePage>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+            color: isDark ? Colors.white10 : Colors.grey.shade200,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(2, 2),
             ),
           ],
         ),
@@ -300,27 +308,6 @@ class _HomePageState extends ConsumerState<HomePage>
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      height: 1.2,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                ),
-                Icon(
-                  LucideIcons.chevronRight,
-                  size: 20,
-                  color: isDark ? Colors.white54 : Colors.grey.shade400,
-                ),
-              ],
-            ),
-            const SizedBox(height: Spacing.sm),
-            Row(
               children: [
                 Container(
                   width: 28,
@@ -332,16 +319,25 @@ class _HomePageState extends ConsumerState<HomePage>
                   child: Icon(icon, size: 14, color: Colors.white),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? Colors.white70 : Colors.grey.shade600,
-                    ),
-                  ),
+                Icon(
+                  LucideIcons.chevronRight,
+                  size: 20,
+                  color: isDark ? Colors.white54 : Colors.grey.shade400,
                 ),
               ],
+            ),
+            const SizedBox(height: Spacing.md),
+
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  height: 1.2,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
             ),
           ],
         ),

@@ -77,7 +77,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     });
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(conversationMessagesProvider(widget.conversationId).notifier)
+      await ref
+          .read(conversationMessagesProvider(widget.conversationId).notifier)
           .loadInitial();
       _repo.markAsRead(widget.conversationId);
       _restoreScrollPosition();
@@ -88,7 +89,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   @override
   void dispose() {
     if (_scrollController.hasClients) {
-      ref.read(chatScrollOffsetsProvider.notifier)
+      ref
+          .read(chatScrollOffsetsProvider.notifier)
           .save(widget.conversationId, _scrollController.position.pixels);
     }
     _messageController.dispose();
@@ -131,13 +133,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void _inboxRefresh() {
-    unawaited(syncConversations(ref.read(chatRepositoryProvider))
-        .then((_) => ref.read(conversationsRefreshProvider.notifier).trigger()));
+    unawaited(
+      syncConversations(
+        ref.read(chatRepositoryProvider),
+      ).then((_) => ref.read(conversationsRefreshProvider.notifier).trigger()),
+    );
   }
 
   void _handleWSEvent(ChatWebSocketEvent event) {
     if (!mounted) return;
-    final notifier = ref.read(conversationMessagesProvider(widget.conversationId).notifier);
+    final notifier = ref.read(
+      conversationMessagesProvider(widget.conversationId).notifier,
+    );
     switch (event.type) {
       case 'new_message':
         if (event.message != null) {
@@ -186,7 +193,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         }
       case 'mark_read':
         if (event.userId != null) {
-          final currentMessages = ref.read(conversationMessagesProvider(widget.conversationId)).messages;
+          final currentMessages = ref
+              .read(conversationMessagesProvider(widget.conversationId))
+              .messages;
           for (final msg in currentMessages) {
             if (msg['senderId'] != event.userId && msg['read'] != true) {
               notifier.updateMessage(msg['id'] as String, {'read': true});
@@ -199,13 +208,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   ChatRepository get _repo => ref.read(chatRepositoryProvider);
 
   Future<void> _loadMoreMessages() async {
-    final notifier = ref.read(conversationMessagesProvider(widget.conversationId).notifier);
+    final notifier = ref.read(
+      conversationMessagesProvider(widget.conversationId).notifier,
+    );
     await notifier.loadMore();
   }
 
   void _onScroll() {
     final s = ref.read(conversationMessagesProvider(widget.conversationId));
-    if (_scrollController.position.pixels <= 100 && s.hasMore && !s.loadingMore) {
+    if (_scrollController.position.pixels <= 100 &&
+        s.hasMore &&
+        !s.loadingMore) {
       _loadMoreMessages();
     }
     if (_scrollController.hasClients) {
@@ -235,7 +248,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   void _toggleMessageSelection(String messageId) {
     setState(() {
-      _selectedMsgIds.contains(messageId) ? _selectedMsgIds.remove(messageId) : _selectedMsgIds.add(messageId);
+      _selectedMsgIds.contains(messageId)
+          ? _selectedMsgIds.remove(messageId)
+          : _selectedMsgIds.add(messageId);
       if (_selectedMsgIds.isEmpty) _selectMode = false;
     });
   }
@@ -243,8 +258,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   void _deleteSelectedMessages() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1F2C33) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF1F2C33)
+          : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (ctx) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return SafeArea(
@@ -270,7 +289,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
+                    child: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                      size: 22,
+                    ),
                   ),
                   title: Text(
                     'Delete ${_selectedMsgIds.length} messages',
@@ -282,10 +305,19 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   onTap: () async {
                     Navigator.pop(ctx);
                     final repo = ref.read(chatRepositoryProvider);
-                    final notifier = ref.read(conversationMessagesProvider(widget.conversationId).notifier);
-                    await Future.wait(_selectedMsgIds.map((id) =>
-                        repo.deleteMessage(
-                            conversationId: widget.conversationId, messageId: id)));
+                    final notifier = ref.read(
+                      conversationMessagesProvider(
+                        widget.conversationId,
+                      ).notifier,
+                    );
+                    await Future.wait(
+                      _selectedMsgIds.map(
+                        (id) => repo.deleteMessage(
+                          conversationId: widget.conversationId,
+                          messageId: id,
+                        ),
+                      ),
+                    );
                     for (final id in _selectedMsgIds.toList()) {
                       notifier.deleteMessage(id);
                     }
@@ -327,7 +359,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       _replyingMsgId = null;
     });
 
-    final notifier = ref.read(conversationMessagesProvider(widget.conversationId).notifier);
+    final notifier = ref.read(
+      conversationMessagesProvider(widget.conversationId).notifier,
+    );
 
     if (editingId != null) {
       try {
@@ -347,7 +381,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         _inboxRefresh();
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to edit: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to edit: $e')));
         }
       } finally {
         setState(() => _isSending = false);
@@ -414,7 +450,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       }
                       return false;
                     },
-                    child: _buildMessages(userAsync.asData?.value?.id, isDark, s),
+                    child: _buildMessages(
+                      userAsync.asData?.value?.id,
+                      isDark,
+                      s,
+                    ),
                   ),
           ),
           if (s.loadingMore)
@@ -430,9 +470,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               isDark: isDark,
             ),
           if (!_selectMode && _replyingText != null)
-            ReplyBanner(text: _replyingText!, onCancel: _cancelReply, isDark: isDark),
+            ReplyBanner(
+              text: _replyingText!,
+              onCancel: _cancelReply,
+              isDark: isDark,
+            ),
           if (!_selectMode && _editingMsgId != null)
-            EditBanner(oldText: _editingOldText ?? '', onCancel: _cancelEdit, isDark: isDark),
+            EditBanner(
+              oldText: _editingOldText ?? '',
+              onCancel: _cancelEdit,
+              isDark: isDark,
+            ),
           if (!_selectMode)
             ChatInput(
               controller: _messageController,
@@ -448,73 +496,87 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   AppBar _selectAppBar(bool isDark) => AppBar(
-        backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(icon: const Icon(Icons.close), onPressed: _exitSelectMode),
-        title: Text(
-          '${_selectedMsgIds.length} selected',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-      );
+    backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
+    elevation: 0,
+    scrolledUnderElevation: 0,
+    leading: IconButton(
+      icon: const Icon(Icons.close),
+      onPressed: _exitSelectMode,
+    ),
+    title: Text(
+      '${_selectedMsgIds.length} selected',
+      style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 16),
+    ),
+  );
 
   AppBar _chatAppBar(bool isDark) => AppBar(
-        backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+    backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
+    elevation: 0,
+    scrolledUnderElevation: 0,
+    titleSpacing: 0,
+    leading: IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () => Navigator.of(context).pop(),
+    ),
+    title: Row(
+      children: [
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: Colors.teal.withValues(alpha: 0.2),
+          child: Text(
+            widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
+            style: const TextStyle(
+              color: Colors.teal,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
         ),
-        title: Row(
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.teal.withValues(alpha: 0.2),
-              child: Text(
-                widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
-                style: const TextStyle(
-                  color: Colors.teal,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+            Text(
+              widget.name,
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
             ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.name,
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 16),
+            if (_typingUsers.isNotEmpty)
+              const Text(
+                'typing...',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.teal,
+                  fontStyle: FontStyle.italic,
                 ),
-                if (_typingUsers.isNotEmpty)
-                  const Text(
-                    'typing...',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.teal,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-              ],
-            ),
+              ),
           ],
         ),
-        actions: [
-          IconButton(icon: const Icon(Icons.more_vert, size: 22), onPressed: () {}),
-        ],
-      );
+      ],
+    ),
+    actions: [
+      IconButton(icon: const Icon(Icons.more_vert, size: 22), onPressed: () {}),
+    ],
+  );
 
-  Widget _buildMessages(String? userId, bool isDark, ConversationMessagesState s) {
+  Widget _buildMessages(
+    String? userId,
+    bool isDark,
+    ConversationMessagesState s,
+  ) {
     final messages = s.messages;
     if (messages.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(LucideIcons.messageCircle, size: 48, color: Colors.grey.shade400),
+            Icon(
+              LucideIcons.messageCircle,
+              size: 48,
+              color: Colors.grey.shade400,
+            ),
             const SizedBox(height: 12),
             Text(
               'No messages yet',
@@ -534,7 +596,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     String? lastDate;
     for (final msg in messages) {
       final timestamp = msg['timestamp'] as String?;
-      final dateStr = timestamp != null && timestamp.length >= 10 ? timestamp.substring(0, 10) : '';
+      final dateStr = timestamp != null && timestamp.length >= 10
+          ? timestamp.substring(0, 10)
+          : '';
       if (dateStr.isNotEmpty && dateStr != lastDate) {
         items.add(ChatItem(kind: ItemKind.date, date: dateStr));
         lastDate = dateStr;
@@ -549,7 +613,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       itemBuilder: (context, index) {
         final item = items[index];
         if (item.kind == ItemKind.date) {
-          return DateSeparator(date: _formatDateLabel(item.date!), isDark: isDark);
+          return DateSeparator(
+            date: _formatDateLabel(item.date!),
+            isDark: isDark,
+          );
         }
 
         final msg = item.data!;
@@ -559,19 +626,24 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         final timeStr = _formatTime(timestamp);
         final isRead = msg['read'] == true;
         final prevItem = index > 0 ? items[index - 1] : null;
-        final showAvatar = prevItem == null ||
+        final showAvatar =
+            prevItem == null ||
             prevItem.kind == ItemKind.date ||
             (prevItem.data?['senderId'] != msg['senderId']);
 
         final createdAt = msg['created_at'] as String?;
         final updatedAt = msg['updated_at'] as String?;
-        final isEdited = createdAt != null && updatedAt != null && createdAt != updatedAt;
+        final isEdited =
+            createdAt != null && updatedAt != null && createdAt != updatedAt;
 
         final repliedToId = msg['repliedToId'] as String?;
         final repliedToText = msg['repliedToText'] as String?;
         final replyTargetIdx = repliedToId != null
             ? items.indexWhere(
-                (item) => item.kind == ItemKind.message && item.data?['id'] == repliedToId)
+                (item) =>
+                    item.kind == ItemKind.message &&
+                    item.data?['id'] == repliedToId,
+              )
             : -1;
         final msgId = msg['id'] as String;
         final isSelected = _selectedMsgIds.contains(msgId);
@@ -596,14 +668,19 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ? () {
                   if (_scrollController.hasClients) {
                     _scrollController.animateTo(
-                      (replyTargetIdx * 72.0).clamp(0, _scrollController.position.maxScrollExtent),
+                      (replyTargetIdx * 72.0).clamp(
+                        0,
+                        _scrollController.position.maxScrollExtent,
+                      ),
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeOut,
                     );
                   }
                 }
               : null,
-          onLongPress: _selectMode ? null : (ctx) => _showMessageActions(ctx, msg, isMe),
+          onLongPress: _selectMode
+              ? null
+              : (ctx) => _showMessageActions(ctx, msg, isMe),
           onSwipeReply: () => _replyToMessage(msg),
           onTapRetry: messageStatus == 'failed' && isMe
               ? () => _retryMessage(msg, text)
@@ -613,7 +690,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  void _showMessageActions(BuildContext ctx, Map<String, dynamic> msg, bool isMe) {
+  void _showMessageActions(
+    BuildContext ctx,
+    Map<String, dynamic> msg,
+    bool isMe,
+  ) {
     final text = msg['text'] as String? ?? '';
     final renderBox = ctx.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
@@ -646,7 +727,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             Clipboard.setData(ClipboardData(text: text));
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Copied'), duration: Duration(seconds: 1)),
+                const SnackBar(
+                  content: Text('Copied'),
+                  duration: Duration(seconds: 1),
+                ),
               );
             }
           },
@@ -658,13 +742,21 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
         if (isMe)
           PopupMenuItem(
-            child: MenuRow(icon: LucideIcons.trash2, label: 'Delete', isDestructive: true),
+            child: MenuRow(
+              icon: LucideIcons.trash2,
+              label: 'Delete',
+              isDestructive: true,
+            ),
             onTap: () => _deleteMessage(msg),
           ),
       ],
-      color: Theme.of(ctx).brightness == Brightness.dark ? const Color(0xFF1F2C33) : Colors.white,
+      color: Theme.of(ctx).brightness == Brightness.dark
+          ? const Color(0xFF1F2C33)
+          : Colors.white,
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(RadiusToken.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+      ),
     );
   }
 
@@ -677,7 +769,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   void _retryMessage(Map<String, dynamic> msg, String text) {
     final msgId = msg['id'] as String;
-    final notifier = ref.read(conversationMessagesProvider(widget.conversationId).notifier);
+    final notifier = ref.read(
+      conversationMessagesProvider(widget.conversationId).notifier,
+    );
     notifier.retryMessage(msgId, {'messageStatus': 'sending'});
     ref.read(messageQueueProvider).retry(msgId).then((result) {
       if (result != null && result['id'] != null) {
@@ -690,9 +784,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void _cancelReply() => setState(() {
-        _replyingText = null;
-        _replyingMsgId = null;
-      });
+    _replyingText = null;
+    _replyingMsgId = null;
+  });
 
   void _editMessage(Map<String, dynamic> msg) {
     setState(() {
@@ -708,8 +802,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   void _deleteMessage(Map<String, dynamic> msg) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1F2C33) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF1F2C33)
+          : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (ctx) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return SafeArea(
@@ -735,7 +833,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
+                    child: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                      size: 22,
+                    ),
                   ),
                   title: Text(
                     'Delete for me',
@@ -748,11 +850,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     final msgId = msg['id'] as String;
                     Navigator.pop(ctx);
                     try {
-                      await ref.read(chatRepositoryProvider).deleteMessage(
-                        conversationId: widget.conversationId,
-                        messageId: msgId,
-                      );
-                      ref.read(conversationMessagesProvider(widget.conversationId).notifier)
+                      await ref
+                          .read(chatRepositoryProvider)
+                          .deleteMessage(
+                            conversationId: widget.conversationId,
+                            messageId: msgId,
+                          );
+                      ref
+                          .read(
+                            conversationMessagesProvider(
+                              widget.conversationId,
+                            ).notifier,
+                          )
                           .deleteMessage(msgId);
                       _inboxRefresh();
                       if (mounted) {

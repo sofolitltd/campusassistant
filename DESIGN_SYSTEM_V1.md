@@ -1003,7 +1003,7 @@ These all need adding to both `buildLightTheme()` and `buildDarkTheme()`:
 2. Replace raw radius numbers with `RadiusToken.*` across all 50+ files
 3. Remove all inline `styleFrom(...)` button overrides in feature files
 4. Remove all inline `Colors.grey`/`Colors.black` text color references
-5. Final audit — no hardcoded design values remain in `lib/features/`
+5. Final audit — no hardcoded design values remain in `lib//features//`
 
 ---
 

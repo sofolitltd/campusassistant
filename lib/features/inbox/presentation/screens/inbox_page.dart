@@ -1,8 +1,9 @@
-import 'dart:async';
+ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -75,12 +76,10 @@ class _InboxPageState extends ConsumerState<InboxPage>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final conversationsAsync = ref.watch(conversationsProvider);
-    final primaryRed = const Color(
-      0xFFD32F2F,
-    ); // Matching the red from screenshot
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return Scaffold(
-      backgroundColor: primaryRed,
+      backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -90,7 +89,8 @@ class _InboxPageState extends ConsumerState<InboxPage>
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
-              onTap: () => ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+              onTap: () =>
+                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
               child: Container(
                 width: 28,
                 height: 28,
@@ -149,10 +149,8 @@ class _InboxPageState extends ConsumerState<InboxPage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.pushNamed(AppRoute.newChat.name),
-        backgroundColor: const Color(0xFF387C44), // Green from screenshot
-        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(LucideIcons.pencil),
+        child: const Icon(LucideIcons.plus),
       ),
     );
   }

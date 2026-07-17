@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -11,14 +10,15 @@ import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
 import '/features/chapter/domain/entities/chapter.dart';
-import '../semester/presentation/providers/semester_provider.dart';
+import '../levels/presentation/providers/semester_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/utils/constants.dart';
 
-import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_tab_bar.dart';
-import '../../../widgets/breadcrumbs.dart';
 
 class CourseNotesScreens extends ConsumerStatefulWidget {
   const CourseNotesScreens({
@@ -119,41 +119,6 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
     });
   }
 
-  Future<void> _handleDelete(WidgetRef ref, dynamic resource) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(_currentTab == 0 ? 'Delete Note' : 'Delete Video'),
-        content: Text(
-          _currentTab == 0
-              ? 'Are you sure you want to delete this note?'
-              : 'Are you sure you want to delete this video?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await ref.read(resourceRepositoryProvider).deleteResource(resource.id);
-      ref.invalidate(resourcesListProvider);
-      Fluttertoast.showToast(
-        msg: _currentTab == 0 ? 'Note deleted' : 'Video deleted',
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -168,22 +133,26 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
     final selectedBatch = ref.watch(resolvedBatchProvider);
 
     // Fetch chapters for this course
-    final chaptersAsync = ref.watch(chaptersForCourseProvider(
-      universityId: universityId,
-      departmentId: departmentId,
-      courseCode: widget.courseCode,
-      batchId: selectedBatch?.id,
-    ));
+    final chaptersAsync = ref.watch(
+      chaptersForCourseProvider(
+        universityId: universityId,
+        departmentId: departmentId,
+        courseCode: widget.courseCode,
+        batchId: selectedBatch?.id,
+      ),
+    );
 
     // Derive selected chapter title
     final chaptersList = chaptersAsync.value;
     final chapterTitle = chaptersList != null
         ? chaptersList
-            .firstWhere(
-              (c) => c.chapterNo.toString() == (_selectedChapterNo ?? widget.chapterNo),
-              orElse: () => chaptersList.first,
-            )
-            .chapterTitle
+              .firstWhere(
+                (c) =>
+                    c.chapterNo.toString() ==
+                    (_selectedChapterNo ?? widget.chapterNo),
+                orElse: () => chaptersList.first,
+              )
+              .chapterTitle
         : '';
 
     final isCrForCurrentBatch =
@@ -207,32 +176,34 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
       lessonNo: int.tryParse(_selectedChapterNo ?? widget.chapterNo) ?? 0,
       uploaderUid: null,
       status: null,
-      limit: 100,
+      limit: kDefaultPageSize,
     );
 
-    final resourcesStream = ref.watch(resourcesListProvider(
-      universityId: params.universityId,
-      departmentId: params.departmentId,
-      type: params.type,
-      courseCode: params.courseCode,
-      batch: params.batch,
-      batchId: params.batchId,
-      lessonNo: params.lessonNo,
-      uploaderUid: params.uploaderUid,
-      status: params.status,
-      limit: params.limit,
-    ));
+    final resourcesStream = ref.watch(
+      resourcesListProvider(
+        universityId: params.universityId,
+        departmentId: params.departmentId,
+        type: params.type,
+        courseCode: params.courseCode,
+        batch: params.batch,
+        batchId: params.batchId,
+        lessonNo: params.lessonNo,
+        uploaderUid: params.uploaderUid,
+        status: params.status,
+        limit: params.limit,
+      ),
+    );
 
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return Scaffold(
-      backgroundColor: primaryRed,
+      backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: false,
+        centerTitle: true,
         titleSpacing: 0,
         title: Text(
           chapterTitle.isNotEmpty
@@ -250,20 +221,10 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Breadcrumbs (red area) ──────────────────────────
-          Theme(
-            data: theme.copyWith(
-              colorScheme: theme.colorScheme.copyWith(
-                onSurface: Colors.white,
-                onSurfaceVariant: Colors.white70,
-              ),
-            ),
-            child: const Breadcrumbs(),
-          ),
-
           // ── Filter row (red area) ──────────────────────────
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12,),
+                        padding: const .fromLTRB(16, 0, 16, 16),
+
             child: Row(
               children: [
                 const Text(
@@ -318,7 +279,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                     Expanded(
                       child: resourcesStream.when(
                         loading: () =>
-                            const Center(child: CircularProgressIndicator()),
+                            const Center(child: CupertinoActivityIndicator()),
                         error: (e, _) => Center(child: Text('Error: $e')),
                         data: (resources) {
                           if (resources.isEmpty) {
@@ -365,25 +326,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                                 const SizedBox(height: Spacing.md),
                             itemBuilder: (context, index) {
                               final resource = resources[index];
-                              return ResourceCard(
-                                resource: resource,
-                                onEdit: !canEdit
-                                    ? null
-                                    : () {
-                                        context.push(
-                                          AppRoute.editResource.toPath({
-                                            'universityId': params.universityId,
-                                            'departmentId': params.departmentId,
-                                            'courseCode': widget.courseCode,
-                                            'resourceId': resource.id,
-                                          }),
-                                          extra: resource,
-                                        );
-                                      },
-                                onDelete: !canEdit
-                                    ? null
-                                    : () => _handleDelete(ref, resource),
-                              );
+                              return ResourceCard(resource: resource);
                             },
                           );
                         },
@@ -396,29 +339,31 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
           ),
         ],
       ),
-      floatingActionButton: canEdit
-          ? FloatingActionButton(
-              onPressed: () {
-                context.push(
-                  Uri(
-                    path: AppRoute.addResource.toPath({
-                      'universityId': universityId,
-                      'departmentId': departmentId,
-                      'courseCode': widget.courseCode,
-                    }),
-                    queryParameters: {
-                      'type': _currentTab == 0 ? 'note' : 'video',
-                      'lessonNo': _selectedChapterNo ?? widget.chapterNo,
-                      if (selectedBatch != null)
-                        'initialBatchName': selectedBatch.name,
-                    },
-                  ).toString(),
-                );
-              },
-              backgroundColor: primaryRed,
-              child: const Icon(Icons.add, color: Colors.white),
-            )
-          : null,
+
+      //todo: later add this feature
+      // floatingActionButton: canEdit
+      //     ? FloatingActionButton(
+      //         onPressed: () {
+      //           context.push(
+      //             Uri(
+      //               path: AppRoute.addResource.toPath({
+      //                 'universityId': universityId,
+      //                 'departmentId': departmentId,
+      //                 'courseCode': widget.courseCode,
+      //               }),
+      //               queryParameters: {
+      //                 'type': _currentTab == 0 ? 'note' : 'video',
+      //                 'lessonNo': _selectedChapterNo ?? widget.chapterNo,
+      //                 if (selectedBatch != null)
+      //                   'initialBatchName': selectedBatch.name,
+      //               },
+      //             ).toString(),
+      //           );
+      //         },
+      //         backgroundColor: primaryColor,
+      //         child: const Icon(Icons.add, color: Colors.white),
+      //       )
+      //     : null,
     );
   }
 }
@@ -461,8 +406,8 @@ class _ChapterFilterButton extends ConsumerWidget {
                 color: redBg
                     ? Colors.white.withValues(alpha: 0.4)
                     : isDark
-                        ? Colors.white24
-                        : Colors.grey.shade300,
+                    ? Colors.white24
+                    : Colors.grey.shade300,
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -510,9 +455,7 @@ class _ChapterFilterButton extends ConsumerWidget {
       loading: () => const SizedBox(
         width: 100,
         height: 32,
-        child: Center(
-          child: CupertinoActivityIndicator(color: Colors.white),
-        ),
+        child: Center(child: CupertinoActivityIndicator(color: Colors.white)),
       ),
       error: (_, _) => const SizedBox(),
     );
@@ -536,10 +479,14 @@ class _ChapterFilterButton extends ConsumerWidget {
             final filteredChapters = searchText.isEmpty
                 ? chapters
                 : chapters
-                    .where((c) =>
-                        c.chapterTitle.toLowerCase().contains(searchText.toLowerCase()) ||
-                        c.chapterNo.toString().contains(searchText))
-                    .toList();
+                      .where(
+                        (c) =>
+                            c.chapterTitle.toLowerCase().contains(
+                              searchText.toLowerCase(),
+                            ) ||
+                            c.chapterNo.toString().contains(searchText),
+                      )
+                      .toList();
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.7,
@@ -710,7 +657,9 @@ class _ChapterTile extends StatelessWidget {
                       color: isSelected
                           ? (isDark ? Colors.red.shade300 : Colors.red.shade700)
                           : (isDark ? Colors.white : Colors.black87),
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -730,4 +679,3 @@ class _ChapterTile extends StatelessWidget {
     );
   }
 }
-

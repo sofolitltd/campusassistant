@@ -107,7 +107,7 @@ lib/
 │   ├── providers/     # App-wide providers (theme, refresh)
 │   ├── theme/         # Light/dark theme definitions
 │   └── usecase/       # Use case base class
-├── features/          # Feature modules
+├── /features//          # Feature modules
 │   ├── auth/          # Authentication
 │   ├── study/         # Courses, notes, resources
 │   ├── home/          # Home page with sections

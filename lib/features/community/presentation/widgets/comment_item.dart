@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import 'package:campusassistant/features/community/data/models/community_comment.dart';
-import 'package:campusassistant/core/di.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart'
+import '/features/community/data/models/community_comment.dart';
+import '/core/di.dart';
+import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class CommentItem extends ConsumerStatefulWidget {
   final CommunityComment comment;
@@ -66,7 +66,9 @@ class _CommentItemState extends ConsumerState<CommentItem> {
           maxLines: 3,
           decoration: InputDecoration(
             hintText: 'Update your comment...',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(RadiusToken.md)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(RadiusToken.md),
+            ),
           ),
         ),
         actions: [
@@ -141,7 +143,9 @@ class _CommentItemState extends ConsumerState<CommentItem> {
             children: [
               CircleAvatar(
                 radius: widget.isReply ? 12 : 14,
-                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).primaryColor.withValues(alpha: 0.1),
                 backgroundImage: widget.comment.authorAvatar != null
                     ? NetworkImage(widget.comment.authorAvatar!)
                     : null,
@@ -278,16 +282,14 @@ class _CommentItemState extends ConsumerState<CommentItem> {
             ],
           ),
           if (widget.comment.replies.isNotEmpty)
-            ...widget.comment.replies
-                .map(
-                  (reply) => CommentItem(
-                    comment: reply,
-                    onReply: widget.onReply,
-                    onRefresh: widget.onRefresh,
-                    isReply: true,
-                  ),
-                )
-                ,
+            ...widget.comment.replies.map(
+              (reply) => CommentItem(
+                comment: reply,
+                onReply: widget.onReply,
+                onRefresh: widget.onRefresh,
+                isReply: true,
+              ),
+            ),
         ],
       ),
     );

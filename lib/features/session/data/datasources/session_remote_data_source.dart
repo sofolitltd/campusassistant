@@ -1,5 +1,5 @@
-import '../../../../core/network/api_client.dart';
-import '../../../../core/network/api_endpoints.dart';
+import '/core/network/api_client.dart';
+import '/core/network/api_endpoints.dart';
 import '../models/session_model.dart';
 
 abstract class SessionRemoteDataSource {

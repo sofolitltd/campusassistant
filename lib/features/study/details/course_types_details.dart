@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,9 +8,10 @@ import '/features/course/domain/entities/course.dart';
 import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
+import '/utils/constants.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/resource/domain/entities/resource.dart';
-import '../semester/presentation/providers/semester_provider.dart';
+import '../levels/presentation/providers/semester_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
 import '/routes/app_route.dart';
@@ -125,21 +127,23 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
       lessonNo: null,
       uploaderUid: null,
       status: null,
-      limit: 100,
+      limit: kDefaultPageSize,
     );
 
-    final contentAsync = ref.watch(resourcesListProvider(
-      universityId: params.universityId,
-      departmentId: params.departmentId,
-      type: params.type,
-      courseCode: params.courseCode,
-      batch: params.batch,
-      batchId: params.batchId,
-      lessonNo: params.lessonNo,
-      uploaderUid: params.uploaderUid,
-      status: params.status,
-      limit: params.limit,
-    ));
+    final contentAsync = ref.watch(
+      resourcesListProvider(
+        universityId: params.universityId,
+        departmentId: params.departmentId,
+        type: params.type,
+        courseCode: params.courseCode,
+        batch: params.batch,
+        batchId: params.batchId,
+        lessonNo: params.lessonNo,
+        uploaderUid: params.uploaderUid,
+        status: params.status,
+        limit: params.limit,
+      ),
+    );
 
     return Scaffold(
       body: Column(
@@ -162,46 +166,11 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final resource = resources[index];
-
-                    final isModerator =
-                        userAsync.value?.information.status?.moderator ?? false;
-                    final isAdmin =
-                        userAsync.value?.information.status?.admin ?? false;
-                    final isCrForCurrentBatch =
-                        userAsync.value != null &&
-                        userAsync.value!.information.status?.cr == true &&
-                        userAsync.value!.information.batch ==
-                            resolvedBatch?.name;
-
-                    final canEdit =
-                        _isAdminMode ||
-                        isAdmin ||
-                        isModerator ||
-                        isCrForCurrentBatch;
-
-                    return ResourceCard(
-                      resource: resource,
-                      onEdit: !canEdit
-                          ? null
-                          : () {
-                              context.push(
-                                AppRoute.editResource.toPath({
-                                  'universityId': params.universityId,
-                                  'departmentId': params.departmentId,
-                                  'courseCode': widget.courseModel.courseCode,
-                                  'resourceId': resource.id,
-                                }),
-                                extra: resource,
-                              );
-                            },
-                      onDelete: !canEdit
-                          ? null
-                          : () => _handleDelete(ref, resource),
-                    );
+                    return ResourceCard(resource: resource);
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),
@@ -243,31 +212,5 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       child: const Icon(Icons.add, color: Colors.white),
     );
-  }
-
-  Future<void> _handleDelete(WidgetRef ref, Resource resource) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Resource'),
-        content: const Text('Are you sure you want to delete this resource?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await ref.read(resourceRepositoryProvider).deleteResource(resource.id);
-      ref.invalidate(resourcesListProvider);
-      Fluttertoast.showToast(msg: 'Resource deleted');
-    }
   }
 }

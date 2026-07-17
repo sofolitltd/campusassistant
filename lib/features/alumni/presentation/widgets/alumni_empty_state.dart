@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class AlumniEmptyState extends StatelessWidget {
   const AlumniEmptyState({super.key});

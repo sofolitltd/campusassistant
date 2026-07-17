@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
+import '/features/auth/domain/entities/user.dart' as user_entity;
 import 'profile_info_tabs.dart';
 import 'account_section.dart';
 import 'theme_section.dart';

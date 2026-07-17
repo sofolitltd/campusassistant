@@ -1,4 +1,5 @@
 import '../../../../core/network/api_client.dart';
+import '../../../../utils/constants.dart';
 import '../models/banner_model.dart';
 
 abstract class BannerRemoteDataSource {
@@ -23,7 +24,7 @@ class BannerRemoteDataSourceImpl implements BannerRemoteDataSource {
     String? departmentId,
     String? mode,
   }) async {
-    final Map<String, dynamic> queryParameters = {'limit': 100};
+    final Map<String, dynamic> queryParameters = {'limit': kDefaultPageSize};
     if (universityId != null) queryParameters['university_id'] = universityId;
     if (departmentId != null) queryParameters['department_id'] = departmentId;
     if (mode != null) queryParameters['mode'] = mode;

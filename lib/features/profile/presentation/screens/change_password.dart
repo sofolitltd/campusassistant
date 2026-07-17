@@ -1,8 +1,9 @@
 // import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '/widgets/breadcrumbs.dart';
+
 import '/core/theme/tokens/app_spacing.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -49,9 +50,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      //
-                      const Breadcrumbs(leftPadding: 0),
-
                       // title
                       Text(
                         'Old password',
@@ -161,7 +159,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 }
                               },
                         child: _isLoading
-                            ? const CircularProgressIndicator()
+                            ? const CupertinoActivityIndicator()
                             : Text('Change Password'.toUpperCase()),
                       ),
                     ],

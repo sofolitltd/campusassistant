@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,14 +7,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notification_tile.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
 
   @override
-  ConsumerState<NotificationScreen> createState() =>
-      _NotificationScreenState();
+  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
 class _NotificationScreenState extends ConsumerState<NotificationScreen> {
@@ -38,9 +38,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                   if (!hasUnread) return const SizedBox.shrink();
                   return TextButton(
                     onPressed: () {
-                      ref
-                          .read(notificationRepositoryProvider)
-                          .markAllAsRead();
+                      ref.read(notificationRepositoryProvider).markAllAsRead();
                       ref.invalidate(notificationsProvider);
                     },
                     child: Text(
@@ -77,23 +75,21 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   children: grouped.entries.map((entry) {
-                    return _buildDateSection(
-                      entry.key,
-                      entry.value,
-                      isDark,
-                    );
+                    return _buildDateSection(entry.key, entry.value, isDark);
                   }).toList(),
                 ),
               ),
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
-            child: Text('Error: $err',
-                style: const TextStyle(color: Colors.red)),
+            child: Text(
+              'Error: $err',
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ),
       ),
@@ -114,15 +110,14 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               color: _showUnreadOnly
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
                   : (isDark
-                      ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.grey.shade100),
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.grey.shade100),
               borderRadius: BorderRadius.circular(RadiusToken.sm),
               border: Border.all(
                 color: _showUnreadOnly
-                    ? Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.3)
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.3)
                     : (isDark ? Colors.white10 : Colors.grey.shade200),
               ),
             ),
@@ -130,9 +125,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _showUnreadOnly
-                      ? LucideIcons.filter
-                      : LucideIcons.mailOpen,
+                  _showUnreadOnly ? LucideIcons.filter : LucideIcons.mailOpen,
                   size: 14,
                   color: _showUnreadOnly
                       ? Theme.of(context).colorScheme.primary
@@ -174,16 +167,16 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                _showUnreadOnly
-                    ? LucideIcons.inbox
-                    : LucideIcons.bellOff,
+                _showUnreadOnly ? LucideIcons.inbox : LucideIcons.bellOff,
                 size: 36,
                 color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              _showUnreadOnly ? 'No unread notifications' : 'No notifications yet',
+              _showUnreadOnly
+                  ? 'No unread notifications'
+                  : 'No notifications yet',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -207,7 +200,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   }
 
   Map<String, List<AppNotification>> _groupByDate(
-      List<AppNotification> notifications) {
+    List<AppNotification> notifications,
+  ) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
@@ -238,8 +232,13 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       grouped[section]!.add(n);
     }
 
-    final orderedKeys = ['Today', 'Yesterday', 'This Week', 'Last Week', 'Earlier']
-        .where((k) => grouped.containsKey(k));
+    final orderedKeys = [
+      'Today',
+      'Yesterday',
+      'This Week',
+      'Last Week',
+      'Earlier',
+    ].where((k) => grouped.containsKey(k));
     return {for (final k in orderedKeys) k: grouped[k]!};
   }
 
@@ -263,14 +262,16 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             ),
           ),
         ),
-        ...notifications.map((notification) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: NotificationTile(
-                notification: notification,
-                onTap: () => _handleNotificationTap(notification),
-                onDismiss: () => _handleDismiss(notification.id),
-              ),
-            )),
+        ...notifications.map(
+          (notification) => Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: NotificationTile(
+              notification: notification,
+              onTap: () => _handleNotificationTap(notification),
+              onDismiss: () => _handleDismiss(notification.id),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -281,10 +282,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
     if (!mounted) return;
 
-    context.push(
-      '/notifications/${notification.id}',
-      extra: notification,
-    );
+    context.push('/notifications/${notification.id}', extra: notification);
   }
 
   void _handleDismiss(String id) async {

@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:campusassistant/features/study/widgets/content_card.dart';
+import '/features/study/widgets/content_card.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -124,9 +125,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                                     SizedBox(
                                       width: 14,
                                       height: 14,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
+                                      child: CupertinoActivityIndicator(),
                                     ),
                                     SizedBox(width: 8),
                                     Text(
@@ -144,7 +143,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                   ],
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, st) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -153,8 +152,9 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                     const SizedBox(height: Spacing.lg),
                     Text('Error: $e'),
                     TextButton(
-                      onPressed: () =>
-                          ref.read(libraryPaginationProvider.notifier).refresh(),
+                      onPressed: () => ref
+                          .read(libraryPaginationProvider.notifier)
+                          .refresh(),
                       child: const Text('Try Again'),
                     ),
                   ],

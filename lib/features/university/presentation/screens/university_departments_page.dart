@@ -28,17 +28,15 @@ class UniversityDepartmentsPage extends ConsumerWidget {
           showSearchBar: false,
           body: deptsAsync.when(
             data: (departments) => Column(
-                children: [
-                  _TotalCountBanner(
-                    count: departments.length,
-                    label: 'Total Departments',
-                    icon: LucideIcons.building2,
-                  ),
-                  Expanded(
-                    child: _DepartmentsList(departments: departments),
-                  ),
-                ],
-              ),
+              children: [
+                _TotalCountBanner(
+                  count: departments.length,
+                  label: 'Total Departments',
+                  icon: LucideIcons.building2,
+                ),
+                Expanded(child: _DepartmentsList(departments: departments)),
+              ],
+            ),
             loading: () => const Center(child: CupertinoActivityIndicator()),
             error: (err, _) => Center(
               child: Padding(

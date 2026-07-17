@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,23 +12,24 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
+import 'package:uuid/uuid.dart';
+
 import '/features/resource/domain/entities/resource.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/core/cache/cache_manager.dart';
+import '/core/providers/download_counter_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/features/bookmark/domain/entities/bookmark.dart';
+import '/features/bookmark/presentation/providers/bookmark_provider.dart';
+import '/features/resource/presentation/providers/downloads_provider.dart';
 import 'resource_info_sheet.dart';
 
 class ResourceCard extends ConsumerStatefulWidget {
   final Resource resource;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
 
-  const ResourceCard({
-    super.key,
-    required this.resource,
-    this.onEdit,
-    this.onDelete,
-  });
+  const ResourceCard({super.key, required this.resource});
 
   @override
   ConsumerState<ResourceCard> createState() => _ResourceCardState();
@@ -38,7 +40,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   bool _isPaused = false;
   double _downloadProgress = 0;
   bool _isDownloaded = false;
-  final bool _isBookmarked = false;
+  bool _isBookmarked = false;
+  String? _bookmarkId;
   String _localPath = '';
   CancelToken? _cancelToken;
 
@@ -46,7 +49,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   void initState() {
     super.initState();
     _checkFileStatus();
-    _checkBookmarkStatus();
   }
 
   Future<void> _checkFileStatus() async {
@@ -60,10 +62,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         });
       }
     }
-  }
-
-  Future<void> _checkBookmarkStatus() async {
-    // TODO: Implement bookmark check via API
   }
 
   String _getFileName() {
@@ -89,6 +87,25 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
     final isProUser = profileData?.information.status?.subscriber == 'pro';
     final isProContent = widget.resource.status == 'pro';
+
+    final userId = profileData?.uid ?? '';
+    ref.listen(userBookmarksProvider(userId), (_, next) {
+      if (userId.isEmpty) return;
+      next.whenOrNull(data: (bookmarks) {
+        final match = bookmarks.where(
+          (b) => b.entityType == 'resource' && b.entityId == widget.resource.id,
+        );
+        final found = match.isNotEmpty;
+        if (found != _isBookmarked || (found && _bookmarkId != match.first.id)) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = found;
+              _bookmarkId = found ? match.first.id : null;
+            });
+          }
+        }
+      });
+    });
 
     return Container(
       decoration: BoxDecoration(
@@ -118,28 +135,35 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                 await _handleOpenContent();
               }
             },
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        _buildThumbnail(isProContent),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: _showInfoBottomSheet,
+                        child: _buildThumbnail(isProContent),
+                      ),
                       const SizedBox(width: 12),
                       _buildDetails(context),
                     ],
                   ),
                 ),
-                Positioned(top: 0, right: 0, child: _buildPopupMenu()),
+                Positioned(top: -4, right: -6, child: _buildPopupMenu()),
                 Positioned(
-                  bottom: 5,
-                  right: 40,
-                  child: Row(children: [_buildInfoButton(), _buildBookmark()]),
-                ),
-                Positioned(
-                  bottom: 15,
+                  bottom: -4,
                   right: 12,
-                  child: _buildDownloadStatusAction(),
+                  child: _isLoading || _isPaused
+                      ? _buildDownloadStatusAction()
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildBookmark(),
+                            const SizedBox(width: 2),
+                            _buildDownloadStatusAction(),
+                          ],
+                        ),
                 ),
               ],
             ),
@@ -155,26 +179,40 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     return Stack(
       alignment: Alignment.topLeft,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Container(
-            width: 80,
-            height: 90,
+        Container(
+          width: 80,
+          height: 90,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
             color: isDark
                 ? theme.colorScheme.surface.withValues(alpha: 0.5)
                 : Colors.blueAccent.shade100.withValues(alpha: 0.1),
-            child: widget.resource.thumbnailUrl.isEmpty
-                ? Icon(LucideIcons.fileText, color: theme.colorScheme.onSurface.withValues(alpha: 0.4), size: 30)
-                : Image.network(
-                    widget.resource.thumbnailUrl,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, _, _) => Icon(
-                      LucideIcons.fileText,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                      size: 30,
-                    ),
-                  ),
+            border: Border.all(
+              color: isDark ? Colors.white24 : Colors.grey.shade300,
+              width: 1,
+            ),
           ),
+          clipBehavior: Clip.antiAlias,
+          child: widget.resource.thumbnailUrl.isEmpty
+              ? Icon(
+                  LucideIcons.fileText,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  size: 30,
+                )
+              : CachedNetworkImage(
+                  imageUrl: widget.resource.thumbnailUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, _) => Icon(
+                    LucideIcons.fileText,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    size: 30,
+                  ),
+                  errorWidget: (context, _, _) => Icon(
+                    LucideIcons.fileText,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    size: 30,
+                  ),
+                ),
         ),
         if (isProContent)
           Positioned(
@@ -193,26 +231,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               ),
             ),
           ),
-        Positioned(
-          bottom: 4,
-          left: 4,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(4, 3, 5, 3.5),
-            decoration: BoxDecoration(
-              color: Colors.teal.withValues(alpha: .5),
-              borderRadius: BorderRadius.circular(2.5),
-            ),
-            child: Text(
-              '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
-              style: const TextStyle(
-                height: 1,
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -225,6 +243,25 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).appColors.primaryColor.withValues(alpha: .5),
+                borderRadius: BorderRadius.circular(2.5),
+              ),
+              child: Text(
+                '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
+                style: const TextStyle(
+                  height: 1,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
             Text(
               widget.resource.title,
               maxLines: 2,
@@ -241,7 +278,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.grey.shade600,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white70
+                    : Colors.grey.shade600,
                 height: 1,
               ),
             ),
@@ -293,31 +332,31 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           case 'delete_local':
             await _handleDeleteLocally();
             break;
-          case 'edit':
-            widget.onEdit?.call();
-            break;
-          case 'delete':
-            widget.onDelete?.call();
+          case 'info':
+            _showInfoBottomSheet();
             break;
         }
       },
       itemBuilder: (context) => [
         if (!_isDownloaded && !_isLoading)
           const PopupMenuItem(
+            height: 34,
             value: 'download',
             child: _PopupItem(icon: LucideIcons.download, text: 'Download'),
           ),
         if (_isLoading || _isPaused)
-          const PopupMenuItem(
+          PopupMenuItem(
+            height: 34,
             value: 'cancel',
             child: _PopupItem(
               icon: LucideIcons.circleX,
               text: 'Cancel Download',
-              isError: true,
+              errorColor: theme.appColors.destructiveColor,
             ),
           ),
         if (_isDownloaded)
           const PopupMenuItem(
+            height: 34,
             value: 'save',
             child: _PopupItem(
               icon: LucideIcons.cloudDownload,
@@ -325,36 +364,30 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             ),
           ),
         const PopupMenuItem(
+          height: 34,
           value: 'share',
           child: _PopupItem(icon: LucideIcons.share2, text: 'Share'),
         ),
         const PopupMenuItem(
+          height: 34,
           value: 'open_with',
           child: _PopupItem(icon: LucideIcons.externalLink, text: 'Open with'),
         ),
         if (_isDownloaded)
-          const PopupMenuItem(
+          PopupMenuItem(
+            height: 34,
             value: 'delete_local',
             child: _PopupItem(
               icon: LucideIcons.trash2,
               text: 'Delete Locally',
-              isError: true,
+              errorColor: theme.appColors.destructiveColor,
             ),
           ),
-        if (widget.onEdit != null)
-          const PopupMenuItem(
-            value: 'edit',
-            child: _PopupItem(icon: LucideIcons.pencil, text: 'Edit Resource'),
-          ),
-        if (widget.onDelete != null)
-          const PopupMenuItem(
-            value: 'delete',
-            child: _PopupItem(
-              icon: LucideIcons.trash2,
-              text: 'Delete Resource',
-              isError: true,
-            ),
-          ),
+        const PopupMenuItem(
+          height: 34,
+          value: 'info',
+          child: _PopupItem(icon: LucideIcons.info, text: 'Info'),
+        ),
       ],
     );
   }
@@ -382,10 +415,10 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 LucideIcons.circleX,
                 size: 18,
-                color: Colors.red,
+                color: theme.appColors.destructiveColor,
               ),
               onPressed: _handleCancelDownload,
             ),
@@ -393,7 +426,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               icon: Icon(
                 _isPaused ? LucideIcons.play : LucideIcons.pause,
                 size: 18,
-                color: Colors.teal,
+                color: theme.appColors.primaryColor,
               ),
               onPressed: () => _isPaused ? _resumeDownload() : _pauseDownload(),
             ),
@@ -419,15 +452,17 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     return Stack(
       alignment: Alignment.center,
       children: [
-          SizedBox(
-            height: 24,
-            width: 24,
-            child: CircularProgressIndicator(
-              value: _downloadProgress,
-              strokeWidth: 3,
-              backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
-            ),
+        SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(
+            value: _downloadProgress,
+            strokeWidth: 3,
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.surface.withValues(alpha: 0.5),
           ),
+        ),
         Text(
           '${(_downloadProgress * 100).toInt()}%',
           style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold),
@@ -439,20 +474,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   Widget _buildBookmark() {
     final theme = Theme.of(context);
     return IconButton(
+      constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
+      padding: EdgeInsets.zero,
       onPressed: _handleBookmarkToggle,
       icon: Icon(
         _isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
-        color: _isBookmarked ? Colors.teal : theme.colorScheme.onSurface.withValues(alpha: 0.4),
-        size: 18,
+        color: _isBookmarked
+            ? Colors.teal
+            : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+        size: 20,
       ),
-    );
-  }
-
-  Widget _buildInfoButton() {
-    final theme = Theme.of(context);
-    return IconButton(
-      onPressed: _showInfoBottomSheet,
-      icon: Icon(LucideIcons.info, color: theme.colorScheme.onSurface.withValues(alpha: 0.4), size: 18),
     );
   }
 
@@ -462,7 +493,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.5) : Colors.grey.shade50,
+        color: isDark
+            ? theme.colorScheme.surface.withValues(alpha: 0.5)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade100,
@@ -584,6 +617,14 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           }
         },
       );
+      // Cache metadata for the downloads page
+      if (mounted) {
+        final cacheManager = ref.read(cacheManagerProvider);
+        await cacheDownloadedResourceMetadata(
+          cacheManager: cacheManager,
+          resource: widget.resource,
+        );
+      }
       return true;
     } catch (e) {
       log('Download error: $e');
@@ -633,10 +674,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     if (!_isDownloaded) await _downloadIfNeeded();
     if (_isDownloaded && _localPath.isNotEmpty) {
       await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(_localPath)],
-          text: widget.resource.title,
-        ),
+        ShareParams(files: [XFile(_localPath)], text: widget.resource.title),
       );
     }
   }
@@ -659,6 +697,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             _downloadProgress = 0;
           });
         }
+        ref.invalidate(downloadCountProvider);
         Fluttertoast.showToast(msg: 'File deleted locally');
       }
     } catch (e) {
@@ -684,28 +723,66 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _handleBookmarkToggle() async {
-    Fluttertoast.showToast(msg: 'Bookmark feature coming soon');
+    final userAsync = ref.read(userProvider);
+    final userId = userAsync.value?.uid ?? '';
+    if (userId.isEmpty) {
+      Fluttertoast.showToast(msg: 'Please login to bookmark');
+      return;
+    }
+
+    if (_isBookmarked && _bookmarkId != null) {
+      final repo = ref.read(bookmarkRepositoryProvider);
+      final result = await repo.removeBookmark(_bookmarkId!);
+      result.fold(
+        (failure) => Fluttertoast.showToast(msg: 'Failed to remove bookmark'),
+        (_) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = false;
+              _bookmarkId = null;
+            });
+          }
+          ref.invalidate(userBookmarksProvider);
+          Fluttertoast.showToast(msg: 'Bookmark removed');
+        },
+      );
+    } else {
+      final bookmark = Bookmark(
+        id: Uuid().v4(),
+        userId: userId,
+        entityType: 'resource',
+        entityId: widget.resource.id,
+      );
+      final repo = ref.read(bookmarkRepositoryProvider);
+      final result = await repo.addBookmark(bookmark);
+      result.fold(
+        (failure) => Fluttertoast.showToast(msg: 'Failed to add bookmark'),
+        (_) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = true;
+              _bookmarkId = bookmark.id;
+            });
+          }
+          ref.invalidate(userBookmarksProvider);
+          Fluttertoast.showToast(msg: 'Bookmarked');
+        },
+      );
+    }
   }
 }
 
 class _PopupItem extends StatelessWidget {
   final IconData icon;
   final String text;
-  final bool isError;
-  const _PopupItem({
-    required this.icon,
-    required this.text,
-    this.isError = false,
-  });
+  final Color? errorColor;
+  const _PopupItem({required this.icon, required this.text, this.errorColor});
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Icon(icon, size: 16, color: isError ? Colors.red : null),
+      Icon(icon, size: 16, color: errorColor),
       const SizedBox(width: 8),
-      Text(
-        text,
-        style: TextStyle(fontSize: 13, color: isError ? Colors.red : null),
-      ),
+      Text(text, style: TextStyle(fontSize: 13, color: errorColor)),
     ],
   );
 }

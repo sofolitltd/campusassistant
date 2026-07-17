@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
-import 'package:campusassistant/widgets/common_text_field_widget.dart';
-import 'package:campusassistant/routes/app_route.dart';
+import '/features/student/presentation/providers/student_provider.dart';
+import '/widgets/common_text_field_widget.dart';
+import '/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class VerificationPage extends ConsumerStatefulWidget {
   const VerificationPage({super.key});
@@ -145,8 +146,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                   ? const SizedBox(
                                       height: 24,
                                       width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
+                                      child: CupertinoActivityIndicator(
                                         color: Colors.white,
                                       ),
                                     )

@@ -13,6 +13,9 @@ class CourseRepositoryImpl implements CourseRepository {
   final CacheManager cacheManager;
   final ConnectivityService connectivity;
 
+  final Map<String, List<Course>> _coursesCache = {};
+  final Map<String, Course> _courseByCodeCache = {};
+
   CourseRepositoryImpl({
     required this.apiClient,
     required this.cacheManager,
@@ -48,7 +51,30 @@ class CourseRepositoryImpl implements CourseRepository {
       batchId: batchId,
     );
 
-    // 1. Try remote if online
+    // 0. In-memory cache (instant — no microtask delay)
+    if (_coursesCache.containsKey(cacheKey)) {
+      debugPrint('[CourseRepo] Returning ${_coursesCache[cacheKey]!.length} courses from in-memory cache');
+      return Right(_coursesCache[cacheKey]!);
+    }
+
+    // 1. Try DB cache
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'course_$cacheKey',
+      );
+      if (cachedData.isNotEmpty) {
+        final courses = cachedData
+            .map((json) => CourseModel.fromJson(json).toEntity())
+            .toList();
+        _coursesCache[cacheKey] = courses;
+        debugPrint('[CourseRepo] Returning ${courses.length} cached courses');
+        return Right(courses);
+      }
+    } catch (e) {
+      debugPrint('[CourseRepo] Cache read failed: $e');
+    }
+
+    // 2. Try remote if online
     if (connectivity.isConnected) {
       try {
         final queryParams = {
@@ -71,33 +97,17 @@ class CourseRepositoryImpl implements CourseRepository {
             .map((json) => CourseModel.fromJson(json).toEntity())
             .toList();
 
-        // Cache the result
         await cacheManager.cacheList(
           entityType: 'course_$cacheKey',
           items: data.cast<Map<String, dynamic>>(),
           ttl: CacheTTL.course,
         );
+        _coursesCache[cacheKey] = courses;
 
         return Right(courses);
       } catch (e) {
         debugPrint('[CourseRepo] Remote fetch failed: $e');
       }
-    }
-
-    // 2. Try cached data
-    try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: 'course_$cacheKey',
-      );
-      if (cachedData.isNotEmpty) {
-        final courses = cachedData
-            .map((json) => CourseModel.fromJson(json).toEntity())
-            .toList();
-        debugPrint('[CourseRepo] Returning ${courses.length} cached courses');
-        return Right(courses);
-      }
-    } catch (e) {
-      debugPrint('[CourseRepo] Cache read failed: $e');
     }
 
     // 3. No data
@@ -118,14 +128,29 @@ class CourseRepositoryImpl implements CourseRepository {
     String? batchId,
     String? semesterId,
   }) async {
-    final cacheKey = _buildCacheKey(
-      universityId: universityId,
-      departmentId: departmentId,
-      semesterId: semesterId,
-      batchId: batchId,
-    );
+    // 0. In-memory cache (instant)
+    if (_courseByCodeCache.containsKey(courseCode)) {
+      debugPrint('[CourseRepo] Returning course $courseCode from in-memory cache');
+      return Right(_courseByCodeCache[courseCode]!);
+    }
 
-    // 1. Try remote if online
+    // 1. Try DB cache
+    try {
+      final cached = await cacheManager.getCachedSingle(
+        entityType: 'course_detail',
+        entityKey: courseCode,
+      );
+      if (cached != null) {
+        final course = CourseModel.fromJson(cached).toEntity();
+        _courseByCodeCache[courseCode] = course;
+        debugPrint('[CourseRepo] Returning course $courseCode from DB cache');
+        return Right(course);
+      }
+    } catch (e) {
+      debugPrint('[CourseRepo] Cache read by code failed: $e');
+    }
+
+    // 2. Try remote if online
     if (connectivity.isConnected) {
       try {
         final queryParams = <String, dynamic>{
@@ -146,34 +171,22 @@ class CourseRepositoryImpl implements CourseRepository {
           return Left(ServerFailure('Course not found'));
         }
 
-        // Cache individual courses
+        final course = CourseModel.fromJson(data.first).toEntity();
+        _courseByCodeCache[courseCode] = course;
+
         for (final json in data) {
-          final course = CourseModel.fromJson(json);
           await cacheManager.cacheSingle(
             entityType: 'course_detail',
-            entityKey: course.courseCode,
+            entityKey: CourseModel.fromJson(json).courseCode,
             data: json,
             ttl: CacheTTL.course,
           );
         }
 
-        return Right(CourseModel.fromJson(data.first).toEntity());
+        return Right(course);
       } catch (e) {
         debugPrint('[CourseRepo] Remote fetch by code failed: $e');
       }
-    }
-
-    // 2. Try cache by course code
-    try {
-      final cached = await cacheManager.getCachedSingle(
-        entityType: 'course_detail',
-        entityKey: courseCode,
-      );
-      if (cached != null) {
-        return Right(CourseModel.fromJson(cached).toEntity());
-      }
-    } catch (e) {
-      debugPrint('[CourseRepo] Cache read by code failed: $e');
     }
 
     if (!connectivity.isConnected) {

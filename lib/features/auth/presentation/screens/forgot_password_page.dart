@@ -1,7 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
 
@@ -133,8 +134,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                             ? const SizedBox(
                                 height: 24,
                                 width: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                child: CupertinoActivityIndicator(
                                   color: Colors.white,
                                 ),
                               )

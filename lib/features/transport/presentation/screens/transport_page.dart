@@ -21,7 +21,7 @@ class TransportPage extends ConsumerWidget {
       title: 'Transport Service',
       showSearchBar: false,
       body: transportAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

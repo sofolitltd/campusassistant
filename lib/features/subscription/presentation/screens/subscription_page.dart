@@ -30,8 +30,10 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: const Text('Premium Access',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Premium Access',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: userAsync.when(
@@ -75,8 +77,10 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
             children: [
               Icon(LucideIcons.packageSearch, size: 64, color: Colors.grey),
               SizedBox(height: Spacing.lg),
-              Text("No plans available right now.",
-                  style: TextStyle(color: Colors.grey, fontSize: 16)),
+              Text(
+                "No plans available right now.",
+                style: TextStyle(color: Colors.grey, fontSize: 16),
+              ),
             ],
           ),
         ),
@@ -117,7 +121,8 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           const SizedBox(height: 12),
           _buildPlansSelector(context, plans),
           const SizedBox(height: 24),
-          if (selectedPlan != null) _buildProjectedDateCard(context, selectedPlan!),
+          if (selectedPlan != null)
+            _buildProjectedDateCard(context, selectedPlan!),
           const SizedBox(height: 24),
           _buildPaymentSection(),
           const SizedBox(height: 32),
@@ -200,7 +205,10 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     );
   }
 
-  Widget _buildPlansSelector(BuildContext context, List<SubscriptionPlan> plans) {
+  Widget _buildPlansSelector(
+    BuildContext context,
+    List<SubscriptionPlan> plans,
+  ) {
     final primaryColor = Theme.of(context).primaryColor;
     return Column(
       children: plans.map((plan) {
@@ -224,7 +232,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                         color: primaryColor.withValues(alpha: 0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
-                      )
+                      ),
                     ]
                   : [],
             ),
@@ -254,12 +262,17 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: isSelected ? const Color(0xFF1E293B) : const Color(0xFF64748B),
+                          color: isSelected
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                       Text(
                         _formatDuration(plan.durationDays),
-                        style: const TextStyle(color: Colors.grey, fontSize: 13),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -272,7 +285,9 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 20,
-                        color: isSelected ? const Color(0xFF6366F1) : const Color(0xFF1E293B),
+                        color: isSelected
+                            ? const Color(0xFF6366F1)
+                            : const Color(0xFF1E293B),
                       ),
                     ),
                     if (plan.discount > 0)
@@ -294,7 +309,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     );
   }
 
-  Widget _buildProjectedDateCard(BuildContext context,SubscriptionPlan plan) {
+  Widget _buildProjectedDateCard(BuildContext context, SubscriptionPlan plan) {
     final expiryDate = DateTime.now().add(Duration(days: plan.durationDays));
     final formattedDate = DateFormat('MMMM dd, yyyy').format(expiryDate);
 
@@ -307,13 +322,16 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
       ),
       child: Row(
         children: [
-          Icon(LucideIcons.calendarDays,
-              color: Theme.of(context).primaryColor, size: 22),
+          Icon(
+            LucideIcons.calendarDays,
+            color: Theme.of(context).primaryColor,
+            size: 22,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: RichText(
               text: TextSpan(
-                style:  TextStyle(
+                style: TextStyle(
                   fontFamily: GoogleFonts.outfit().fontFamily,
                   color: Color(0xFF64748B),
                   fontSize: 14,
@@ -383,8 +401,9 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed:
-            selectedPlan == null ? null : () => _handleSubscribe(context),
+        onPressed: selectedPlan == null
+            ? null
+            : () => _handleSubscribe(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black,
           foregroundColor: Colors.white,
@@ -404,7 +423,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
 
   void _handleSubscribe(BuildContext context) {
     if (selectedPlan == null) return;
-    
+
     final params = {
       'plan': selectedPlan!.title,
       'amount': selectedPlan!.price.toString(),

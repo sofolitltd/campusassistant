@@ -6,8 +6,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class NotificationDetailScreen extends ConsumerWidget {
   final dynamic notification;
@@ -45,8 +45,18 @@ class NotificationDetailScreen extends ConsumerWidget {
     final now = DateTime.now();
     final diff = now.difference(dt);
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
     final amPm = dt.hour >= 12 ? 'PM' : 'AM';
@@ -93,10 +103,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          color,
-                          color.withValues(alpha: 0.7),
-                        ],
+                        colors: [color, color.withValues(alpha: 0.7)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -181,7 +188,9 @@ class NotificationDetailScreen extends ConsumerWidget {
                       Icon(
                         LucideIcons.clock,
                         size: 14,
-                        color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                        color: isDark
+                            ? Colors.grey.shade500
+                            : Colors.grey.shade400,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -280,9 +289,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                         icon: const Icon(LucideIcons.arrowUpRight, size: 18),
                         label: Text(
                           'Go to ${_sourceLabel(notif.type)}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         style: FilledButton.styleFrom(
                           backgroundColor: color,
@@ -352,10 +359,7 @@ class NotificationDetailScreen extends ConsumerWidget {
   void _navigateToSource(BuildContext context, AppNotification notif) {
     final route = notif.actionRoute;
     if (route != null) {
-      context.push(
-        route,
-        extra: notif.actionParams,
-      );
+      context.push(route, extra: notif.actionParams);
     }
   }
 

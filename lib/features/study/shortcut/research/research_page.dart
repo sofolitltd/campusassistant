@@ -1,4 +1,5 @@
-import 'package:campusassistant/widgets/open_app.dart';
+import '/widgets/open_app.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -128,9 +129,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(4),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
@@ -138,9 +137,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
                                 ),
                                 child: Text(
                                   research.type,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
+                                  style: Theme.of(context).textTheme.bodySmall!
                                       .copyWith(color: Colors.white),
                                 ),
                               ),
@@ -161,7 +158,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
           );
         },
         loading: () {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator());
         },
         error: (e, st) => Center(child: Text('Error: $e')),
       ),

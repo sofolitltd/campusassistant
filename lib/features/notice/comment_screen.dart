@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
+import '/features/auth/domain/entities/user.dart' as user_entity;
 
 class CommentScreen extends StatefulWidget {
   const CommentScreen({super.key, required this.noticeId, required this.user});

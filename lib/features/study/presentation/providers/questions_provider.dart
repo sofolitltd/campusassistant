@@ -67,7 +67,9 @@ class QuestionsYearNotifier extends Notifier<String?> {
 }
 
 final questionsSelectedCourseProvider =
-    NotifierProvider<QuestionsCourseNotifier, String?>(QuestionsCourseNotifier.new);
+    NotifierProvider<QuestionsCourseNotifier, String?>(
+      QuestionsCourseNotifier.new,
+    );
 
 class QuestionsCourseNotifier extends Notifier<String?> {
   @override

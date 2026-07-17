@@ -8,10 +8,7 @@ import '/widgets/open_app.dart';
 class ContactCard extends StatelessWidget {
   final EmergencyContact contact;
 
-  const ContactCard({
-    super.key,
-    required this.contact,
-  });
+  const ContactCard({super.key, required this.contact});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +27,6 @@ class ContactCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .end,
         children: [
-      
           // Contact Info
           Expanded(
             child: Column(
@@ -53,11 +49,7 @@ class ContactCard extends StatelessWidget {
                     ),
                     if (contact.isVerified) ...[
                       const SizedBox(width: 4),
-                      const Icon(
-                        Icons.verified,
-                        color: Colors.blue,
-                        size: 14,
-                      ),
+                      const Icon(Icons.verified, color: Colors.blue, size: 14),
                     ],
                   ],
                 ),
@@ -93,7 +85,10 @@ class ContactCard extends StatelessWidget {
                 icon: LucideIcons.share2,
                 onPressed: () {
                   SharePlus.instance.share(
-                    ShareParams(text: '${contact.title}\n${contact.designation ?? ''}\nPhone: ${contact.phone}'),
+                    ShareParams(
+                      text:
+                          '${contact.title}\n${contact.designation ?? ''}\nPhone: ${contact.phone}',
+                    ),
                   );
                 },
                 color: Colors.grey.shade400,
@@ -111,7 +106,6 @@ class ContactCard extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _ActionButton extends StatelessWidget {

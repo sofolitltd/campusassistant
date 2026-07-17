@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -78,55 +79,55 @@ class _BloodBankState extends ConsumerState<BloodBank>
           ),
           Expanded(
             child: bloodAsync.when(
-        data: (state) {
-          if (state.students.isEmpty && !state.isLoadingMore) {
-            return const Center(child: Text('No donors found.'));
-          }
+              data: (state) {
+                if (state.students.isEmpty && !state.isLoadingMore) {
+                  return const Center(child: Text('No donors found.'));
+                }
 
-          return Column(
-            children: [
-              // Count indicator
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'Showing ${state.students.length} / ${state.total}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.separated(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                  itemCount: state.students.length + (state.hasMore ? 1 : 0),
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    if (index < state.students.length) {
-                      final p = state.students[index];
-                      return _buildDonorCard(p, currentScope, isDark);
-                    } else {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator.adaptive(),
+                return Column(
+                  children: [
+                    // Count indicator
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Showing ${state.students.length} / ${state.total}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade600,
                         ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                        itemCount:
+                            state.students.length + (state.hasMore ? 1 : 0),
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          if (index < state.students.length) {
+                            final p = state.students[index];
+                            return _buildDonorCard(p, currentScope, isDark);
+                          } else {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: CupertinoActivityIndicator(),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CupertinoActivityIndicator()),
+              error: (err, _) => Center(child: Text('Error: $err')),
             ),
           ),
         ],

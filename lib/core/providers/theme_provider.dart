@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
 
 class ThemeNotifier extends AsyncNotifier<ThemeMode> {
   static const _key = 'theme_mode';
@@ -25,5 +25,6 @@ class ThemeNotifier extends AsyncNotifier<ThemeMode> {
   }
 }
 
-final themeProvider =
-    AsyncNotifierProvider<ThemeNotifier, ThemeMode>(ThemeNotifier.new);
+final themeProvider = AsyncNotifierProvider<ThemeNotifier, ThemeMode>(
+  ThemeNotifier.new,
+);

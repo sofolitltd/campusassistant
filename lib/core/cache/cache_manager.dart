@@ -1,4 +1,9 @@
+import 'dart:io' show File;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../database/app_database.dart';
 
@@ -23,6 +28,7 @@ class CacheTTL {
   static const bookmark = Duration(minutes: 15);
   static const university = Duration(hours: 24);
   static const hall = Duration(hours: 24);
+  static const department = Duration(hours: 6);
   static const batch = Duration(hours: 12);
   static const session = Duration(hours: 12);
   static const defaultTTL = Duration(hours: 1);
@@ -32,7 +38,41 @@ class CacheTTL {
 class CacheManager {
   final OfflineDatabase _db;
 
+  static const _markerFileName = '.cache_cleared_at';
+  static const _markerTtl = Duration(minutes: 5);
+
   CacheManager(this._db);
+
+  Future<String> _markerPath() async {
+    if (kIsWeb) return '';
+    final dir = await getApplicationDocumentsDirectory();
+    return p.join(dir.path, _markerFileName);
+  }
+
+  Future<void> _writeClearMarker() async {
+    if (kIsWeb) return;
+    final file = File(await _markerPath());
+    await file.writeAsString(DateTime.now().toIso8601String());
+  }
+
+  /// Whether the cache was cleared by the user within the last 5 minutes.
+  /// Auto-deletes the marker if expired.
+  Future<bool> isRecentlyCleared() async {
+    if (kIsWeb) return false;
+    final file = File(await _markerPath());
+    if (!await file.exists()) return false;
+    try {
+      final content = await file.readAsString();
+      final clearedAt = DateTime.parse(content);
+      if (DateTime.now().difference(clearedAt) < _markerTtl) {
+        return true;
+      }
+      await file.delete();
+    } catch (_) {
+      await file.delete();
+    }
+    return false;
+  }
 
   /// Store a list of items in cache under the given entity type.
   Future<void> cacheList({
@@ -116,9 +156,20 @@ class CacheManager {
     return _db.pruneExpiredCache();
   }
 
-  /// Clear all cache.
+  /// Clear all cache. Writes a marker so automatic refresh is skipped briefly.
   Future<void> clearAll() async {
     await _db.clearAllCache();
+    await _writeClearMarker();
+  }
+
+  /// Get cache statistics grouped by entity type.
+  Future<List<CacheStat>> getStats() async {
+    return _db.getCacheStats();
+  }
+
+  /// Get total number of cache entries.
+  Future<int> getTotalCount() async {
+    return _db.getTotalCacheCount();
   }
 }
 

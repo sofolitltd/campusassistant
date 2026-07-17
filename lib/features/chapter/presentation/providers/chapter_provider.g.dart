@@ -127,7 +127,7 @@ final class ChaptersForCourseProvider
   }) : super(
          retry: null,
          name: r'chaptersForCourseProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -178,7 +178,7 @@ final class ChaptersForCourseProvider
   }
 }
 
-String _$chaptersForCourseHash() => r'1a2e5b5eedd7624a8812a3844ad2c0b0cb3fe566';
+String _$chaptersForCourseHash() => r'8892ebf3be0fd708117248f3776539770647f5b2';
 
 final class ChaptersForCourseFamily extends $Family
     with
@@ -197,7 +197,7 @@ final class ChaptersForCourseFamily extends $Family
         name: r'chaptersForCourseProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   ChaptersForCourseProvider call({

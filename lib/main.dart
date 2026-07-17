@@ -1,19 +1,21 @@
-import 'package:campusassistant/features/auth/data/datasources/auth_local_data_source.dart';
+import '/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:campusassistant/routes/router_config.dart';
+import 'routes/router_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'
     show PathUrlStrategy, setUrlStrategy;
 import 'package:go_router/go_router.dart';
-import 'package:campusassistant/core/providers/theme_provider.dart';
-import 'package:campusassistant/core/providers/app_refresh_provider.dart';
-import 'package:campusassistant/core/theme/app_theme.dart';
-import 'package:campusassistant/core/cache/connectivity_service.dart';
-import 'package:campusassistant/core/cache/sync_manager.dart';
-import 'package:campusassistant/core/websocket/websocket_service.dart';
-import 'package:campusassistant/features/auth/presentation/providers/auth_provider.dart';
+import '/core/providers/theme_provider.dart';
+import '/core/providers/app_refresh_provider.dart';
+import '/core/theme/app_theme.dart';
+import '/core/cache/cache_manager.dart';
+import '/core/cache/connectivity_service.dart';
+import '/core/cache/sync_manager.dart';
+import '/core/websocket/websocket_service.dart';
+import '/core/widgets/offline_banner.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +56,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void _initConnectivity() {
+  Future<void> _initConnectivity() async {
     final connectivity = ref.read(connectivityServiceProvider);
 
     // Listen for connectivity changes and update the provider
@@ -68,8 +70,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       }
     });
 
-    // Set initial state
-    ref.read(isConnectedProvider.notifier).update(connectivity.isConnected);
+    // Perform initial check (emits result to stream, caught by listener above)
+    await connectivity.checkConnectivity();
   }
 
   void _initWebSocket() {
@@ -103,7 +105,9 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       if (token != null && token.isNotEmpty) {
         final wsService = ref.read(websocketServiceProvider);
         await wsService.connect(token);
-        ref.read(websocketConnectedProvider.notifier).update(wsService.isConnected);
+        ref
+            .read(websocketConnectedProvider.notifier)
+            .update(wsService.isConnected);
       }
     } catch (e) {
       debugPrint('[Main] WebSocket connection failed: $e');
@@ -113,7 +117,12 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      ref.read(refreshAppDataProvider);
+      // If user just cleared cache, skip automatic refresh
+      ref.read(cacheManagerProvider).isRecentlyCleared().then((recentlyCleared) {
+        if (!recentlyCleared) {
+          ref.read(refreshAppDataProvider);
+        }
+      });
 
       // Process pending syncs when app resumes
       if (!kIsWeb) {
@@ -140,6 +149,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         routerConfig: router,
+        builder: (context, child) =>
+            OfflineBanner(child: child ?? const SizedBox.shrink()),
       ),
       loading: () => MaterialApp.router(
         title: 'Campus Assistant',
@@ -148,6 +159,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         routerConfig: router,
+        builder: (context, child) =>
+            OfflineBanner(child: child ?? const SizedBox.shrink()),
       ),
       error: (_, _) => MaterialApp.router(
         title: 'Campus Assistant',
@@ -156,6 +169,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         routerConfig: router,
+        builder: (context, child) =>
+            OfflineBanner(child: child ?? const SizedBox.shrink()),
       ),
     );
   }

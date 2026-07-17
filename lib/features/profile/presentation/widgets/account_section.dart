@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
 
 class AccountSection extends ConsumerWidget {
   const AccountSection({super.key});
@@ -33,17 +34,17 @@ class AccountSection extends ConsumerWidget {
             children: [
               Text(
                 'LOGOUT',
-                style: const TextStyle(
-                  color: Color(0xFFD32F2F),
+                style: TextStyle(
+                  color: Theme.of(context).appColors.primaryColor,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 LucideIcons.logOut,
-                color: Color(0xFFD32F2F),
+                color: Theme.of(context).appColors.primaryColor,
                 size: 18,
               ),
             ],

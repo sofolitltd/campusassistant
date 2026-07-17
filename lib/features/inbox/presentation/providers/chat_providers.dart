@@ -13,7 +13,9 @@ class _ScrollOffsetsNotifier extends Notifier<Map<String, double>> {
 }
 
 final chatScrollOffsetsProvider =
-    NotifierProvider<_ScrollOffsetsNotifier, Map<String, double>>(_ScrollOffsetsNotifier.new);
+    NotifierProvider<_ScrollOffsetsNotifier, Map<String, double>>(
+      _ScrollOffsetsNotifier.new,
+    );
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -26,10 +28,12 @@ class _RefreshNotifier extends Notifier<int> {
   void trigger() => state++;
 }
 
-final conversationsRefreshProvider =
-    NotifierProvider<_RefreshNotifier, int>(_RefreshNotifier.new);
-final messagesRefreshProvider =
-    NotifierProvider<_RefreshNotifier, int>(_RefreshNotifier.new);
+final conversationsRefreshProvider = NotifierProvider<_RefreshNotifier, int>(
+  _RefreshNotifier.new,
+);
+final messagesRefreshProvider = NotifierProvider<_RefreshNotifier, int>(
+  _RefreshNotifier.new,
+);
 
 /// Fetch conversations from network and upsert into local DB.
 Future<void> syncConversations(ChatRepository repo) async {
@@ -40,7 +44,8 @@ Future<void> syncConversations(ChatRepository repo) async {
 /// Delete all conversations from both local cache and server.
 Future<void> deleteAllConversations(Ref ref) async {
   final repo = ref.read(chatRepositoryProvider);
-  final local = await ChatDatabase.tryDb(() => ChatDatabase.getConversations()) ?? [];
+  final local =
+      await ChatDatabase.tryDb(() => ChatDatabase.getConversations()) ?? [];
   for (final conv in local) {
     try {
       await repo.deleteConversation(conv['id'] as String);
@@ -58,7 +63,11 @@ Future<List<Map<String, dynamic>>> syncMessages(
 ) async {
   final result = await repo.getMessages(conversationId, limit: 30);
   var msgs = (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-  msgs = await ChatDatabase.tryDb(() => ChatDatabase.filterDeletedMessages(msgs)) ?? msgs;
+  msgs =
+      await ChatDatabase.tryDb(
+        () => ChatDatabase.filterDeletedMessages(msgs),
+      ) ??
+      msgs;
   if (msgs.isNotEmpty) {
     await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
   }
@@ -67,10 +76,14 @@ Future<List<Map<String, dynamic>>> syncMessages(
 
 /// Returns cached conversations from DB (instant after first load).
 /// On first-ever load (empty DB) falls back to network fetch.
-final conversationsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final conversationsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   ref.watch(conversationsRefreshProvider);
 
-  final cached = await ChatDatabase.tryDb(() => ChatDatabase.getConversations());
+  final cached = await ChatDatabase.tryDb(
+    () => ChatDatabase.getConversations(),
+  );
   if (cached != null && cached.isNotEmpty) {
     return cached.map(ChatDatabase.expandConversation).toList();
   }
@@ -82,22 +95,26 @@ final conversationsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) a
 });
 
 final messagesProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>(
-  (ref, conversationId) async {
-    ref.watch(messagesRefreshProvider);
+    FutureProvider.family<List<Map<String, dynamic>>, String>((
+      ref,
+      conversationId,
+    ) async {
+      ref.watch(messagesRefreshProvider);
 
-    final cached = await ChatDatabase.tryDb(() => ChatDatabase.getMessages(conversationId));
-    if (cached != null && cached.isNotEmpty) {
-      return cached.map(ChatDatabase.expandMessage).toList();
-    }
+      final cached = await ChatDatabase.tryDb(
+        () => ChatDatabase.getMessages(conversationId),
+      );
+      if (cached != null && cached.isNotEmpty) {
+        return cached.map(ChatDatabase.expandMessage).toList();
+      }
 
-    final repo = ref.watch(chatRepositoryProvider);
-    final result = await repo.getMessages(conversationId, limit: 30);
-    final msgs = (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-    await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
-    return msgs;
-  },
-);
+      final repo = ref.watch(chatRepositoryProvider);
+      final result = await repo.getMessages(conversationId, limit: 30);
+      final msgs =
+          (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
+      return msgs;
+    });
 
 class ConversationMessagesState {
   final List<Map<String, dynamic>> messages;
@@ -147,8 +164,14 @@ class ConversationMessagesState {
           error == other.error;
 
   @override
-  int get hashCode =>
-      Object.hash(messages, initialLoading, loadingMore, hasMore, nextCursor, error);
+  int get hashCode => Object.hash(
+    messages,
+    initialLoading,
+    loadingMore,
+    hasMore,
+    nextCursor,
+    error,
+  );
 }
 
 class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
@@ -165,7 +188,9 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
     if (state.messages.isNotEmpty && !state.initialLoading) return;
     state = state.copyWith(initialLoading: true);
     try {
-      final cached = await ChatDatabase.tryDb(() => ChatDatabase.getMessages(conversationId));
+      final cached = await ChatDatabase.tryDb(
+        () => ChatDatabase.getMessages(conversationId),
+      );
       if (cached != null && cached.isNotEmpty) {
         state = state.copyWith(
           messages: cached.map(ChatDatabase.expandMessage).toList(),
@@ -177,7 +202,8 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
 
       final repo = ref.read(chatRepositoryProvider);
       final result = await repo.getMessages(conversationId, limit: 30);
-      final msgs = (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      final msgs =
+          (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
       await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
 
       state = state.copyWith(
@@ -201,9 +227,14 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
         cursor: state.nextCursor,
         limit: 30,
       );
-      var msgs = (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      var msgs =
+          (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
       if (msgs.isNotEmpty) {
-        msgs = await ChatDatabase.tryDb(() => ChatDatabase.filterDeletedMessages(msgs)) ?? msgs;
+        msgs =
+            await ChatDatabase.tryDb(
+              () => ChatDatabase.filterDeletedMessages(msgs),
+            ) ??
+            msgs;
         await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
       }
       state = state.copyWith(
@@ -279,18 +310,27 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
     try {
       final repo = ref.read(chatRepositoryProvider);
       final result = await repo.getMessages(conversationId, limit: 30);
-      var msgs = (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-      msgs = await ChatDatabase.tryDb(() => ChatDatabase.filterDeletedMessages(msgs)) ?? msgs;
+      var msgs =
+          (result['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      msgs =
+          await ChatDatabase.tryDb(
+            () => ChatDatabase.filterDeletedMessages(msgs),
+          ) ??
+          msgs;
       await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
 
       final serverById = {for (final m in msgs) m['id'] as String: m};
       final current = state.messages;
-      final merged = current.map((m) => serverById.remove(m['id'] as String) ?? m).toList();
+      final merged = current
+          .map((m) => serverById.remove(m['id'] as String) ?? m)
+          .toList();
       merged.addAll(serverById.values);
 
       merged.sort((a, b) {
-        final aTime = a['createdAt'] as String? ?? a['timestamp'] as String? ?? '';
-        final bTime = b['createdAt'] as String? ?? b['timestamp'] as String? ?? '';
+        final aTime =
+            a['createdAt'] as String? ?? a['timestamp'] as String? ?? '';
+        final bTime =
+            b['createdAt'] as String? ?? b['timestamp'] as String? ?? '';
         return aTime.compareTo(bTime);
       });
 
@@ -300,6 +340,8 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
 }
 
 final conversationMessagesProvider =
-    NotifierProvider.family<ConversationMessagesNotifier, ConversationMessagesState, String>(
-  (conversationId) => ConversationMessagesNotifier(conversationId),
-);
+    NotifierProvider.family<
+      ConversationMessagesNotifier,
+      ConversationMessagesState,
+      String
+    >((conversationId) => ConversationMessagesNotifier(conversationId));

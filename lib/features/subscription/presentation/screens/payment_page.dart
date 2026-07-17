@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:campusassistant/routes/app_route.dart';
+import '/routes/app_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -136,7 +137,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(),
+                    const CupertinoActivityIndicator(),
                     const SizedBox(height: 20),
                     Text(
                       _statusMessage,

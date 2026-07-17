@@ -8,10 +8,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/department/presentation/providers/department_provider.dart';
 import '/widgets/open_app.dart';
-import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
+import '/core/theme/app_colors.dart';
 
 class DepartmentPage extends ConsumerWidget {
   const DepartmentPage({super.key});
@@ -85,7 +85,9 @@ class DepartmentPage extends ConsumerWidget {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withValues(alpha: 0.8),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.8,
+                            ),
                             foregroundColor: Colors.black,
                             minimumSize: const Size(0, 40),
                             shape: RoundedRectangleBorder(
@@ -170,9 +172,7 @@ class DepartmentPage extends ConsumerWidget {
                     Text(
                       department.about,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDark
-                            ? Colors.white70
-                            : Colors.grey.shade800,
+                        color: isDark ? Colors.white70 : Colors.grey.shade800,
                         height: 1.5,
                       ),
                     ),
@@ -183,8 +183,7 @@ class DepartmentPage extends ConsumerWidget {
             ],
           ),
         ),
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: ${err.toString()}')),
       ),
     );
@@ -222,7 +221,12 @@ class _StatTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(LucideIcons.user, size: 16, color: Color(0xFFD32F2F)),
+              Icon(
+                LucideIcons.user,
+                size: 16,
+                color: Theme.of(context).appColors.primaryColor,
+              ),
+
               const SizedBox(width: 8),
               Text(
                 label,

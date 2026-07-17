@@ -104,7 +104,7 @@ final class DepartmentRepositoryProvider
 }
 
 String _$departmentRepositoryHash() =>
-    r'06a2944747626f0405fbd810bdb8815f660f10e9';
+    r'dc93d8e56d3cdc2edb3cba9df9ca54b009b2c03e';
 
 @ProviderFor(getDepartments)
 final getDepartmentsProvider = GetDepartmentsProvider._();

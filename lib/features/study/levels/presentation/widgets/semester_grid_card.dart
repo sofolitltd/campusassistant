@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/semester.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class SemesterGridCard extends StatelessWidget {
   final Semester semester;
@@ -28,9 +28,7 @@ class SemesterGridCard extends StatelessWidget {
           children: [
             Text(
               '$label:',
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-              ),
+              style: TextStyle(color: theme.colorScheme.onSurface),
             ),
             const SizedBox(width: 8),
             Container(
@@ -44,8 +42,9 @@ class SemesterGridCard extends StatelessWidget {
               padding: const EdgeInsets.all(2),
               child: Text(
                 value,
-                style: theme.textTheme.titleSmall!
-                    .copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -80,8 +79,9 @@ class SemesterGridCard extends StatelessWidget {
               children: [
                 Text(
                   semester.name,
-                  style: theme.textTheme.titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: Spacing.lg),
                 Column(

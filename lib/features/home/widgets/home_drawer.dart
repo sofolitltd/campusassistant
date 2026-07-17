@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/app_colors.dart';
 
 class HomeDrawer extends ConsumerWidget {
   const HomeDrawer({super.key});
@@ -15,7 +16,7 @@ class HomeDrawer extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final userAsync = ref.watch(userProvider);
     final user = userAsync.value;
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return Drawer(
       child: SafeArea(
@@ -25,7 +26,7 @@ class HomeDrawer extends ConsumerWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-              decoration: const BoxDecoration(color: Color(0xFFD32F2F)),
+              decoration: BoxDecoration(color: primaryColor),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -111,7 +112,8 @@ class HomeDrawer extends ConsumerWidget {
                   _DrawerTile(
                     icon: LucideIcons.folderDown,
                     label: 'Downloads',
-                    onTap: () => _navigate(context, AppRoute.downloadedFiles.name),
+                    onTap: () =>
+                        _navigate(context, AppRoute.downloadedFiles.name),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.users,
@@ -152,9 +154,10 @@ class _DrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     return ListTile(
-      leading: Icon(icon, color: Color(0xFFD32F2F), size: 20),
+      leading: Icon(icon, color: primaryColor, size: 20),
       title: Text(
         label,
         style: TextStyle(

@@ -5,17 +5,20 @@ import '/features/auth/data/models/user_model.dart';
 part 'student_model.freezed.dart';
 part 'student_model.g.dart';
 
-Object? _readUniversityName(Map<dynamic, dynamic> json, String key) => 
-    json['university_name'] ?? (json['university'] is Map ? json['university']['name'] : null);
+Object? _readUniversityName(Map<dynamic, dynamic> json, String key) =>
+    json['university_name'] ??
+    (json['university'] is Map ? json['university']['name'] : null);
 
-Object? _readDepartmentName(Map<dynamic, dynamic> json, String key) => 
-    json['department_name'] ?? (json['department'] is Map ? json['department']['name'] : null);
+Object? _readDepartmentName(Map<dynamic, dynamic> json, String key) =>
+    json['department_name'] ??
+    (json['department'] is Map ? json['department']['name'] : null);
 
-Object? _readBatchName(Map<dynamic, dynamic> json, String key) => 
+Object? _readBatchName(Map<dynamic, dynamic> json, String key) =>
     json['batch_name'] ?? (json['batch'] is Map ? json['batch']['name'] : null);
 
-Object? _readSessionName(Map<dynamic, dynamic> json, String key) => 
-    json['session_name'] ?? (json['session'] is Map ? json['session']['name'] : null);
+Object? _readSessionName(Map<dynamic, dynamic> json, String key) =>
+    json['session_name'] ??
+    (json['session'] is Map ? json['session']['name'] : null);
 
 @freezed
 abstract class StudentModel with _$StudentModel {
@@ -50,52 +53,52 @@ abstract class StudentModel with _$StudentModel {
       _$StudentModelFromJson(json);
 
   Student toEntity() => Student(
-        id: id,
-        studentId: studentId,
-        universityId: universityId,
-        departmentId: departmentId,
-        batchId: batchId,
-        sessionId: sessionId,
-        hallId: hallId,
-        bloodGroup: bloodGroup,
-        verificationCode: verificationCode,
-        isClaimed: isClaimed,
-        studentName: studentName,
-        email: email,
-        phone: phone,
-        isRegular: isRegular,
-        isCR: isCR,
-        userId: userId,
-        user: user?.toEntity(),
-        hallName: hallName,
-        batchName: batchName,
-        departmentName: departmentName,
-        universityName: universityName,
-        sessionName: sessionName,
-      );
+    id: id,
+    studentId: studentId,
+    universityId: universityId,
+    departmentId: departmentId,
+    batchId: batchId,
+    sessionId: sessionId,
+    hallId: hallId,
+    bloodGroup: bloodGroup,
+    verificationCode: verificationCode,
+    isClaimed: isClaimed,
+    studentName: studentName,
+    email: email,
+    phone: phone,
+    isRegular: isRegular,
+    isCR: isCR,
+    userId: userId,
+    user: user?.toEntity(),
+    hallName: hallName,
+    batchName: batchName,
+    departmentName: departmentName,
+    universityName: universityName,
+    sessionName: sessionName,
+  );
 
   factory StudentModel.fromEntity(Student student) => StudentModel(
-        id: student.id,
-        studentId: student.studentId,
-        universityId: student.universityId,
-        departmentId: student.departmentId,
-        batchId: student.batchId,
-        sessionId: student.sessionId,
-        hallId: student.hallId,
-        bloodGroup: student.bloodGroup,
-        verificationCode: student.verificationCode,
-        isClaimed: student.isClaimed,
-        studentName: student.studentName,
-        email: student.email,
-        phone: student.phone,
-        isRegular: student.isRegular,
-        isCR: student.isCR,
-        userId: student.userId,
-        user: student.user != null ? UserModel.fromEntity(student.user!) : null,
-        hallName: student.hallName,
-        batchName: student.batchName,
-        departmentName: student.departmentName,
-        universityName: student.universityName,
-        sessionName: student.sessionName,
-      );
+    id: student.id,
+    studentId: student.studentId,
+    universityId: student.universityId,
+    departmentId: student.departmentId,
+    batchId: student.batchId,
+    sessionId: student.sessionId,
+    hallId: student.hallId,
+    bloodGroup: student.bloodGroup,
+    verificationCode: student.verificationCode,
+    isClaimed: student.isClaimed,
+    studentName: student.studentName,
+    email: student.email,
+    phone: student.phone,
+    isRegular: student.isRegular,
+    isCR: student.isCR,
+    userId: student.userId,
+    user: student.user != null ? UserModel.fromEntity(student.user!) : null,
+    hallName: student.hallName,
+    batchName: student.batchName,
+    departmentName: student.departmentName,
+    universityName: student.universityName,
+    sessionName: student.sessionName,
+  );
 }

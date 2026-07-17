@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:campusassistant/features/auth/domain/entities/user.dart'
-    as user_entity;
-import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
-import 'package:campusassistant/core/widgets/section_tab_bar.dart';
+import '/core/error/failures.dart';
+import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/features/student/presentation/providers/student_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/section_tab_bar.dart';
 
 class ProfileInfoTabsSection extends StatefulWidget {
   final user_entity.User user;
@@ -141,7 +141,34 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
                 );
               },
               loading: () => const Center(child: CupertinoActivityIndicator()),
-              error: (err, _) => const SizedBox.shrink(),
+              error: (err, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        err is NetworkFailure
+                            ? Icons.cloud_off
+                            : Icons.error_outline,
+                        color: Colors.grey.shade400,
+                        size: 40,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        err is NetworkFailure
+                            ? 'No internet connection'
+                            : 'Unable to load academic info',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
       },
     );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:campusassistant/features/study/data/models/content_model.dart';
-import 'package:campusassistant/features/batch/presentation/providers/batch_provider.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/features/study/data/models/content_model.dart';
+import '/features/batch/presentation/providers/batch_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ResourceInfoSheet extends ConsumerWidget {
   final ContentModel contentModel;

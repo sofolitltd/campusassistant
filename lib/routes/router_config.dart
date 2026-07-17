@@ -41,7 +41,7 @@ import '/features/university/presentation/screens/university_faculties_page.dart
 import '/features/course/presentation/screens/course_page.dart';
 import '/features/study/details/chapter_notes_screen.dart';
 import '/features/study/details/course_details_page.dart';
-import '../features/study/semester/presentation/screens/study_page.dart';
+import '../features/study/levels/presentation/screens/study_page.dart';
 import '/features/study/shortcut/library/library_page.dart';
 import '/features/study/shortcut/questions/questions_page.dart';
 import '/features/study/shortcut/research/research_page.dart';
@@ -65,6 +65,7 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/features/resource/domain/entities/resource.dart';
 import '/features/auth/presentation/screens/new_splash_screen.dart';
+import '/features/cache/presentation/cache_management_page.dart';
 import 'app_route.dart';
 import 'scaffold_with_navbar.dart';
 
@@ -96,7 +97,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // ── Splash screen: wait for auth resolution ──
       if (matchedLocation == '/splash') {
-        if (isLoading || hasError) return null; // stay on splash while checking auth or on network error
+        if (isLoading || hasError)
+          return null; // stay on splash while checking auth or on network error
         if (!isLoggedIn) return AppRoute.login.path;
         return AppRoute.home.path; // logged in → go to home
       }
@@ -104,7 +106,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ── During auth loading on any other route, just wait ──
       if (isLoading || hasError) return null;
 
-      final isGuestRoute = matchedLocation == AppRoute.login.path ||
+      final isGuestRoute =
+          matchedLocation == AppRoute.login.path ||
           matchedLocation == AppRoute.forgotPassword.path ||
           matchedLocation == AppRoute.verification.path ||
           matchedLocation.startsWith('/register') ||
@@ -196,7 +199,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           GoRoute(
                             path: ':chapterNo',
                             name: AppRoute.courseNotes.name,
-                            parentNavigatorKey: rootNavigatorKey,
                             pageBuilder: (context, state) {
                               final courseCode =
                                   state.pathParameters['courseCode']!;
@@ -243,10 +245,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: AppRoute.inboxChat.name,
                     path: 'chat/:conversationId',
                     pageBuilder: (context, state) {
-                      final conversationId = state.pathParameters['conversationId']!;
+                      final conversationId =
+                          state.pathParameters['conversationId']!;
                       final extra = state.extra as Map<String, dynamic>?;
                       final name = extra?['name'] as String? ?? 'Chat';
-                      final otherUserId = extra?['otherUserId'] as String? ?? '';
+                      final otherUserId =
+                          extra?['otherUserId'] as String? ?? '';
                       final status = extra?['status'] as String? ?? 'accepted';
                       final initiatorId = extra?['initiatorId'] as String?;
                       return NoTransitionPage(
@@ -264,10 +268,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: AppRoute.requestConfirmation.name,
                     path: 'request/:conversationId',
                     pageBuilder: (context, state) {
-                      final conversationId = state.pathParameters['conversationId']!;
+                      final conversationId =
+                          state.pathParameters['conversationId']!;
                       final extra = state.extra as Map<String, dynamic>?;
                       final name = extra?['name'] as String? ?? 'Unknown';
-                      final otherUserId = extra?['otherUserId'] as String? ?? '';
+                      final otherUserId =
+                          extra?['otherUserId'] as String? ?? '';
                       final initiatorId = extra?['initiatorId'] as String?;
                       return NoTransitionPage(
                         child: RequestConfirmationPage(
@@ -598,9 +604,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) {
               final notification = state.extra;
               return NoTransitionPage(
-                child: NotificationDetailScreen(
-                  notification: notification,
-                ),
+                child: NotificationDetailScreen(notification: notification),
               );
             },
           ),
@@ -719,7 +723,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           final type = state.uri.queryParameters['type'] ?? 'note';
           final lessonNo =
               int.tryParse(state.uri.queryParameters['lessonNo'] ?? '') ?? 0;
-          final initialBatchName = state.uri.queryParameters['initialBatchName'];
+          final initialBatchName =
+              state.uri.queryParameters['initialBatchName'];
 
           return NoTransitionPage(
             child: AddEditResourceScreen(
@@ -762,7 +767,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: ContributorPage()),
       ),
-
+      GoRoute(
+        name: AppRoute.cacheManagement.name,
+        path: AppRoute.cacheManagement.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: CacheManagementPage()),
+      ),
     ],
   );
 });

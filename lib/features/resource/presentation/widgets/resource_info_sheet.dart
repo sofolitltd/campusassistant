@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -88,19 +89,39 @@ class ResourceInfoSheet extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 60,
-                height: 60,
+                width: 70,
+                height: 75,
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent.shade100.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
+                  border: Border.all(color: Colors.grey.shade300, width: 1),
                 ),
-                child: Center(
-                  child: Icon(
-                    _getIconForType(resource.type),
-                    size: 30,
-                    color: Colors.teal,
-                  ),
-                ),
+                clipBehavior: Clip.antiAlias,
+                child: resource.thumbnailUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: resource.thumbnailUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, _) => Center(
+                          child: Icon(
+                            _getIconForType(resource.type),
+                            size: 28,
+                            color: Colors.teal,
+                          ),
+                        ),
+                        errorWidget: (context, _, _) => Center(
+                          child: Icon(
+                            _getIconForType(resource.type),
+                            size: 28,
+                            color: Colors.teal,
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          _getIconForType(resource.type),
+                          size: 28,
+                          color: Colors.teal,
+                        ),
+                      ),
               ),
               const SizedBox(width: 16),
               Expanded(

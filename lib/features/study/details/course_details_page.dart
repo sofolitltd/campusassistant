@@ -1,4 +1,4 @@
-import '/widgets/breadcrumbs.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,8 +12,9 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
-import '/features/study/semester/presentation/providers/semester_provider.dart';
-import '/features/study/semester/domain/entities/semester.dart';
+import '../levels/presentation/providers/semester_provider.dart';
+import '../levels/domain/entities/semester.dart';
+import '/core/theme/app_colors.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/utils/constants.dart';
 import 'course_chapters_page.dart';
@@ -170,12 +171,14 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
     // Courses for current batch/semester (for course filter)
     final uid = userAsync.value?.information.universityId ?? '';
     final did = userAsync.value?.information.departmentId ?? '';
-    final coursesAsync = ref.watch(coursesProvider(
-      universityId: uid,
-      departmentId: did,
-      semesterId: selectedSemester?.id,
-      batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
-    ));
+    final coursesAsync = ref.watch(
+      coursesProvider(
+        universityId: uid,
+        departmentId: did,
+        semesterId: selectedSemester?.id,
+        batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
+      ),
+    );
 
     // Course data (may be loading)
     final user = userAsync.value;
@@ -195,16 +198,16 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
     final isLoading = userAsync.isLoading || courseAsync.isLoading;
     final hasError = userAsync.hasError || courseAsync.hasError;
 
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
     final appBarTitle = courseModel != null
-        ? '${courseModel.courseCode} : ${courseModel.courseTitle}'
-        : widget.courseCode;
+        ? '${courseModel.courseCode.toUpperCase()} : ${courseModel.courseTitle}'
+        : widget.courseCode.toUpperCase();
 
     // ── Error state ──────────────────────────────────────────────────
     if (hasError && !isLoading) {
       final errorMsg = userAsync.error ?? courseAsync.error;
       return Scaffold(
-        backgroundColor: primaryRed,
+        backgroundColor: primaryColor,
         body: Center(
           child: Text(
             'Error: $errorMsg',
@@ -215,13 +218,13 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
     }
 
     return Scaffold(
-      backgroundColor: primaryRed,
+      backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: false,
+        centerTitle: true,
         titleSpacing: 0,
         title: Text(
           appBarTitle,
@@ -237,20 +240,9 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Breadcrumbs (red area) ────────────────────────────
-          Theme(
-            data: theme.copyWith(
-              colorScheme: theme.colorScheme.copyWith(
-                onSurface: Colors.white,
-                onSurfaceVariant: Colors.white70,
-              ),
-            ),
-            child: const Breadcrumbs(),
-          ),
-
           // ── Filter row (red area) ────────────────────────────
           Padding(
-            padding: const .fromLTRB(16,12,0,12),
+            padding: const .fromLTRB(16, 0, 0, 16),
             child: Row(
               children: [
                 const Text(
@@ -341,10 +333,10 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
                   top: Radius.circular(24),
                 ),
                 child: courseModel == null
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const Center(child: CupertinoActivityIndicator())
                     : Column(
                         children: [
-                          // ── SectionTabBar ──────────────────────────
+// ── SectionTabBar ──────────────────────────
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: SectionTabBar(
@@ -691,8 +683,8 @@ class _SemesterFilterButton extends ConsumerWidget {
             color: redBg
                 ? Colors.white.withValues(alpha: 0.4)
                 : isDark
-                    ? Colors.white24
-                    : Colors.grey.shade300,
+                ? Colors.white24
+                : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -797,7 +789,9 @@ class _SemesterFilterButton extends ConsumerWidget {
                       title: 'All Levels',
                       isSelected: selectedSemester == null,
                       onTap: () {
-                        ref.read(selectedSemesterNotifierProvider.notifier).clear();
+                        ref
+                            .read(selectedSemesterNotifierProvider.notifier)
+                            .clear();
                         Navigator.pop(context);
                       },
                     ),
@@ -806,7 +800,9 @@ class _SemesterFilterButton extends ConsumerWidget {
                         title: semester.name,
                         isSelected: selectedSemester?.id == semester.id,
                         onTap: () {
-                          ref.read(selectedSemesterNotifierProvider.notifier).setFromSemester(semester);
+                          ref
+                              .read(selectedSemesterNotifierProvider.notifier)
+                              .setFromSemester(semester);
                           Navigator.pop(context);
                         },
                       ),
@@ -909,8 +905,8 @@ class _CourseFilterButton extends StatelessWidget {
             color: redBg
                 ? Colors.white.withValues(alpha: 0.4)
                 : isDark
-                    ? Colors.white24
-                    : Colors.grey.shade300,
+                ? Colors.white24
+                : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -924,7 +920,7 @@ class _CourseFilterButton extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              selectedCourse.courseCode,
+              selectedCourse.courseCode.toUpperCase(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -1107,7 +1103,7 @@ class _CourseFilterButton extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        course.courseCode,
+                                        course.courseCode.toUpperCase(),
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: isSelected

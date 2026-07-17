@@ -79,7 +79,9 @@ class UniversityPage extends ConsumerWidget {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withValues(alpha: 0.8),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.8,
+                            ),
                             foregroundColor: Colors.black,
                             minimumSize: Size(0, 40),
                             shape: RoundedRectangleBorder(
@@ -162,9 +164,7 @@ class UniversityPage extends ConsumerWidget {
                     Text(
                       university.about,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isDark
-                            ? Colors.white70
-                            : Colors.grey.shade800,
+                        color: isDark ? Colors.white70 : Colors.grey.shade800,
                         height: 1.5,
                       ),
                     ),
@@ -177,7 +177,7 @@ class UniversityPage extends ConsumerWidget {
           ),
         ),
         loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
+            const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: ${err.toString()}')),
       ),
     );

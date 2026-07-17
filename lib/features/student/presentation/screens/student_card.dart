@@ -178,17 +178,15 @@ class StudentCard extends StatelessWidget {
                       ),
                       Text(
                         studentModel.studentId,
-                        style: Theme.of(context).textTheme.bodySmall!
-                            .copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                              fontSize: 12,
-                            ),
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-
 
                   if (studentModel.hall != 'None') ...[
                     const SizedBox(height: 2),

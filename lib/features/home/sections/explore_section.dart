@@ -1,4 +1,4 @@
-import 'package:campusassistant/routes/app_route.dart';
+import '/routes/app_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,10 +31,12 @@ class ExploreSection extends ConsumerWidget {
             ? ref.watch(universityNameProvider(user.universityId!))
             : 'University';
 
-        final departmentName = user.departmentId != null &&
-                user.universityId != null
+        final departmentName =
+            user.departmentId != null && user.universityId != null
             ? ref.watch(
-                departmentNameProvider('${user.universityId}|${user.departmentId}'),
+                departmentNameProvider(
+                  '${user.universityId}|${user.departmentId}',
+                ),
               )
             : 'Department';
 
@@ -130,9 +132,7 @@ class _ExploreCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: 20,
-                  color: isDark
-                      ? color.withValues(alpha: 0.8)
-                      : color,
+                  color: isDark ? color.withValues(alpha: 0.8) : color,
                 ),
               ),
               const SizedBox(width: Spacing.md),
@@ -144,23 +144,23 @@ class _ExploreCard extends StatelessWidget {
                     Text(
                       label,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.5)
-                                : Colors.grey.shade600,
-                            letterSpacing: 0.3,
-                          ),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.5)
+                            : Colors.grey.shade600,
+                        letterSpacing: 0.3,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            height: 1.3,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        height: 1.3,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),

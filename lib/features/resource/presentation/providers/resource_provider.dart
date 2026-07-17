@@ -39,7 +39,7 @@ typedef ResourceParams = ({
   int? offset,
 });
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<Resource>> resourcesList(
   Ref ref, {
   required String universityId,

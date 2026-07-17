@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -6,6 +7,7 @@ import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/study/widgets/content_card.dart';
 import '/features/study/data/models/content_model.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/utils/constants.dart';
 
 class MySubmissionsPage extends ConsumerWidget {
   const MySubmissionsPage({super.key});
@@ -17,7 +19,9 @@ class MySubmissionsPage extends ConsumerWidget {
 
     if (user == null) {
       if (userAsync.isLoading) {
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        return const Scaffold(
+          body: Center(child: CupertinoActivityIndicator()),
+        );
       }
       return const Scaffold(
         body: Center(child: Text('Please login to see your submissions')),
@@ -34,23 +38,25 @@ class MySubmissionsPage extends ConsumerWidget {
       lessonNo: null,
       uploaderUid: user.uid,
       status: null,
-      limit: 100,
+      limit: kDefaultPageSize,
       offset: null,
     );
 
-    final submissionsAsync = ref.watch(resourcesListProvider(
-      universityId: params.universityId,
-      departmentId: params.departmentId,
-      type: params.type,
-      courseCode: params.courseCode,
-      batch: params.batch,
-      batchId: params.batchId,
-      lessonNo: params.lessonNo,
-      uploaderUid: params.uploaderUid,
-      status: params.status,
-      limit: params.limit,
-      offset: params.offset,
-    ));
+    final submissionsAsync = ref.watch(
+      resourcesListProvider(
+        universityId: params.universityId,
+        departmentId: params.departmentId,
+        type: params.type,
+        courseCode: params.courseCode,
+        batch: params.batch,
+        batchId: params.batchId,
+        lessonNo: params.lessonNo,
+        uploaderUid: params.uploaderUid,
+        status: params.status,
+        limit: params.limit,
+        offset: params.offset,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Submissions'), centerTitle: true),
@@ -84,7 +90,8 @@ class MySubmissionsPage extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: resources.length,
-            separatorBuilder: (context, index) => const SizedBox(height: Spacing.lg),
+            separatorBuilder: (context, index) =>
+                const SizedBox(height: Spacing.lg),
             itemBuilder: (context, index) {
               final resource = resources[index];
 
@@ -125,7 +132,7 @@ class MySubmissionsPage extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),
     );

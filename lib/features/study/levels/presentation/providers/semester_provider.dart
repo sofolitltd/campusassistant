@@ -6,8 +6,8 @@ import '../../../../../core/providers/app_refresh_provider.dart';
 import '../../domain/entities/semester.dart';
 import '../../domain/repositories/semester_repository.dart';
 import '../../data/repositories/semester_repository_impl.dart';
-import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
-import 'package:campusassistant/features/batch/presentation/providers/selected_batch_provider.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/batch/presentation/providers/selected_batch_provider.dart';
 
 final semesterRepositoryProvider = Provider<SemesterRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -25,9 +25,7 @@ final semesterRepositoryProvider = Provider<SemesterRepository>((ref) {
 // Fetches ALL semesters for the user's department (no batch filter).
 // This is the raw data pool — filtering happens client-side.
 // ---------------------------------------------------------------------------
-final semestersProvider = FutureProvider.autoDispose<List<Semester>>((
-  ref,
-) async {
+final semestersProvider = FutureProvider<List<Semester>>((ref) async {
   ref.watch(appRefreshProvider);
   final userAsync = ref.watch(userProvider);
   if (userAsync.value == null) return [];
@@ -40,7 +38,7 @@ final semestersProvider = FutureProvider.autoDispose<List<Semester>>((
   final result = await repository.getSemesters(
     universityId: universityId,
     departmentId: departmentId,
-    batch: null, // Always fetch all — client-side filtering
+    batch: null,
   );
 
   return result.fold((failure) => [], (semesters) => semesters);

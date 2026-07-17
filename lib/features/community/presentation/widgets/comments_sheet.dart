@@ -1,12 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/core/di.dart';
-import 'package:campusassistant/features/community/data/models/community_comment.dart';
-import 'package:campusassistant/features/community/data/models/community_post.dart';
-import 'package:campusassistant/features/community/presentation/widgets/comment_item.dart';
+import '/core/di.dart';
+import '/features/community/data/models/community_comment.dart';
+import '/features/community/data/models/community_post.dart';
+import '/features/community/presentation/widgets/comment_item.dart';
 
 class CommentsSheet extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -103,7 +104,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: CupertinoActivityIndicator());
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));

@@ -4,12 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import 'package:campusassistant/core/di.dart';
-import 'package:campusassistant/features/community/data/models/community_post.dart';
-import 'package:campusassistant/features/community/presentation/widgets/comments_sheet.dart';
-import 'package:campusassistant/features/community/presentation/widgets/interaction_button.dart';
-import 'package:campusassistant/features/community/presentation/widgets/share_option.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/di.dart';
+import '/features/community/data/models/community_post.dart';
+import '/features/community/presentation/widgets/comments_sheet.dart';
+import '/features/community/presentation/widgets/interaction_button.dart';
+import '/features/community/presentation/widgets/share_option.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class DiscussionCard extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -64,7 +64,9 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).primaryColor.withValues(alpha: 0.1),
                 backgroundImage: widget.post.authorAvatar != null
                     ? NetworkImage(widget.post.authorAvatar!)
                     : null,
@@ -334,7 +336,10 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
             const Divider(),
             ListTile(
               leading: const Icon(LucideIcons.download, size: 20),
-              title: const Text('Save as Image', style: TextStyle(fontSize: 14)),
+              title: const Text(
+                'Save as Image',
+                style: TextStyle(fontSize: 14),
+              ),
               onTap: () => Navigator.pop(context),
             ),
             ListTile(

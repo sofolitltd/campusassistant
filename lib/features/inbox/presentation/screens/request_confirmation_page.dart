@@ -41,10 +41,7 @@ class RequestConfirmationPage extends ConsumerWidget {
         ),
         title: Text(
           'Message Request',
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       body: messagesAsync.when(
@@ -79,7 +76,9 @@ class RequestConfirmationPage extends ConsumerWidget {
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -87,8 +86,11 @@ class RequestConfirmationPage extends ConsumerWidget {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(LucideIcons.mailQuestion,
-                            size: 14, color: Colors.orange),
+                        Icon(
+                          LucideIcons.mailQuestion,
+                          size: 14,
+                          color: Colors.orange,
+                        ),
                         SizedBox(width: 4),
                         Text(
                           'Message Request',
@@ -107,14 +109,10 @@ class RequestConfirmationPage extends ConsumerWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1F2C33)
-                            : Colors.white,
+                        color: isDark ? const Color(0xFF1F2C33) : Colors.white,
                         borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(
-                          color: isDark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
                         ),
                       ),
                       child: Column(
@@ -122,8 +120,11 @@ class RequestConfirmationPage extends ConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              Icon(LucideIcons.messageCircle,
-                                  size: 16, color: Colors.grey.shade500),
+                              Icon(
+                                LucideIcons.messageCircle,
+                                size: 16,
+                                color: Colors.grey.shade500,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 'Message',
@@ -140,9 +141,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                             msg['text'] as String? ?? '',
                             style: TextStyle(
                               fontSize: 15,
-                              color: isDark
-                                  ? Colors.white
-                                  : Colors.black87,
+                              color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                         ],
@@ -153,10 +152,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                   const Text(
                     'Accepting will move this conversation to your inbox.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
@@ -174,7 +170,9 @@ class RequestConfirmationPage extends ConsumerWidget {
                       child: const Text(
                         'Accept',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -194,7 +192,9 @@ class RequestConfirmationPage extends ConsumerWidget {
                       child: const Text(
                         'Block',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
@@ -236,9 +236,9 @@ class RequestConfirmationPage extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to accept: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to accept: $e')));
       }
     }
   }
@@ -249,16 +249,16 @@ class RequestConfirmationPage extends ConsumerWidget {
       await repo.blockRequest(conversationId);
       ref.read(conversationsRefreshProvider.notifier).trigger();
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Request blocked')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Request blocked')));
         Navigator.of(context).pop();
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to block: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to block: $e')));
       }
     }
   }

@@ -9,7 +9,7 @@ class ConnectivityService {
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
 
-  bool _isConnected = true;
+  bool _isConnected = false;
   bool get isConnected => _isConnected;
 
   /// Stream of connectivity changes. true = online, false = offline.
@@ -26,10 +26,14 @@ class ConnectivityService {
     });
   }
 
-  /// Check current connectivity status (one-shot).
+  /// Check current connectivity status (one-shot) and emit result to stream.
   Future<bool> checkConnectivity() async {
     final results = await _connectivity.checkConnectivity();
+    final wasConnected = _isConnected;
     _isConnected = results.any((r) => r != ConnectivityResult.none);
+    if (wasConnected != _isConnected) {
+      _controller.add(_isConnected);
+    }
     return _isConnected;
   }
 

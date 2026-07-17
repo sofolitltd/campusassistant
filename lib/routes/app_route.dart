@@ -167,6 +167,10 @@ class AppRoute {
     name: 'contactWithCR',
     path: '/contact-with-cr',
   );
+  static const cacheManagement = AppRoute(
+    name: 'cacheManagement',
+    path: '/cache',
+  );
   static const registration = AppRoute(
     name: 'register',
     path: '/register/:studentId',

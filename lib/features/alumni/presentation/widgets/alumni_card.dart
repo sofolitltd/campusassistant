@@ -1,12 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
-import 'package:campusassistant/widgets/open_app.dart';
-import 'package:campusassistant/features/alumni/domain/entities/alumni.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/widgets/open_app.dart';
+import '/features/alumni/domain/entities/alumni.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class AlumniCard extends StatelessWidget {
   final Alumni alumni;
@@ -293,7 +294,9 @@ class AlumniCard extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(RadiusToken.sm),
+                                        borderRadius: BorderRadius.circular(
+                                          RadiusToken.sm,
+                                        ),
                                       ),
                                       child: Text(
                                         a.batch.startsWith('Batch')
@@ -342,7 +345,9 @@ class AlumniCard extends StatelessWidget {
                               color: isDark
                                   ? Colors.white.withValues(alpha: 0.04)
                                   : Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(RadiusToken.md),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
                               border: Border.all(
                                 color: isDark
                                     ? Colors.white10
@@ -697,13 +702,11 @@ class AlumniCard extends StatelessWidget {
                                     color: isDark
                                         ? Colors.grey.shade900
                                         : Colors.grey.shade100,
-                                    child: const Center(
+                                    child: Center(
                                       child: SizedBox(
                                         width: 18,
                                         height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
+                                        child: CupertinoActivityIndicator(),
                                       ),
                                     ),
                                   ),

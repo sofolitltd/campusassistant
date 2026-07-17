@@ -8,7 +8,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
-import 'package:campusassistant/features/profile/data/models/profile_model.dart';
+import '/features/profile/data/models/profile_model.dart';
 import '/features/staff/domain/entities/staff.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';

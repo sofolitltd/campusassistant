@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,7 +81,9 @@ class _UniversityLocationPageState
                                   ),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(RadiusToken.sm),
+                                    borderRadius: BorderRadius.circular(
+                                      RadiusToken.sm,
+                                    ),
                                   ),
                                   child: Text(
                                     university.name,
@@ -138,9 +141,7 @@ class _UniversityLocationPageState
             // Bottom info card
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor,
-              ),
+              decoration: BoxDecoration(color: theme.scaffoldBackgroundColor),
               child: SafeArea(
                 top: false,
                 child: Column(
@@ -159,8 +160,9 @@ class _UniversityLocationPageState
                       university.address,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     ),
                     const SizedBox(height: Spacing.lg),
@@ -204,7 +206,7 @@ class _UniversityLocationPageState
       ),
       loading: () => Scaffold(
         appBar: AppBar(title: const Text('Campus Map'), centerTitle: true),
-        body: const Center(child: CircularProgressIndicator.adaptive()),
+        body: const Center(child: CupertinoActivityIndicator()),
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: const Text('Campus Map'), centerTitle: true),
@@ -244,9 +246,7 @@ class _ZoomButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: theme.colorScheme.outlineVariant,
-            ),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
           child: Icon(icon, size: 20, color: theme.colorScheme.primary),
         ),
@@ -269,9 +269,7 @@ class _CoordChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant,
-        ),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Column(
         children: [

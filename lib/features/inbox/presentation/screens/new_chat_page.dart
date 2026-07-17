@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -58,7 +59,9 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
       final result = await repo.getContacts(
         limit: _limit,
         offset: 0,
-        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+        search: _searchController.text.isNotEmpty
+            ? _searchController.text
+            : null,
       );
       setState(() {
         _contacts = result.contacts;
@@ -79,7 +82,9 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
       final result = await repo.getContacts(
         limit: _limit,
         offset: _offset,
-        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+        search: _searchController.text.isNotEmpty
+            ? _searchController.text
+            : null,
       );
       setState(() {
         _contacts.addAll(result.contacts);
@@ -160,91 +165,95 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CupertinoActivityIndicator())
           : _contacts.isEmpty
-              ? Center(
-                  child: Text(
-                    'No contacts found',
-                    style: TextStyle(color: Colors.grey.shade500),
+          ? Center(
+              child: Text(
+                'No contacts found',
+                style: TextStyle(color: Colors.grey.shade500),
+              ),
+            )
+          : ListView.separated(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              itemCount: _contacts.length + (_hasMore ? 1 : 0),
+              separatorBuilder: (_, _) => Divider(
+                height: 0,
+                indent: 72,
+                color: isDark ? Colors.white10 : Colors.grey.shade200,
+              ),
+              itemBuilder: (context, index) {
+                if (index >= _contacts.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CupertinoActivityIndicator()),
+                  );
+                }
+                final contact = _contacts[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 22,
+                    backgroundImage:
+                        contact.avatarUrl != null &&
+                            contact.avatarUrl!.isNotEmpty
+                        ? NetworkImage(contact.avatarUrl!)
+                        : null,
+                    backgroundColor: Colors.teal.withValues(alpha: 0.2),
+                    child:
+                        contact.avatarUrl == null || contact.avatarUrl!.isEmpty
+                        ? Text(
+                            contact.name.isNotEmpty
+                                ? contact.name[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: Colors.teal,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          )
+                        : null,
                   ),
-                )
-              : ListView.separated(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  itemCount: _contacts.length + (_hasMore ? 1 : 0),
-                  separatorBuilder: (_, _) => Divider(
-                    height: 0,
-                    indent: 72,
-                    color: isDark ? Colors.white10 : Colors.grey.shade200,
+                  title: Text(
+                    contact.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
                   ),
-                  itemBuilder: (context, index) {
-                    if (index >= _contacts.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final contact = _contacts[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 22,
-                        backgroundImage: contact.avatarUrl != null &&
-                                contact.avatarUrl!.isNotEmpty
-                            ? NetworkImage(contact.avatarUrl!)
-                            : null,
-                        backgroundColor: Colors.teal.withValues(alpha: 0.2),
-                        child: contact.avatarUrl == null ||
-                                contact.avatarUrl!.isEmpty
-                            ? Text(
-                                contact.name.isNotEmpty
-                                    ? contact.name[0].toUpperCase()
-                                    : '?',
-                                style: const TextStyle(
-                                  color: Colors.teal,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              )
-                            : null,
-                      ),
-                      title: Text(
-                        contact.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15,
-                        ),
-                      ),
-                      onTap: () async {
-                        final repo = ref.read(chatRepositoryProvider);
-                        final result = await repo.getOrCreateConversation(
-                          otherUserId: contact.userId,
-                          otherUserName: contact.name,
-                          otherUserImage: contact.avatarUrl != null &&
-                                  contact.avatarUrl!.isNotEmpty
-                              ? contact.avatarUrl
-                              : null,
-                        );
-                        final convId = result['id'] as String;
-                        final status = result['status'] as String? ?? 'pending';
-                        final initiatorId = result['initiatorId'] as String?;
-                        await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertConversations([result]));
-                        ref.read(conversationsRefreshProvider.notifier).trigger();
-                        if (!context.mounted) return;
-                        Navigator.of(context).pop();
-                        context.pushNamed(
-                          AppRoute.inboxChat.name,
-                          pathParameters: {'conversationId': convId},
-                          extra: {
-                            'name': contact.name,
-                            'otherUserId': contact.userId,
-                            'status': status,
-                            'initiatorId': initiatorId,
-                          },
-                        );
+                  onTap: () async {
+                    final repo = ref.read(chatRepositoryProvider);
+                    final result = await repo.getOrCreateConversation(
+                      otherUserId: contact.userId,
+                      otherUserName: contact.name,
+                      otherUserImage:
+                          contact.avatarUrl != null &&
+                              contact.avatarUrl!.isNotEmpty
+                          ? contact.avatarUrl
+                          : null,
+                    );
+                    final convId = result['id'] as String;
+                    final status = result['status'] as String? ?? 'pending';
+                    final initiatorId = result['initiatorId'] as String?;
+                    await ChatDatabase.tryDbVoid(
+                      () => ChatDatabase.upsertConversations([result]),
+                    );
+                    ref.read(conversationsRefreshProvider.notifier).trigger();
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop();
+                    context.pushNamed(
+                      AppRoute.inboxChat.name,
+                      pathParameters: {'conversationId': convId},
+                      extra: {
+                        'name': contact.name,
+                        'otherUserId': contact.userId,
+                        'status': status,
+                        'initiatorId': initiatorId,
                       },
                     );
                   },
-                ),
+                );
+              },
+            ),
     );
   }
 }

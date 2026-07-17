@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -84,13 +85,10 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               controller: _scrollController,
               separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemCount:
-                  state.syllabi.length + (state.hasMore ? 1 : 0),
+              itemCount: state.syllabi.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index < state.syllabi.length) {
-                  return SyllabusCard(
-                    syllabus: state.syllabi[index],
-                  );
+                  return SyllabusCard(syllabus: state.syllabi[index]);
                 }
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
@@ -100,7 +98,7 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, st) => Center(child: Text('Error: $e')),
       ),
     );

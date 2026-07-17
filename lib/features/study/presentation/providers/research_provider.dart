@@ -7,7 +7,9 @@ import '../../../auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/research_model.dart';
 
 final researchSearchQueryProvider =
-    NotifierProvider<ResearchSearchNotifier, String>(ResearchSearchNotifier.new);
+    NotifierProvider<ResearchSearchNotifier, String>(
+      ResearchSearchNotifier.new,
+    );
 
 class ResearchSearchNotifier extends Notifier<String> {
   @override

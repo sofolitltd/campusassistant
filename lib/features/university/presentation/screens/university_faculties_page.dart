@@ -152,9 +152,7 @@ class _FacultiesList extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        ...departments.map(
-          (dept) => _FacultyCard(department: dept),
-        ),
+        ...departments.map((dept) => _FacultyCard(department: dept)),
       ],
     );
   }

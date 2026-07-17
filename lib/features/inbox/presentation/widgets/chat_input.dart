@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ChatInput extends StatelessWidget {
@@ -8,7 +9,8 @@ class ChatInput extends StatelessWidget {
   final bool hasText;
   final bool isMultiline;
 
-  const ChatInput({super.key, 
+  const ChatInput({
+    super.key,
     required this.controller,
     required this.isDark,
     required this.onSend,
@@ -27,20 +29,28 @@ class ChatInput extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? Colors.transparent : Colors.white,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: isDark ? Colors.white12 : Colors.grey.shade300),
+          border: Border.all(
+            color: isDark ? Colors.white12 : Colors.grey.shade300,
+          ),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.08),
+              color: isDark
+                  ? Colors.black26
+                  : Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
-          crossAxisAlignment: isMultiline ? CrossAxisAlignment.end : CrossAxisAlignment.center,
+          crossAxisAlignment: isMultiline
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center,
           children: [
             Align(
-              alignment: isMultiline ? Alignment.bottomCenter : Alignment.center,
+              alignment: isMultiline
+                  ? Alignment.bottomCenter
+                  : Alignment.center,
               child: IconButton(
                 icon: Icon(
                   Icons.add_circle_outline,
@@ -57,7 +67,10 @@ class ChatInput extends StatelessWidget {
                 minLines: 1,
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
-                style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 15),
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontSize: 15,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Type a message',
                   hintStyle: TextStyle(
@@ -70,7 +83,9 @@ class ChatInput extends StatelessWidget {
               ),
             ),
             Align(
-              alignment: isMultiline ? Alignment.bottomCenter : Alignment.center,
+              alignment: isMultiline
+                  ? Alignment.bottomCenter
+                  : Alignment.center,
               child: Container(
                 width: 28,
                 height: 28,
@@ -85,9 +100,15 @@ class ChatInput extends StatelessWidget {
                       ? const SizedBox(
                           width: 14,
                           height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CupertinoActivityIndicator(
+                            color: Colors.white,
+                          ),
                         )
-                      : const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 16),
+                      : const Icon(
+                          Icons.arrow_upward_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                   onPressed: canSend ? onSend : null,
                 ),
               ),

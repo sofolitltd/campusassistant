@@ -3,7 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class NotificationTile extends StatelessWidget {
   final AppNotification notification;
@@ -120,11 +120,11 @@ class NotificationTile extends StatelessWidget {
                                     : FontWeight.bold,
                                 color: isDark
                                     ? (notification.isRead
-                                        ? Colors.white70
-                                        : Colors.white)
+                                          ? Colors.white70
+                                          : Colors.white)
                                     : (notification.isRead
-                                        ? Colors.grey.shade700
-                                        : Colors.grey.shade900),
+                                          ? Colors.grey.shade700
+                                          : Colors.grey.shade900),
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,

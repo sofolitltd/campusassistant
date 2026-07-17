@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
-import 'package:campusassistant/features/student/presentation/providers/student_provider.dart';
-import 'package:campusassistant/features/batch/presentation/providers/batch_list_provider.dart';
-import 'package:campusassistant/features/batch/domain/entities/batch.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/student/presentation/providers/student_provider.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
+import '/features/batch/domain/entities/batch.dart';
 
 // Virtual batch representing "All Batches" (No Filter).
 final allBatchesPlaceholder = Batch(
@@ -82,9 +82,12 @@ Batch? matchBatch(String? hint, List<Batch> batches) {
   if (hint == null || hint.isEmpty) return null;
   final h = hint.toLowerCase().trim();
   if (h == 'all' || h == 'all_batches') return allBatchesPlaceholder;
-  return batches.where((b) =>
-    b.id.toLowerCase() == h ||
-    b.name.toLowerCase() == h ||
-    b.slug.toLowerCase() == h,
-  ).firstOrNull;
+  return batches
+      .where(
+        (b) =>
+            b.id.toLowerCase() == h ||
+            b.name.toLowerCase() == h ||
+            b.slug.toLowerCase() == h,
+      )
+      .firstOrNull;
 }

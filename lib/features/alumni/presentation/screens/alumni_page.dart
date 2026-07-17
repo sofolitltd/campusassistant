@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -102,22 +103,20 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
                 return ListView.separated(
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                  itemCount:
-                      alumniList.length + (state.isLoadingMore ? 1 : 0),
+                  itemCount: alumniList.length + (state.isLoadingMore ? 1 : 0),
                   separatorBuilder: (_, _) => const SizedBox(height: 14),
                   itemBuilder: (context, index) {
                     if (index == alumniList.length) {
                       return const Padding(
                         padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(child: CupertinoActivityIndicator()),
                       );
                     }
                     return AlumniCard(alumni: alumniList[index]);
                   },
                 );
               },
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (err, _) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(32),

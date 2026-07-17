@@ -16,10 +16,7 @@ class ClubDetailsPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Club Details'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Club Details'), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -66,8 +63,8 @@ class ClubDetailsPage extends StatelessWidget {
                     Text(
                       club.name,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(

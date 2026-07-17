@@ -32,12 +32,9 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
     String? departmentId,
     String? mode,
   }) async {
-    // Build a unique cache key based on query parameters
-    final cacheKey = _buildCacheKey(
-      universityId: universityId,
-      departmentId: departmentId,
-      mode: mode,
-    );
+    // Use a consistent cache key that doesn't depend on university/department
+    // since the API already filters server-side.
+    final cacheKey = mode == 'admin' ? 'banners_admin' : 'banners';
 
     // 1. Try remote if online
     if (connectivity.isConnected) {
@@ -52,7 +49,7 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
         // Cache the result
         final cacheItems = remoteBanners.map((m) => m.toJson()).toList();
         await cacheManager.cacheList(
-          entityType: 'banner_$cacheKey',
+          entityType: cacheKey,
           items: cacheItems,
           ttl: CacheTTL.banner,
         );
@@ -67,7 +64,7 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
     // 2. Try cached data
     try {
       final cachedData = await cacheManager.getCachedList(
-        entityType: 'banner_$cacheKey',
+        entityType: cacheKey,
       );
 
       if (cachedData.isNotEmpty) {
@@ -155,11 +152,8 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
     if (connectivity.isConnected) {
       try {
         await remoteDataSource.deleteBanner(id);
-        // Invalidate cache
-        await cacheManager.invalidateEntry(
-          entityType: 'banner',
-          entityKey: id,
-        );
+        // Invalidate banner cache
+        await cacheManager.invalidate('banners');
         return const Right(null);
       } catch (e) {
         debugPrint('[BannerRepo] Remote delete failed: $e');
@@ -181,16 +175,4 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
     ));
   }
 
-  String _buildCacheKey({
-    String? universityId,
-    String? departmentId,
-    String? mode,
-  }) {
-    final parts = <String>[
-      if (universityId != null) 'uni_$universityId',
-      if (departmentId != null) 'dept_$departmentId',
-      if (mode != null) 'mode_$mode',
-    ];
-    return parts.isEmpty ? 'global' : parts.join('_');
-  }
 }

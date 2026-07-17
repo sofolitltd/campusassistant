@@ -7,7 +7,7 @@ import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
 /// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFFD32F2F);
+const Color _brandPrimary = Color(0xFF00897B);
 const Color _darkBg = Color(0xFF121212);
 const Color _darkCard = Color(0xFF1E1E1E);
 const Color _darkSurfaceAlt = Color(0xFF2A2A2A);

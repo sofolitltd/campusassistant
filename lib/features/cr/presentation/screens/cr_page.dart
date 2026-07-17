@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -55,14 +56,13 @@ class _CrPageState extends ConsumerState<CrPage>
           ),
           Expanded(
             child: crAsync.when(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
               data: (crList) {
-                final activeCrs =
-                    crList.where((cr) => cr.isCurrent).toList();
-                final archivedCrs =
-                    crList.where((cr) => !cr.isCurrent).toList();
+                final activeCrs = crList.where((cr) => cr.isCurrent).toList();
+                final archivedCrs = crList
+                    .where((cr) => !cr.isCurrent)
+                    .toList();
 
                 return TabBarView(
                   controller: _tabController,
@@ -115,9 +115,7 @@ class _CrList extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              searchQuery.isNotEmpty
-                  ? LucideIcons.searchX
-                  : LucideIcons.userX,
+              searchQuery.isNotEmpty ? LucideIcons.searchX : LucideIcons.userX,
               size: 48,
               color: Colors.grey.shade300,
             ),
@@ -143,10 +141,9 @@ class _CrList extends StatelessWidget {
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        horizontal:
-            MediaQuery.of(context).size.width > 800
-                ? MediaQuery.of(context).size.width * .2
-                : 16,
+        horizontal: MediaQuery.of(context).size.width > 800
+            ? MediaQuery.of(context).size.width * .2
+            : 16,
         vertical: 16,
       ),
       itemCount: batches.length,

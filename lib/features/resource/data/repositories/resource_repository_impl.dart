@@ -16,6 +16,8 @@ class ResourceRepositoryImpl implements ResourceRepository {
   final ConnectivityService connectivity;
   final SyncManager syncManager;
 
+  final Map<String, PaginatedResources> _resourcesCache = {};
+
   ResourceRepositoryImpl({
     required this.apiClient,
     required this.cacheManager,
@@ -55,7 +57,50 @@ class ResourceRepositoryImpl implements ResourceRepository {
       year: year,
     );
 
-    // 1. Try remote if online
+    // 0. In-memory cache (instant)
+    if (_resourcesCache.containsKey(cacheKey)) {
+      debugPrint('[ResourceRepo] Returning resources from in-memory cache');
+      return Right(_resourcesCache[cacheKey]!);
+    }
+
+    // 1. Try DB cache
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'resource_$cacheKey',
+      );
+
+      if (cachedData.isNotEmpty) {
+        final resources = <Resource>[];
+        for (final json in cachedData) {
+          try {
+            resources.add(ResourceModel.fromJson(json).toEntity());
+          } catch (e) {
+            debugPrint('[ResourceRepo] Skipping cached item due to parse error: $e');
+          }
+        }
+
+        int total = cachedData.length;
+        final totalEntry = await cacheManager.getCachedSingle(
+          entityType: 'resource_total_$cacheKey',
+          entityKey: 'total',
+        );
+        if (totalEntry != null && totalEntry['total'] is int) {
+          total = totalEntry['total'] as int;
+        }
+
+        debugPrint('[ResourceRepo] Returning ${resources.length} cached resources');
+        final result = PaginatedResources(
+          resources: resources,
+          total: total,
+        );
+        _resourcesCache[cacheKey] = result;
+        return Right(result);
+      }
+    } catch (e) {
+      debugPrint('[ResourceRepo] Cache read failed: $e');
+    }
+
+    // 2. Try remote if online
     if (connectivity.isConnected) {
       try {
         final queryParams = {
@@ -109,48 +154,15 @@ class ResourceRepositoryImpl implements ResourceRepository {
           debugPrint('[ResourceRepo] Cache write failed (non-fatal): $e');
         }
 
-        return Right(PaginatedResources(
+        final result = PaginatedResources(
           resources: resources,
           total: totalCount,
-        ));
+        );
+        _resourcesCache[cacheKey] = result;
+        return Right(result);
       } catch (e) {
         debugPrint('[ResourceRepo] Remote fetch failed: $e');
       }
-    }
-
-    // 2. Try cached data
-    try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: 'resource_$cacheKey',
-      );
-
-      if (cachedData.isNotEmpty) {
-        final resources = <Resource>[];
-        for (final json in cachedData) {
-          try {
-            resources.add(ResourceModel.fromJson(json).toEntity());
-          } catch (e) {
-            debugPrint('[ResourceRepo] Skipping cached item due to parse error: $e');
-          }
-        }
-
-        int total = cachedData.length;
-        final totalEntry = await cacheManager.getCachedSingle(
-          entityType: 'resource_total_$cacheKey',
-          entityKey: 'total',
-        );
-        if (totalEntry != null && totalEntry['total'] is int) {
-          total = totalEntry['total'] as int;
-        }
-
-        debugPrint('[ResourceRepo] Returning ${resources.length} cached resources');
-        return Right(PaginatedResources(
-          resources: resources,
-          total: total,
-        ));
-      }
-    } catch (e) {
-      debugPrint('[ResourceRepo] Cache read failed: $e');
     }
 
     // 3. No data

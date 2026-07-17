@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import 'package:campusassistant/features/auth/presentation/providers/user_profile_provider.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/error/failures.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class SubscriptionSection extends ConsumerStatefulWidget {
   const SubscriptionSection({super.key});
@@ -158,7 +159,28 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
         );
       },
       loading: () => const _SubscriptionSkeleton(),
-      error: (e, _) => const SizedBox.shrink(),
+      error: (e, _) => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(RadiusToken.xl),
+          color: Theme.of(context).cardColor,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              e is NetworkFailure ? Icons.cloud_off : Icons.error_outline,
+              color: Colors.grey.shade400,
+              size: 22,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              e is NetworkFailure ? 'No internet connection' : 'Unable to load',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

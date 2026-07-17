@@ -1,6 +1,6 @@
 import re
 
-file_path = "lib/features/study/semester/presentation/screens/study_page.dart"
+file_path = "lib//features//study/semester/presentation/screens/study_page.dart"
 
 with open(file_path, "r") as f:
     content = f.read()

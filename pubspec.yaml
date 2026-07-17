@@ -61,6 +61,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.28
   connectivity_plus: ^6.1.0
   freezed: ">=3.2.0 <3.2.6"
+  uuid: ^4.6.0
 
 dev_dependencies:
   flutter_test:

@@ -22,7 +22,7 @@ CourseRepository courseRepository(Ref ref) {
   );
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<Course>> courses(
   Ref ref, {
   required String universityId,
@@ -44,7 +44,7 @@ Future<List<Course>> courses(
   return result.fold((failure) => throw failure, (courses) => courses);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<Course?> courseByCode(
   Ref ref, {
   required String universityId,

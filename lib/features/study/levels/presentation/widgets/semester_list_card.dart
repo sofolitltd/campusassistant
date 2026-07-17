@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/semester.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_radius.dart';
 
 class SemesterListCard extends StatelessWidget {
   final Semester semester;
@@ -19,11 +19,11 @@ class SemesterListCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: useShade200
               ? (isDark
-                  ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                  : Colors.grey.shade200)
+                    ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                    : Colors.grey.shade200)
               : (isDark
-                  ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                  : Colors.grey.shade100),
+                    ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                    : Colors.grey.shade100),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
@@ -46,8 +46,9 @@ class SemesterListCard extends StatelessWidget {
               padding: const EdgeInsets.all(2),
               child: Text(
                 value,
-                style: theme.textTheme.bodyMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -84,8 +85,9 @@ class SemesterListCard extends StatelessWidget {
               children: [
                 Text(
                   semester.name,
-                  style: theme.textTheme.titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -95,8 +97,11 @@ class SemesterListCard extends StatelessWidget {
                     children: [
                       infoChip('Courses', semester.totalCourses.toString()),
                       infoChip('Credits', semester.totalCredits.toString()),
-                      infoChip('Marks', semester.totalMarks.toString(),
-                          useShade200: true),
+                      infoChip(
+                        'Marks',
+                        semester.totalMarks.toString(),
+                        useShade200: true,
+                      ),
                     ],
                   ),
                 ),

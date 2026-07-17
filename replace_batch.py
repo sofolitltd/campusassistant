@@ -1,6 +1,6 @@
 import re
 
-file_path = "lib/features/study/semester/presentation/screens/study_page.dart"
+file_path = "lib//features//study/semester/presentation/screens/study_page.dart"
 with open(file_path, "r") as f:
     content = f.read()
 
@@ -164,7 +164,7 @@ class _BatchDropdownState extends ConsumerState<_BatchDropdown> {
       loading: () => const SizedBox(
         width: 110,
         height: 36,
-        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        child: Center(child: CupertinoActivityIndicator(strokeWidth: 2)),
       ),
       error: (e, _) => const Text("Error"),
     );

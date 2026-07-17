@@ -1,14 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/alumni_provider.dart';
-import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
-Future<void> showOrganizationFilterSheet(
-  BuildContext context,
-  WidgetRef ref,
-) {
+Future<void> showOrganizationFilterSheet(BuildContext context, WidgetRef ref) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -45,15 +43,15 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).primaryColor;
-    final orgsAsync = ref.watch(alumniOrganizationsProvider(search: _searchQuery));
+    final orgsAsync = ref.watch(
+      alumniOrganizationsProvider(search: _searchQuery),
+    );
     final selectedOrg = ref.watch(alumniSelectedOrganizationProvider);
 
     return Container(
       decoration: BoxDecoration(
         color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
@@ -115,9 +113,7 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                     _searchQuery = val;
                   });
                 },
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
                   hintText: 'Search organizations...',
                   hintStyle: TextStyle(
@@ -181,8 +177,12 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                     final isSelected = selectedOrg?.id == org.id;
 
                     final h = (org.name.hashCode.abs() % 360).toDouble();
-                    final orgColor =
-                        HSLColor.fromAHSL(1.0, h, 0.55, 0.45).toColor();
+                    final orgColor = HSLColor.fromAHSL(
+                      1.0,
+                      h,
+                      0.55,
+                      0.45,
+                    ).toColor();
 
                     return ListTile(
                       leading: Container(
@@ -209,13 +209,14 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                         org.name,
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                           color: isSelected
                               ? primaryColor
                               : (isDark
-                                  ? Colors.white70
-                                  : Colors.grey.shade800),
+                                    ? Colors.white70
+                                    : Colors.grey.shade800),
                         ),
                       ),
                       subtitle: org.website.isNotEmpty
@@ -245,8 +246,7 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                   },
                 );
               },
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (err, _) => Center(
                 child: Text(
                   'Error: $err',

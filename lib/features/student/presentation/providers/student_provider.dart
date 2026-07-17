@@ -8,6 +8,7 @@ import '../../../session/presentation/providers/session_provider.dart';
 import '../../../university/presentation/providers/university_provider.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/student/data/repositories/student_repository_impl.dart';
+import '/utils/constants.dart';
 import '/features/student/domain/entities/student.dart';
 import '/features/student/domain/repositories/student_repository.dart';
 
@@ -70,9 +71,15 @@ Future<List<Student>> _enrichStudents(
   final effectiveUniversityId = universityId ?? students.first.universityId;
   final effectiveDepartmentId = departmentId ?? students.first.departmentId;
 
-  final halls = await ref.watch(hallsByUniversityProvider(effectiveUniversityId).future);
-  final batches = await ref.watch(batchesByDepartmentProvider(effectiveDepartmentId).future);
-  final sessions = await ref.watch(sessionsByUniversityProvider(effectiveUniversityId).future);
+  final halls = await ref.watch(
+    hallsByUniversityProvider(effectiveUniversityId).future,
+  );
+  final batches = await ref.watch(
+    batchesByDepartmentProvider(effectiveDepartmentId).future,
+  );
+  final sessions = await ref.watch(
+    sessionsByUniversityProvider(effectiveUniversityId).future,
+  );
 
   return students.map((s) {
     final hall = halls.firstWhereOrNull((h) => h.id == s.hallId);
@@ -133,34 +140,53 @@ Future<PaginatedStudents> studentsWithTotalByBatchPaginated(
 @riverpod
 Future<List<Student>> studentsByBatch(Ref ref, String batchId) async {
   final repository = ref.watch(studentRepositoryProvider);
-  final paginated = await repository.getStudents(batchId: batchId, limit: 2000);
+  final paginated = await repository.getStudents(batchId: batchId, limit: kDefaultPageSize);
   return _enrichStudents(ref, paginated.students);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<Student?> studentByUserId(Ref ref, String userId) async {
   final repository = ref.watch(studentRepositoryProvider);
   final paginated = await repository.getStudents(userId: userId);
-  final student =
-      paginated.students.isNotEmpty ? paginated.students.first : null;
+  final student = paginated.students.isNotEmpty
+      ? paginated.students.first
+      : null;
 
   if (student == null) return null;
 
-  final halls =
-      await ref.watch(hallsByUniversityProvider(student.universityId).future);
-  final batches =
-      await ref.watch(batchesByDepartmentProvider(student.departmentId).future);
-  final sessions =
-      await ref.watch(sessionsByUniversityProvider(student.universityId).future);
+  // Enrich with hall/batch/session names — non-fatal when offline.
+  // The entity getters (hall, batch, session) fall back to raw IDs.
+  String? hallName;
+  String? batchName;
+  String? sessionName;
 
-  final hall = halls.firstWhereOrNull((h) => h.id == student.hallId);
-  final batch = batches.firstWhereOrNull((b) => b.id == student.batchId);
-  final session = sessions.firstWhereOrNull((ses) => ses.id == student.sessionId);
+  try {
+    final halls = await ref.watch(
+      hallsByUniversityProvider(student.universityId).future,
+    );
+    hallName = halls.firstWhereOrNull((h) => h.id == student.hallId)?.name;
+  } catch (_) {}
+
+  try {
+    final batches = await ref.watch(
+      batchesByDepartmentProvider(student.departmentId).future,
+    );
+    batchName = batches.firstWhereOrNull((b) => b.id == student.batchId)?.name;
+  } catch (_) {}
+
+  try {
+    final sessions = await ref.watch(
+      sessionsByUniversityProvider(student.universityId).future,
+    );
+    sessionName = sessions
+        .firstWhereOrNull((ses) => ses.id == student.sessionId)
+        ?.name;
+  } catch (_) {}
 
   return student.copyWith(
-    hallName: hall?.name,
-    batchName: batch?.name,
-    sessionName: session?.name,
+    hallName: hallName,
+    batchName: batchName,
+    sessionName: sessionName,
   );
 }
 
@@ -171,16 +197,21 @@ Future<Student?> studentByAcademicId(Ref ref, String studentId) async {
 
   if (student == null) return null;
 
-  final halls =
-      await ref.watch(hallsByUniversityProvider(student.universityId).future);
-  final batches =
-      await ref.watch(batchesByDepartmentProvider(student.departmentId).future);
-  final sessions =
-      await ref.watch(sessionsByUniversityProvider(student.universityId).future);
+  final halls = await ref.watch(
+    hallsByUniversityProvider(student.universityId).future,
+  );
+  final batches = await ref.watch(
+    batchesByDepartmentProvider(student.departmentId).future,
+  );
+  final sessions = await ref.watch(
+    sessionsByUniversityProvider(student.universityId).future,
+  );
 
   final hall = halls.firstWhereOrNull((h) => h.id == student.hallId);
   final batch = batches.firstWhereOrNull((b) => b.id == student.batchId);
-  final session = sessions.firstWhereOrNull((ses) => ses.id == student.sessionId);
+  final session = sessions.firstWhereOrNull(
+    (ses) => ses.id == student.sessionId,
+  );
 
   return student.copyWith(
     hallName: hall?.name,
@@ -189,7 +220,7 @@ Future<Student?> studentByAcademicId(Ref ref, String studentId) async {
   );
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<Student?> studentProfile(Ref ref) async {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null || user.role != 'student') return null;
@@ -201,16 +232,21 @@ Future<Student> studentByCode(Ref ref, String code) async {
   final repository = ref.watch(studentRepositoryProvider);
   final student = await repository.verifyCode(code);
 
-  final halls =
-      await ref.watch(hallsByUniversityProvider(student.universityId).future);
-  final batches =
-      await ref.watch(batchesByDepartmentProvider(student.departmentId).future);
-  final sessions =
-      await ref.watch(sessionsByUniversityProvider(student.universityId).future);
+  final halls = await ref.watch(
+    hallsByUniversityProvider(student.universityId).future,
+  );
+  final batches = await ref.watch(
+    batchesByDepartmentProvider(student.departmentId).future,
+  );
+  final sessions = await ref.watch(
+    sessionsByUniversityProvider(student.universityId).future,
+  );
 
   final hall = halls.firstWhereOrNull((h) => h.id == student.hallId);
   final batch = batches.firstWhereOrNull((b) => b.id == student.batchId);
-  final session = sessions.firstWhereOrNull((ses) => ses.id == student.sessionId);
+  final session = sessions.firstWhereOrNull(
+    (ses) => ses.id == student.sessionId,
+  );
 
   return student.copyWith(
     hallName: hall?.name,
@@ -229,10 +265,12 @@ Future<List<Student>> allStudents(
   final paginated = await repository.getStudents(
     universityId: universityId,
     departmentId: departmentId,
-    limit: 2000,
+    limit: kDefaultPageSize,
   );
-  final effectiveUniversityId = universityId ?? paginated.students.firstOrNull?.universityId;
-  final effectiveDepartmentId = departmentId ?? paginated.students.firstOrNull?.departmentId;
+  final effectiveUniversityId =
+      universityId ?? paginated.students.firstOrNull?.universityId;
+  final effectiveDepartmentId =
+      departmentId ?? paginated.students.firstOrNull?.departmentId;
   return _enrichStudents(
     ref,
     paginated.students,

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '/features/course/domain/entities/course.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
-import '../semester/presentation/providers/semester_provider.dart';
+import '../levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 
@@ -125,7 +126,9 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
                               color: isDark
-                                  ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                                  ? theme.colorScheme.surface.withValues(
+                                      alpha: 0.5,
+                                    )
                                   : Colors.grey.shade100,
                             ),
                             alignment: Alignment.center,
@@ -156,12 +159,11 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
               },
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CupertinoActivityIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
         ),
       ),
       floatingActionButton: null,
     );
   }
-
 }

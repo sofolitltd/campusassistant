@@ -27,7 +27,7 @@ ChapterRepository chapterRepository(Ref ref) {
   );
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<Chapter>> chaptersForCourse(
   Ref ref, {
   required String universityId,

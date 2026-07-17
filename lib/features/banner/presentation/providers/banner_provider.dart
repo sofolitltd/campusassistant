@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/cache/cache_manager.dart';
@@ -39,28 +40,46 @@ final getBannersProvider = Provider<GetBanners>((ref) {
   return GetBanners(repository);
 });
 
-// Presentation Providers
-final bannersListProvider = FutureProvider<List<Banner>>((ref) async {
-  String? uniId;
-  String? deptId;
+// Banner List Notifier — keeps last state so loading is not shown on rebuilds
+class BannersListNotifier extends AsyncNotifier<List<Banner>> {
+  @override
+  Future<List<Banner>> build() async {
+    String? uniId;
+    String? deptId;
 
-  // Try to get uni and dept for student targeting
-  try {
-    final university = await ref.watch(myUniversityProvider.future);
-    uniId = university.id;
-    final department = await ref.watch(myDepartmentProvider.future);
-    deptId = department.id;
-  } catch (_) {
-    // If guest or no uni/dept, fetch global only
+    // Try to get uni and dept for student targeting
+    try {
+      final university = await ref.watch(myUniversityProvider.future);
+      uniId = university.id;
+      final department = await ref.watch(myDepartmentProvider.future);
+      deptId = department.id;
+    } catch (_) {
+      // If guest or no uni/dept, fetch global only
+    }
+
+    final getBanners = ref.watch(getBannersProvider);
+    final result = await getBanners(
+      GetBannersParams(universityId: uniId, departmentId: deptId),
+    ).timeout(const Duration(seconds: 8));
+
+    return result.fold((failure) => throw failure, (banners) => banners);
   }
 
-  final getBanners = ref.watch(getBannersProvider);
-  final result = await getBanners(
-    GetBannersParams(universityId: uniId, departmentId: deptId),
-  );
+  /// Manual refresh — silently updates data without showing loading
+  Future<void> refresh() async {
+    try {
+      state = AsyncData(await build());
+    } catch (e) {
+      debugPrint('[BannersList] Refresh failed: $e');
+    }
+  }
+}
 
-  return result.fold((failure) => throw failure, (banners) => banners);
-});
+// Presentation Providers
+final bannersListProvider =
+    AsyncNotifierProvider<BannersListNotifier, List<Banner>>(
+  BannersListNotifier.new,
+);
 
 // Admin management providers
 final createBannerProvider = Provider((ref) {

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -130,7 +131,7 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
+                  child: CupertinoActivityIndicator(),
                 ),
               );
             }
@@ -141,7 +142,7 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
           separatorBuilder: (_, _) => const SizedBox(height: 12),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CupertinoActivityIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }

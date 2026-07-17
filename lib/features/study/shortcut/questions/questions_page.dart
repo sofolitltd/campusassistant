@@ -1,12 +1,14 @@
 import 'dart:async';
 
-import 'package:campusassistant/features/study/widgets/content_card.dart';
+import '/features/study/widgets/content_card.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../presentation/providers/questions_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 
 class QuestionsPage extends ConsumerStatefulWidget {
   const QuestionsPage({super.key});
@@ -73,7 +75,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                     width: 40,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -95,8 +99,11 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                           TextButton(
                             onPressed: () {
                               ref
-                                  .read(questionsSelectedYearProvider.notifier)
-                                  .state = null;
+                                      .read(
+                                        questionsSelectedYearProvider.notifier,
+                                      )
+                                      .state =
+                                  null;
                               Navigator.pop(context);
                             },
                             child: const Text(
@@ -127,8 +134,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                           title: Text(
                             isAll ? 'All Years' : year!,
                             style: TextStyle(
-                              fontWeight:
-                                  isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                               color: isSelected
                                   ? Theme.of(context).primaryColor
                                   : (isDark ? Colors.white : Colors.black87),
@@ -143,8 +151,11 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                               : null,
                           onTap: () {
                             ref
-                                .read(questionsSelectedYearProvider.notifier)
-                                .state = year;
+                                    .read(
+                                      questionsSelectedYearProvider.notifier,
+                                    )
+                                    .state =
+                                year;
                             Navigator.pop(context);
                           },
                         );
@@ -164,12 +175,13 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedCourse = ref.read(questionsSelectedCourseProvider);
     final docs = ref.read(questionsPaginationProvider).asData?.value.docs ?? [];
-    final courses = docs
-        .map((d) => d.courseCode)
-        .where((c) => c.isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
+    final courses =
+        docs
+            .map((d) => d.courseCode)
+            .where((c) => c.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
 
     showModalBottomSheet(
       context: context,
@@ -197,7 +209,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                     width: 40,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -219,8 +233,12 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                           TextButton(
                             onPressed: () {
                               ref
-                                  .read(questionsSelectedCourseProvider.notifier)
-                                  .state = null;
+                                      .read(
+                                        questionsSelectedCourseProvider
+                                            .notifier,
+                                      )
+                                      .state =
+                                  null;
                               Navigator.pop(context);
                             },
                             child: const Text(
@@ -251,8 +269,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                           title: Text(
                             isAll ? 'All Courses' : course!,
                             style: TextStyle(
-                              fontWeight:
-                                  isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                               color: isSelected
                                   ? Theme.of(context).primaryColor
                                   : (isDark ? Colors.white : Colors.black87),
@@ -267,8 +286,11 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                               : null,
                           onTap: () {
                             ref
-                                .read(questionsSelectedCourseProvider.notifier)
-                                .state = course;
+                                    .read(
+                                      questionsSelectedCourseProvider.notifier,
+                                    )
+                                    .state =
+                                course;
                             Navigator.pop(context);
                           },
                         );
@@ -324,7 +346,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final primaryRed = const Color(0xFFD32F2F);
+    final primaryColor = Theme.of(context).appColors.primaryColor;
 
     final questionsAsync = ref.watch(questionsPaginationProvider);
     final selectedCourse = ref.watch(questionsSelectedCourseProvider);
@@ -332,7 +354,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     final searchHint = 'Search questions...';
 
     return Scaffold(
-      backgroundColor: primaryRed,
+      backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -457,14 +479,17 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 12),
                             controller: _scrollController,
-                            itemCount: state.docs.length + (state.hasMore ? 1 : 0),
+                            itemCount:
+                                state.docs.length + (state.hasMore ? 1 : 0),
                             itemBuilder: (context, index) {
                               if (index >= state.docs.length - 5 &&
                                   state.hasMore &&
                                   !state.isLoadingMore) {
                                 Future.microtask(() {
                                   ref
-                                      .read(questionsPaginationProvider.notifier)
+                                      .read(
+                                        questionsPaginationProvider.notifier,
+                                      )
                                       .loadNextPage();
                                 });
                               }
@@ -477,14 +502,13 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   padding: EdgeInsets.symmetric(vertical: 16),
                                   child: Center(
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 14,
                                           height: 14,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
+                                          child: CupertinoActivityIndicator(),
                                         ),
                                         SizedBox(width: 8),
                                         Text(
@@ -502,17 +526,23 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                       ],
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CupertinoActivityIndicator()),
                   error: (e, st) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(LucideIcons.circleAlert, color: Colors.red, size: 48),
+                        Icon(
+                          LucideIcons.circleAlert,
+                          color: Colors.red,
+                          size: 48,
+                        ),
                         const SizedBox(height: Spacing.lg),
                         Text('Error: $e'),
                         TextButton(
-                          onPressed: () =>
-                              ref.read(questionsPaginationProvider.notifier).refresh(),
+                          onPressed: () => ref
+                              .read(questionsPaginationProvider.notifier)
+                              .refresh(),
                           child: const Text('Try Again'),
                         ),
                       ],

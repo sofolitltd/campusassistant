@@ -2,6 +2,7 @@ import 'dart:io';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,7 @@ import '../../data/models/profile_model.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/utils/constants.dart';
-import '/widgets/breadcrumbs.dart';
+
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
@@ -29,7 +30,7 @@ class EditProfilePage extends ConsumerWidget {
       appBar: AppBar(centerTitle: true, title: const Text('Edit Profile')),
       body: profileAsync.when(
         data: (profile) => _EditProfileForm(profile: profile),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );
@@ -112,11 +113,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-
-                  /// ---- BREADCRUMBS ----
-                    const Breadcrumbs(leftPadding: 0),
-                      const SizedBox(height: 8),
-                  //
+//
                   ButtonTheme(
                     alignedDropdown: true,
                     child: Container(
@@ -142,8 +139,6 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                        
-                  
                           /// ---- PROFILE IMAGE ----
                           Row(
                             children: [
@@ -152,24 +147,22 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               Expanded(child: _buildPhotoInstruction(context)),
                             ],
                           ),
-                  
+
                           const SizedBox(height: 24),
-                  
+
                           /// ---- NAME ----
                           const Text('Name'),
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: _nameController,
                             textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(
-                              hintText: 'Name',
-                            ),
+                            decoration: const InputDecoration(hintText: 'Name'),
                             validator: (val) =>
                                 val!.isEmpty ? 'Enter your name' : null,
                           ),
-                  
+
                           const SizedBox(height: Spacing.lg),
-                  
+
                           /// ---- MOBILE + BLOOD ----
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +178,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                       controller: _mobileController,
                                       keyboardType: TextInputType.phone,
                                       validator: (val) {
-                                        if (val!.isEmpty) return 'Enter mobile no';
+                                        if (val!.isEmpty)
+                                          return 'Enter mobile no';
                                         if (val.length != 11) {
                                           return 'Mobile no must be 11 digits';
                                         }
@@ -212,12 +206,15 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                         hintText: 'Blood',
                                       ),
                                       isDense: true,
-                                      onChanged: (val) =>
-                                          setState(() => _selectedBloodGroup = val),
+                                      onChanged: (val) => setState(
+                                        () => _selectedBloodGroup = val,
+                                      ),
                                       validator: (val) => val == null
                                           ? 'Select your blood group'
                                           : null,
-                                      dropdownColor: Theme.of(context).cardColor,
+                                      dropdownColor: Theme.of(
+                                        context,
+                                      ).cardColor,
                                       items: kBloodGroup
                                           .map(
                                             (bg) => DropdownMenuItem(
@@ -232,13 +229,13 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               ),
                             ],
                           ),
-                  
+
                           const SizedBox(height: Spacing.lg),
-                  
+
                           /// ---- HALL ----
                           const Text('Hall Name'),
                           const SizedBox(height: 8),
-                  
+
                           hallsAsync.when(
                             data: (hallList) {
                               final validHall = hallList.contains(_selectedHall)
@@ -269,19 +266,22 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                     .toList(),
                               );
                             },
-                            loading: () => const SizedBox.shrink(),
+                            loading: () => const Padding(
+                              padding: EdgeInsets.all(8),
+                              child: CupertinoActivityIndicator(),
+                            ),
                             error: (e, _) => Text('Error loading halls: $e'),
                           ),
-                  
+
                           const SizedBox(height: 24),
-                  
+
                           /// ---- SAVE BUTTON ----
                           ElevatedButton(
                             onPressed: _isLoading || !_hasChanged()
                                 ? null
                                 : _updateProfile,
                             child: _isLoading
-                                ? const CircularProgressIndicator()
+                                ? const CupertinoActivityIndicator()
                                 : const Text('UPDATE'),
                           ),
                         ],

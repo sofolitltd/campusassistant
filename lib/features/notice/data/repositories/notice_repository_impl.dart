@@ -22,7 +22,7 @@ class NoticeRepositoryImpl implements NoticeRepository {
     required String universityId,
     required String departmentId,
   }) async {
-    final cacheKey = 'notice_uni_${universityId}_dept_${departmentId}';
+    final cacheKey = 'notice_uni_${universityId}_dept_$departmentId';
 
     // 1. Try remote if online
     if (connectivity.isConnected) {

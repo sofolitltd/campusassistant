@@ -16,6 +16,10 @@ import '../../../../routes/app_route.dart';
 import '../../../../widgets/pdf_viewer_page.dart';
 import '../../domain/entities/downloaded_file.dart';
 import '../providers/downloads_provider.dart';
+import '../../../auth/presentation/providers/user_profile_provider.dart';
+import '../../../bookmark/domain/entities/bookmark.dart';
+import '../../../bookmark/presentation/providers/bookmark_provider.dart';
+import 'package:uuid/uuid.dart';
 import 'resource_info_sheet.dart';
 
 class DownloadedResourceCard extends ConsumerWidget {
@@ -33,6 +37,17 @@ class DownloadedResourceCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final resource = downloadedFile.resource;
+
+    final userId = ref.watch(userProvider).value?.uid ?? '';
+    final isBookmarked = userId.isNotEmpty &&
+        ref.watch(userBookmarksProvider(userId)).whenOrNull(
+              data: (bookmarks) => bookmarks.any(
+                (b) =>
+                    b.entityType == 'resource' &&
+                    b.entityId == resource.id,
+              ),
+            ) ==
+            true;
 
     return Container(
       decoration: BoxDecoration(
@@ -80,11 +95,29 @@ class DownloadedResourceCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Positioned(top: 0, right: -6, child: _buildPopupMenu(context, ref)),
+                Positioned(top: 0, right: -6, child: _buildPopupMenu(context, ref, isBookmarked)),
                 Positioned(
-                  bottom: 10,
+                  bottom: -4,
                   right: 12,
-                  child: const Icon(LucideIcons.circleCheck, color: Colors.green, size: 20),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
+                        padding: EdgeInsets.zero,
+                        onPressed: () => _handleBookmarkToggle(context, ref, isBookmarked),
+                        icon: Icon(
+                          isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
+                          color: isBookmarked
+                              ? Colors.teal
+                              : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      const Icon(LucideIcons.circleCheck, color: Colors.green, size: 20),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -225,7 +258,7 @@ class DownloadedResourceCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildPopupMenu(BuildContext context, WidgetRef ref) {
+  Widget _buildPopupMenu(BuildContext context, WidgetRef ref, bool isBookmarked) {
     final theme = Theme.of(context);
     return PopupMenuButton<String>(
       padding: EdgeInsets.zero,
@@ -246,6 +279,9 @@ class DownloadedResourceCard extends ConsumerWidget {
             break;
           case 'info':
             _showInfoBottomSheet(context);
+            break;
+          case 'bookmark':
+            await _handleBookmarkToggle(context, ref, isBookmarked);
             break;
           case 'view_course':
             _navigateToCourse(context);
@@ -268,6 +304,14 @@ class DownloadedResourceCard extends ConsumerWidget {
           value: 'info',
           child: _PopupItem(icon: LucideIcons.info, text: 'Info'),
         ),
+        PopupMenuItem(height: 34,
+          value: 'bookmark',
+          child: _PopupItem(
+            icon: isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
+            text: isBookmarked ? 'Remove Bookmark' : 'Bookmark',
+            errorColor: isBookmarked ? theme.appColors.destructiveColor : null,
+          ),
+        ),
         if (downloadedFile.resource.id.isNotEmpty)
           const PopupMenuItem(height: 34, 
             value: 'view_course',
@@ -279,6 +323,74 @@ class DownloadedResourceCard extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _handleBookmarkToggle(
+    BuildContext context,
+    WidgetRef ref,
+    bool isBookmarked,
+  ) async {
+    final userAsync = ref.read(userProvider);
+    final userId = userAsync.value?.uid ?? '';
+    if (userId.isEmpty) {
+      Fluttertoast.showToast(msg: 'Please login to bookmark');
+      return;
+    }
+
+    if (isBookmarked) {
+      final bookmarks = ref.read(userBookmarksProvider(userId)).value ?? [];
+      final match = bookmarks.where(
+        (b) => b.entityType == 'resource' && b.entityId == downloadedFile.resource.id,
+      );
+      final bookmarkId = match.isNotEmpty ? match.first.id : null;
+      if (bookmarkId == null) return;
+
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Remove Bookmark'),
+          content: const Text('Are you sure you want to remove this bookmark?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                'Remove',
+                style: TextStyle(color: Theme.of(context).appColors.destructiveColor),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+
+      final result = await ref.read(bookmarkRepositoryProvider).removeBookmark(bookmarkId);
+      result.fold(
+        (failure) => Fluttertoast.showToast(msg: 'Failed to remove bookmark'),
+        (_) {
+          ref.invalidate(userBookmarksProvider);
+          Fluttertoast.showToast(msg: 'Bookmark removed');
+        },
+      );
+    } else {
+      final bookmark = Bookmark(
+        id: const Uuid().v4(),
+        userId: userId,
+        entityType: 'resource',
+        entityId: downloadedFile.resource.id,
+      );
+      final result = await ref.read(bookmarkRepositoryProvider).addBookmark(bookmark);
+      result.fold(
+        (failure) => Fluttertoast.showToast(msg: 'Failed to add bookmark'),
+        (_) {
+          ref.invalidate(userBookmarksProvider);
+          Fluttertoast.showToast(msg: 'Bookmarked');
+        },
+      );
+    }
   }
 
   void _showInfoBottomSheet(BuildContext context) {

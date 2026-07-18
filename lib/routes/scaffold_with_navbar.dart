@@ -77,9 +77,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
                         label: Text('Study'),
                       ),
                       NavigationRailDestination(
-                        icon: Icon(Icons.chat_bubble_outline),
-                        selectedIcon: Icon(Icons.chat_bubble),
-                        label: Text('Inbox'),
+                        icon: Icon(Icons.people_outline),
+                        selectedIcon: Icon(Icons.people),
+                        label: Text('Community'),
                       ),
                       NavigationRailDestination(
                         icon: Icon(Icons.person_outline),
@@ -146,7 +146,7 @@ class _BlurryBottomNavBar extends StatelessWidget {
   static const _items = [
     _NavItem(icon: LucideIcons.house, selectedIcon: LucideIcons.house, label: 'Home'),
     _NavItem(icon: LucideIcons.bookOpen, selectedIcon: LucideIcons.bookOpen, label: 'Study'),
-    _NavItem(icon: LucideIcons.messageCircle, selectedIcon: LucideIcons.messageCircle, label: 'Inbox'),
+    _NavItem(icon: LucideIcons.users, selectedIcon: LucideIcons.users, label: 'Community'),
     _NavItem(icon: LucideIcons.userRound, selectedIcon: LucideIcons.userRound, label: 'Profile'),
   ];
 

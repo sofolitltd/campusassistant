@@ -39,9 +39,9 @@ import '/features/university/presentation/screens/university_halls_page.dart';
 import '/features/university/presentation/screens/university_departments_page.dart';
 import '/features/university/presentation/screens/university_faculties_page.dart';
 import '/features/course/presentation/screens/course_page.dart';
-import '/features/study/details/chapter_notes_screen.dart';
-import '/features/study/details/course_details_page.dart';
-import '../features/study/levels/presentation/screens/study_page.dart';
+import '/features/study/presentation/screens/details/chapter_notes_screen.dart';
+import '/features/study/presentation/screens/details/course_details_page.dart';
+import '/features/study/levels/presentation/screens/study_page.dart';
 import '/features/study/shortcut/library/library_page.dart';
 import '/features/study/shortcut/questions/questions_page.dart';
 import '/features/study/shortcut/research/research_page.dart';
@@ -58,11 +58,9 @@ import '/features/profile/presentation/screens/edit_profile_page.dart';
 import '/features/profile/presentation/screens/my_submissions_page.dart';
 import '/features/profile/presentation/screens/profile_page.dart';
 import '/features/contributor/presentation/screens/contributor_page.dart';
-import '/features/notice/notice_group.dart';
 import '/features/notification/presentation/screens/notification_detail_screen.dart';
 import '/features/notification/presentation/screens/notification_screen.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
-import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/features/resource/domain/entities/resource.dart';
 import '/features/auth/presentation/screens/new_splash_screen.dart';
 import '/features/cache/presentation/cache_management_page.dart';
@@ -97,8 +95,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // ── Splash screen: wait for auth resolution ──
       if (matchedLocation == '/splash') {
-        if (isLoading || hasError)
+        if (isLoading || hasError) {
           return null; // stay on splash while checking auth or on network error
+        }
         if (!isLoggedIn) return AppRoute.login.path;
         return AppRoute.home.path; // logged in → go to home
       }
@@ -236,56 +235,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                name: AppRoute.inbox.name,
-                path: AppRoute.inbox.path,
+                name: AppRoute.community.name,
+                path: AppRoute.community.path,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: InboxPage()),
-                routes: [
-                  GoRoute(
-                    name: AppRoute.inboxChat.name,
-                    path: 'chat/:conversationId',
-                    pageBuilder: (context, state) {
-                      final conversationId =
-                          state.pathParameters['conversationId']!;
-                      final extra = state.extra as Map<String, dynamic>?;
-                      final name = extra?['name'] as String? ?? 'Chat';
-                      final otherUserId =
-                          extra?['otherUserId'] as String? ?? '';
-                      final status = extra?['status'] as String? ?? 'accepted';
-                      final initiatorId = extra?['initiatorId'] as String?;
-                      return NoTransitionPage(
-                        child: ChatPage(
-                          conversationId: conversationId,
-                          name: name,
-                          otherUserId: otherUserId,
-                          status: status,
-                          initiatorId: initiatorId,
-                        ),
-                      );
-                    },
-                  ),
-                  GoRoute(
-                    name: AppRoute.requestConfirmation.name,
-                    path: 'request/:conversationId',
-                    pageBuilder: (context, state) {
-                      final conversationId =
-                          state.pathParameters['conversationId']!;
-                      final extra = state.extra as Map<String, dynamic>?;
-                      final name = extra?['name'] as String? ?? 'Unknown';
-                      final otherUserId =
-                          extra?['otherUserId'] as String? ?? '';
-                      final initiatorId = extra?['initiatorId'] as String?;
-                      return NoTransitionPage(
-                        child: RequestConfirmationPage(
-                          conversationId: conversationId,
-                          name: name,
-                          otherUserId: otherUserId,
-                          initiatorId: initiatorId,
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                    const NoTransitionPage(child: CommunityPage()),
               ),
             ],
           ),
@@ -320,10 +273,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     name: AppRoute.noticeGroup.name,
                     path: AppRoute.noticeGroup.path,
-                    pageBuilder: (context, state) {
-                      final user = state.extra as user_entity.User;
-                      return NoTransitionPage(child: NoticeGroup(user: user));
-                    },
+                    pageBuilder: (context, state) =>
+                        const NoTransitionPage(child: DepartmentNoticesPage()),
                   ),
                 ],
               ),
@@ -332,11 +283,55 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
-        name: AppRoute.community.name,
-        path: AppRoute.community.path,
+        name: AppRoute.inbox.name,
+        path: AppRoute.inbox.path,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
-            const NoTransitionPage(child: CommunityPage()),
+            const NoTransitionPage(child: InboxPage()),
+        routes: [
+          GoRoute(
+            name: AppRoute.inboxChat.name,
+            path: 'chat/:conversationId',
+            pageBuilder: (context, state) {
+              final conversationId =
+                  state.pathParameters['conversationId']!;
+              final extra = state.extra as Map<String, dynamic>?;
+              final name = extra?['name'] as String? ?? 'Chat';
+              final otherUserId = extra?['otherUserId'] as String? ?? '';
+              final status = extra?['status'] as String? ?? 'accepted';
+              final initiatorId = extra?['initiatorId'] as String?;
+              return NoTransitionPage(
+                child: ChatPage(
+                  conversationId: conversationId,
+                  name: name,
+                  otherUserId: otherUserId,
+                  status: status,
+                  initiatorId: initiatorId,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            name: AppRoute.requestConfirmation.name,
+            path: 'request/:conversationId',
+            pageBuilder: (context, state) {
+              final conversationId =
+                  state.pathParameters['conversationId']!;
+              final extra = state.extra as Map<String, dynamic>?;
+              final name = extra?['name'] as String? ?? 'Unknown';
+              final otherUserId = extra?['otherUserId'] as String? ?? '';
+              final initiatorId = extra?['initiatorId'] as String?;
+              return NoTransitionPage(
+                child: RequestConfirmationPage(
+                  conversationId: conversationId,
+                  name: name,
+                  otherUserId: otherUserId,
+                  initiatorId: initiatorId,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         name: AppRoute.routine.name,

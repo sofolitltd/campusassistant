@@ -141,7 +141,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
             children: [
 // ── Filter row (red area) ───────────────────────────────
               Padding(
-                padding: const .fromLTRB(16, 16, 16, 16),
+                padding: const .fromLTRB(16, 0, 16, 16),
                 child: Row(
                   children: [
                     const Text(
@@ -455,6 +455,12 @@ class _SemesterButton extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Icon(
+              LucideIcons.graduationCap,
+              size: 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
             Text(
               selectedSemester?.name ?? 'All',
               style: const TextStyle(
@@ -639,6 +645,12 @@ class _BatchButton extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Icon(
+              LucideIcons.users,
+              size: 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
             Text(
               selectedBatch?.name ?? 'All Batches',
               style: const TextStyle(
@@ -820,6 +832,8 @@ class _FilterTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).appColors.primaryColor;
+    final selectedBg = primary.withValues(alpha: isDark ? 0.22 : 0.12);
 
     return GestureDetector(
       onTap: onTap,
@@ -827,11 +841,7 @@ class _FilterTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark
-                    ? Colors.red.shade900.withAlpha(50)
-                    : const Color(0xFFFDE8E8))
-              : Colors.transparent,
+          color: isSelected ? selectedBg : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -842,7 +852,7 @@ class _FilterTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 color: isSelected
-                    ? (isDark ? Colors.red.shade300 : Colors.red.shade700)
+                    ? primary
                     : (isDark ? Colors.white : Colors.black87),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
@@ -850,7 +860,7 @@ class _FilterTile extends StatelessWidget {
             if (isSelected)
               Icon(
                 LucideIcons.check,
-                color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                color: primary,
                 size: 20,
               ),
           ],

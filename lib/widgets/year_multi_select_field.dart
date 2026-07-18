@@ -1,6 +1,7 @@
 import '/core/theme/tokens/app_radius.dart';
 import 'package:flutter/material.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 
 class YearMultiSelectField extends StatelessWidget {
   final List<String> years;
@@ -147,16 +148,25 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
                   child: Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.black : Colors.white,
+                      color: isSelected
+                          ? Theme.of(context)
+                              .appColors
+                              .primaryColor
+                              .withValues(alpha: 0.12)
+                          : Colors.white,
                       border: Border.all(
-                        color: isSelected ? Colors.black : Colors.grey.shade300,
+                        color: isSelected
+                            ? Theme.of(context).appColors.primaryColor
+                            : Colors.grey.shade300,
                       ),
                       borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Text(
                       year,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
+                        color: isSelected
+                            ? Theme.of(context).appColors.primaryColor
+                            : Colors.black,
                         fontWeight: isSelected ? FontWeight.bold : null,
                       ),
                     ),
@@ -170,7 +180,9 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).appColors.primaryColor,
+              ),
               onPressed: () {
                 widget.onSelected(_selected);
                 Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '/core/cache/cache_manager.dart';
 import '/core/cache/connectivity_service.dart';
@@ -43,6 +44,8 @@ class CommunityRepository {
 
   Future<List<CommunityPost>> getPosts(String scope, {int page = 1}) async {
     final cacheKey = 'community_${scope}_page_$page';
+    // Saved/Liked change frequently on save/unsave/like — never cache them.
+    final cacheable = scope != 'saved' && scope != 'liked';
 
     // 1. Try remote if online
     if (connectivity.isConnected) {
@@ -55,7 +58,7 @@ class CommunityRepository {
         final posts = data.map((json) => CommunityPost.fromJson(json)).toList();
 
         // Cache first page only
-        if (page == 1) {
+        if (cacheable && page == 1) {
           await cacheManager.cacheList(
             entityType: cacheKey,
             items: data.cast<Map<String, dynamic>>(),
@@ -70,7 +73,7 @@ class CommunityRepository {
     }
 
     // 2. Try cache (first page only)
-    if (page == 1) {
+    if (cacheable && page == 1) {
       try {
         final cachedData = await cacheManager.getCachedList(
           entityType: cacheKey,
@@ -96,13 +99,53 @@ class CommunityRepository {
     throw Exception('Failed to fetch community posts');
   }
 
-  Future<CommunityPost> createPost(String content, String scope) async {
+  Future<List<CommunityPost>> getLikedPosts({int page = 1}) async {
+    if (!connectivity.isConnected) {
+      return [];
+    }
+    final response = await apiClient.get(
+      ApiEndpoints.communityPostsLiked,
+      queryParameters: {'page': page, 'page_size': 20},
+    );
+    final List<dynamic> data = response.data ?? [];
+    return data.map((json) => CommunityPost.fromJson(json)).toList();
+  }
+
+  Future<CommunityPost> createPost(
+    String content,
+    String scope, {
+    List<Uint8List> images = const [],
+  }) async {
     if (!connectivity.isConnected) {
       throw Exception('Internet connection required to create a post');
     }
+
+    if (images.isEmpty) {
+      final response = await apiClient.post(
+        ApiEndpoints.communityPosts,
+        data: {'content': content, 'scope': scope},
+      );
+      return CommunityPost.fromJson(response.data);
+    }
+
+    final formData = FormData.fromMap({
+      'content': content,
+      'scope': scope,
+      'images': images
+          .asMap()
+          .entries
+          .map(
+            (e) => MultipartFile.fromBytes(
+              e.value,
+              filename: 'community_image_${e.key}.jpg',
+            ),
+          )
+          .toList(),
+    });
+
     final response = await apiClient.post(
       ApiEndpoints.communityPosts,
-      data: {'content': content, 'scope': scope},
+      data: formData,
     );
     return CommunityPost.fromJson(response.data);
   }
@@ -193,6 +236,24 @@ class CommunityRepository {
       throw Exception('Internet connection required');
     }
     await apiClient.delete(ApiEndpoints.communityCommentDetail(id));
+  }
+
+  Future<void> deletePost(String id) async {
+    if (!connectivity.isConnected) {
+      throw Exception('Internet connection required to delete post');
+    }
+    await apiClient.delete(ApiEndpoints.communityPostDetail(id));
+  }
+
+  Future<CommunityPost> updatePost(String id, String content) async {
+    if (!connectivity.isConnected) {
+      throw Exception('Internet connection required to edit post');
+    }
+    final response = await apiClient.put(
+      ApiEndpoints.communityPostDetail(id),
+      data: {'content': content},
+    );
+    return CommunityPost.fromJson(response.data);
   }
 
   void dispose() {

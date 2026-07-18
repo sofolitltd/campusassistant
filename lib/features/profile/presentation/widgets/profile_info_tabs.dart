@@ -61,6 +61,7 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+        
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 Spacing.lg,
@@ -68,18 +69,6 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
                 Spacing.lg,
                 0,
               ),
-              child: Text(
-                'Information',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : Colors.grey.shade800,
-                ),
-              ),
-            ),
-            const SizedBox(height: Spacing.sm),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
               child: SectionTabBar(
                 controller: _tabController,
                 tabs: const [
@@ -121,18 +110,18 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
                     children: [
                       _InfoItem(
                         label: 'Batch',
-                        value: student.batchName ?? student.batchId ?? 'N/A',
+                        value: student.batchName ?? student.batchId,
                       ),
                       const Divider(thickness: .5),
                       _InfoItem(
                         label: 'Session',
                         value:
-                            student.sessionName ?? student.sessionId ?? 'N/A',
+                            student.sessionName ?? student.sessionId,
                       ),
                       const Divider(thickness: .5),
                       _InfoItem(
                         label: 'Student ID',
-                        value: student.studentId ?? 'N/A',
+                        value: student.studentId,
                       ),
                       const Divider(thickness: .5),
                       _InfoItem(label: 'Hall', value: student.hall),

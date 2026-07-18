@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '/features/course/domain/entities/course.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
-import '../levels/presentation/providers/semester_provider.dart';
+import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 

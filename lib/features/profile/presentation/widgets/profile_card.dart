@@ -5,7 +5,7 @@ import '/features/auth/domain/entities/user.dart' as user_entity;
 import 'profile_info_tabs.dart';
 import 'account_section.dart';
 import 'theme_section.dart';
-import 'essentials_section.dart';
+import 'quick_actions_section.dart';
 import 'subscription_card.dart';
 
 class ProfileCard extends ConsumerWidget {
@@ -26,7 +26,7 @@ class ProfileCard extends ConsumerWidget {
             ProfileInfoTabsSection(user: user),
             const AccountSection(),
             const ThemeSection(),
-            EssentialsSection(user: user),
+            const QuickActionsSection(),
           ],
         ),
       ),

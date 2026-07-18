@@ -89,6 +89,25 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     final isProContent = widget.resource.status == 'pro';
 
     final userId = profileData?.uid ?? '';
+    if (userId.isNotEmpty) {
+      final bookmarksValue = ref.watch(userBookmarksProvider(userId));
+      bookmarksValue.whenOrNull(data: (bookmarks) {
+        final match = bookmarks.where(
+          (b) => b.entityType == 'resource' && b.entityId == widget.resource.id,
+        );
+        final found = match.isNotEmpty;
+        if (found != _isBookmarked ||
+            (found && _bookmarkId != match.first.id)) {
+          if (mounted) {
+            setState(() {
+              _isBookmarked = found;
+              _bookmarkId = found ? match.first.id : null;
+            });
+          }
+        }
+      });
+    }
+
     ref.listen(userBookmarksProvider(userId), (_, next) {
       if (userId.isEmpty) return;
       next.whenOrNull(data: (bookmarks) {
@@ -731,6 +750,30 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
 
     if (_isBookmarked && _bookmarkId != null) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Remove Bookmark'),
+          content: const Text(
+            'Are you sure you want to remove this bookmark?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                'Remove',
+                style: TextStyle(color: Theme.of(context).appColors.destructiveColor),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+
       final repo = ref.read(bookmarkRepositoryProvider);
       final result = await repo.removeBookmark(_bookmarkId!);
       result.fold(

@@ -62,6 +62,8 @@ class ApiEndpoints {
   static String communitySave(String id) => '/community/posts/$id/save';
   static String communityUnsave(String id) => '/community/posts/$id/unsave';
   static String communityComments(String id) => '/community/posts/$id/comments';
+  static String communityPostDetail(String id) => '/community/posts/$id';
+  static const String communityPostsLiked = '/community/posts/liked';
   static String communityCommentLike(String id) => '/community/comments/$id/like';
   static String communityCommentUnlike(String id) => '/community/comments/$id/unlike';
   static String communityCommentDetail(String id) => '/community/comments/$id';

@@ -16,6 +16,7 @@ import '/utils/constants.dart';
 
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class EditProfilePage extends ConsumerWidget {
   final String uid;
@@ -26,8 +27,9 @@ class EditProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileByUidProvider(uid));
 
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text('Edit Profile')),
+    return RedHeaderLayout(
+      title: 'Edit Profile',
+      showSearchBar: false,
       body: profileAsync.when(
         data: (profile) => _EditProfileForm(profile: profile),
         loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -178,8 +180,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                       controller: _mobileController,
                                       keyboardType: TextInputType.phone,
                                       validator: (val) {
-                                        if (val!.isEmpty)
+                                        if (val!.isEmpty) {
                                           return 'Enter mobile no';
+                                        }
                                         if (val.length != 11) {
                                           return 'Mobile no must be 11 digits';
                                         }

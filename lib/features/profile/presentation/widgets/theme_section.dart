@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/providers/theme_provider.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 
@@ -61,6 +62,34 @@ class ThemeSection extends ConsumerWidget {
               title: 'Change Password',
               onTap: () {
                 context.pushNamed(AppRoute.changePassword.name);
+              },
+            ),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.grey.shade300,
+            ),
+            _PreferenceTile(
+              icon: LucideIcons.database,
+              title: 'Manage Cache',
+              onTap: () {
+                context.pushNamed(AppRoute.cacheManagement.name);
+              },
+            ),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.grey.shade300,
+            ),
+            _PreferenceTile(
+              icon: LucideIcons.userPen,
+              title: 'Edit Profile',
+              onTap: () {
+                final uid = ref.watch(userProvider).value?.uid;
+                if (uid != null) {
+                  context.pushNamed(
+                    AppRoute.editProfile.name,
+                    queryParameters: {'uid': uid},
+                  );
+                }
               },
             ),
           ],

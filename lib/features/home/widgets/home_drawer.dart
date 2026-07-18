@@ -12,8 +12,6 @@ class HomeDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final userAsync = ref.watch(userProvider);
     final user = userAsync.value;
     final primaryColor = Theme.of(context).appColors.primaryColor;
@@ -45,7 +43,7 @@ class HomeDrawer extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    user?.name?.toUpperCase() ?? 'User',
+                    user?.name.toUpperCase() ?? 'User',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,

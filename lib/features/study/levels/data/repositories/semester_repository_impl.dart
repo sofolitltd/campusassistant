@@ -28,7 +28,7 @@ class SemesterRepositoryImpl implements SemesterRepository {
     required String departmentId,
     String? batch,
   }) async {
-    final cacheKey = 'semester_uni_${universityId}_dept_${departmentId}';
+    final cacheKey = 'semester_uni_${universityId}_dept_$departmentId';
 
     // 0. In-memory cache (instant)
     if (_semestersCache.containsKey(cacheKey)) {

@@ -132,7 +132,7 @@ class DepartmentPage extends ConsumerWidget {
                         value: teachersAsync.when(
                           data: (t) => '${t.length}',
                           loading: () => '...',
-                          error: (_, __) => '0',
+                          error: (_, _) => '0',
                         ),
                         isDark: isDark,
                         border: true,
@@ -142,7 +142,7 @@ class DepartmentPage extends ConsumerWidget {
                         value: staffAsync.when(
                           data: (s) => '${s.length}',
                           loading: () => '...',
-                          error: (_, __) => '0',
+                          error: (_, _) => '0',
                         ),
                         isDark: isDark,
                         border: false,

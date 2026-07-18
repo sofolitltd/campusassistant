@@ -129,8 +129,14 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         final isAll = index == 0;
                         final year = isAll ? null : years[index - 1];
                         final isSelected = selectedYear == year;
+                        final primary = Theme.of(context).appColors.primaryColor;
+                        final selectedColor = primary;
+                        final selectedBg =
+                            primary.withValues(alpha: isDark ? 0.22 : 0.12);
 
                         return ListTile(
+                          selected: isSelected,
+                          selectedTileColor: selectedBg,
                           title: Text(
                             isAll ? 'All Years' : year!,
                             style: TextStyle(
@@ -138,14 +144,14 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                               color: isSelected
-                                  ? Theme.of(context).primaryColor
+                                  ? selectedColor
                                   : (isDark ? Colors.white : Colors.black87),
                             ),
                           ),
                           trailing: isSelected
                               ? Icon(
                                   LucideIcons.check,
-                                  color: Theme.of(context).primaryColor,
+                                  color: selectedColor,
                                   size: 20,
                                 )
                               : null,
@@ -264,8 +270,14 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         final isAll = index == 0;
                         final course = isAll ? null : courses[index - 1];
                         final isSelected = selectedCourse == course;
+                        final primary = Theme.of(context).appColors.primaryColor;
+                        final selectedColor = primary;
+                        final selectedBg =
+                            primary.withValues(alpha: isDark ? 0.22 : 0.12);
 
                         return ListTile(
+                          selected: isSelected,
+                          selectedTileColor: selectedBg,
                           title: Text(
                             isAll ? 'All Courses' : course!,
                             style: TextStyle(
@@ -273,14 +285,14 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                               color: isSelected
-                                  ? Theme.of(context).primaryColor
+                                  ? selectedColor
                                   : (isDark ? Colors.white : Colors.black87),
                             ),
                           ),
                           trailing: isSelected
                               ? Icon(
                                   LucideIcons.check,
-                                  color: Theme.of(context).primaryColor,
+                                  color: selectedColor,
                                   size: 20,
                                 )
                               : null,

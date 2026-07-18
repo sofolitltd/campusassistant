@@ -54,7 +54,6 @@ class ResearchPaginationNotifier extends AsyncNotifier<List<ResearchModel>> {
 
   Future<List<ResearchModel>> _load({required int offset}) async {
     final user = await ref.watch(userProvider.future);
-    if (user == null) return [];
 
     final searchQuery = ref.read(researchSearchQueryProvider);
     final repo = ref.read(resourceRepositoryProvider);

@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/red_header_layout.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -24,14 +25,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: const Text('Change Password'),
-      ),
-
-      //
+    return RedHeaderLayout(
+      title: 'Change Password',
+      showSearchBar: false,
       body: Center(
         child: Align(
           alignment: Alignment.topCenter,

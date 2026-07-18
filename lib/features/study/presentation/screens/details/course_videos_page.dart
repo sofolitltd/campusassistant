@@ -11,7 +11,7 @@ import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
-import '../levels/presentation/providers/semester_provider.dart';
+import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
 import '/utils/constants.dart';
 import '/core/theme/tokens/app_radius.dart';

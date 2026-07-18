@@ -1,4 +1,3 @@
-import '/routes/app_route.dart';
 import '/routes/scaffold_with_navbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '../providers/semester_provider.dart';
@@ -15,6 +13,8 @@ import '/core/theme/app_colors.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/core/providers/download_counter_provider.dart';
+import '/features/study/widgets/batch_dropdown.dart';
+import '/features/study/widgets/resource_shortcuts_bar.dart';
 import '../../domain/entities/semester.dart';
 import '../widgets/semester_grid_card.dart';
 import '../widgets/semester_list_card.dart';
@@ -62,7 +62,6 @@ class _StudyPageState extends ConsumerState<StudyPage>
     );
 
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final primaryColor = Theme.of(context).appColors.primaryColor;
 
     final isLoading =
@@ -114,7 +113,6 @@ class _StudyPageState extends ConsumerState<StudyPage>
         children: [
           Expanded(
             child: Container(
-              margin: .only(top: 8),
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(
@@ -134,124 +132,11 @@ class _StudyPageState extends ConsumerState<StudyPage>
                         slivers: [
                           // Resources horizontal list
                           SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 130,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                                itemCount: allShortcuts.length,
-                                itemBuilder: (context, index) {
-                                  final shortcut = allShortcuts[index];
-                                  final isBookmark =
-                                      shortcut.imageUrl == 'bookmark';
-                                  final isDownload =
-                                      shortcut.imageUrl == 'download';
-                                  int count = 0;
-                                  if (isBookmark) count = bookmarkCount;
-                                  if (isDownload) count = downloadCount;
-
-                              return GestureDetector(
-                                onTap: () {
-                                  if (shortcut.isNamedRoute) {
-                                    context.pushNamed(shortcut.route);
-                                  } else {
-                                    context.push(shortcut.route);
-                                  }
-                                },
-                                child: Container(
-                                  width: 100,
-                                  margin: const EdgeInsets.only(right: 12),
-                                  decoration: BoxDecoration(
-                                    color: theme.cardColor,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isDark
-                                          ? Colors.white10
-                                          : Colors.grey.shade200,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withAlpha(8),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: shortcut.color,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              shortcut.icon,
-                                              color: Colors.white,
-                                              size: 22,
-                                            ),
-                                          ),
-                                          if (count > 0)
-                                            Positioned(
-                                              right: -4,
-                                              top: -4,
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(4),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: theme.cardColor,
-                                                    width: 2,
-                                                  ),
-                                                ),
-                                                constraints:
-                                                    const BoxConstraints(
-                                                  minWidth: 20,
-                                                  minHeight: 20,
-                                                ),
-                                                child: Text(
-                                                  count.toString(),
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        shortcut.name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 10,
-                                          color: isDark
-                                              ? Colors.white
-                                              : Colors.black87,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                            child: ResourceShortcutsBar(
+                              bookmarkCount: bookmarkCount,
+                              downloadCount: downloadCount,
+                            ),
                           ),
-                        ),
-                      ),
 
                       // Levels header row
                       SliverToBoxAdapter(
@@ -303,11 +188,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  _BatchDropdown(
-                                    batchesAsync: batchesAsync,
-                                    currentBatch: currentBatch,
-                                    theme: theme,
-                                  ),
+                                  const BatchDropdown(),
                                 ],
                               ),
                             ],
@@ -407,327 +288,3 @@ class _StudyPageState extends ConsumerState<StudyPage>
   }
 }
 
-class ShortcutData {
-  final String name;
-  final String route;
-  final bool isNamedRoute;
-  final IconData icon;
-  final Color color;
-  final String? imageUrl; // Used as identifier for badge logic
-
-  ShortcutData({
-    required this.name,
-    required this.route,
-    required this.icon,
-    required this.color,
-    this.imageUrl,
-    this.isNamedRoute = false,
-  });
-}
-
-final List<ShortcutData> allShortcuts = [
-  ShortcutData(
-    name: 'Saved\nBookmarks',
-    route: AppRoute.bookmarks.name,
-    isNamedRoute: true,
-    icon: LucideIcons.bookmark,
-    color: Colors.redAccent,
-    imageUrl: 'bookmark',
-  ),
-  ShortcutData(
-    name: 'Download\nFiles',
-    route: AppRoute.downloadedFiles.name,
-    isNamedRoute: true,
-    icon: LucideIcons.folderDown,
-    color: Colors.orangeAccent,
-    imageUrl: 'download',
-  ),
-  ShortcutData(
-    name: 'Academic\nLibrary',
-    route: '/library',
-    icon: LucideIcons.library,
-    color: Colors.blueAccent,
-  ),
-  ShortcutData(
-    name: 'Question\nBank',
-    route: '/questions',
-    icon: LucideIcons.helpCircle,
-    color: Colors.purpleAccent,
-  ),
-  ShortcutData(
-    name: 'Full\nSyllabus',
-    route: '/syllabus',
-    icon: LucideIcons.fileText,
-    color: Colors.pinkAccent,
-  ),
-  ShortcutData(
-    name: 'Research\nArchive',
-    route: '/research',
-    icon: LucideIcons.search,
-    color: Colors.red.shade400,
-  ),
-];
-
-class _BatchDropdown extends ConsumerWidget {
-  final AsyncValue<List<Batch>> batchesAsync;
-  final Batch? currentBatch;
-  final ThemeData theme;
-
-  const _BatchDropdown({
-    required this.batchesAsync,
-    required this.currentBatch,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return batchesAsync.when(
-      data: (batches) {
-        if (batches.isEmpty) return const SizedBox();
-        final batch = currentBatch;
-
-        return GestureDetector(
-          onTap: () => _showBatchBottomSheet(context, ref, batches, batch),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white24
-                    : Colors.grey.shade300,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  batch?.name ?? 'All Batches',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 16,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      loading: () => const SizedBox(
-        width: 100,
-        height: 32,
-        child: Center(child: CupertinoActivityIndicator()),
-      ),
-      error: (_, __) => const SizedBox(),
-    );
-  }
-
-  void _showBatchBottomSheet(
-    BuildContext context,
-    WidgetRef ref,
-    List<Batch> batches,
-    Batch? currentBatch,
-  ) {
-    final isDark = theme.brightness == Brightness.dark;
-    String searchText = '';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final filteredBatches = searchText.isEmpty
-                ? batches
-                : batches
-                      .where(
-                        (b) => b.name.toLowerCase().contains(
-                          searchText.toLowerCase(),
-                        ),
-                      )
-                      .toList();
-
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.75,
-              padding: const EdgeInsets.only(top: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Select Batch',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            LucideIcons.x,
-                            size: 20,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withAlpha(12)
-                            : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
-                      ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => searchText = v),
-                        decoration: InputDecoration(
-                          hintText: 'Search batch...',
-                          hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                            fontSize: 14,
-                          ),
-                          prefixIcon: Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      children: [
-                        if (searchText.isEmpty)
-                          _BatchTile(
-                            title: 'All Batches',
-                            isSelected: currentBatch == null,
-                            onTap: () {
-                              ref
-                                  .read(selectedBatchNotifierProvider.notifier)
-                                  .setAll();
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ...filteredBatches.map(
-                          (b) => _BatchTile(
-                            title: b.name,
-                            isSelected: currentBatch?.id == b.id,
-                            onTap: () {
-                              ref
-                                  .read(selectedBatchNotifierProvider.notifier)
-                                  .setSelectedBatch(b);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-class _BatchTile extends StatelessWidget {
-  final String title;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _BatchTile({
-    required this.title,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark
-                    ? Colors.red.shade900.withAlpha(50)
-                    : const Color(0xFFFDE8E8))
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 15,
-                color: isSelected
-                    ? (isDark ? Colors.red.shade300 : Colors.red.shade700)
-                    : (isDark ? Colors.white : Colors.black87),
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-            if (isSelected)
-              Icon(
-                LucideIcons.check,
-                color: isDark ? Colors.red.shade300 : Colors.red.shade700,
-                size: 20,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}

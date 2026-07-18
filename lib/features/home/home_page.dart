@@ -72,7 +72,7 @@ class _HomePageState extends ConsumerState<HomePage>
                           GestureDetector(
                             onTap: () => context.goNamed(AppRoute.profile.name),
                             child: CircleAvatar(
-                              backgroundColor: Colors.white.withOpacity(0.2),
+                              backgroundColor: Colors.white.withValues(alpha: .2),
                               radius: 20,
                               child: Text(
                                 initial,
@@ -138,7 +138,7 @@ class _HomePageState extends ConsumerState<HomePage>
                           Text(
                             _timeBasedGreeting(),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: .9),
                               fontSize: 14,
                             ),
                           ),

@@ -21,7 +21,7 @@ DateTime? _parseDateTime(String? value) {
 /// Custom DateTime? to JSON converter
 String? _dateTimeToJson(DateTime? value) => value?.toIso8601String();
 
-/// Converts a list of dynamic items to List<String> via .toString()
+/// Converts a list of dynamic  via .toString()
 List<String> _parseStringList(dynamic value) {
   if (value is List) {
     return value.map((e) => e.toString()).toList();
@@ -37,7 +37,7 @@ bool _parseBool(dynamic value) {
   return false;
 }
 
-/// JSON serializer for List<String> — just passes through
+/// JSON serializer  — just passes through
 List<String>? _stringListToJson(List<String>? value) => value;
 
 @freezed

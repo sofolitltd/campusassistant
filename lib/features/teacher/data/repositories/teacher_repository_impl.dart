@@ -26,7 +26,7 @@ class TeacherRepositoryImpl implements TeacherRepository {
     required String departmentId,
     bool? isPresent,
   }) async {
-    final cacheKey = 'uni_${universityId}_dept_${departmentId}';
+    final cacheKey = 'uni_${universityId}_dept_$departmentId';
 
     // 1. Try remote if online
     if (connectivity.isConnected) {

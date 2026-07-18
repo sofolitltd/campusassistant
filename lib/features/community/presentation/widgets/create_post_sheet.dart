@@ -1,11 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/di.dart';
 import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
+import '/features/community/utils/image_compress.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
   final int tabIndex;
@@ -23,6 +28,11 @@ class CreatePostSheet extends ConsumerStatefulWidget {
 
 class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   late TextEditingController _controller;
+  final List<Uint8List> _images = [];
+  bool _isUploading = false;
+
+  static const int _maxImages = 4;
+  static const int _maxTotalBytes = 1 * 1024 * 1024; // 1 MB total after compression
 
   @override
   void initState() {
@@ -35,6 +45,41 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
     _controller.dispose();
     super.dispose();
   }
+
+  Future<void> _pickImages() async {
+    if (_images.length >= _maxImages) return;
+    final picked = await ImagePicker().pickMultiImage(
+      maxWidth: 1080,
+      maxHeight: 1080,
+      imageQuality: 80,
+    );
+    if (picked.isEmpty) return;
+
+    for (final xfile in picked) {
+      if (_images.length >= _maxImages) break;
+      final compressed = await compressCommunityImage(File(xfile.path));
+      if (!mounted) return;
+      if (compressed.lengthInBytes > _maxTotalBytes) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('One image is too large even after compression.'),
+          ),
+        );
+        continue;
+      }
+      if (totalImageBytes([..._images, compressed]) > _maxTotalBytes) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Total image size must stay under 1 MB.'),
+          ),
+        );
+        break;
+      }
+      setState(() => _images.add(compressed));
+    }
+  }
+
+  void _removeImage(int index) => setState(() => _images.removeAt(index));
 
   @override
   Widget build(BuildContext context) {
@@ -65,48 +110,67 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  if (_controller.text.trim().isEmpty) return;
+                onPressed: _isUploading
+                    ? null
+                    : () async {
+                        if (_controller.text.trim().isEmpty && _images.isEmpty) {
+                          return;
+                        }
 
-                  final scopes = ['batch', 'department', 'university', 'saved'];
-                  final currentScope = scopes[widget.tabIndex];
-                  if (currentScope == 'saved') {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please select a feed tab to post'),
-                      ),
-                    );
-                    return;
-                  }
+                        // Index 3 ("All" tab) posts into the University feed.
+                        final scopes = [
+                          'batch',
+                          'department',
+                          'university',
+                          'university',
+                        ];
+                        final currentScope = scopes[widget.tabIndex];
 
-                  try {
-                    await ref
-                        .read(communityRepositoryProvider)
-                        .createPost(_controller.text.trim(), currentScope);
-                    if (context.mounted) {
-                      ref.read(communityRefreshProvider.notifier).increment();
-                      Navigator.pop(context);
-                      widget.onPostCreated();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Post published to community!'),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to post: $e')),
-                      );
-                    }
-                  }
-                },
+                        setState(() => _isUploading = true);
+                        try {
+                          await ref
+                              .read(communityRepositoryProvider)
+                              .createPost(
+                                _controller.text.trim(),
+                                currentScope,
+                                images: _images,
+                              );
+                          if (context.mounted) {
+                            ref
+                                .read(communityRefreshProvider.notifier)
+                                .increment();
+                            Navigator.pop(context);
+                            widget.onPostCreated();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Post published to community!'),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to post: $e')),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _isUploading = false);
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(70, 32),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                child: const Text('Post', style: TextStyle(fontSize: 13)),
+                child: _isUploading
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text('Post', style: TextStyle(fontSize: 13)),
               ),
             ],
           ),
@@ -171,6 +235,49 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             ],
           ),
           const SizedBox(height: 20),
+          if (_images.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (var i = 0; i < _images.length; i++)
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.memory(
+                            _images[i],
+                            width: 72,
+                            height: 72,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          top: -6,
+                          right: -6,
+                          child: GestureDetector(
+                            onTap: () => _removeImage(i),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.black54,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: const EdgeInsets.all(2),
+                              child: const Icon(
+                                LucideIcons.x,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
           Expanded(
             child: TextField(
               controller: _controller,
@@ -188,12 +295,19 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
           ),
           Row(
             children: [
-              IconButton(icon: const Icon(LucideIcons.image), onPressed: () {}),
               IconButton(
-                icon: const Icon(LucideIcons.paperclip),
-                onPressed: () {},
+                icon: const Icon(LucideIcons.image),
+                onPressed: _images.length >= _maxImages ? null : _pickImages,
+                tooltip:
+                    _images.length >= _maxImages ? 'Max $_maxImages images' : null,
               ),
-              IconButton(icon: const Icon(LucideIcons.smile), onPressed: () {}),
+              Text(
+                '${_images.length}/$_maxImages',
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
             ],
           ),
           SizedBox(height: MediaQuery.of(context).viewInsets.bottom),

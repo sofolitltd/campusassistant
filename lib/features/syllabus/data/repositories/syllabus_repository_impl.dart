@@ -27,8 +27,8 @@ class SyllabusRepositoryImpl implements SyllabusRepository {
     int? limit,
     int? offset,
   }) async {
-    final cacheKey = 'syllabus_uni_${universityId}_dept_${departmentId}';
-    final totalCacheKey = 'syllabus_total_${universityId}_${departmentId}';
+    final cacheKey = 'syllabus_uni_${universityId}_dept_$departmentId';
+    final totalCacheKey = 'syllabus_total_${universityId}_$departmentId';
 
     // 1. Try remote if online
     if (connectivity.isConnected) {

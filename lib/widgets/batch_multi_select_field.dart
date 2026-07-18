@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '/features/batch/domain/entities/batch.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 
 class BatchMultiSelectField extends StatelessWidget {
   final List<Batch> batches;
@@ -224,9 +225,16 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue.shade50 : Colors.white,
+                      color: isSelected
+                          ? Theme.of(context)
+                              .appColors
+                              .primaryColor
+                              .withValues(alpha: 0.12)
+                          : Colors.white,
                       border: Border.all(
-                        color: isSelected ? Colors.blue : Colors.grey.shade300,
+                        color: isSelected
+                            ? Theme.of(context).appColors.primaryColor
+                            : Colors.grey.shade300,
                       ),
                       borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),

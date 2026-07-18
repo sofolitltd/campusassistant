@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '/features/course/domain/entities/course.dart';
 import '/features/batch/domain/entities/batch.dart';
@@ -10,8 +9,7 @@ import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/utils/constants.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
-import '/features/resource/domain/entities/resource.dart';
-import '../levels/presentation/providers/semester_provider.dart';
+import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
 import '/routes/app_route.dart';
@@ -110,7 +108,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final userAsync = ref.watch(userProvider);
+    // final userAsync = ref.watch(userProvider);
 
     // Only filter by batch when user explicitly chose one
     final explicitBatch = ref.watch(selectedBatchNotifierProvider);

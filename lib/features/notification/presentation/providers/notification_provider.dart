@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '/core/di.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/repositories/notification_repository.dart';
 
 final notificationRepositoryProvider =
     Provider<NotificationRepository>((ref) {
-  return NotificationRepositoryImpl();
+  return NotificationRepositoryImpl(apiClient: ref.watch(apiClientProvider));
 });
 
 final notificationsProvider =

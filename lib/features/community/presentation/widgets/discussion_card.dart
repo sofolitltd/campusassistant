@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart' hide Share;
 import 'package:timeago/timeago.dart' as timeago;
 
 import '/core/di.dart';
@@ -10,20 +15,14 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/community/data/models/community_post.dart';
 import '/features/community/presentation/widgets/comments_sheet.dart';
 import '/features/community/presentation/widgets/interaction_button.dart';
-import '/features/community/presentation/widgets/share_option.dart';
+import '/features/community/presentation/providers/community_posts_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 
 class DiscussionCard extends ConsumerStatefulWidget {
   final CommunityPost post;
   final String scope;
-  final VoidCallback? onRemoved;
 
-  const DiscussionCard({
-    super.key,
-    required this.post,
-    required this.scope,
-    this.onRemoved,
-  });
+  const DiscussionCard({super.key, required this.post, required this.scope});
 
   @override
   ConsumerState<DiscussionCard> createState() => _DiscussionCardState();
@@ -39,6 +38,20 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
   @override
   void initState() {
     super.initState();
+    _syncFromPost();
+  }
+
+  @override
+  void didUpdateWidget(DiscussionCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.post.id != oldWidget.post.id ||
+        widget.post.isLiked != oldWidget.post.isLiked ||
+        widget.post.isSaved != oldWidget.post.isSaved) {
+      _syncFromPost();
+    }
+  }
+
+  void _syncFromPost() {
     _isLiked = widget.post.isLiked;
     _likeCount = widget.post.likesCount;
     _isBookmarked = widget.post.isSaved;
@@ -46,225 +59,246 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     _displayContent = widget.post.content;
   }
 
+  String get _providerScope => widget.scope.toLowerCase();
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark ? Theme.of(context).cardColor : Colors.white,
+            borderRadius: BorderRadius.circular(RadiusToken.md),
+            border: Border.all(
+              color: isDark ? Colors.white10 : Colors.grey.shade200,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          child: Stack(
             children: [
-              GestureDetector(
-                onTap: () => _showAuthorDialog(context),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Theme.of(
-                        context,
-                      ).primaryColor.withValues(alpha: 0.1),
-                      backgroundImage: widget.post.authorAvatar != null
-                          ? NetworkImage(widget.post.authorAvatar!)
-                          : null,
-                      child: widget.post.authorAvatar == null
-                          ? Text(
-                              widget.post.authorName[0],
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          : null,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => _showAuthorDialog(context),
+                    child: Row(
                       children: [
-                        Text(
-                          widget.post.authorName,
-                          style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).primaryColor.withValues(alpha: 0.1),
+                          backgroundImage: widget.post.authorAvatar != null
+                              ? NetworkImage(widget.post.authorAvatar!)
+                              : null,
+                          child: widget.post.authorAvatar == null
+                              ? Text(
+                                  widget.post.authorName[0],
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : null,
                         ),
-                        Text(
-                          '${timeago.format(widget.post.createdAt)} • ${widget.scope}',
-                          style: GoogleFonts.outfit(
-                            fontSize: 11,
-                            color: Colors.grey,
-                          ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.post.authorName,
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              '${timeago.format(widget.post.createdAt)} • ${widget.scope}',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              if (ref.watch(currentUserProvider).value?.id == widget.post.authorId)
-                IconButton(
-                  icon: const Icon(LucideIcons.ellipsisVertical, size: 16),
-                  onPressed: () => _showOptionsMenu(context),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            _displayContent,
-            style: GoogleFonts.outfit(
-              fontSize: 13,
-              height: 1.4,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (widget.post.imageUrls.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: widget.post.imageUrls.length,
-                itemBuilder: (context, index) {
-                  final url = widget.post.imageUrls[index];
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(RadiusToken.sm),
-                    child: CachedNetworkImage(
-                      imageUrl: url,
-                      fit: BoxFit.cover,
-                      placeholder: (_, _) => Container(
-                        color: isDark
-                            ? Colors.white10
-                            : Colors.grey.shade200,
-                      ),
-                      errorWidget: (_, _, _) =>
-                          const Icon(Icons.broken_image),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _displayContent,
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: isDark ? Colors.white70 : Colors.black87,
                     ),
-                  );
-                },
-              ),
-            ),
-          Row(
-            children: [
-              InteractionButton(
-                icon: LucideIcons.messageSquare,
-                label: '$_commentCount',
-                onTap: () => _showCommentsSheet(context),
-              ),
-              const SizedBox(width: 16),
-              InteractionButton(
-                icon: _isLiked ? Icons.favorite : LucideIcons.heart,
-                iconColor: _isLiked ? Colors.red : null,
-                label: '$_likeCount',
-                onTap: () async {
-                  final oldIsLiked = _isLiked;
-                  final oldLikeCount = _likeCount;
-                  setState(() {
-                    _isLiked = !_isLiked;
-                    _likeCount += _isLiked ? 1 : -1;
-                  });
-                  try {
-                    if (_isLiked) {
-                      await ref
-                          .read(communityRepositoryProvider)
-                          .likePost(widget.post.id);
-                    } else {
-                      await ref
-                          .read(communityRepositoryProvider)
-                          .unlikePost(widget.post.id);
-                      // On the Liked page, an unliked post must leave the list.
-                      if (!_isLiked && widget.scope == 'liked') {
-                        widget.onRemoved?.call();
-                      }
-                    }
-                  } catch (e) {
-                    setState(() {
-                      _isLiked = oldIsLiked;
-                      _likeCount = oldLikeCount;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(width: 16),
-              InteractionButton(
-                icon: LucideIcons.bookmark,
-                iconColor: _isBookmarked ? Colors.teal : null,
-                label: _isBookmarked ? 'Saved' : 'Save',
-                onTap: () async {
-                  final oldIsBookmarked = _isBookmarked;
-                  setState(() {
-                    _isBookmarked = !_isBookmarked;
-                  });
-                  try {
-                    if (_isBookmarked) {
-                      await ref
-                          .read(communityRepositoryProvider)
-                          .savePost(widget.post.id);
-                    } else {
-                      await ref
-                          .read(communityRepositoryProvider)
-                          .unsavePost(widget.post.id);
-                    }
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          _isBookmarked
-                              ? 'Post saved to bookmarks'
-                              : 'Post removed from bookmarks',
-                        ),
-                        duration: const Duration(seconds: 1),
-                        behavior: SnackBarBehavior.floating,
+                  ),
+                  const SizedBox(height: 12),
+                  if (widget.post.imageUrls.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.zero,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
+                        itemCount: widget.post.imageUrls.length,
+                        itemBuilder: (context, index) {
+                          final url = widget.post.imageUrls[index];
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
+                            child: CachedNetworkImage(
+                              imageUrl: url,
+                              fit: BoxFit.cover,
+                              placeholder: (_, _) => Container(
+                                color: isDark
+                                    ? Colors.white10
+                                    : Colors.grey.shade200,
+                              ),
+                              errorWidget: (_, _, _) =>
+                                  const Icon(Icons.broken_image),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                    // On the Saved page, an unsaved post must leave the list.
-                    if (!_isBookmarked && widget.scope == 'saved') {
-                      widget.onRemoved?.call();
-                    }
-                  } catch (e) {
-                    setState(() {
-                      _isBookmarked = oldIsBookmarked;
-                    });
-                  }
-                },
-              ),
-              const Spacer(),
-              InteractionButton(
-                icon: LucideIcons.share,
-                label: 'Share',
-                onTap: () => _showShareSheet(context),
+                    ),
+                  Row(
+                    children: [
+                      InteractionButton(
+                        icon: LucideIcons.messageSquare,
+                        label: '$_commentCount',
+                        onTap: () => _showCommentsSheet(context),
+                      ),
+                      const SizedBox(width: 16),
+                      InteractionButton(
+                        icon: _isLiked ? Icons.favorite : LucideIcons.heart,
+                        iconColor: _isLiked ? Colors.red : null,
+                        label: '$_likeCount',
+                        onTap: () async {
+                          final oldIsLiked = _isLiked;
+                          final oldLikeCount = _likeCount;
+                          setState(() {
+                            _isLiked = !_isLiked;
+                            _likeCount += _isLiked ? 1 : -1;
+                          });
+                          try {
+                            if (_isLiked) {
+                              await ref
+                                  .read(communityRepositoryProvider)
+                                  .likePost(widget.post.id);
+                            } else {
+                              await ref
+                                  .read(communityRepositoryProvider)
+                                  .unlikePost(widget.post.id);
+                              if (widget.scope == 'liked') {
+                                ref
+                                    .read(
+                                      communityPostsProvider('liked').notifier,
+                                    )
+                                    .remove(widget.post.id);
+                              }
+                            }
+                            ref
+                                .read(communityRefreshProvider.notifier)
+                                .increment();
+                          } catch (e) {
+                            setState(() {
+                              _isLiked = oldIsLiked;
+                              _likeCount = oldLikeCount;
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                      InteractionButton(
+                        icon: LucideIcons.bookmark,
+                        iconColor: _isBookmarked ? Colors.teal : null,
+                        label: _isBookmarked ? 'Saved' : 'Save',
+                        onTap: () async {
+                          final oldIsBookmarked = _isBookmarked;
+                          setState(() {
+                            _isBookmarked = !_isBookmarked;
+                          });
+                          try {
+                            if (_isBookmarked) {
+                              await ref
+                                  .read(communityRepositoryProvider)
+                                  .savePost(widget.post.id);
+                            } else {
+                              await ref
+                                  .read(communityRepositoryProvider)
+                                  .unsavePost(widget.post.id);
+                              if (widget.scope == 'saved') {
+                                ref
+                                    .read(
+                                      communityPostsProvider('saved').notifier,
+                                    )
+                                    .remove(widget.post.id);
+                              }
+                            }
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  _isBookmarked
+                                      ? 'Post saved to bookmarks'
+                                      : 'Post removed from bookmarks',
+                                ),
+                                duration: const Duration(seconds: 1),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            ref
+                                .read(communityRefreshProvider.notifier)
+                                .increment();
+                          } catch (e) {
+                            setState(() {
+                              _isBookmarked = oldIsBookmarked;
+                            });
+                          }
+                        },
+                      ),
+                      const Spacer(),
+                      InteractionButton(
+                        icon: LucideIcons.share,
+                        onTap: () => _sharePost(context),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        if (ref.watch(currentUserProvider).value?.id == widget.post.authorId)
+          Positioned(
+            top: 0,
+            right: -4,
+            child: IconButton(
+              icon: const Icon(LucideIcons.ellipsisVertical, size: 16),
+              onPressed: () => _showOptionsMenu(context),
+              padding: EdgeInsets.all(2),
+              constraints: const BoxConstraints(),
+            ),
+          ),
+      ],
     );
   }
 
@@ -272,10 +306,8 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     final post = widget.post;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final rows = [
-      if (post.authorUniversity != null)
-        ('University', post.authorUniversity!),
-      if (post.authorDepartment != null)
-        ('Department', post.authorDepartment!),
+      if (post.authorUniversity != null) ('University', post.authorUniversity!),
+      if (post.authorDepartment != null) ('Department', post.authorDepartment!),
       if (post.authorBatch != null) ('Batch', post.authorBatch!),
       if (post.authorSession != null) ('Session', post.authorSession!),
     ];
@@ -293,16 +325,15 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
             children: [
               CircleAvatar(
                 radius: 36,
-                backgroundColor:
-                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).primaryColor.withValues(alpha: 0.1),
                 backgroundImage: post.authorAvatar != null
                     ? NetworkImage(post.authorAvatar!)
                     : null,
                 child: post.authorAvatar == null
                     ? Text(
-                        post.authorName.isNotEmpty
-                            ? post.authorName[0]
-                            : '',
+                        post.authorName.isNotEmpty ? post.authorName[0] : '',
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontSize: 28,
@@ -323,10 +354,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
               const SizedBox(height: 4),
               Text(
                 '@${post.authorId.substring(0, 8)}',
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
               ),
               const SizedBox(height: 16),
               const Divider(height: 1),
@@ -386,7 +414,8 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
   void _showOptionsMenu(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentUser = ref.watch(currentUserProvider).value;
-    final isOwner = currentUser != null && currentUser.id == widget.post.authorId;
+    final isOwner =
+        currentUser != null && currentUser.id == widget.post.authorId;
 
     showModalBottomSheet(
       context: context,
@@ -419,7 +448,11 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                 },
               ),
               ListTile(
-                leading: const Icon(LucideIcons.trash2, size: 20, color: Colors.red),
+                leading: const Icon(
+                  LucideIcons.trash2,
+                  size: 20,
+                  color: Colors.red,
+                ),
                 title: const Text(
                   'Delete Post',
                   style: TextStyle(fontSize: 14, color: Colors.red),
@@ -442,7 +475,9 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Post'),
-        content: const Text('Are you sure you want to delete this post? This cannot be undone.'),
+        content: const Text(
+          'Are you sure you want to delete this post? This cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -456,6 +491,13 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                     .read(communityRepositoryProvider)
                     .deletePost(widget.post.id);
                 if (!context.mounted) return;
+                ref
+                    .read(communityPostsProvider(_providerScope).notifier)
+                    .remove(widget.post.id);
+                ref
+                    .read(communityPostsProvider(_providerScope).notifier)
+                    .fetch();
+                ref.read(communityRefreshProvider.notifier).increment();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Post deleted'),
@@ -463,7 +505,6 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
-                              ref.read(communityRefreshProvider.notifier).increment();
               } catch (e) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -560,7 +601,16 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
-                ref.read(communityRefreshProvider.notifier).increment();
+                              ref
+                                  .read(
+                                    communityPostsProvider(
+                                      _providerScope,
+                                    ).notifier,
+                                  )
+                                  .fetch();
+                              ref
+                                  .read(communityRefreshProvider.notifier)
+                                  .increment();
                             } catch (e) {
                               setSheetState(() => isSaving = false);
                               if (!context.mounted) return;
@@ -613,85 +663,29 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     );
   }
 
-  void _showShareSheet(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Share Post',
-              style: GoogleFonts.outfit(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  ShareOption(
-                    icon: LucideIcons.link,
-                    label: 'Copy Link',
-                    color: Colors.blue,
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  ShareOption(
-                    icon: LucideIcons.send,
-                    label: 'Messenger',
-                    color: Colors.blueAccent,
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  ShareOption(
-                    icon: LucideIcons.messageCircle,
-                    label: 'WhatsApp',
-                    color: Colors.green,
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  ShareOption(
-                    icon: LucideIcons.link,
-                    label: 'Facebook',
-                    color: Colors.indigo,
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  ShareOption(
-                    icon: LucideIcons.link,
-                    label: 'Twitter',
-                    color: Colors.lightBlue,
-                    onTap: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Divider(),
-            ListTile(
-              leading: const Icon(LucideIcons.download, size: 20),
-              title: const Text(
-                'Save as Image',
-                style: TextStyle(fontSize: 14),
-              ),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(LucideIcons.externalLink, size: 20),
-              title: const Text('Other Apps', style: TextStyle(fontSize: 14)),
-              onTap: () => Navigator.pop(context),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
-    );
+  Future<void> _sharePost(BuildContext context) async {
+    final post = widget.post;
+    final text = '${post.authorName}: ${post.content}';
+
+    if (post.imageUrls.isEmpty) {
+      await SharePlus.instance.share(ShareParams(text: text, subject: 'Post from ${post.authorName}'));
+      return;
+    }
+
+    try {
+      final dio = Dio();
+      final files = <XFile>[];
+      for (final url in post.imageUrls) {
+        final response = await dio.get(url, options: Options(responseType: ResponseType.bytes));
+        final tempDir = await getTemporaryDirectory();
+        final ext = url.split('.').last.split('?').first;
+        final file = File('${tempDir.path}/share_${post.id}_${files.length}.$ext');
+        await file.writeAsBytes(response.data);
+        files.add(XFile(file.path));
+      }
+      await SharePlus.instance.share(ShareParams(files: files, text: text, subject: 'Post from ${post.authorName}'));
+    } catch (e) {
+      await SharePlus.instance.share(ShareParams(text: text, subject: 'Post from ${post.authorName}'));
+    }
   }
 }

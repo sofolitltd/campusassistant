@@ -97,26 +97,31 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
 
   Future<void> _shareProfile(Teacher teacherModel) async {
     try {
-      final url = teacherModel.imageUrl;
-      final dio = Dio();
-      final response = await dio.get(
-        url,
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final bytes = response.data;
-
-      final tempDir = await getTemporaryDirectory();
-      final file = File('${tempDir.path}/${teacherModel.name}.png');
-      await file.writeAsBytes(bytes);
-
       final text =
           "${teacherModel.name}\n${teacherModel.post}\n${teacherModel.phd}\n\n"
           "Mobile: ${teacherModel.mobile}\nEmail: ${teacherModel.email}\n\n"
           "Publications: ${teacherModel.publications}\n\n"
           "Interests: ${teacherModel.interests}";
 
+      XFile? imageFile;
+      final url = teacherModel.imageUrl;
+      if (url.isNotEmpty) {
+        final dio = Dio();
+        final response = await dio.get(
+          url,
+          options: Options(responseType: ResponseType.bytes),
+        );
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/${teacherModel.name}.png');
+        await file.writeAsBytes(response.data);
+        imageFile = XFile(file.path);
+      }
+
       await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)], text: text),
+        ShareParams(
+          files: imageFile != null ? [imageFile] : null,
+          text: text,
+        ),
       );
     } catch (e) {
       debugPrint('Error sharing profile: $e');

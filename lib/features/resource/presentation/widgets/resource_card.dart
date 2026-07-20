@@ -29,7 +29,12 @@ import 'resource_info_sheet.dart';
 class ResourceCard extends ConsumerStatefulWidget {
   final Resource resource;
 
-  const ResourceCard({super.key, required this.resource});
+  /// When true, this card automatically opens its content (downloading it
+  /// first if needed) as soon as its local-file status is known — used to
+  /// deep-link straight to a resource from a "new resource" notification.
+  final bool autoOpen;
+
+  const ResourceCard({super.key, required this.resource, this.autoOpen = false});
 
   @override
   ConsumerState<ResourceCard> createState() => _ResourceCardState();
@@ -48,7 +53,12 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   @override
   void initState() {
     super.initState();
-    _checkFileStatus();
+    final statusChecked = _checkFileStatus();
+    if (widget.autoOpen) {
+      statusChecked.then((_) {
+        if (mounted) _handleOpenContent();
+      });
+    }
   }
 
   Future<void> _checkFileStatus() async {

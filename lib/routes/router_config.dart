@@ -211,6 +211,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   state.uri.queryParameters['universityId'];
                               final departmentId =
                                   state.uri.queryParameters['departmentId'];
+                              final resourceId =
+                                  state.uri.queryParameters['resourceId'];
                               return NoTransitionPage(
                                 child: CourseNotesScreens(
                                   courseCode: courseCode,
@@ -220,6 +222,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                                   title: title,
                                   universityId: universityId,
                                   departmentId: departmentId,
+                                  resourceId: resourceId,
                                 ),
                               );
                             },

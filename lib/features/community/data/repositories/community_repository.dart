@@ -111,6 +111,18 @@ class CommunityRepository {
     return data.map((json) => CommunityPost.fromJson(json)).toList();
   }
 
+  Future<List<CommunityPost>> getSavedPosts({int page = 1}) async {
+    if (!connectivity.isConnected) {
+      return [];
+    }
+    final response = await apiClient.get(
+      ApiEndpoints.communityPostsSaved,
+      queryParameters: {'page': page, 'page_size': 20},
+    );
+    final List<dynamic> data = response.data ?? [];
+    return data.map((json) => CommunityPost.fromJson(json)).toList();
+  }
+
   Future<CommunityPost> createPost(
     String content,
     String scope, {
@@ -243,6 +255,9 @@ class CommunityRepository {
       throw Exception('Internet connection required to delete post');
     }
     await apiClient.delete(ApiEndpoints.communityPostDetail(id));
+    for (final scope in ['batch', 'department', 'university']) {
+      await cacheManager.invalidate('community_${scope}_page_1');
+    }
   }
 
   Future<CommunityPost> updatePost(String id, String content) async {

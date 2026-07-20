@@ -27,6 +27,7 @@ class CourseNotesScreens extends ConsumerStatefulWidget {
     required this.semester,
     this.universityId,
     this.departmentId,
+    this.resourceId,
   });
 
   final String courseCode;
@@ -36,6 +37,10 @@ class CourseNotesScreens extends ConsumerStatefulWidget {
   final String? semester;
   final String? universityId;
   final String? departmentId;
+
+  /// When set (e.g. from a "new resource" notification deep link), the
+  /// matching resource in the list auto-opens once it loads.
+  final String? resourceId;
 
   @override
   ConsumerState<CourseNotesScreens> createState() => _CourseNotesScreensState();
@@ -323,7 +328,11 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                                 const SizedBox(height: Spacing.md),
                             itemBuilder: (context, index) {
                               final resource = resources[index];
-                              return ResourceCard(resource: resource);
+                              return ResourceCard(
+                                resource: resource,
+                                autoOpen: widget.resourceId != null &&
+                                    resource.id == widget.resourceId,
+                              );
                             },
                           );
                         },

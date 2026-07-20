@@ -64,11 +64,18 @@ class ApiEndpoints {
   static String communityComments(String id) => '/community/posts/$id/comments';
   static String communityPostDetail(String id) => '/community/posts/$id';
   static const String communityPostsLiked = '/community/posts/liked';
+  static const String communityPostsSaved = '/community/posts/saved';
   static String communityCommentLike(String id) => '/community/comments/$id/like';
   static String communityCommentUnlike(String id) => '/community/comments/$id/unlike';
   static String communityCommentDetail(String id) => '/community/comments/$id';
   static const String bookmarks = '/bookmarks';
   static const String clubs = '/clubs';
+
+  // Notifications
+  static const String notifications = '/notifications';
+  static String notificationRead(String id) => '/notifications/$id/read';
+  static const String notificationsReadAll = '/notifications/read-all';
+  static String notificationDetail(String id) => '/notifications/$id';
 
   // Chat
   static const String conversations = '/conversations';

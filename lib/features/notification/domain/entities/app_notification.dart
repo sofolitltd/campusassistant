@@ -21,6 +21,36 @@ class AppNotification {
     this.actionParams,
   });
 
+  factory AppNotification.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>?;
+    return AppNotification(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      body: json['body'] as String,
+      type: NotificationType.fromJson(json['type'] as String),
+      isRead: json['is_read'] as bool? ?? false,
+      timestamp: DateTime.parse(json['created_at'] as String),
+      actionRoute: data?['action_route'] as String?,
+      actionParams: (data?['action_params'] as Map<String, dynamic>?)
+          ?.map((k, v) => MapEntry(k, v as String)),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'body': body,
+      'type': type.toJson(),
+      'is_read': isRead,
+      'created_at': timestamp.toIso8601String(),
+      'data': {
+        if (actionRoute != null) 'action_route': actionRoute,
+        if (actionParams != null) 'action_params': actionParams,
+      },
+    };
+  }
+
   AppNotification copyWith({
     String? id,
     String? title,

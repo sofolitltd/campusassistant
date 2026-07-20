@@ -10,7 +10,7 @@ class InteractionButton extends StatelessWidget {
   const InteractionButton({
     super.key,
     required this.icon,
-    required this.label,
+    this.label = '',
     required this.onTap,
     this.iconColor,
   });

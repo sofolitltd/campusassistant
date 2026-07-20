@@ -84,6 +84,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scopeLabels = ['Batch', 'Department', 'My University'];
+    final currentLabel = scopeLabels[widget.tabIndex];
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
@@ -117,11 +119,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                           return;
                         }
 
-                        // Index 3 ("All" tab) posts into the University feed.
                         final scopes = [
                           'batch',
                           'department',
-                          'university',
                           'university',
                         ];
                         final currentScope = scopes[widget.tabIndex];
@@ -227,7 +227,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     ),
                   ),
                   Text(
-                    'Posting to Community',
+                    'Post to $currentLabel',
                     style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
                   ),
                 ],

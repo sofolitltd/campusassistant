@@ -11,6 +11,17 @@ enum NotificationType {
   achievement,
   club;
 
+  String get value => name;
+
+  static NotificationType fromJson(String json) {
+    return NotificationType.values.firstWhere(
+      (e) => e.value == json,
+      orElse: () => NotificationType.notice,
+    );
+  }
+
+  String toJson() => value;
+
   String get label {
     switch (this) {
       case NotificationType.routineUpdate:

@@ -30,7 +30,10 @@ class ShortcutSection extends ConsumerWidget {
         final items = _shortcutList;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.sm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.lg,
+            vertical: Spacing.sm,
+          ),
           child: Container(
             decoration: BoxDecoration(
               color: theme.cardColor,
@@ -47,13 +50,21 @@ class ShortcutSection extends ConsumerWidget {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(Spacing.md, Spacing.md, Spacing.md, Spacing.sm),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.md,
+                Spacing.md,
+                Spacing.md,
+                Spacing.sm,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: Spacing.xs, bottom: Spacing.sm),
+                    padding: const EdgeInsets.only(
+                      left: Spacing.xs,
+                      bottom: Spacing.sm,
+                    ),
                     child: Text(
                       'Quick Access',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -66,12 +77,13 @@ class ShortcutSection extends ConsumerWidget {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.5,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 1.5,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                        ),
                     itemCount: items.length,
                     itemBuilder: (context, index) =>
                         _GridItem(shortcut: items[index]),
@@ -138,11 +150,11 @@ class _GridItem extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    height: 1.2,
-                    color: isDark ? Colors.white60 : Colors.grey.shade700,
-                  ),
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                height: 1.2,
+                color: isDark ? Colors.white60 : Colors.grey.shade700,
+              ),
             ),
           ],
         ),

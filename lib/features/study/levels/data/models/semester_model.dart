@@ -27,35 +27,35 @@ abstract class SemesterModel with _$SemesterModel {
       _$SemesterModelFromJson(json);
 
   Semester toEntity() => Semester(
-        id: id,
-        name: name,
-        order: order,
-        status: status,
-        universityId: universityId,
-        departmentId: departmentId,
-        totalCourses: totalCourses,
-        totalCredits: totalCredits,
-        totalMarks: totalMarks,
-        batches: batches.map((e) {
-          if (e is Map<String, dynamic>) return e['id'].toString();
-          return e.toString();
-        }).toList(),
-        createdById: createdById,
-        updatedById: updatedById,
-      );
+    id: id,
+    name: name,
+    order: order,
+    status: status,
+    universityId: universityId,
+    departmentId: departmentId,
+    totalCourses: totalCourses,
+    totalCredits: totalCredits,
+    totalMarks: totalMarks,
+    batches: batches.map((e) {
+      if (e is Map<String, dynamic>) return e['id'].toString();
+      return e.toString();
+    }).toList(),
+    createdById: createdById,
+    updatedById: updatedById,
+  );
 
   factory SemesterModel.fromEntity(Semester semester) => SemesterModel(
-        id: semester.id,
-        name: semester.name,
-        order: semester.order,
-        status: semester.status,
-        universityId: semester.universityId,
-        departmentId: semester.departmentId,
-        totalCourses: semester.totalCourses,
-        totalCredits: semester.totalCredits,
-        totalMarks: semester.totalMarks,
-        batches: semester.batches,
-        createdById: semester.createdById,
-        updatedById: semester.updatedById,
-      );
+    id: semester.id,
+    name: semester.name,
+    order: semester.order,
+    status: semester.status,
+    universityId: semester.universityId,
+    departmentId: semester.departmentId,
+    totalCourses: semester.totalCourses,
+    totalCredits: semester.totalCredits,
+    totalMarks: semester.totalMarks,
+    batches: semester.batches,
+    createdById: semester.createdById,
+    updatedById: semester.updatedById,
+  );
 }

@@ -20,12 +20,12 @@ abstract class CourseCategoryModel with _$CourseCategoryModel {
       _$CourseCategoryModelFromJson(json);
 
   CourseCategory toEntity() => CourseCategory(
-        id: id,
-        name: name,
-        order: order,
-        departmentId: departmentId,
-        universityId: universityId,
-      );
+    id: id,
+    name: name,
+    order: order,
+    departmentId: departmentId,
+    universityId: universityId,
+  );
 
   factory CourseCategoryModel.fromEntity(CourseCategory category) =>
       CourseCategoryModel(

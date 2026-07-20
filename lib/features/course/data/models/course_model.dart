@@ -36,38 +36,36 @@ abstract class CourseModel with _$CourseModel {
   }
 
   Course toEntity() => Course(
-        id: id,
-        courseCode: courseCode,
-        courseTitle: courseTitle,
-        universityId: universityId,
-        departmentId: departmentId,
-        batches: batches.map((b) => b.toEntity()).toList(),
-        totalCredits: totalCredits,
-        totalMarks: totalMarks,
-        thumbnailURL: thumbnailURL,
-        courseCategoryId: courseCategoryId,
-        courseCategory: courseCategory?.toEntity(),
-        semesterId: semesterId,
-        semesterName: semesterName,
-      );
+    id: id,
+    courseCode: courseCode,
+    courseTitle: courseTitle,
+    universityId: universityId,
+    departmentId: departmentId,
+    batches: batches.map((b) => b.toEntity()).toList(),
+    totalCredits: totalCredits,
+    totalMarks: totalMarks,
+    thumbnailURL: thumbnailURL,
+    courseCategoryId: courseCategoryId,
+    courseCategory: courseCategory?.toEntity(),
+    semesterId: semesterId,
+    semesterName: semesterName,
+  );
 
   factory CourseModel.fromEntity(Course course) => CourseModel(
-        id: course.id,
-        courseCode: course.courseCode,
-        courseTitle: course.courseTitle,
-        universityId: course.universityId,
-        departmentId: course.departmentId,
-        batches: course.batches
-            .map((b) => BatchModel.fromEntity(b))
-            .toList(),
-        totalCredits: course.totalCredits,
-        totalMarks: course.totalMarks,
-        thumbnailURL: course.thumbnailURL,
-        courseCategoryId: course.courseCategoryId,
-        courseCategory: course.courseCategory != null
-            ? CourseCategoryModel.fromEntity(course.courseCategory!)
-            : null,
-        semesterId: course.semesterId,
-        semesterName: course.semesterName,
-      );
+    id: course.id,
+    courseCode: course.courseCode,
+    courseTitle: course.courseTitle,
+    universityId: course.universityId,
+    departmentId: course.departmentId,
+    batches: course.batches.map((b) => BatchModel.fromEntity(b)).toList(),
+    totalCredits: course.totalCredits,
+    totalMarks: course.totalMarks,
+    thumbnailURL: course.thumbnailURL,
+    courseCategoryId: course.courseCategoryId,
+    courseCategory: course.courseCategory != null
+        ? CourseCategoryModel.fromEntity(course.courseCategory!)
+        : null,
+    semesterId: course.semesterId,
+    semesterName: course.semesterName,
+  );
 }

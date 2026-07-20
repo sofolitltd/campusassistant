@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
@@ -98,7 +99,9 @@ class ResourceInfoSheet extends ConsumerWidget {
                 clipBehavior: Clip.antiAlias,
                 child: resource.thumbnailUrl.isNotEmpty
                     ? CachedNetworkImage(
-                        imageUrl: resource.thumbnailUrl,
+                        imageUrl: ApiEndpoints.resolveImageUrl(
+                          resource.thumbnailUrl,
+                        ),
                         fit: BoxFit.cover,
                         placeholder: (context, _) => Center(
                           child: Icon(

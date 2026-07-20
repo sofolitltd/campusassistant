@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -316,7 +315,7 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
                     ? const Center(child: CupertinoActivityIndicator())
                     : Column(
                         children: [
-// ── SectionTabBar ──────────────────────────
+                          // ── SectionTabBar ──────────────────────────
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: SectionTabBar(

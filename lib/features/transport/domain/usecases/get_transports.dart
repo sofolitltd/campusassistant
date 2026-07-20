@@ -10,9 +10,8 @@ part 'get_transports.freezed.dart';
 
 @freezed
 abstract class GetTransportsParams with _$GetTransportsParams {
-  const factory GetTransportsParams({
-    required String universityId,
-  }) = _GetTransportsParams;
+  const factory GetTransportsParams({required String universityId}) =
+      _GetTransportsParams;
 }
 
 class GetTransports implements UseCase<List<Transport>, GetTransportsParams> {

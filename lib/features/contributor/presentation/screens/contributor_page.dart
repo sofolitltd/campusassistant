@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 
 class ContributorPage extends StatelessWidget {
@@ -21,7 +21,7 @@ class ContributorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Our Contributors',
       showSearchBar: false,
       body: ListView.builder(

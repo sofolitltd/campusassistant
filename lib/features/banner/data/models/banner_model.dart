@@ -25,30 +25,32 @@ abstract class BannerModel with _$BannerModel {
       _$BannerModelFromJson(json);
 
   Banner toEntity() => Banner(
-        id: id,
-        title: title,
-        imageUrl: imageUrl,
-        clickUrl: clickUrl,
-        priority: priority,
-        isActive: isActive,
-        startAt: startAt,
-        endAt: endAt,
-        targetScope: targetScope,
-        targets: targets.map((t) => t.toEntity()).toList(),
-      );
+    id: id,
+    title: title,
+    imageUrl: imageUrl,
+    clickUrl: clickUrl,
+    priority: priority,
+    isActive: isActive,
+    startAt: startAt,
+    endAt: endAt,
+    targetScope: targetScope,
+    targets: targets.map((t) => t.toEntity()).toList(),
+  );
 
   factory BannerModel.fromEntity(Banner banner) => BannerModel(
-        id: banner.id,
-        title: banner.title,
-        imageUrl: banner.imageUrl,
-        clickUrl: banner.clickUrl,
-        priority: banner.priority,
-        isActive: banner.isActive,
-        startAt: banner.startAt,
-        endAt: banner.endAt,
-        targetScope: banner.targetScope,
-        targets: banner.targets.map((t) => BannerTargetModel.fromEntity(t)).toList(),
-      );
+    id: banner.id,
+    title: banner.title,
+    imageUrl: banner.imageUrl,
+    clickUrl: banner.clickUrl,
+    priority: banner.priority,
+    isActive: banner.isActive,
+    startAt: banner.startAt,
+    endAt: banner.endAt,
+    targetScope: banner.targetScope,
+    targets: banner.targets
+        .map((t) => BannerTargetModel.fromEntity(t))
+        .toList(),
+  );
 }
 
 @freezed
@@ -66,11 +68,11 @@ abstract class BannerTargetModel with _$BannerTargetModel {
       _$BannerTargetModelFromJson(json);
 
   BannerTarget toEntity() => BannerTarget(
-        id: id,
-        bannerId: bannerId,
-        universityId: universityId,
-        departmentId: departmentId,
-      );
+    id: id,
+    bannerId: bannerId,
+    universityId: universityId,
+    departmentId: departmentId,
+  );
 
   factory BannerTargetModel.fromEntity(BannerTarget target) =>
       BannerTargetModel(

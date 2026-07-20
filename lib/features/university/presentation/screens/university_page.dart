@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/university_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/widgets/open_app.dart';
+import '/core/network/api_endpoints.dart';
 
 class UniversityPage extends ConsumerWidget {
   const UniversityPage({super.key});
@@ -22,162 +23,170 @@ class UniversityPage extends ConsumerWidget {
     return Scaffold(
       body: universityAsync.when(
         data: (university) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔹 Hero Image
-              Stack(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 700),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: university.images.isNotEmpty
-                        ? university.images.first
-                        : '',
-                    width: double.infinity,
-                    height: width > 800 ? 350 : 250,
-                    fit: BoxFit.cover,
-                    placeholder: (context, _) =>
-                        const Center(child: CupertinoActivityIndicator()),
-                    errorWidget: (_, _, _) => Container(
-                      color: Colors.grey.shade200,
-                      height: width > 800 ? 350 : 250,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.image_not_supported),
-                    ),
+                  // 🔹 Hero Image
+                  Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: ApiEndpoints.resolveImageUrl(
+                          university.images.isNotEmpty
+                              ? university.images.first
+                              : '',
+                        ),
+                        width: double.infinity,
+                        height: width > 800 ? 350 : 250,
+                        fit: BoxFit.cover,
+                        placeholder: (context, _) =>
+                            const Center(child: CupertinoActivityIndicator()),
+                        errorWidget: (_, _, _) => Container(
+                          color: Colors.grey.shade200,
+                          height: width > 800 ? 350 : 250,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.image_not_supported),
+                        ),
+                      ),
+                      Container(
+                        height: width > 800 ? 350 : 250,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.black54, Colors.transparent],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 24,
+                        left: 24,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              university.name,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                if (kIsWeb) {
+                                  OpenApp.withUrl(university.websiteUrl);
+                                } else {
+                                  context.push(
+                                    '/webview?url=${university.websiteUrl}',
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.8,
+                                ),
+                                foregroundColor: Colors.black,
+                                minimumSize: Size(0, 40),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                visualDensity: VisualDensity(
+                                  vertical: -4,
+                                  horizontal: -4,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 0,
+                                ),
+                              ),
+                              icon: const Icon(Icons.public, size: 16),
+                              label: const Text('Visit Website'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SafeArea(child: BackButton()),
+                    ],
                   ),
-                  Container(
-                    height: width > 800 ? 350 : 250,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.black54, Colors.transparent],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+
+                  const SizedBox(height: 24),
+
+                  // 🔹 Stats Table
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _StatTile(
+                            label: 'Total Faculties',
+                            value: university.totalFaculties,
+                            isDark: isDark,
+                            border: true,
+                          ),
+                          _StatTile(
+                            label: 'Total Departments',
+                            value: university.totalDepartments,
+                            isDark: isDark,
+                            border: true,
+                          ),
+                          _StatTile(
+                            label: 'Total Halls',
+                            value: '${university.totalHalls} Halls',
+                            isDark: isDark,
+                            border: false,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 24,
-                    left: 24,
+
+                  const SizedBox(height: 24),
+
+                  // 🔹 About Section (full width)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          university.name,
+                          'About',
                           style: theme.textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            if (kIsWeb) {
-                              OpenApp.withUrl(university.websiteUrl);
-                            } else {
-                              context.push(
-                                '/webview?url=${university.websiteUrl}',
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withValues(
-                              alpha: 0.8,
-                            ),
-                            foregroundColor: Colors.black,
-                            minimumSize: Size(0, 40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            visualDensity: VisualDensity(
-                              vertical: -4,
-                              horizontal: -4,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 0,
-                            ),
+                        const SizedBox(height: 8),
+                        Text(
+                          university.about,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isDark
+                                ? Colors.white70
+                                : Colors.grey.shade800,
+                            height: 1.5,
                           ),
-                          icon: const Icon(Icons.public, size: 16),
-                          label: const Text('Visit Website'),
                         ),
                       ],
                     ),
                   ),
-                  SafeArea(child: BackButton()),
+
+                  const SizedBox(height: 40),
                 ],
               ),
-
-              const SizedBox(height: 24),
-
-              // 🔹 Stats Table
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(RadiusToken.md),
-                    border: Border.all(
-                      color: isDark ? Colors.white10 : Colors.grey.shade200,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      _StatTile(
-                        label: 'Total Faculties',
-                        value: university.totalFaculties,
-                        isDark: isDark,
-                        border: true,
-                      ),
-                      _StatTile(
-                        label: 'Total Departments',
-                        value: university.totalDepartments,
-                        isDark: isDark,
-                        border: true,
-                      ),
-                      _StatTile(
-                        label: 'Total Halls',
-                        value: '${university.totalHalls} Halls',
-                        isDark: isDark,
-                        border: false,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // 🔹 About Section (full width)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'About',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      university.about,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.grey.shade800,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
         ),
-        loading: () =>
-            const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: ${err.toString()}')),
       ),
     );

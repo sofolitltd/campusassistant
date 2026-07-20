@@ -10,7 +10,9 @@ import '../../domain/entities/routine.dart';
 import '../../domain/repositories/routine_repository.dart';
 import '../models/routine_model.dart';
 
-class RoutineRepositoryImpl with OfflineFirstMixin implements RoutineRepository {
+class RoutineRepositoryImpl
+    with OfflineFirstMixin
+    implements RoutineRepository {
   final ApiClient apiClient;
   @override
   final CacheManager cacheManager;
@@ -43,7 +45,11 @@ class RoutineRepositoryImpl with OfflineFirstMixin implements RoutineRepository 
         final envelope = response.data as Map<String, dynamic>;
         final List<dynamic> data = envelope['data'] ?? [];
         final routines = data
-            .map((json) => RoutineModel.fromJson(json as Map<String, dynamic>).toEntity())
+            .map(
+              (json) => RoutineModel.fromJson(
+                json as Map<String, dynamic>,
+              ).toEntity(),
+            )
             .toList();
 
         // Cache the result
@@ -70,7 +76,9 @@ class RoutineRepositoryImpl with OfflineFirstMixin implements RoutineRepository 
         final routines = cachedData
             .map((json) => RoutineModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[RoutineRepo] Returning ${routines.length} cached routines');
+        debugPrint(
+          '[RoutineRepo] Returning ${routines.length} cached routines',
+        );
         return Right(routines);
       }
     } catch (e) {
@@ -79,9 +87,11 @@ class RoutineRepositoryImpl with OfflineFirstMixin implements RoutineRepository 
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached routines available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached routines available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch routines'));
@@ -99,8 +109,8 @@ class RoutineRepositoryImpl with OfflineFirstMixin implements RoutineRepository 
       }
     }
 
-    return Left(NetworkFailure(
-      'Delete operation requires internet connection',
-    ));
+    return Left(
+      NetworkFailure('Delete operation requires internet connection'),
+    );
   }
 }

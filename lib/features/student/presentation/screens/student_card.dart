@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '/features/student/domain/entities/student.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class StudentCard extends StatelessWidget {
   const StudentCard({
@@ -46,7 +47,9 @@ class StudentCard extends StatelessWidget {
                           fit: BoxFit.cover,
                           height: 88,
                           width: 80,
-                          imageUrl: studentModel.imageUrl,
+                          imageUrl: ApiEndpoints.resolveImageUrl(
+                            studentModel.imageUrl,
+                          ),
                           placeholder: (context, url) => ClipRRect(
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(

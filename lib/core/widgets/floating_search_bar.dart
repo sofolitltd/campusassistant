@@ -130,7 +130,9 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
                         ? GestureDetector(
                             onTap: _onClear,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                               child: Icon(
                                 LucideIcons.circleX,
                                 size: 14,

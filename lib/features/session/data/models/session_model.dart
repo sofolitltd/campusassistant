@@ -21,20 +21,20 @@ abstract class SessionModel with _$SessionModel {
       _$SessionModelFromJson(json);
 
   Session toEntity() => Session(
-        id: id,
-        name: name,
-        slug: slug,
-        universityId: universityId,
-        departmentId: departmentId,
-        isActive: isActive,
-      );
+    id: id,
+    name: name,
+    slug: slug,
+    universityId: universityId,
+    departmentId: departmentId,
+    isActive: isActive,
+  );
 
   factory SessionModel.fromEntity(Session session) => SessionModel(
-        id: session.id,
-        name: session.name,
-        slug: session.slug,
-        universityId: session.universityId,
-        departmentId: session.departmentId,
-        isActive: session.isActive,
-      );
+    id: session.id,
+    name: session.name,
+    slug: session.slug,
+    universityId: session.universityId,
+    departmentId: session.departmentId,
+    isActive: session.isActive,
+  );
 }

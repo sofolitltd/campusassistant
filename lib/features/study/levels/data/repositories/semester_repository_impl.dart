@@ -32,21 +32,23 @@ class SemesterRepositoryImpl implements SemesterRepository {
 
     // 0. In-memory cache (instant)
     if (_semestersCache.containsKey(cacheKey)) {
-      debugPrint('[SemesterRepo] Returning ${_semestersCache[cacheKey]!.length} semesters from in-memory cache');
+      debugPrint(
+        '[SemesterRepo] Returning ${_semestersCache[cacheKey]!.length} semesters from in-memory cache',
+      );
       return Right(_semestersCache[cacheKey]!);
     }
 
     // 1. Try DB cache
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final semesters = cachedData
             .map((json) => SemesterModel.fromJson(json).toEntity())
             .toList();
         _semestersCache[cacheKey] = semesters;
-        debugPrint('[SemesterRepo] Returning ${semesters.length} cached semesters');
+        debugPrint(
+          '[SemesterRepo] Returning ${semesters.length} cached semesters',
+        );
         return Right(semesters);
       }
     } catch (e) {
@@ -87,9 +89,11 @@ class SemesterRepositoryImpl implements SemesterRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached semester data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached semester data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch semesters'));
@@ -100,7 +104,10 @@ class SemesterRepositoryImpl implements SemesterRepository {
     try {
       final model = SemesterModel.fromEntity(semester);
 
-      final response = await apiClient.post(ApiEndpoints.levels, data: model.toJson());
+      final response = await apiClient.post(
+        ApiEndpoints.levels,
+        data: model.toJson(),
+      );
       return Right(SemesterModel.fromJson(response.data).toEntity());
     } catch (e) {
       return Left(ServerFailure(e.toString()));

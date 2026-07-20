@@ -75,7 +75,9 @@ class ResourceRepositoryImpl implements ResourceRepository {
           try {
             resources.add(ResourceModel.fromJson(json).toEntity());
           } catch (e) {
-            debugPrint('[ResourceRepo] Skipping cached item due to parse error: $e');
+            debugPrint(
+              '[ResourceRepo] Skipping cached item due to parse error: $e',
+            );
           }
         }
 
@@ -88,11 +90,10 @@ class ResourceRepositoryImpl implements ResourceRepository {
           total = totalEntry['total'] as int;
         }
 
-        debugPrint('[ResourceRepo] Returning ${resources.length} cached resources');
-        final result = PaginatedResources(
-          resources: resources,
-          total: total,
+        debugPrint(
+          '[ResourceRepo] Returning ${resources.length} cached resources',
         );
+        final result = PaginatedResources(resources: resources, total: total);
         _resourcesCache[cacheKey] = result;
         return Right(result);
       }
@@ -167,9 +168,11 @@ class ResourceRepositoryImpl implements ResourceRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached resources available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached resources available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch resources'));
@@ -186,9 +189,9 @@ class ResourceRepositoryImpl implements ResourceRepository {
       }
     }
 
-    return Left(NetworkFailure(
-      'Delete operation requires internet connection',
-    ));
+    return Left(
+      NetworkFailure('Delete operation requires internet connection'),
+    );
   }
 
   @override
@@ -216,9 +219,11 @@ class ResourceRepositoryImpl implements ResourceRepository {
       method: 'POST',
     );
 
-    return Left(NetworkFailure(
-      'Resource creation queued for sync when connection is restored',
-    ));
+    return Left(
+      NetworkFailure(
+        'Resource creation queued for sync when connection is restored',
+      ),
+    );
   }
 
   @override
@@ -246,9 +251,11 @@ class ResourceRepositoryImpl implements ResourceRepository {
       method: 'PUT',
     );
 
-    return Left(NetworkFailure(
-      'Resource update queued for sync when connection is restored',
-    ));
+    return Left(
+      NetworkFailure(
+        'Resource update queued for sync when connection is restored',
+      ),
+    );
   }
 
   String _buildCacheKey({

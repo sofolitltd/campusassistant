@@ -33,7 +33,7 @@ class ImageViewer extends StatelessWidget {
     try {
       // 2. Download the image bytes using http
       final resolvedUrl = ApiEndpoints.resolveImageUrl(image);
-      
+
       final dio = Dio();
       final response = await dio.get(
         resolvedUrl,

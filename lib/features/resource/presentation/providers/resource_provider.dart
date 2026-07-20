@@ -74,11 +74,15 @@ Future<List<Resource>> resourcesList(
 @riverpod
 Future<Resource> Function(Resource) createResource(Ref ref) {
   final repo = ref.watch(resourceRepositoryProvider);
-  return (Resource resource) => repo.createResource(resource).then((res) => res.fold((l) => throw l, (r) => r));
+  return (Resource resource) => repo
+      .createResource(resource)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }
 
 @riverpod
 Future<Resource> Function(Resource) updateResource(Ref ref) {
   final repo = ref.watch(resourceRepositoryProvider);
-  return (Resource resource) => repo.updateResource(resource).then((res) => res.fold((l) => throw l, (r) => r));
+  return (Resource resource) => repo
+      .updateResource(resource)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }

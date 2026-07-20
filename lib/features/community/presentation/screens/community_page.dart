@@ -5,7 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/di.dart';
 import '/core/widgets/section_tab_bar.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/app_colors.dart';
 import '/routes/scaffold_with_navbar.dart';
 import '/features/community/presentation/widgets/create_post_sheet.dart';
@@ -134,7 +134,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: isDark ? theme.scaffoldBackgroundColor : const Color(0xFFF8F9FA),
+          color: isDark
+              ? theme.scaffoldBackgroundColor
+              : const Color(0xFFF8F9FA),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: ClipRRect(
@@ -201,7 +203,9 @@ class _CommunityFeedState extends ConsumerState<_CommunityFeed> {
   @override
   void initState() {
     super.initState();
-    ref.read(communityPostsProvider(widget.scope.toLowerCase()).notifier).fetch();
+    ref
+        .read(communityPostsProvider(widget.scope.toLowerCase()).notifier)
+        .fetch();
   }
 
   @override
@@ -209,13 +213,17 @@ class _CommunityFeedState extends ConsumerState<_CommunityFeed> {
     final refresh = ref.watch(communityRefreshProvider);
     if (refresh != _prevRefresh) {
       _prevRefresh = refresh;
-      Future.microtask(() => ref.read(
-        communityPostsProvider(widget.scope.toLowerCase()).notifier,
-      ).fetch());
+      Future.microtask(
+        () => ref
+            .read(communityPostsProvider(widget.scope.toLowerCase()).notifier)
+            .fetch(),
+      );
     }
     final posts = ref.watch(communityPostsProvider(widget.scope.toLowerCase()));
     return RefreshIndicator(
-      onRefresh: () => ref.read(communityPostsProvider(widget.scope.toLowerCase()).notifier).fetch(),
+      onRefresh: () => ref
+          .read(communityPostsProvider(widget.scope.toLowerCase()).notifier)
+          .fetch(),
       child: Column(
         children: [
           Expanded(
@@ -273,16 +281,17 @@ class _CommunityListScreenState extends ConsumerState<_CommunityListScreen> {
     final refresh = ref.watch(communityRefreshProvider);
     if (refresh != _prevRefresh) {
       _prevRefresh = refresh;
-      Future.microtask(() => ref.read(
-        communityPostsProvider(scope).notifier,
-      ).fetch());
+      Future.microtask(
+        () => ref.read(communityPostsProvider(scope).notifier).fetch(),
+      );
     }
     final posts = ref.watch(communityPostsProvider(scope));
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: widget.title,
       showSearchBar: false,
       body: RefreshIndicator(
-        onRefresh: () => ref.read(communityPostsProvider(scope).notifier).fetch(),
+        onRefresh: () =>
+            ref.read(communityPostsProvider(scope).notifier).fetch(),
         child: posts.isEmpty
             ? Center(
                 child: Text(
@@ -291,12 +300,13 @@ class _CommunityListScreenState extends ConsumerState<_CommunityListScreen> {
                 ),
               )
             : ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                itemCount: posts.length,
-                itemBuilder: (context, index) => DiscussionCard(
-                  post: posts[index],
-                  scope: widget.scope,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
+                itemCount: posts.length,
+                itemBuilder: (context, index) =>
+                    DiscussionCard(post: posts[index], scope: widget.scope),
               ),
       ),
     );

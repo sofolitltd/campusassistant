@@ -66,12 +66,7 @@ class ChapterTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (isSelected)
-              Icon(
-                LucideIcons.check,
-                color: primary,
-                size: 20,
-              ),
+            if (isSelected) Icon(LucideIcons.check, color: primary, size: 20),
           ],
         ),
       ),

@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../presentation/providers/research_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class ResearchPage extends ConsumerStatefulWidget {
   const ResearchPage({super.key});
@@ -45,7 +45,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
     final researchAsync = ref.watch(researchPaginationProvider);
     final notifier = ref.read(researchPaginationProvider.notifier);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Research Archive',
       showSearchBar: true,
       searchHint: 'Search research...',

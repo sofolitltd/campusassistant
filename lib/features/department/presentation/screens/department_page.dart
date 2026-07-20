@@ -12,6 +12,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
 import '/core/theme/app_colors.dart';
+import '/core/network/api_endpoints.dart';
 
 class DepartmentPage extends ConsumerWidget {
   const DepartmentPage({super.key});
@@ -27,160 +28,171 @@ class DepartmentPage extends ConsumerWidget {
     return Scaffold(
       body: departmentAsync.when(
         data: (department) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 🔹 Hero Image
-              Stack(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 700),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: department.images.isNotEmpty
-                        ? department.images[0]
-                        : '',
-                    width: double.infinity,
-                    height: width > 800 ? 350 : 250,
-                    fit: BoxFit.cover,
-                    placeholder: (context, _) =>
-                        const Center(child: CupertinoActivityIndicator()),
-                    errorWidget: (_, _, _) => Container(
-                      color: Colors.grey.shade200,
-                      height: width > 800 ? 350 : 250,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.image_not_supported),
-                    ),
+                  // 🔹 Hero Image
+                  Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: ApiEndpoints.resolveImageUrl(
+                          department.images.isNotEmpty
+                              ? department.images[0]
+                              : '',
+                        ),
+                        width: double.infinity,
+                        height: width > 800 ? 350 : 250,
+                        fit: BoxFit.cover,
+                        placeholder: (context, _) =>
+                            const Center(child: CupertinoActivityIndicator()),
+                        errorWidget: (_, _, _) => Container(
+                          color: Colors.grey.shade200,
+                          height: width > 800 ? 350 : 250,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.image_not_supported),
+                        ),
+                      ),
+                      Container(
+                        height: width > 800 ? 350 : 250,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.black54, Colors.transparent],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 24,
+                        left: 24,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              department.name,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                if (kIsWeb) {
+                                  OpenApp.withUrl(department.websiteUrl);
+                                } else {
+                                  context.push(
+                                    '/webview?url=${department.websiteUrl}',
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.8,
+                                ),
+                                foregroundColor: Colors.black,
+                                minimumSize: const Size(0, 40),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                visualDensity: const VisualDensity(
+                                  vertical: -4,
+                                  horizontal: -4,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 0,
+                                ),
+                              ),
+                              icon: const Icon(Icons.public, size: 16),
+                              label: const Text('Visit Website'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SafeArea(child: BackButton()),
+                    ],
                   ),
-                  Container(
-                    height: width > 800 ? 350 : 250,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.black54, Colors.transparent],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+
+                  const SizedBox(height: 24),
+
+                  // 🔹 Stats Table (Teachers & Staff)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _StatTile(
+                            label: 'Teachers',
+                            value: teachersAsync.when(
+                              data: (t) => '${t.length}',
+                              loading: () => '...',
+                              error: (_, _) => '0',
+                            ),
+                            isDark: isDark,
+                            border: true,
+                          ),
+                          _StatTile(
+                            label: 'Staffs',
+                            value: staffAsync.when(
+                              data: (s) => '${s.length}',
+                              loading: () => '...',
+                              error: (_, _) => '0',
+                            ),
+                            isDark: isDark,
+                            border: false,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 24,
-                    left: 24,
+
+                  const SizedBox(height: 24),
+
+                  // 🔹 About Section (full width)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          department.name,
+                          'About',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(
-                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
                         ),
-                        const SizedBox(height: 10),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            if (kIsWeb) {
-                              OpenApp.withUrl(department.websiteUrl);
-                            } else {
-                              context.push(
-                                '/webview?url=${department.websiteUrl}',
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withValues(
-                              alpha: 0.8,
-                            ),
-                            foregroundColor: Colors.black,
-                            minimumSize: const Size(0, 40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            visualDensity: const VisualDensity(
-                              vertical: -4,
-                              horizontal: -4,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 0,
-                            ),
-                          ),
-                          icon: const Icon(Icons.public, size: 16),
-                          label: const Text('Visit Website'),
+                        const SizedBox(height: 8),
+                        Text(
+                          department.about,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: isDark
+                                    ? Colors.white70
+                                    : Colors.grey.shade800,
+                                height: 1.5,
+                              ),
                         ),
                       ],
                     ),
                   ),
-                  SafeArea(child: BackButton()),
+                  const SizedBox(height: 32),
                 ],
               ),
-
-              const SizedBox(height: 24),
-
-              // 🔹 Stats Table (Teachers & Staff)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(RadiusToken.md),
-                    border: Border.all(
-                      color: isDark ? Colors.white10 : Colors.grey.shade200,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      _StatTile(
-                        label: 'Teachers',
-                        value: teachersAsync.when(
-                          data: (t) => '${t.length}',
-                          loading: () => '...',
-                          error: (_, _) => '0',
-                        ),
-                        isDark: isDark,
-                        border: true,
-                      ),
-                      _StatTile(
-                        label: 'Staffs',
-                        value: staffAsync.when(
-                          data: (s) => '${s.length}',
-                          loading: () => '...',
-                          error: (_, _) => '0',
-                        ),
-                        isDark: isDark,
-                        border: false,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // 🔹 About Section (full width)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'About',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      department.about,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.grey.shade800,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
         loading: () => const Center(child: CupertinoActivityIndicator()),

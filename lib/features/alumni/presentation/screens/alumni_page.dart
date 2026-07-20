@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 
 import '../providers/alumni_provider.dart';
@@ -71,7 +71,7 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
   Widget build(BuildContext context) {
     final alumniStateAsync = ref.watch(alumniPaginationProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Alumni Network',
       searchHint: 'Search alumni...',
       actionIcon: LucideIcons.building2,

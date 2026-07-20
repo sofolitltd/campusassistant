@@ -58,10 +58,12 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
           ttl: CacheTTL.emergency,
         );
 
-        return Right(PaginatedEmergencyContacts(
-          contacts: model.contacts.map((m) => m.toEntity()).toList(),
-          total: model.total,
-        ));
+        return Right(
+          PaginatedEmergencyContacts(
+            contacts: model.contacts.map((m) => m.toEntity()).toList(),
+            total: model.total,
+          ),
+        );
       } catch (e) {
         debugPrint('[EmergencyRepo] Remote fetch failed: $e');
       }
@@ -77,11 +79,15 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
         final contacts = cachedData
             .map((json) => EmergencyContactModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[EmergencyRepo] Returning ${contacts.length} cached contacts');
-        return Right(PaginatedEmergencyContacts(
-          contacts: contacts,
-          total: cachedData.length,
-        ));
+        debugPrint(
+          '[EmergencyRepo] Returning ${contacts.length} cached contacts',
+        );
+        return Right(
+          PaginatedEmergencyContacts(
+            contacts: contacts,
+            total: cachedData.length,
+          ),
+        );
       }
     } catch (e) {
       debugPrint('[EmergencyRepo] Cache read failed: $e');
@@ -89,9 +95,11 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached emergency contacts available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached emergency contacts available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch emergency contacts'));
@@ -111,9 +119,9 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
       }
     }
 
-    return Left(NetworkFailure(
-      'Create operation requires internet connection',
-    ));
+    return Left(
+      NetworkFailure('Create operation requires internet connection'),
+    );
   }
 
   @override
@@ -130,9 +138,9 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
       }
     }
 
-    return Left(NetworkFailure(
-      'Update operation requires internet connection',
-    ));
+    return Left(
+      NetworkFailure('Update operation requires internet connection'),
+    );
   }
 
   @override
@@ -146,9 +154,9 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
       }
     }
 
-    return Left(NetworkFailure(
-      'Delete operation requires internet connection',
-    ));
+    return Left(
+      NetworkFailure('Delete operation requires internet connection'),
+    );
   }
 
   String _buildCacheKey({

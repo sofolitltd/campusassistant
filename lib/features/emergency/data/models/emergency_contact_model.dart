@@ -27,19 +27,19 @@ abstract class EmergencyContactModel with _$EmergencyContactModel {
       _$EmergencyContactModelFromJson(json);
 
   EmergencyContact toEntity() => EmergencyContact(
-        id: id,
-        title: title,
-        designation: designation,
-        description: description,
-        phone: phone,
-        email: email,
-        category: category,
-        scope: scope,
-        universityId: universityId,
-        departmentId: departmentId,
-        isVerified: isVerified,
-        logoUrl: logoUrl,
-      );
+    id: id,
+    title: title,
+    designation: designation,
+    description: description,
+    phone: phone,
+    email: email,
+    category: category,
+    scope: scope,
+    universityId: universityId,
+    departmentId: departmentId,
+    isVerified: isVerified,
+    logoUrl: logoUrl,
+  );
 
   factory EmergencyContactModel.fromEntity(EmergencyContact contact) =>
       EmergencyContactModel(

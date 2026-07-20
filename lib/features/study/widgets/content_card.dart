@@ -18,6 +18,7 @@ import '/widgets/pdf_viewer_page.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import 'resource_info_sheet.dart';
 
@@ -54,6 +55,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   }
 
   Future<void> _checkFileStatus() async {
+    // No local filesystem on web — path_provider has no web implementation.
+    // "Downloaded" isn't a meaningful state there; content just streams.
+    if (kIsWeb) return;
     final fileName = _getFileName();
     final directory = await getApplicationDocumentsDirectory();
     _localPath = '${directory.path}/$fileName';
@@ -88,20 +92,25 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     final userId = profileData?.uid ?? '';
     ref.listen(userBookmarksProvider(userId), (_, next) {
       if (userId.isEmpty) return;
-      next.whenOrNull(data: (bookmarks) {
-        final match = bookmarks.where(
-          (b) => b.entityType == 'content' && b.entityId == widget.contentModel.contentId,
-        );
-        final found = match.isNotEmpty;
-        if (found != _isBookmarked || (found && _bookmarkId != match.first.id)) {
-          if (mounted) {
-            setState(() {
-              _isBookmarked = found;
-              _bookmarkId = found ? match.first.id : null;
-            });
+      next.whenOrNull(
+        data: (bookmarks) {
+          final match = bookmarks.where(
+            (b) =>
+                b.entityType == 'resource' &&
+                b.entityId == widget.contentModel.contentId,
+          );
+          final found = match.isNotEmpty;
+          if (found != _isBookmarked ||
+              (found && _bookmarkId != match.first.id)) {
+            if (mounted) {
+              setState(() {
+                _isBookmarked = found;
+                _bookmarkId = found ? match.first.id : null;
+              });
+            }
           }
-        }
-      });
+        },
+      );
     });
 
     return Container(
@@ -127,8 +136,6 @@ class _ContentCardState extends ConsumerState<ContentCard> {
               topRight: Radius.circular(8),
             ),
             onTap: () async {
-              if (kIsWeb) return;
-
               if (isProContent && !isProUser) {
                 _showProDialog(context);
               } else {
@@ -163,7 +170,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                       fit: BoxFit.fitHeight,
                                     )
                                   : Image.network(
-                                      widget.contentModel.imageUrl,
+                                      ApiEndpoints.resolveImageUrl(
+                                        widget.contentModel.imageUrl,
+                                      ),
                                       fit: BoxFit.contain,
                                     ),
                             ),
@@ -341,15 +350,18 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       },
       itemBuilder: (context) => [
         if (!_isDownloaded && !_isLoading && !_isPaused)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'download',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                Icon(LucideIcons.download, size: 16),
-                SizedBox(width: 8),
-                Text('Download', style: TextStyle(fontSize: 13)),
+                Icon(kIsWeb ? LucideIcons.eye : LucideIcons.download, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  kIsWeb ? 'View' : 'Download',
+                  style: const TextStyle(fontSize: 13),
+                ),
               ],
             ),
           ),
@@ -394,18 +406,19 @@ class _ContentCardState extends ConsumerState<ContentCard> {
             ],
           ),
         ),
-        const PopupMenuItem(
-          value: 'open_with',
-          height: 32,
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: [
-              Icon(LucideIcons.externalLink, size: 16),
-              SizedBox(width: 8),
-              Text('Open with', style: TextStyle(fontSize: 13)),
-            ],
+        if (!kIsWeb)
+          const PopupMenuItem(
+            value: 'open_with',
+            height: 32,
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Icon(LucideIcons.externalLink, size: 16),
+                SizedBox(width: 8),
+                Text('Open with', style: TextStyle(fontSize: 13)),
+              ],
+            ),
           ),
-        ),
         if (_isDownloaded)
           const PopupMenuItem(
             value: 'delete',
@@ -688,7 +701,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       final bookmark = Bookmark(
         id: Uuid().v4(),
         userId: userId,
-        entityType: 'content',
+        entityType: 'resource',
         entityId: widget.contentModel.contentId,
       );
       final repo = ref.read(bookmarkRepositoryProvider);
@@ -722,6 +735,17 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   }
 
   Future<void> _handleShare() async {
+    // No local file to attach on web — share the link instead.
+    if (kIsWeb) {
+      await SharePlus.instance.share(
+        ShareParams(
+          text:
+              '${widget.contentModel.contentTitle}\n${widget.contentModel.fileUrl}',
+        ),
+      );
+      return;
+    }
+
     if (!_isDownloaded) await _downloadIfNeeded();
     if (_isDownloaded && _localPath.isNotEmpty) {
       await SharePlus.instance.share(
@@ -835,6 +859,13 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   }
 
   Future<void> _handleOpenContent() async {
+    // Web streams the PDF straight from the URL (see PdfViewerPage) — no
+    // local download step needed or possible.
+    if (kIsWeb) {
+      _openInAppViewer();
+      return;
+    }
+
     if (_isDownloaded) {
       _openInAppViewer();
       return;

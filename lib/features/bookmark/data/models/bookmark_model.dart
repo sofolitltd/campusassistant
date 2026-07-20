@@ -19,16 +19,16 @@ abstract class BookmarkModel with _$BookmarkModel {
       _$BookmarkModelFromJson(json);
 
   Bookmark toEntity() => Bookmark(
-        id: id,
-        userId: userId,
-        entityType: entityType,
-        entityId: entityId,
-      );
+    id: id,
+    userId: userId,
+    entityType: entityType,
+    entityId: entityId,
+  );
 
   factory BookmarkModel.fromEntity(Bookmark bookmark) => BookmarkModel(
-        id: bookmark.id,
-        userId: bookmark.userId,
-        entityType: bookmark.entityType,
-        entityId: bookmark.entityId,
-      );
+    id: bookmark.id,
+    userId: bookmark.userId,
+    entityType: bookmark.entityType,
+    entityId: bookmark.entityId,
+  );
 }

@@ -58,7 +58,9 @@ class TransportRepositoryImpl implements TransportRepository {
         final transports = cachedData
             .map((json) => TransportModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[TransportRepo] Returning ${transports.length} cached transports');
+        debugPrint(
+          '[TransportRepo] Returning ${transports.length} cached transports',
+        );
         return Right(transports);
       }
     } catch (e) {
@@ -67,9 +69,11 @@ class TransportRepositoryImpl implements TransportRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached transport data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached transport data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch transport data'));

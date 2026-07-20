@@ -70,10 +70,7 @@ class SectionCard extends StatelessWidget {
     }
 
     if (margin != null) {
-      return Padding(
-        padding: margin!,
-        child: card,
-      );
+      return Padding(padding: margin!, child: card);
     }
 
     return card;

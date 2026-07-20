@@ -129,10 +129,13 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         final isAll = index == 0;
                         final year = isAll ? null : years[index - 1];
                         final isSelected = selectedYear == year;
-                        final primary = Theme.of(context).appColors.primaryColor;
+                        final primary = Theme.of(
+                          context,
+                        ).appColors.primaryColor;
                         final selectedColor = primary;
-                        final selectedBg =
-                            primary.withValues(alpha: isDark ? 0.22 : 0.12);
+                        final selectedBg = primary.withValues(
+                          alpha: isDark ? 0.22 : 0.12,
+                        );
 
                         return ListTile(
                           selected: isSelected,
@@ -270,10 +273,13 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         final isAll = index == 0;
                         final course = isAll ? null : courses[index - 1];
                         final isSelected = selectedCourse == course;
-                        final primary = Theme.of(context).appColors.primaryColor;
+                        final primary = Theme.of(
+                          context,
+                        ).appColors.primaryColor;
                         final selectedColor = primary;
-                        final selectedBg =
-                            primary.withValues(alpha: isDark ? 0.22 : 0.12);
+                        final selectedBg = primary.withValues(
+                          alpha: isDark ? 0.22 : 0.12,
+                        );
 
                         return ListTile(
                           selected: isSelected,

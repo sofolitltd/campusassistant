@@ -5,7 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/providers/download_counter_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/features/resource/presentation/providers/downloads_provider.dart';
 import '/features/resource/presentation/widgets/downloaded_resource_card.dart';
 
@@ -16,7 +16,7 @@ class DownloadedFilesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final downloadsAsync = ref.watch(downloadedFilesProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Downloaded Files',
       showSearchBar: false,
       body: downloadsAsync.when(

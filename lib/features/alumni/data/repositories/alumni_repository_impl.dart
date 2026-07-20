@@ -20,9 +20,7 @@ class AlumniRepositoryImpl implements AlumniRepository {
     int? limit,
     int? offset,
   }) async {
-    final Map<String, dynamic> params = {
-      'preload': 'true',
-    };
+    final Map<String, dynamic> params = {'preload': 'true'};
     if (universityId != null && universityId.isNotEmpty) {
       params['university_id'] = universityId;
     }
@@ -47,16 +45,16 @@ class AlumniRepositoryImpl implements AlumniRepository {
       params['offset'] = offset;
     }
 
-    final response = await apiClient.get(
-      '/alumni',
-      queryParameters: params,
-    );
+    final response = await apiClient.get('/alumni', queryParameters: params);
     // API returns paginated envelope: {"data": [...], "count": N, ...}
     final envelope = response.data as Map<String, dynamic>;
     final List<dynamic> data = envelope['data'] ?? [];
     final int count = envelope['count'] ?? 0;
     final list = data
-        .map((json) => AlumniModel.fromJson(json as Map<String, dynamic>).toEntity())
+        .map(
+          (json) =>
+              AlumniModel.fromJson(json as Map<String, dynamic>).toEntity(),
+        )
         .toList();
     return PaginatedAlumni(alumniList: list, total: count);
   }
@@ -64,7 +62,9 @@ class AlumniRepositoryImpl implements AlumniRepository {
   @override
   Future<Alumni> getAlumniById(String id) async {
     final response = await apiClient.get('/alumni/$id');
-    return AlumniModel.fromJson(response.data as Map<String, dynamic>).toEntity();
+    return AlumniModel.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
   }
 
   @override
@@ -86,7 +86,11 @@ class AlumniRepositoryImpl implements AlumniRepository {
     final envelope = response.data as Map<String, dynamic>;
     final List<dynamic> data = envelope['data'] ?? [];
     return data
-        .map((json) => AlumniOrganizationModel.fromJson(json as Map<String, dynamic>).toEntity())
+        .map(
+          (json) => AlumniOrganizationModel.fromJson(
+            json as Map<String, dynamic>,
+          ).toEntity(),
+        )
         .toList();
   }
 }

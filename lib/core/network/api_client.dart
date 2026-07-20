@@ -84,16 +84,19 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) =>
-      dio.get(path, queryParameters: queryParameters, options: options);
+  }) => dio.get(path, queryParameters: queryParameters, options: options);
 
   Future<Response> post(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) =>
-      dio.post(path, data: data, queryParameters: queryParameters, options: options);
+  }) => dio.post(
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+  );
 
   Future<Response> uploadFile(
     String path, {
@@ -129,14 +132,22 @@ class ApiClient {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) =>
-      dio.put(path, data: data, queryParameters: queryParameters, options: options);
+  }) => dio.put(
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+  );
 
   Future<Response> delete(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
-  }) =>
-      dio.delete(path, data: data, queryParameters: queryParameters, options: options);
+  }) => dio.delete(
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+  );
 }

@@ -21,20 +21,20 @@ abstract class RoutineModel with _$RoutineModel {
       _$RoutineModelFromJson(json);
 
   Routine toEntity() => Routine(
-        id: id,
-        title: title,
-        imageUrl: imageUrl,
-        time: time,
-        universityId: universityId,
-        departmentId: departmentId,
-      );
+    id: id,
+    title: title,
+    imageUrl: imageUrl,
+    time: time,
+    universityId: universityId,
+    departmentId: departmentId,
+  );
 
   factory RoutineModel.fromEntity(Routine routine) => RoutineModel(
-        id: routine.id,
-        title: routine.title,
-        imageUrl: routine.imageUrl,
-        time: routine.time,
-        universityId: routine.universityId,
-        departmentId: routine.departmentId,
-      );
+    id: routine.id,
+    title: routine.title,
+    imageUrl: routine.imageUrl,
+    time: routine.time,
+    universityId: routine.universityId,
+    departmentId: routine.departmentId,
+  );
 }

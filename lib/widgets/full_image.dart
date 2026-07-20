@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../core/theme/tokens/app_radius.dart' show RadiusToken;
+import '../core/network/api_endpoints.dart';
 
 class FullImage extends StatelessWidget {
   final String title;
@@ -44,7 +45,7 @@ class FullImage extends StatelessWidget {
                 : CachedNetworkImage(
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
-                    imageUrl: imageUrl,
+                    imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
                     fadeInDuration: const Duration(milliseconds: 500),
                     imageBuilder: (context, imageProvider) => InteractiveViewer(
                       child: Container(

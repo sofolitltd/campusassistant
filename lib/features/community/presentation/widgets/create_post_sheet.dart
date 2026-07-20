@@ -11,6 +11,7 @@ import '/core/di.dart';
 import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import '/features/community/utils/image_compress.dart';
+import '/core/network/api_endpoints.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
   final int tabIndex;
@@ -32,7 +33,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   bool _isUploading = false;
 
   static const int _maxImages = 4;
-  static const int _maxTotalBytes = 1 * 1024 * 1024; // 1 MB total after compression
+  static const int _maxTotalBytes =
+      1 * 1024 * 1024; // 1 MB total after compression
 
   @override
   void initState() {
@@ -115,15 +117,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                 onPressed: _isUploading
                     ? null
                     : () async {
-                        if (_controller.text.trim().isEmpty && _images.isEmpty) {
+                        if (_controller.text.trim().isEmpty &&
+                            _images.isEmpty) {
                           return;
                         }
 
-                        final scopes = [
-                          'batch',
-                          'department',
-                          'university',
-                        ];
+                        final scopes = ['batch', 'department', 'university'];
                         final currentScope = scopes[widget.tabIndex];
 
                         setState(() => _isUploading = true);
@@ -187,7 +186,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     .watch(currentUserProvider)
                     .maybeWhen(
                       data: (user) => user?.profileImage != null
-                          ? NetworkImage(user!.profileImage!)
+                          ? NetworkImage(
+                              ApiEndpoints.resolveImageUrl(user!.profileImage),
+                            )
                           : null,
                       orElse: () => null,
                     ),
@@ -298,15 +299,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
               IconButton(
                 icon: const Icon(LucideIcons.image),
                 onPressed: _images.length >= _maxImages ? null : _pickImages,
-                tooltip:
-                    _images.length >= _maxImages ? 'Max $_maxImages images' : null,
+                tooltip: _images.length >= _maxImages
+                    ? 'Max $_maxImages images'
+                    : null,
               ),
               Text(
                 '${_images.length}/$_maxImages',
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),

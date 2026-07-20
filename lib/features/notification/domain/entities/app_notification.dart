@@ -31,8 +31,9 @@ class AppNotification {
       isRead: json['is_read'] as bool? ?? false,
       timestamp: DateTime.parse(json['created_at'] as String),
       actionRoute: data?['action_route'] as String?,
-      actionParams: (data?['action_params'] as Map<String, dynamic>?)
-          ?.map((k, v) => MapEntry(k, v as String)),
+      actionParams: (data?['action_params'] as Map<String, dynamic>?)?.map(
+        (k, v) => MapEntry(k, v as String),
+      ),
     );
   }
 

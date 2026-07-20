@@ -53,7 +53,9 @@ class CourseRepositoryImpl implements CourseRepository {
 
     // 0. In-memory cache (instant — no microtask delay)
     if (_coursesCache.containsKey(cacheKey)) {
-      debugPrint('[CourseRepo] Returning ${_coursesCache[cacheKey]!.length} courses from in-memory cache');
+      debugPrint(
+        '[CourseRepo] Returning ${_coursesCache[cacheKey]!.length} courses from in-memory cache',
+      );
       return Right(_coursesCache[cacheKey]!);
     }
 
@@ -112,9 +114,11 @@ class CourseRepositoryImpl implements CourseRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached course data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached course data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch courses'));
@@ -130,7 +134,9 @@ class CourseRepositoryImpl implements CourseRepository {
   }) async {
     // 0. In-memory cache (instant)
     if (_courseByCodeCache.containsKey(courseCode)) {
-      debugPrint('[CourseRepo] Returning course $courseCode from in-memory cache');
+      debugPrint(
+        '[CourseRepo] Returning course $courseCode from in-memory cache',
+      );
       return Right(_courseByCodeCache[courseCode]!);
     }
 
@@ -190,9 +196,11 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached course data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached course data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Course not found'));

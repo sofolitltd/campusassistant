@@ -12,8 +12,12 @@ import 'connectivity_service.dart';
 
 /// Processes pending offline write operations when connection is restored.
 /// Also handles periodic background refresh of stale data.
+///
+/// [_db] is null on web (no Drift/sqlite3 support there — see
+/// app_database.dart's connection split). The offline write queue simply
+/// doesn't exist on web, so every method touching it degrades to a no-op.
 class SyncManager {
-  final OfflineDatabase _db;
+  final OfflineDatabase? _db;
   final ApiClient _apiClient;
   final ConnectivityService _connectivity;
   final CacheManager _cacheManager;
@@ -22,14 +26,14 @@ class SyncManager {
   bool _isSyncing = false;
 
   SyncManager({
-    required OfflineDatabase db,
+    required OfflineDatabase? db,
     required ApiClient apiClient,
     required ConnectivityService connectivity,
     required CacheManager cacheManager,
-  })  : _db = db,
-        _apiClient = apiClient,
-        _connectivity = connectivity,
-        _cacheManager = cacheManager;
+  }) : _db = db,
+       _apiClient = apiClient,
+       _connectivity = connectivity,
+       _cacheManager = cacheManager;
 
   /// Whether a sync operation is currently in progress.
   bool get isSyncing => _isSyncing;
@@ -37,19 +41,19 @@ class SyncManager {
   /// Process all pending sync operations.
   /// Call this when app resumes or connectivity returns.
   Future<void> processPendingSyncs() async {
+    final db = _db;
+    if (db == null) return;
     if (_isSyncing) return;
     if (!_connectivity.isConnected) return;
 
     _isSyncing = true;
     try {
-      final pending = await _db.getPendingSyncs();
+      final pending = await db.getPendingSyncs();
       debugPrint('[SyncManager] Processing ${pending.length} pending syncs');
 
       for (final sync in pending) {
         try {
-          final payload = Map<String, dynamic>.from(
-            _jsonDecode(sync.payload),
-          );
+          final payload = Map<String, dynamic>.from(_jsonDecode(sync.payload));
 
           switch (sync.method.toUpperCase()) {
             case 'POST':
@@ -66,11 +70,13 @@ class SyncManager {
               break;
           }
 
-          await _db.completeSync(sync.id);
-          debugPrint('[SyncManager] Synced ${sync.entityType}/${sync.entityKey}');
+          await db.completeSync(sync.id);
+          debugPrint(
+            '[SyncManager] Synced ${sync.entityType}/${sync.entityKey}',
+          );
         } catch (e) {
           debugPrint('[SyncManager] Failed to sync ${sync.entityKey}: $e');
-          await _db.failSync(sync.id);
+          await db.failSync(sync.id);
         }
       }
     } finally {
@@ -115,7 +121,9 @@ class SyncManager {
       try {
         final isFresh = await _cacheManager.isFresh(entityType: entityType);
         if (!isFresh) {
-          debugPrint('[SyncManager] $entityType cache is stale (TTL: $maxAge), refreshing...');
+          debugPrint(
+            '[SyncManager] $entityType cache is stale (TTL: $maxAge), refreshing...',
+          );
           // The actual refresh is handled by the repository layer.
           // We just signal that a refresh is needed.
         }
@@ -131,7 +139,9 @@ class SyncManager {
     }
   }
 
-  /// Enqueue a write operation for offline sync.
+  /// Enqueue a write operation for offline sync. No-op on web — there's no
+  /// local queue to persist to there, so a failed write is simply lost
+  /// rather than retried later.
   Future<void> enqueue({
     required String operation,
     required String entityType,
@@ -140,7 +150,10 @@ class SyncManager {
     required String endpoint,
     required String method,
   }) async {
-    await _db.enqueueSync(
+    final db = _db;
+    if (db == null) return;
+
+    await db.enqueueSync(
       operation: operation,
       entityType: entityType,
       entityKey: entityKey,
@@ -148,7 +161,9 @@ class SyncManager {
       endpoint: endpoint,
       method: method,
     );
-    debugPrint('[SyncManager] Enqueued $method $endpoint for $entityType/$entityKey');
+    debugPrint(
+      '[SyncManager] Enqueued $method $endpoint for $entityType/$entityKey',
+    );
 
     // Try to sync immediately if online
     if (_connectivity.isConnected) {
@@ -158,12 +173,13 @@ class SyncManager {
 
   /// Get count of pending sync operations.
   Future<int> getPendingCount() async {
+    if (_db == null) return 0;
     return _db.getPendingSyncCount();
   }
 
   /// Clear the sync queue.
   Future<void> clearQueue() async {
-    await _db.clearSyncQueue();
+    await _db?.clearSyncQueue();
   }
 
   void dispose() {
@@ -171,15 +187,13 @@ class SyncManager {
   }
 
   Map<String, dynamic> _jsonDecode(String json) {
-    return Map<String, dynamic>.from(
-      const JsonDecoder().convert(json) as Map,
-    );
+    return Map<String, dynamic>.from(const JsonDecoder().convert(json) as Map);
   }
 }
 
 /// Riverpod provider for SyncManager.
 final syncManagerProvider = Provider<SyncManager>((ref) {
-  final db = ref.watch(offlineDatabaseProvider);
+  final db = kIsWeb ? null : ref.watch(offlineDatabaseProvider);
   final apiClient = ref.watch(apiClientProvider);
   final connectivity = ref.watch(connectivityServiceProvider);
   final cacheManager = ref.watch(cacheManagerProvider);

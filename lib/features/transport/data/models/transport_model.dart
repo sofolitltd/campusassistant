@@ -18,17 +18,13 @@ abstract class TransportModel with _$TransportModel {
   factory TransportModel.fromJson(Map<String, dynamic> json) =>
       _$TransportModelFromJson(json);
 
-  Transport toEntity() => Transport(
-        id: id,
-        title: title,
-        image: image,
-        time: time,
-      );
+  Transport toEntity() =>
+      Transport(id: id, title: title, image: image, time: time);
 
   factory TransportModel.fromEntity(Transport transport) => TransportModel(
-        id: transport.id,
-        title: transport.title,
-        image: transport.image,
-        time: transport.time,
-      );
+    id: transport.id,
+    title: transport.title,
+    image: transport.image,
+    time: transport.time,
+  );
 }

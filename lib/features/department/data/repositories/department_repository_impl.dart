@@ -51,14 +51,14 @@ class DepartmentRepositoryImpl implements DepartmentRepository {
 
     // Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final departments = cachedData
             .map((json) => DepartmentModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[DepartmentRepo] Returning ${departments.length} cached departments');
+        debugPrint(
+          '[DepartmentRepo] Returning ${departments.length} cached departments',
+        );
         return Right(departments);
       }
     } catch (e) {
@@ -66,9 +66,11 @@ class DepartmentRepositoryImpl implements DepartmentRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached department data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached department data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch departments'));

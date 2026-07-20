@@ -31,9 +31,7 @@ Future<List<Course>> courses(
   String? batchId,
 }) async {
   ref.watch(appRefreshProvider);
-  debugPrint(
-    '[courses] Fetching: semesterId=$semesterId batchId=$batchId',
-  );
+  debugPrint('[courses] Fetching: semesterId=$semesterId batchId=$batchId');
   final repo = ref.watch(courseRepositoryProvider);
   final result = await repo.getCourses(
     universityId: universityId,
@@ -83,7 +81,8 @@ Future<Map<String, List<Course>>> groupedCourses(
   final Map<String, List<Course>> grouped = {};
   for (final course in coursesList) {
     // Group by category using the enterprise display logic
-    final category = (course.courseCategory?.name ?? course.courseCategoryId ?? 'Unknown');
+    final category =
+        (course.courseCategory?.name ?? course.courseCategoryId ?? 'Unknown');
     grouped.putIfAbsent(category, () => []).add(course);
   }
   return grouped;

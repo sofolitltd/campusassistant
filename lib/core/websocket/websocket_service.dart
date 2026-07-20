@@ -7,18 +7,13 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../network/api_endpoints.dart';
 
-
 /// A general-purpose WebSocket event.
 class WebSocketMessage {
   final String type;
   final String? channel;
   final Map<String, dynamic>? data;
 
-  WebSocketMessage({
-    required this.type,
-    this.channel,
-    this.data,
-  });
+  WebSocketMessage({required this.type, this.channel, this.data});
 
   factory WebSocketMessage.fromJson(Map<String, dynamic> json) {
     return WebSocketMessage(
@@ -90,19 +85,15 @@ class WebSocketService {
   /// Subscribe to a specific channel (e.g., 'community', 'notifications').
   void subscribe(String channel) {
     if (!_connected || _channel == null) return;
-    _channel!.sink.add(jsonEncode({
-      'action': 'subscribe',
-      'channel': channel,
-    }));
+    _channel!.sink.add(jsonEncode({'action': 'subscribe', 'channel': channel}));
   }
 
   /// Unsubscribe from a channel.
   void unsubscribe(String channel) {
     if (!_connected || _channel == null) return;
-    _channel!.sink.add(jsonEncode({
-      'action': 'unsubscribe',
-      'channel': channel,
-    }));
+    _channel!.sink.add(
+      jsonEncode({'action': 'unsubscribe', 'channel': channel}),
+    );
   }
 
   /// Send a message to the server.
@@ -134,10 +125,14 @@ class WebSocketService {
     }
 
     _reconnectTimer?.cancel();
-    final delay = Duration(seconds: (3 * (_reconnectAttempts + 1)).clamp(3, 30));
+    final delay = Duration(
+      seconds: (3 * (_reconnectAttempts + 1)).clamp(3, 30),
+    );
     _reconnectAttempts++;
 
-    debugPrint('[WS] Reconnecting in ${delay.inSeconds}s (attempt $_reconnectAttempts)');
+    debugPrint(
+      '[WS] Reconnecting in ${delay.inSeconds}s (attempt $_reconnectAttempts)',
+    );
     _reconnectTimer = Timer(delay, () {
       if (_token != null) connect(_token!);
     });
@@ -158,8 +153,9 @@ class WebSocketService {
         .replaceFirst('/api/v1', '');
     final isSecure = base.startsWith('https://');
     final scheme = isSecure ? 'wss' : 'ws';
-    return Uri.parse('$scheme://$host/ws/notifications')
-        .replace(queryParameters: {'token': token});
+    return Uri.parse(
+      '$scheme://$host/ws/notifications',
+    ).replace(queryParameters: {'token': token});
   }
 
   void dispose() {
@@ -188,6 +184,7 @@ class WebSocketConnectedNotifier extends Notifier<bool> {
   void update(bool value) => state = value;
 }
 
-final websocketConnectedProvider = NotifierProvider<WebSocketConnectedNotifier, bool>(
-  WebSocketConnectedNotifier.new,
-);
+final websocketConnectedProvider =
+    NotifierProvider<WebSocketConnectedNotifier, bool>(
+      WebSocketConnectedNotifier.new,
+    );

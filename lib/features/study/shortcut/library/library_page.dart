@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/section_tab_bar.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../presentation/providers/library_provider.dart';
 
@@ -54,7 +54,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
   Widget build(BuildContext context) {
     final libraryAsync = ref.watch(libraryPaginationProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Academic Library',
       showSearchBar: true,
       searchHint: 'Search by book, author or course...',

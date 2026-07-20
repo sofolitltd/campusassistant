@@ -55,6 +55,7 @@ import '/features/auth/presentation/screens/get_verification_code_screen.dart';
 import '/features/profile/presentation/screens/change_password.dart';
 import '/features/profile/presentation/screens/downloaded_files_page.dart';
 import '/features/profile/presentation/screens/edit_profile_page.dart';
+import '/features/profile/presentation/screens/manage_devices_page.dart';
 import '/features/profile/presentation/screens/my_submissions_page.dart';
 import '/features/profile/presentation/screens/profile_page.dart';
 import '/features/contributor/presentation/screens/contributor_page.dart';
@@ -268,6 +269,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                         const NoTransitionPage(child: ChangePasswordPage()),
                   ),
                   GoRoute(
+                    name: AppRoute.manageDevices.name,
+                    path: AppRoute.manageDevices.path,
+                    pageBuilder: (context, state) =>
+                        const NoTransitionPage(child: ManageDevicesPage()),
+                  ),
+                  GoRoute(
                     name: AppRoute.mySubmissions.name,
                     path: AppRoute.mySubmissions.path,
                     pageBuilder: (context, state) =>
@@ -296,8 +303,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: AppRoute.inboxChat.name,
             path: 'chat/:conversationId',
             pageBuilder: (context, state) {
-              final conversationId =
-                  state.pathParameters['conversationId']!;
+              final conversationId = state.pathParameters['conversationId']!;
               final extra = state.extra as Map<String, dynamic>?;
               final name = extra?['name'] as String? ?? 'Chat';
               final otherUserId = extra?['otherUserId'] as String? ?? '';
@@ -318,8 +324,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: AppRoute.requestConfirmation.name,
             path: 'request/:conversationId',
             pageBuilder: (context, state) {
-              final conversationId =
-                  state.pathParameters['conversationId']!;
+              final conversationId = state.pathParameters['conversationId']!;
               final extra = state.extra as Map<String, dynamic>?;
               final name = extra?['name'] as String? ?? 'Unknown';
               final otherUserId = extra?['otherUserId'] as String? ?? '';

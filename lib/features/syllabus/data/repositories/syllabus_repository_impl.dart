@@ -58,8 +58,11 @@ class SyllabusRepositoryImpl implements SyllabusRepository {
         final List<dynamic> data = envelope['data'] ?? [];
         final int count = envelope['count'] ?? 0;
         final list = data
-            .map((json) =>
-                SyllabusModel.fromJson(json as Map<String, dynamic>).toEntity())
+            .map(
+              (json) => SyllabusModel.fromJson(
+                json as Map<String, dynamic>,
+              ).toEntity(),
+            )
             .toList();
 
         // Cache first page list
@@ -85,13 +88,10 @@ class SyllabusRepositoryImpl implements SyllabusRepository {
 
     // 2. Try cached data (always, regardless of offset/search)
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final syllabi = cachedData
-            .map((json) =>
-                SyllabusModel.fromJson(json).toEntity())
+            .map((json) => SyllabusModel.fromJson(json).toEntity())
             .toList();
 
         int total = syllabi.length;
@@ -112,9 +112,11 @@ class SyllabusRepositoryImpl implements SyllabusRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return Left(NetworkFailure(
-        'No internet connection and no cached syllabus data available',
-      ));
+      return Left(
+        NetworkFailure(
+          'No internet connection and no cached syllabus data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch syllabi'));

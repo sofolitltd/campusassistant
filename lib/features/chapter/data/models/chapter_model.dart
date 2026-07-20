@@ -22,25 +22,25 @@ abstract class ChapterModel with _$ChapterModel {
       _$ChapterModelFromJson(json);
 
   Chapter toEntity() => Chapter(
-        id: id,
-        courseCode: courseCode,
-        chapterNo: chapterNo,
-        chapterTitle: chapterTitle,
-        universityId: universityId,
-        departmentId: departmentId,
-        batches: batches.map((e) {
-          if (e is Map) return e['id'].toString();
-          return e.toString();
-        }).toList(),
-      );
+    id: id,
+    courseCode: courseCode,
+    chapterNo: chapterNo,
+    chapterTitle: chapterTitle,
+    universityId: universityId,
+    departmentId: departmentId,
+    batches: batches.map((e) {
+      if (e is Map) return e['id'].toString();
+      return e.toString();
+    }).toList(),
+  );
 
   factory ChapterModel.fromEntity(Chapter chapter) => ChapterModel(
-        id: chapter.id,
-        courseCode: chapter.courseCode,
-        chapterNo: chapter.chapterNo,
-        chapterTitle: chapter.chapterTitle,
-        universityId: chapter.universityId,
-        departmentId: chapter.departmentId,
-        batches: chapter.batches.map((id) => {'id': id}).toList(),
-      );
+    id: chapter.id,
+    courseCode: chapter.courseCode,
+    chapterNo: chapter.chapterNo,
+    chapterTitle: chapter.chapterTitle,
+    universityId: chapter.universityId,
+    departmentId: chapter.departmentId,
+    batches: chapter.batches.map((id) => {'id': id}).toList(),
+  );
 }

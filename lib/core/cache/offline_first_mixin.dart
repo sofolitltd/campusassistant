@@ -89,9 +89,9 @@ mixin OfflineFirstMixin {
 
     // 3. No data available
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached data available',
-      ));
+      return const Left(
+        NetworkFailure('No internet connection and no cached data available'),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch $entityType data'));
@@ -121,7 +121,9 @@ mixin OfflineFirstMixin {
 
         return Right(remoteData);
       } catch (e) {
-        debugPrint('[OfflineFirst] Remote fetch failed for $entityType/$entityKey: $e');
+        debugPrint(
+          '[OfflineFirst] Remote fetch failed for $entityType/$entityKey: $e',
+        );
       }
     }
 
@@ -136,14 +138,16 @@ mixin OfflineFirstMixin {
         return Right(fromCacheItem(cachedData));
       }
     } catch (e) {
-      debugPrint('[OfflineFirst] Cache read failed for $entityType/$entityKey: $e');
+      debugPrint(
+        '[OfflineFirst] Cache read failed for $entityType/$entityKey: $e',
+      );
     }
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached data available',
-      ));
+      return const Left(
+        NetworkFailure('No internet connection and no cached data available'),
+      );
     }
 
     return Right(null);
@@ -172,8 +176,8 @@ mixin OfflineFirstMixin {
 
     // 2. Queue for sync (requires SyncManager - injected separately)
     // The repository should handle this via syncManager.enqueue()
-    return Left(NetworkFailure(
-      'Operation queued for sync when connection is restored',
-    ));
+    return Left(
+      NetworkFailure('Operation queued for sync when connection is restored'),
+    );
   }
 }

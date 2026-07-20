@@ -139,7 +139,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
           body: Column(
             crossAxisAlignment: .start,
             children: [
-// ── Filter row (red area) ───────────────────────────────
+              // ── Filter row (red area) ───────────────────────────────
               Padding(
                 padding: const .fromLTRB(16, 0, 16, 16),
                 child: Row(
@@ -645,11 +645,7 @@ class _BatchButton extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              LucideIcons.users,
-              size: 14,
-              color: Colors.white,
-            ),
+            const Icon(LucideIcons.users, size: 14, color: Colors.white),
             const SizedBox(width: 6),
             Text(
               selectedBatch?.name ?? 'All Batches',
@@ -857,12 +853,7 @@ class _FilterTile extends StatelessWidget {
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
-            if (isSelected)
-              Icon(
-                LucideIcons.check,
-                color: primary,
-                size: 20,
-              ),
+            if (isSelected) Icon(LucideIcons.check, color: primary, size: 20),
           ],
         ),
       ),

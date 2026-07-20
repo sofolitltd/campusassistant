@@ -10,9 +10,9 @@ import '../datasources/auth_remote_data_source.dart';
 Failure _classifyError(Object e) {
   if (e is DioException &&
       (e.type == DioExceptionType.connectionTimeout ||
-       e.type == DioExceptionType.connectionError ||
-       e.type == DioExceptionType.receiveTimeout ||
-       e.type == DioExceptionType.sendTimeout)) {
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout)) {
     return NetworkFailure('No internet connection');
   }
   return ServerFailure(e.toString());

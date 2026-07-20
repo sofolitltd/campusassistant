@@ -42,18 +42,20 @@ class CommunityPost {
       final rel = student?[key] as Map<String, dynamic>?;
       return rel?['name']?.toString();
     }
+
     final rawImages = json['image_urls'];
     final List<String> images = switch (rawImages) {
-      List list => list
-          .map(
-            (e) => switch (e) {
-              String s => s,
-              Map m => (m['url'] ?? m['image_url'] ?? '').toString(),
-              _ => '',
-            },
-          )
-          .where((e) => e.isNotEmpty)
-          .toList(),
+      List list =>
+        list
+            .map(
+              (e) => switch (e) {
+                String s => s,
+                Map m => (m['url'] ?? m['image_url'] ?? '').toString(),
+                _ => '',
+              },
+            )
+            .where((e) => e.isNotEmpty)
+            .toList(),
       _ => const <String>[],
     };
     return CommunityPost(
@@ -63,7 +65,9 @@ class CommunityPost {
       likesCount: json['likes_count'] ?? 0,
       commentsCount: json['comments_count'] ?? 0,
       authorId: json['author_id'],
-      authorName: author != null ? '${author['first_name']} ${author['last_name']}' : 'Anonymous',
+      authorName: author != null
+          ? '${author['first_name']} ${author['last_name']}'
+          : 'Anonymous',
       authorAvatar: author?['avatar_url'],
       createdAt: DateTime.parse(json['created_at']),
       isLiked: json['is_liked'] ?? false,

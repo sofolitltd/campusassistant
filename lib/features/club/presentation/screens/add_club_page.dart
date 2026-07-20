@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '/core/widgets/custom_header_layout.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 
 class AddClubPage extends ConsumerStatefulWidget {
@@ -110,8 +111,9 @@ class _AddClubPageState extends ConsumerState<AddClubPage> {
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Club'), centerTitle: true),
+    return CustomHeaderLayout(
+      title: 'Add Club',
+      showSearchBar: false,
       body: userAsync.when(
         data: (user) {
           return SingleChildScrollView(

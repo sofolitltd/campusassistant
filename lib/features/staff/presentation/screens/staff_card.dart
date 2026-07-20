@@ -12,6 +12,7 @@ import '/features/profile/data/models/profile_model.dart';
 import '/features/staff/domain/entities/staff.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class StaffCard extends StatelessWidget {
   final Staff staff;
@@ -111,7 +112,9 @@ class StaffCard extends StatelessWidget {
                           ),
                         );
 
-                        final url = staff.imageUrl;
+                        final url = ApiEndpoints.resolveImageUrl(
+                          staff.imageUrl,
+                        );
                         final response = await Dio().get(
                           url,
                           options: Options(responseType: ResponseType.bytes),
@@ -194,7 +197,7 @@ class _StaffImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(RadiusToken.sm),
       ),
       child: CachedNetworkImage(
-        imageUrl: imageUrl,
+        imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
         fadeInDuration: const Duration(milliseconds: 500),
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(

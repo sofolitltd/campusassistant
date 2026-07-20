@@ -24,8 +24,14 @@ class AppRoute {
   static const home = AppRoute(name: 'home', path: '/');
   static const community = AppRoute(name: 'community', path: '/community');
   static const inbox = AppRoute(name: 'inbox', path: '/inbox');
-  static const inboxChat = AppRoute(name: 'inboxChat', path: 'chat/:conversationId');
-  static const requestConfirmation = AppRoute(name: 'requestConfirmation', path: 'request/:conversationId');
+  static const inboxChat = AppRoute(
+    name: 'inboxChat',
+    path: 'chat/:conversationId',
+  );
+  static const requestConfirmation = AppRoute(
+    name: 'requestConfirmation',
+    path: 'request/:conversationId',
+  );
   static const newChat = AppRoute(name: 'newChat', path: '/new-chat');
 
   //
@@ -145,6 +151,7 @@ class AppRoute {
     name: 'changePassword',
     path: 'change-password',
   );
+  static const manageDevices = AppRoute(name: 'manageDevices', path: 'devices');
 
   //register
   static const verification = AppRoute(

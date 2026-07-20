@@ -93,7 +93,11 @@ Future<List<Hall>> hallsByUniversity(Ref ref, String universityId) async {
 }
 
 @riverpod
-String hallName(Ref ref, {required String universityId, required String hallId}) {
+String hallName(
+  Ref ref, {
+  required String universityId,
+  required String hallId,
+}) {
   final hallsAsync = ref.watch(hallsByUniversityProvider(universityId));
   return hallsAsync.when(
     data: (halls) {

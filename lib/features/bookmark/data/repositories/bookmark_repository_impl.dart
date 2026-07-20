@@ -39,14 +39,22 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
         } else {
           data = [];
         }
+        // Bookmarks only exist for resources in this app — 'content' is a
+        // legacy alias for the same underlying resource entity (written by
+        // an older card widget). Anything else (e.g. a stray 'community_post'
+        // row) has no matching detail endpoint and would 404 below.
         final bookmarks = data
             .map((json) => BookmarkModel.fromJson(json))
+            .where(
+              (b) => b.entityType == 'resource' || b.entityType == 'content',
+            )
             .toList();
 
-        // Cache the result
+        // Cache the result (post-filter, so stale/foreign entity types
+        // never get cached either)
         await cacheManager.cacheList(
           entityType: cacheKey,
-          items: data.cast<Map<String, dynamic>>(),
+          items: bookmarks.map((b) => b.toJson()).toList(),
           ttl: CacheTTL.bookmark,
         );
 
@@ -58,14 +66,14 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
 
     // 2. Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final bookmarks = cachedData
             .map((json) => BookmarkModel.fromJson(json))
             .toList();
-        debugPrint('[BookmarkRepo] Returning ${bookmarks.length} cached bookmarks');
+        debugPrint(
+          '[BookmarkRepo] Returning ${bookmarks.length} cached bookmarks',
+        );
         return Right(bookmarks.map((m) => m.toEntity()).toList());
       }
     } catch (e) {
@@ -74,9 +82,11 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached bookmark data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached bookmark data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch bookmarks'));
@@ -114,31 +124,13 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
     String entityType,
     String entityId,
   ) async {
+    // Bookmarks only ever point at resources — see the entityType filter
+    // in getBookmarks above.
     try {
-      final String path = _getPluralPath(entityType);
-      final response = await apiClient.get('/$path/$entityId');
+      final response = await apiClient.get('/resources/$entityId');
       return Right(response.data);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
-    }
-  }
-
-  String _getPluralPath(String type) {
-    switch (type.toLowerCase()) {
-      case 'resource':
-        return 'resources';
-      case 'teacher':
-        return 'teachers';
-      case 'alumni':
-        return 'alumni';
-      case 'staff':
-        return 'staffs';
-      case 'university':
-        return 'universities';
-      case 'department':
-        return 'departments';
-      default:
-        return '${type}s';
     }
   }
 }

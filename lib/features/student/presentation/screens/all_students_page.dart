@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/student/presentation/screens/student_card.dart';
@@ -83,7 +83,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           );
         }
 
-        return RedHeaderLayout(
+        return CustomHeaderLayout(
           title: 'All Students',
           searchHint: 'Search by name, ID, or hall...',
           onSearchChanged: (value) => setState(() => _searchQuery = value),

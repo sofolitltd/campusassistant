@@ -7,6 +7,7 @@ import '/core/database/app_database.dart';
 import '/features/inbox/data/repositories/chat_repository.dart';
 import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
+import '/core/network/api_endpoints.dart';
 
 class NewChatPage extends ConsumerStatefulWidget {
   const NewChatPage({super.key});
@@ -196,7 +197,9 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
                     backgroundImage:
                         contact.avatarUrl != null &&
                             contact.avatarUrl!.isNotEmpty
-                        ? NetworkImage(contact.avatarUrl!)
+                        ? NetworkImage(
+                            ApiEndpoints.resolveImageUrl(contact.avatarUrl),
+                          )
                         : null,
                     backgroundColor: Colors.teal.withValues(alpha: 0.2),
                     child:

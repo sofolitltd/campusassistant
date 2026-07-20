@@ -1,4 +1,4 @@
- import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
 import '/routes/scaffold_with_navbar.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class InboxPage extends ConsumerStatefulWidget {
   const InboxPage({super.key});
@@ -135,11 +136,16 @@ class _InboxPageState extends ConsumerState<InboxPage>
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(24),
                 ),
-                child: conversationsAsync.when(
-                  data: (conversations) =>
-                      _buildConversationList(conversations, isDark),
-                  loading: () => _buildLoading(),
-                  error: (e, _) => Center(child: Text('Error: $e')),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: conversationsAsync.when(
+                      data: (conversations) =>
+                          _buildConversationList(conversations, isDark),
+                      loading: () => _buildLoading(),
+                      error: (e, _) => Center(child: Text('Error: $e')),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -538,7 +544,7 @@ class _ConversationTile extends StatelessWidget {
               CircleAvatar(
                 radius: 22,
                 backgroundImage: imageUrl.isNotEmpty
-                    ? NetworkImage(imageUrl)
+                    ? NetworkImage(ApiEndpoints.resolveImageUrl(imageUrl))
                     : null,
                 backgroundColor: isPending
                     ? Colors.orange.withValues(alpha: 0.2)

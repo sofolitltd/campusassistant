@@ -16,7 +16,8 @@ import '/utils/constants.dart';
 
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
+import '/core/network/api_endpoints.dart';
 
 class EditProfilePage extends ConsumerWidget {
   final String uid;
@@ -27,7 +28,7 @@ class EditProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileByUidProvider(uid));
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Edit Profile',
       showSearchBar: false,
       body: profileAsync.when(
@@ -115,7 +116,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-//
+                  //
                   ButtonTheme(
                     alignedDropdown: true,
                     child: Container(
@@ -309,7 +310,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
           ? MemoryImage(_webImage)
           : FileImage(_pickedMobileImage!);
     } else if (widget.profile.image.isNotEmpty) {
-      imageProvider = NetworkImage(widget.profile.image);
+      imageProvider = NetworkImage(
+        ApiEndpoints.resolveImageUrl(widget.profile.image),
+      );
     } else {
       imageProvider = null;
     }

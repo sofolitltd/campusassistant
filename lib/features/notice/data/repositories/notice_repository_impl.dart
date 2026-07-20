@@ -48,9 +48,7 @@ class NoticeRepositoryImpl implements NoticeRepository {
 
     // 2. Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final notices = cachedData
             .map((json) => NoticeModel.fromJson(json))

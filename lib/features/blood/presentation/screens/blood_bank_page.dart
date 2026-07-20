@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/utils/constants.dart';
 import '/features/session/presentation/providers/session_provider.dart';
@@ -58,7 +58,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
     final currentScope = ref.watch(bloodBankScopeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Blood Bank',
       searchHint: 'Search donor name...',
       onSearchChanged: _onSearchChanged,

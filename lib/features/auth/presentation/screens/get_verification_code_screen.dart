@@ -13,6 +13,7 @@ import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/widgets/open_app.dart';
+import '/core/network/api_endpoints.dart';
 
 class GetVerificationCodeScreen extends StatelessWidget {
   const GetVerificationCodeScreen({super.key});
@@ -482,7 +483,11 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                               tileColor: Colors.white,
                               leading: CircleAvatar(
                                 backgroundImage: s.imageUrl.isNotEmpty
-                                    ? NetworkImage(s.imageUrl)
+                                    ? NetworkImage(
+                                        ApiEndpoints.resolveImageUrl(
+                                          s.imageUrl,
+                                        ),
+                                      )
                                     : const AssetImage(
                                             'assets/images/pp_placeholder.png',
                                           )

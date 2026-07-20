@@ -63,9 +63,7 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
 
     // 2. Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
 
       if (cachedData.isNotEmpty) {
         final banners = cachedData
@@ -80,9 +78,11 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached banners available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached banners available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch banners'));
@@ -112,9 +112,11 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
       method: 'POST',
     );
 
-    return Left(NetworkFailure(
-      'Banner creation queued for sync when connection is restored',
-    ));
+    return Left(
+      NetworkFailure(
+        'Banner creation queued for sync when connection is restored',
+      ),
+    );
   }
 
   @override
@@ -141,9 +143,11 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
       method: 'PUT',
     );
 
-    return Left(NetworkFailure(
-      'Banner update queued for sync when connection is restored',
-    ));
+    return Left(
+      NetworkFailure(
+        'Banner update queued for sync when connection is restored',
+      ),
+    );
   }
 
   @override
@@ -170,9 +174,10 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
       method: 'DELETE',
     );
 
-    return Left(NetworkFailure(
-      'Banner deletion queued for sync when connection is restored',
-    ));
+    return Left(
+      NetworkFailure(
+        'Banner deletion queued for sync when connection is restored',
+      ),
+    );
   }
-
 }

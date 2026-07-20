@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/mouse_wheel_horizontal_scroll.dart';
 import '/routes/app_route.dart';
 import '../../features/auth/presentation/providers/user_profile_provider.dart';
 import 'sections/banner_section.dart';
@@ -22,6 +23,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _shortcutsScrollController = ScrollController();
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void dispose() {
     _tabController.dispose();
+    _shortcutsScrollController.dispose();
     super.dispose();
   }
 
@@ -72,7 +75,9 @@ class _HomePageState extends ConsumerState<HomePage>
                           GestureDetector(
                             onTap: () => context.goNamed(AppRoute.profile.name),
                             child: CircleAvatar(
-                              backgroundColor: Colors.white.withValues(alpha: .2),
+                              backgroundColor: Colors.white.withValues(
+                                alpha: .2,
+                              ),
                               radius: 20,
                               child: Text(
                                 initial,
@@ -155,7 +160,7 @@ class _HomePageState extends ConsumerState<HomePage>
                       ),
                     ),
 
-                  SizedBox(height: 32),
+                    SizedBox(height: 32),
                   ],
                 ),
               ),
@@ -173,70 +178,68 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
                 child: Column(
                   children: [
-                                        SizedBox(height: Spacing.sm),
+                    SizedBox(height: Spacing.sm),
 
-                      // Shortcut Cards
+                    // Shortcut Cards
                     SizedBox(
                       height: 100,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                      child: MouseWheelHorizontalScroll(
+                        controller: _shortcutsScrollController,
+                        child: ListView(
+                          controller: _shortcutsScrollController,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          children: [
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Routine',
+                              icon: LucideIcons.calendarDays,
+                              route: '/routine',
+                              color: const Color(0xFF3B82F6),
+                            ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Alumni',
+                              icon: LucideIcons.graduationCap,
+                              route: '/alumni',
+                              color: const Color(0xFF8B5CF6),
+                            ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Emergency',
+                              icon: LucideIcons.phoneCall,
+                              route: '/emergency',
+                              color: const Color(0xFFEF4444),
+                            ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Transport',
+                              icon: LucideIcons.bus,
+                              route: '/transport',
+                              color: const Color(0xFFF59E0B),
+                            ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Clubs',
+                              icon: LucideIcons.heart,
+                              route: '/club',
+                              color: const Color(0xFFEC4899),
+                            ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Blood Bank',
+                              icon: LucideIcons.droplets,
+                              route: '/blood-bank',
+                              color: const Color(0xFFDC2626),
+                            ),
+                          ],
                         ),
-                        children: [
-                          _buildShortcutCard(
-                            theme: theme,
-                            title: 'Routine',
-                            subtitle: 'View class schedule',
-                            icon: LucideIcons.calendarDays,
-                            route: '/routine',
-                            color: const Color(0xFF3B82F6),
-                          ),
-                          _buildShortcutCard(
-                            theme: theme,
-                            title: 'Alumni',
-                            subtitle: 'Connect with alumni',
-                            icon: LucideIcons.graduationCap,
-                            route: '/alumni',
-                            color: const Color(0xFF8B5CF6),
-                          ),
-                          _buildShortcutCard(
-                            theme: theme,
-                            title: 'Emergency',
-                            subtitle: 'Important contacts',
-                            icon: LucideIcons.phoneCall,
-                            route: '/emergency',
-                            color: const Color(0xFFEF4444),
-                          ),
-                          _buildShortcutCard(
-                            theme: theme,
-                            title: 'Transport',
-                            subtitle: 'Bus schedules',
-                            icon: LucideIcons.bus,
-                            route: '/transport',
-                            color: const Color(0xFFF59E0B),
-                          ),
-                          _buildShortcutCard(
-                            theme: theme,
-                            title: 'Clubs',
-                            subtitle: 'Explore organizations',
-                            icon: LucideIcons.heart,
-                            route: '/club',
-                            color: const Color(0xFFEC4899),
-                          ),
-                          _buildShortcutCard(
-                            theme: theme,
-                            title: 'Blood Bank',
-                            subtitle: 'Donate or request',
-                            icon: LucideIcons.droplets,
-                            route: '/blood-bank',
-                            color: const Color(0xFFDC2626),
-                          ),
-                        ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: Spacing.sm),
                     const SubscriptionSection(),
                     const SizedBox(height: Spacing.sm),
@@ -264,7 +267,6 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget _buildShortcutCard({
     required ThemeData theme,
     required String title,
-    required String subtitle,
     required IconData icon,
     required String route,
     required Color color,
@@ -291,7 +293,7 @@ class _HomePageState extends ConsumerState<HomePage>
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(12),
-            border: Border.all(
+          border: Border.all(
             color: isDark ? Colors.white10 : Colors.grey.shade200,
           ),
           boxShadow: [
@@ -332,9 +334,9 @@ class _HomePageState extends ConsumerState<HomePage>
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
+                  // fontSize: 16,
                   height: 1.2,
-                  fontWeight: FontWeight.bold,
+                  // fontWeight: FontWeight.w600,
                   color: isDark ? Colors.white : Colors.black87,
                 ),
               ),

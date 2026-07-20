@@ -5,7 +5,8 @@ class MenuRow extends StatelessWidget {
   final String label;
   final bool isDestructive;
 
-  const MenuRow({super.key, 
+  const MenuRow({
+    super.key,
     required this.icon,
     required this.label,
     this.isDestructive = false,
@@ -16,8 +17,8 @@ class MenuRow extends StatelessWidget {
     final color = isDestructive
         ? Colors.red
         : Theme.of(context).brightness == Brightness.dark
-            ? Colors.white70
-            : Colors.black87;
+        ? Colors.white70
+        : Colors.black87;
     return Row(
       children: [
         Icon(icon, size: 18, color: color),

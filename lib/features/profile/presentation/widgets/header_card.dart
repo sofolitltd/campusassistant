@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/routes/app_route.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 
@@ -138,7 +139,7 @@ class _ProfileImage extends StatelessWidget {
                   ),
                 )
               : CachedNetworkImage(
-                  imageUrl: imageUrl,
+                  imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
                     child: Icon(

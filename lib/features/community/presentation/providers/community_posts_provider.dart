@@ -4,9 +4,11 @@ import '/core/di.dart';
 import '/features/community/data/models/community_post.dart';
 
 final communityPostsProvider =
-    StateNotifierProvider.family<CommunityPostsNotifier, List<CommunityPost>, String>(
-      (ref, scope) => CommunityPostsNotifier(ref, scope),
-    );
+    StateNotifierProvider.family<
+      CommunityPostsNotifier,
+      List<CommunityPost>,
+      String
+    >((ref, scope) => CommunityPostsNotifier(ref, scope));
 
 class CommunityPostsNotifier extends StateNotifier<List<CommunityPost>> {
   final Ref ref;

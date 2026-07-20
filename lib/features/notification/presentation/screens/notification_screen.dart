@@ -8,6 +8,7 @@ import '../../domain/entities/app_notification.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notification_tile.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -24,38 +25,33 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final notificationsAsync = ref.watch(notificationsProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Notifications',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        actions: [
-          notificationsAsync.whenOrNull(
-                data: (notifications) {
-                  final hasUnread = notifications.any((n) => !n.isRead);
-                  if (!hasUnread) return const SizedBox.shrink();
-                  return TextButton(
-                    onPressed: () {
-                      ref.read(notificationRepositoryProvider).markAllAsRead();
-                      ref.invalidate(notificationsProvider);
-                    },
-                    child: Text(
-                      'Mark all read',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+    return CustomHeaderLayout(
+      title: 'Notifications',
+      showSearchBar: false,
+      actions: [
+        notificationsAsync.whenOrNull(
+              data: (notifications) {
+                final hasUnread = notifications.any((n) => !n.isRead);
+                if (!hasUnread) return const SizedBox.shrink();
+                return TextButton(
+                  onPressed: () {
+                    ref.read(notificationRepositoryProvider).markAllAsRead();
+                    ref.invalidate(notificationsProvider);
+                  },
+                  child: const Text(
+                    'Mark all read',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
                     ),
-                  );
-                },
-              ) ??
-              const SizedBox.shrink(),
-          const SizedBox(width: 4),
-        ],
-      ),
+                  ),
+                );
+              },
+            ) ??
+            const SizedBox.shrink(),
+        const SizedBox(width: 4),
+      ],
       body: notificationsAsync.when(
         data: (notifications) {
           final filtered = _showUnreadOnly

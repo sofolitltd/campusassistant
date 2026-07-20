@@ -20,12 +20,12 @@ abstract class CoursePrefixModel with _$CoursePrefixModel {
       _$CoursePrefixModelFromJson(json);
 
   CoursePrefix toEntity() => CoursePrefix(
-        id: id,
-        prefix: prefix,
-        description: description,
-        departmentId: departmentId,
-        universityId: universityId,
-      );
+    id: id,
+    prefix: prefix,
+    description: description,
+    departmentId: departmentId,
+    universityId: universityId,
+  );
 
   factory CoursePrefixModel.fromEntity(CoursePrefix prefix) =>
       CoursePrefixModel(

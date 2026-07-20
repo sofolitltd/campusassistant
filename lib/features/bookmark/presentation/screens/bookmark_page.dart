@@ -10,7 +10,7 @@ import '/features/resource/presentation/widgets/resource_card.dart';
 import '/features/resource/data/models/resource_model.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class BookmarkPage extends ConsumerStatefulWidget {
   const BookmarkPage({super.key});
@@ -29,7 +29,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
 
     final bookmarksAsync = ref.watch(userBookmarksProvider(userId));
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Saved Bookmarks',
       showSearchBar: false,
       body: bookmarksAsync.when(
@@ -71,7 +71,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Bookmark resources, teachers, and more',
+                    'Bookmark notes, videos, and other resources',
                     style: TextStyle(
                       fontSize: 13,
                       color: isDark ? Colors.white38 : Colors.grey.shade500,

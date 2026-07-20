@@ -23,22 +23,22 @@ abstract class BatchModel with _$BatchModel {
       _$BatchModelFromJson(json);
 
   Batch toEntity() => Batch(
-        id: id,
-        name: name,
-        slug: slug,
-        isStudying: isStudying,
-        departmentId: departmentId,
-        universityId: universityId,
-        sessions: sessions.map((s) => s.toEntity()).toList(),
-      );
+    id: id,
+    name: name,
+    slug: slug,
+    isStudying: isStudying,
+    departmentId: departmentId,
+    universityId: universityId,
+    sessions: sessions.map((s) => s.toEntity()).toList(),
+  );
 
   factory BatchModel.fromEntity(Batch batch) => BatchModel(
-        id: batch.id,
-        name: batch.name,
-        slug: batch.slug,
-        isStudying: batch.isStudying,
-        departmentId: batch.departmentId,
-        universityId: batch.universityId,
-        sessions: batch.sessions.map((s) => SessionModel.fromEntity(s)).toList(),
-      );
+    id: batch.id,
+    name: batch.name,
+    slug: batch.slug,
+    isStudying: batch.isStudying,
+    departmentId: batch.departmentId,
+    universityId: batch.universityId,
+    sessions: batch.sessions.map((s) => SessionModel.fromEntity(s)).toList(),
+  );
 }

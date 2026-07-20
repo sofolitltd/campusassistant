@@ -61,7 +61,6 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-        
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 Spacing.lg,
@@ -115,14 +114,10 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
                       const Divider(thickness: .5),
                       _InfoItem(
                         label: 'Session',
-                        value:
-                            student.sessionName ?? student.sessionId,
+                        value: student.sessionName ?? student.sessionId,
                       ),
                       const Divider(thickness: .5),
-                      _InfoItem(
-                        label: 'Student ID',
-                        value: student.studentId,
-                      ),
+                      _InfoItem(label: 'Student ID', value: student.studentId),
                       const Divider(thickness: .5),
                       _InfoItem(label: 'Hall', value: student.hall),
                     ],

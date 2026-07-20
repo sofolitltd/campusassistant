@@ -217,10 +217,7 @@ ThemeData buildLightTheme() {
       indicatorColor: colorScheme.primary,
       labelColor: colorScheme.primary,
       unselectedLabelColor: colorScheme.onSurfaceVariant,
-      labelStyle: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-      ),
+      labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       indicatorSize: TabBarIndicatorSize.tab,
     ),
 
@@ -370,9 +367,7 @@ ThemeData buildDarkTheme() {
       backgroundColor: _darkAppBar,
       height: 64,
     ),
-    navigationRailTheme: NavigationRailThemeData(
-      backgroundColor: _darkAppBar,
-    ),
+    navigationRailTheme: NavigationRailThemeData(backgroundColor: _darkAppBar),
 
     // --- Dialogs & Sheets ---
     dialogTheme: DialogThemeData(
@@ -445,10 +440,7 @@ ThemeData buildDarkTheme() {
       indicatorColor: _brandPrimary,
       labelColor: _brandPrimary,
       unselectedLabelColor: darkColorScheme.onSurfaceVariant,
-      labelStyle: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-      ),
+      labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       indicatorSize: TabBarIndicatorSize.tab,
     ),
 

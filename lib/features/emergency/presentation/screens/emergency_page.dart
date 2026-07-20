@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/emergency/presentation/providers/emergency_provider.dart';
 import '/features/emergency/presentation/widgets/contact_card.dart';
@@ -45,7 +45,7 @@ class _EmergencyPageState extends ConsumerState<EmergencyPage>
   Widget build(BuildContext context) {
     final tabs = ['Department', 'University', 'National'];
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Emergency Contacts',
       searchHint: 'Search contacts...',
       onSearchChanged: _onSearchChanged,

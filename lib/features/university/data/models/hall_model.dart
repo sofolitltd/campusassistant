@@ -18,17 +18,13 @@ abstract class HallModel with _$HallModel {
   factory HallModel.fromJson(Map<String, dynamic> json) =>
       _$HallModelFromJson(json);
 
-  Hall toEntity() => Hall(
-        id: id,
-        name: name,
-        slug: slug,
-        universityId: universityId,
-      );
+  Hall toEntity() =>
+      Hall(id: id, name: name, slug: slug, universityId: universityId);
 
   factory HallModel.fromEntity(Hall hall) => HallModel(
-        id: hall.id,
-        name: hall.name,
-        slug: hall.slug,
-        universityId: hall.universityId,
-      );
+    id: hall.id,
+    name: hall.name,
+    slug: hall.slug,
+    universityId: hall.universityId,
+  );
 }

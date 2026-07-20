@@ -71,9 +71,7 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
               : widget.textCapitalization!,
           obscureText: _obscureText!,
           validator: (value) => widget.validator(value),
-          style: TextStyle(
-            color: widget.enabled! ? null : cs.onSurfaceVariant,
-          ),
+          style: TextStyle(color: widget.enabled! ? null : cs.onSurfaceVariant),
           decoration: InputDecoration(
             isDense: true,
             filled: widget.enabled! ? false : true,

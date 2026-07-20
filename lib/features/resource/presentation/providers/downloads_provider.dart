@@ -72,7 +72,9 @@ Resource _inferResourceFromFileName(String fileName, FileStat stat) {
   // First part is "{courseCode}-{lessonNo}"
   final codePart = parts.isNotEmpty ? parts.first : '';
   final dashIndex = codePart.indexOf('-');
-  final courseCode = dashIndex > 0 ? codePart.substring(0, dashIndex) : codePart;
+  final courseCode = dashIndex > 0
+      ? codePart.substring(0, dashIndex)
+      : codePart;
   final lessonNoStr = dashIndex > 0 ? codePart.substring(dashIndex + 1) : '0';
   final lessonNo = int.tryParse(lessonNoStr) ?? 0;
   // Type is the second-to-last part
@@ -132,10 +134,10 @@ class DownloadedFiles extends _$DownloadedFiles {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final allFiles = directory.listSync();
-      final pdfFiles = allFiles
-          .where((f) => f.path.endsWith('.pdf'))
-          .toList()
-        ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+      final pdfFiles = allFiles.where((f) => f.path.endsWith('.pdf')).toList()
+        ..sort(
+          (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
+        );
 
       final cacheManager = ref.read(cacheManagerProvider);
       final results = <DownloadedFile>[];
@@ -169,13 +171,15 @@ class DownloadedFiles extends _$DownloadedFiles {
           resource = _inferResourceFromFileName(fileName, stat);
         }
 
-        results.add(DownloadedFile(
-          resource: resource,
-          localPath: path,
-          fileSizeBytes: stat.size,
-          modifiedAt: stat.modified,
-          downloadedAt: stat.modified,
-        ));
+        results.add(
+          DownloadedFile(
+            resource: resource,
+            localPath: path,
+            fileSizeBytes: stat.size,
+            modifiedAt: stat.modified,
+            downloadedAt: stat.modified,
+          ),
+        );
       }
 
       return results;

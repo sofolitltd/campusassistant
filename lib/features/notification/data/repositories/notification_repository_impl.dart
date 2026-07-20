@@ -12,7 +12,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<List<AppNotification>> getNotifications() async {
     final response = await apiClient.get(ApiEndpoints.notifications);
     final List<dynamic> data = response.data ?? [];
-    return data.map((json) => AppNotification.fromJson(json as Map<String, dynamic>)).toList();
+    return data
+        .map((json) => AppNotification.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   @override

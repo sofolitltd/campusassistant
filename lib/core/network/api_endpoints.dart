@@ -16,14 +16,15 @@ class ApiEndpoints {
 
   static String resolveImageUrl(String? url) {
     if (url == null || url.isEmpty) return '';
-    
+
     String resolvedUrl = url;
     if (!resolvedUrl.startsWith('http')) {
       // Relative path, prepend base URL (without /api/v1)
       final base = baseUrl.replaceAll('/api/v1', '');
-      resolvedUrl = '$base${resolvedUrl.startsWith('/') ? '' : '/'}$resolvedUrl';
+      resolvedUrl =
+          '$base${resolvedUrl.startsWith('/') ? '' : '/'}$resolvedUrl';
     }
-    
+
     // Android emulator localhost replacement
     if (!kIsWeb && Platform.isAndroid) {
       if (resolvedUrl.contains('localhost')) {
@@ -33,15 +34,19 @@ class ApiEndpoints {
       }
     }
 
-    // Proxy R2 images through the local backend in local/emulator development
-    // to bypass emulator internet/DNS resolution limitations.
-    final isLocal = baseUrl.contains('10.0.2.2') || 
-                    baseUrl.contains('localhost') || 
-                    baseUrl.contains('127.0.0.1');
-    if (isLocal && resolvedUrl.contains('r2.dev')) {
+    // Proxy R2 images through the backend in two cases: local/emulator dev
+    // (to bypass emulator internet/DNS resolution limitations), and web
+    // (browsers enforce CORS when canvaskit/skwasm decodes cross-origin
+    // images; native apps never do, and the R2 bucket has no CORS policy
+    // set — the backend's /proxy route sends Access-Control-Allow-Origin: *).
+    final isLocal =
+        baseUrl.contains('10.0.2.2') ||
+        baseUrl.contains('localhost') ||
+        baseUrl.contains('127.0.0.1');
+    if ((isLocal || kIsWeb) && resolvedUrl.contains('r2.dev')) {
       resolvedUrl = '$baseUrl/proxy?url=${Uri.encodeComponent(resolvedUrl)}';
     }
-    
+
     return resolvedUrl;
   }
 
@@ -65,8 +70,10 @@ class ApiEndpoints {
   static String communityPostDetail(String id) => '/community/posts/$id';
   static const String communityPostsLiked = '/community/posts/liked';
   static const String communityPostsSaved = '/community/posts/saved';
-  static String communityCommentLike(String id) => '/community/comments/$id/like';
-  static String communityCommentUnlike(String id) => '/community/comments/$id/unlike';
+  static String communityCommentLike(String id) =>
+      '/community/comments/$id/like';
+  static String communityCommentUnlike(String id) =>
+      '/community/comments/$id/unlike';
   static String communityCommentDetail(String id) => '/community/comments/$id';
   static const String bookmarks = '/bookmarks';
   static const String clubs = '/clubs';
@@ -77,16 +84,26 @@ class ApiEndpoints {
   static const String notificationsReadAll = '/notifications/read-all';
   static String notificationDetail(String id) => '/notifications/$id';
 
+  // Devices (FCM push tokens)
+  static const String devices = '/devices';
+  static const String devicesUnregister = '/devices/unregister';
+  static String deviceDetail(String id) => '/devices/$id';
+  static const String devicesLogoutAll = '/devices/logout-all';
+  static const String devicesLogoutOthers = '/devices/logout-others';
+
   // Chat
   static const String conversations = '/conversations';
   static const String conversationsContacts = '/conversations/contacts';
   static const String conversationsPending = '/conversations/pending';
-  static String conversationMessages(String id) => '/conversations/$id/messages';
+  static String conversationMessages(String id) =>
+      '/conversations/$id/messages';
   static String conversationRead(String id) => '/conversations/$id/read';
-  static String conversationMessage(String id, String msgId) => '/conversations/$id/messages/$msgId';
+  static String conversationMessage(String id, String msgId) =>
+      '/conversations/$id/messages/$msgId';
   static String conversationAccept(String id) => '/conversations/$id/accept';
   static String conversationBlock(String id) => '/conversations/$id/block';
   static String conversationDelete(String id) => '/conversations/$id';
   static String conversationArchive(String id) => '/conversations/$id/archive';
-  static String conversationMessageDelete(String id, String msgId) => '/conversations/$id/messages/$msgId';
+  static String conversationMessageDelete(String id, String msgId) =>
+      '/conversations/$id/messages/$msgId';
 }

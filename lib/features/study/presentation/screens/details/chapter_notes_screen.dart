@@ -225,7 +225,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
         children: [
           // ── Filter row (red area) ──────────────────────────
           Padding(
-                        padding: const .fromLTRB(16, 0, 16, 16),
+            padding: const .fromLTRB(16, 0, 16, 16),
 
             child: Row(
               children: [
@@ -330,7 +330,8 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                               final resource = resources[index];
                               return ResourceCard(
                                 resource: resource,
-                                autoOpen: widget.resourceId != null &&
+                                autoOpen:
+                                    widget.resourceId != null &&
                                     resource.id == widget.resourceId,
                               );
                             },

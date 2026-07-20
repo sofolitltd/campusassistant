@@ -12,6 +12,7 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/bkash/bkash_payment.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class PaymentPage extends ConsumerStatefulWidget {
   const PaymentPage({super.key, required this.plan, required this.amount});
@@ -128,8 +129,9 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('bKash Payment'), centerTitle: true),
+    return CustomHeaderLayout(
+      title: 'bKash Payment',
+      showSearchBar: false,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

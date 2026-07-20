@@ -43,12 +43,7 @@ class BatchTile extends StatelessWidget {
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
-            if (isSelected)
-              Icon(
-                LucideIcons.check,
-                color: primary,
-                size: 20,
-              ),
+            if (isSelected) Icon(LucideIcons.check, color: primary, size: 20),
           ],
         ),
       ),

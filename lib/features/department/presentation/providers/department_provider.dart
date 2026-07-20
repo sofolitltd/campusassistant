@@ -52,16 +52,16 @@ UploadDepartmentLogo uploadDepartmentLogo(Ref ref) {
 }
 
 @riverpod
-Future<List<Department>> departmentsByUniversity(Ref ref, String universityId) async {
+Future<List<Department>> departmentsByUniversity(
+  Ref ref,
+  String universityId,
+) async {
   final getDepartments = ref.watch(getDepartmentsProvider);
   final result = await getDepartments(
     GetDepartmentsParams(universityId: universityId),
   );
 
-  return result.fold(
-    (failure) => throw failure,
-    (departments) => departments,
-  );
+  return result.fold((failure) => throw failure, (departments) => departments);
 }
 
 @Riverpod(keepAlive: true)

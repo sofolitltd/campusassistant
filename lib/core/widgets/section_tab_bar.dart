@@ -70,18 +70,13 @@ class SectionTabBar extends StatelessWidget {
           ],
         ),
         labelColor: isDark ? Colors.white : Colors.black87,
-        unselectedLabelColor:
-            isDark ? Colors.white54 : Colors.grey.shade600,
-        labelStyle: labelStyle ??
-            const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-        unselectedLabelStyle: unselectedLabelStyle ??
-            const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 13,
-            ),
+        unselectedLabelColor: isDark ? Colors.white54 : Colors.grey.shade600,
+        labelStyle:
+            labelStyle ??
+            const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        unselectedLabelStyle:
+            unselectedLabelStyle ??
+            const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
         dividerColor: Colors.transparent,
         tabs: tabs,
       ),

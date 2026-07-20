@@ -6,11 +6,7 @@ class Contact {
   final String name;
   final String? avatarUrl;
 
-  const Contact({
-    required this.userId,
-    required this.name,
-    this.avatarUrl,
-  });
+  const Contact({required this.userId, required this.name, this.avatarUrl});
 
   factory Contact.fromJson(Map<String, dynamic> json) {
     return Contact(
@@ -90,10 +86,7 @@ class ChatRepository {
   }) async {
     final response = await _apiClient.post(
       ApiEndpoints.conversationMessages(conversationId),
-      data: {
-        'text': text,
-        'repliedToId': ?repliedToId,
-      },
+      data: {'text': text, 'repliedToId': ?repliedToId},
     );
     return response.data as Map<String, dynamic>;
   }
@@ -136,15 +129,11 @@ class ChatRepository {
   }
 
   Future<void> deleteConversation(String conversationId) async {
-    await _apiClient.delete(
-      ApiEndpoints.conversationDelete(conversationId),
-    );
+    await _apiClient.delete(ApiEndpoints.conversationDelete(conversationId));
   }
 
   Future<void> archiveConversation(String conversationId) async {
-    await _apiClient.post(
-      ApiEndpoints.conversationArchive(conversationId),
-    );
+    await _apiClient.post(ApiEndpoints.conversationArchive(conversationId));
   }
 
   Future<void> markAsRead(String conversationId) async {

@@ -11,7 +11,7 @@ import '/features/routine/domain/entities/routine.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class RoutinePage extends ConsumerWidget {
   const RoutinePage({super.key});
@@ -29,7 +29,7 @@ class RoutinePage extends ConsumerWidget {
       )),
     );
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Class Routine',
       showSearchBar: false,
       body: routineAsync.when(

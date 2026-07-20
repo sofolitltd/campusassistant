@@ -42,7 +42,12 @@ class PillTabBar extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.md, Spacing.lg, Spacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.md,
+        Spacing.lg,
+        Spacing.sm,
+      ),
       child: Container(
         padding: const EdgeInsets.all(Spacing.xs),
         decoration: BoxDecoration(
@@ -80,10 +85,16 @@ class PillTabBar extends StatelessWidget {
     final animationValue = controller.animation!.value;
     final progress = (1.0 - (animationValue - index).abs()).clamp(0.0, 1.0);
 
-    final Color pillColor =
-        Color.lerp(Colors.transparent, cs.primary, progress)!;
-    final Color textColor =
-        Color.lerp(cs.onSurfaceVariant, cs.onPrimary, progress)!;
+    final Color pillColor = Color.lerp(
+      Colors.transparent,
+      cs.primary,
+      progress,
+    )!;
+    final Color textColor = Color.lerp(
+      cs.onSurfaceVariant,
+      cs.onPrimary,
+      progress,
+    )!;
     final Color borderColor = progress > 0.5
         ? cs.primary.withValues(alpha: 0.4)
         : cs.outlineVariant.withValues(alpha: 0.3);
@@ -106,8 +117,7 @@ class PillTabBar extends StatelessWidget {
             labels[index],
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: textColor,
-              fontWeight:
-                  progress > 0.5 ? FontWeight.w600 : FontWeight.w500,
+              fontWeight: progress > 0.5 ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
         ),

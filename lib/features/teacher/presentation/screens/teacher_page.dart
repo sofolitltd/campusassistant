@@ -6,11 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/routes/app_route.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class TeacherPage extends ConsumerStatefulWidget {
   const TeacherPage({super.key});
@@ -38,7 +39,7 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
 
   @override
   Widget build(BuildContext context) {
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Faculty Members',
       searchHint: 'Search by name, dept or designation...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),
@@ -265,7 +266,7 @@ class _TeacherCard extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(RadiusToken.sm),
             child: CachedNetworkImage(
-              imageUrl: teacher.imageUrl,
+              imageUrl: ApiEndpoints.resolveImageUrl(teacher.imageUrl),
               fit: BoxFit.cover,
               placeholder: (context, url) =>
                   const Center(child: CupertinoActivityIndicator(radius: 6)),

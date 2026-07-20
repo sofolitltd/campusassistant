@@ -25,28 +25,28 @@ abstract class StaffModel with _$StaffModel {
       _$StaffModelFromJson(json);
 
   Staff toEntity() => Staff(
-        id: id,
-        universityId: universityId,
-        departmentId: departmentId,
-        name: name,
-        post: post,
-        mobile: mobile,
-        imageUrl: imageUrl,
-        serial: serial,
-        verificationCode: verificationCode,
-        isClaimed: isClaimed,
-      );
+    id: id,
+    universityId: universityId,
+    departmentId: departmentId,
+    name: name,
+    post: post,
+    mobile: mobile,
+    imageUrl: imageUrl,
+    serial: serial,
+    verificationCode: verificationCode,
+    isClaimed: isClaimed,
+  );
 
   factory StaffModel.fromEntity(Staff staff) => StaffModel(
-        id: staff.id,
-        universityId: staff.universityId,
-        departmentId: staff.departmentId,
-        name: staff.name,
-        post: staff.post,
-        mobile: staff.mobile,
-        imageUrl: staff.imageUrl,
-        serial: staff.serial,
-        verificationCode: staff.verificationCode,
-        isClaimed: staff.isClaimed,
-      );
+    id: staff.id,
+    universityId: staff.universityId,
+    departmentId: staff.departmentId,
+    name: staff.name,
+    post: staff.post,
+    mobile: staff.mobile,
+    imageUrl: staff.imageUrl,
+    serial: staff.serial,
+    verificationCode: staff.verificationCode,
+    isClaimed: staff.isClaimed,
+  );
 }

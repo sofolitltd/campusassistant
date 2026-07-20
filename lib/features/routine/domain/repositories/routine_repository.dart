@@ -10,4 +10,3 @@ abstract class RoutineRepository {
 
   Future<Either<Failure, void>> deleteRoutine(String id);
 }
-

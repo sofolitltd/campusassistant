@@ -35,8 +35,14 @@ class CacheTTL {
 }
 
 /// Manages reading and writing data to the Drift cache.
+///
+/// [_db] is null on web (no Drift/sqlite3 support there — see
+/// app_database.dart's connection split). Every method degrades to a safe
+/// no-op/empty-result in that case rather than throwing, so features built
+/// on top of caching (community, resources, banners, etc.) still work on
+/// web, just without local persistence.
 class CacheManager {
-  final OfflineDatabase _db;
+  final OfflineDatabase? _db;
 
   static const _markerFileName = '.cache_cleared_at';
   static const _markerTtl = Duration(minutes: 5);
@@ -80,7 +86,7 @@ class CacheManager {
     required List<Map<String, dynamic>> items,
     Duration? ttl,
   }) async {
-    await _db.cacheEntities(
+    await _db?.cacheEntities(
       entityType: entityType,
       items: items,
       ttl: ttl ?? CacheTTL.defaultTTL,
@@ -94,7 +100,7 @@ class CacheManager {
     required Map<String, dynamic> data,
     Duration? ttl,
   }) async {
-    await _db.cacheEntity(
+    await _db?.cacheEntity(
       entityType: entityType,
       entityKey: entityKey,
       data: data,
@@ -107,6 +113,7 @@ class CacheManager {
   Future<List<Map<String, dynamic>>> getCachedList({
     required String entityType,
   }) async {
+    if (_db == null) return [];
     return _db.getCachedEntities(entityType: entityType);
   }
 
@@ -115,29 +122,22 @@ class CacheManager {
     required String entityType,
     required String entityKey,
   }) async {
-    return _db.getCachedEntity(
-      entityType: entityType,
-      entityKey: entityKey,
-    );
+    if (_db == null) return null;
+    return _db.getCachedEntity(entityType: entityType, entityKey: entityKey);
   }
 
   /// Check if a cache entry exists and is fresh.
-  Future<bool> isFresh({
-    required String entityType,
-    String? entityKey,
-  }) async {
+  Future<bool> isFresh({required String entityType, String? entityKey}) async {
+    if (_db == null) return false;
     if (entityKey != null) {
-      return _db.isCacheFresh(
-        entityType: entityType,
-        entityKey: entityKey,
-      );
+      return _db.isCacheFresh(entityType: entityType, entityKey: entityKey);
     }
     return _db.hasFreshCache(entityType: entityType);
   }
 
   /// Invalidate all cache for an entity type.
   Future<void> invalidate(String entityType) async {
-    await _db.invalidateCache(entityType);
+    await _db?.invalidateCache(entityType);
   }
 
   /// Invalidate a specific cache entry.
@@ -145,7 +145,7 @@ class CacheManager {
     required String entityType,
     required String entityKey,
   }) async {
-    await _db.invalidateCacheEntry(
+    await _db?.invalidateCacheEntry(
       entityType: entityType,
       entityKey: entityKey,
     );
@@ -153,28 +153,31 @@ class CacheManager {
 
   /// Remove all expired cache entries.
   Future<int> pruneExpired() async {
+    if (_db == null) return 0;
     return _db.pruneExpiredCache();
   }
 
   /// Clear all cache. Writes a marker so automatic refresh is skipped briefly.
   Future<void> clearAll() async {
-    await _db.clearAllCache();
+    await _db?.clearAllCache();
     await _writeClearMarker();
   }
 
   /// Get cache statistics grouped by entity type.
   Future<List<CacheStat>> getStats() async {
+    if (_db == null) return [];
     return _db.getCacheStats();
   }
 
   /// Get total number of cache entries.
   Future<int> getTotalCount() async {
+    if (_db == null) return 0;
     return _db.getTotalCacheCount();
   }
 }
 
 /// Riverpod provider for CacheManager.
 final cacheManagerProvider = Provider<CacheManager>((ref) {
-  final db = ref.watch(offlineDatabaseProvider);
+  final db = kIsWeb ? null : ref.watch(offlineDatabaseProvider);
   return CacheManager(db);
 });

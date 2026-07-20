@@ -27,32 +27,32 @@ abstract class SyllabusModel with _$SyllabusModel {
       _$SyllabusModelFromJson(json);
 
   Syllabus toEntity() => Syllabus(
-        id: id,
-        title: title,
-        courseCode: courseCode,
-        courseTitle: courseTitle ?? '',
-        description: description,
-        fileUrl: fileUrl,
-        uploaderName: uploaderName,
-        createdAt: createdAt,
-        batches: batches ?? <String>[],
-        years: (years ?? <dynamic>[]).map((e) => e.toString()).toList(),
-        universityId: universityId,
-        departmentId: departmentId,
-      );
+    id: id,
+    title: title,
+    courseCode: courseCode,
+    courseTitle: courseTitle ?? '',
+    description: description,
+    fileUrl: fileUrl,
+    uploaderName: uploaderName,
+    createdAt: createdAt,
+    batches: batches ?? <String>[],
+    years: (years ?? <dynamic>[]).map((e) => e.toString()).toList(),
+    universityId: universityId,
+    departmentId: departmentId,
+  );
 
   factory SyllabusModel.fromEntity(Syllabus syllabus) => SyllabusModel(
-        id: syllabus.id,
-        title: syllabus.title,
-        courseCode: syllabus.courseCode,
-        courseTitle: syllabus.courseTitle,
-        description: syllabus.description,
-        fileUrl: syllabus.fileUrl,
-        uploaderName: syllabus.uploaderName,
-        createdAt: syllabus.createdAt,
-        batches: syllabus.batches,
-        years: syllabus.years.map((e) => e).toList(),
-        universityId: syllabus.universityId,
-        departmentId: syllabus.departmentId,
-      );
+    id: syllabus.id,
+    title: syllabus.title,
+    courseCode: syllabus.courseCode,
+    courseTitle: syllabus.courseTitle,
+    description: syllabus.description,
+    fileUrl: syllabus.fileUrl,
+    uploaderName: syllabus.uploaderName,
+    createdAt: syllabus.createdAt,
+    batches: syllabus.batches,
+    years: syllabus.years.map((e) => e).toList(),
+    universityId: syllabus.universityId,
+    departmentId: syllabus.departmentId,
+  );
 }

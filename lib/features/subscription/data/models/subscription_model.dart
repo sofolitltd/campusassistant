@@ -20,12 +20,12 @@ abstract class SubscriptionModel with _$SubscriptionModel {
       _$SubscriptionModelFromJson(json);
 
   Subscription toEntity() => Subscription(
-        id: id,
-        userId: userId,
-        plan: plan,
-        startDate: startDate,
-        endDate: endDate,
-      );
+    id: id,
+    userId: userId,
+    plan: plan,
+    startDate: startDate,
+    endDate: endDate,
+  );
 
   factory SubscriptionModel.fromEntity(Subscription subscription) =>
       SubscriptionModel(
@@ -55,14 +55,14 @@ abstract class SubscriptionPlanModel with _$SubscriptionPlanModel {
       _$SubscriptionPlanModelFromJson(json);
 
   SubscriptionPlan toEntity() => SubscriptionPlan(
-        id: id,
-        title: title,
-        price: price,
-        discount: discount,
-        durationDays: durationDays,
-        index: index,
-        targets: targets.map((t) => t.toEntity()).toList(),
-      );
+    id: id,
+    title: title,
+    price: price,
+    discount: discount,
+    durationDays: durationDays,
+    index: index,
+    targets: targets.map((t) => t.toEntity()).toList(),
+  );
 
   factory SubscriptionPlanModel.fromEntity(SubscriptionPlan plan) =>
       SubscriptionPlanModel(
@@ -92,10 +92,10 @@ abstract class SubscriptionTargetModel with _$SubscriptionTargetModel {
       _$SubscriptionTargetModelFromJson(json);
 
   SubscriptionTarget toEntity() => SubscriptionTarget(
-        id: id,
-        universityId: universityId,
-        departmentId: departmentId,
-      );
+    id: id,
+    universityId: universityId,
+    departmentId: departmentId,
+  );
 
   factory SubscriptionTargetModel.fromEntity(SubscriptionTarget target) =>
       SubscriptionTargetModel(

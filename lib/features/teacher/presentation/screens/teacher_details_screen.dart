@@ -12,8 +12,9 @@ import 'package:share_plus/share_plus.dart' hide Share;
 
 import '/features/teacher/domain/entities/teacher.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class TeacherDetailsScreen extends ConsumerStatefulWidget {
   const TeacherDetailsScreen({super.key, required this.teacherId});
@@ -30,7 +31,7 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
   Widget build(BuildContext context) {
     final teacherAsync = ref.watch(singleTeacherProvider(widget.teacherId));
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Faculty Profile',
       actionIcon: LucideIcons.share2,
       onActionTap: () async {
@@ -104,7 +105,7 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
           "Interests: ${teacherModel.interests}";
 
       XFile? imageFile;
-      final url = teacherModel.imageUrl;
+      final url = ApiEndpoints.resolveImageUrl(teacherModel.imageUrl);
       if (url.isNotEmpty) {
         final dio = Dio();
         final response = await dio.get(
@@ -118,10 +119,7 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
       }
 
       await SharePlus.instance.share(
-        ShareParams(
-          files: imageFile != null ? [imageFile] : null,
-          text: text,
-        ),
+        ShareParams(files: imageFile != null ? [imageFile] : null, text: text),
       );
     } catch (e) {
       debugPrint('Error sharing profile: $e');
@@ -300,7 +298,7 @@ class _HeaderCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
                 child: CachedNetworkImage(
-                  imageUrl: teacher.imageUrl,
+                  imageUrl: ApiEndpoints.resolveImageUrl(teacher.imageUrl),
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
                     child: CupertinoActivityIndicator(radius: 6),

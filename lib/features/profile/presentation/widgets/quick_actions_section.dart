@@ -33,9 +33,7 @@ class QuickActionsSection extends StatelessWidget {
             .map(
               (item) => Expanded(
                 child: Container(
-                  margin: EdgeInsets.only(
-                    right: item == items.last ? 0 : 12,
-                  ),
+                  margin: EdgeInsets.only(right: item == items.last ? 0 : 12),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(RadiusToken.lg),
@@ -66,9 +64,7 @@ class QuickActionsSection extends StatelessWidget {
                             Icon(
                               item.icon,
                               size: 24,
-                              color: Theme.of(
-                                context,
-                              ).appColors.primaryColor,
+                              color: Theme.of(context).appColors.primaryColor,
                             ),
                             const SizedBox(height: 10),
                             Text(

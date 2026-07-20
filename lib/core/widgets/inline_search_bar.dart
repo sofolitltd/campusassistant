@@ -84,7 +84,9 @@ class _InlineSearchBarState extends State<InlineSearchBar> {
       ),
       decoration: InputDecoration(
         isDense: widget.dense,
-        visualDensity: widget.dense ? VisualDensity.compact : VisualDensity.standard,
+        visualDensity: widget.dense
+            ? VisualDensity.compact
+            : VisualDensity.standard,
         hintText: widget.hintText,
         hintStyle: TextStyle(
           color: Colors.grey.shade500,
@@ -120,7 +122,9 @@ class _InlineSearchBarState extends State<InlineSearchBar> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.dense ? 6 : 8),
-          borderSide: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.6)),
+          borderSide: BorderSide(
+            color: cs.outlineVariant.withValues(alpha: 0.6),
+          ),
         ),
       ),
     );

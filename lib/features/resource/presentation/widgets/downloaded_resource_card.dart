@@ -10,6 +10,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
 import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/theme/tokens/app_radius.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../routes/app_route.dart';
@@ -39,14 +40,16 @@ class DownloadedResourceCard extends ConsumerWidget {
     final resource = downloadedFile.resource;
 
     final userId = ref.watch(userProvider).value?.uid ?? '';
-    final isBookmarked = userId.isNotEmpty &&
-        ref.watch(userBookmarksProvider(userId)).whenOrNull(
-              data: (bookmarks) => bookmarks.any(
-                (b) =>
-                    b.entityType == 'resource' &&
-                    b.entityId == resource.id,
-              ),
-            ) ==
+    final isBookmarked =
+        userId.isNotEmpty &&
+        ref
+                .watch(userBookmarksProvider(userId))
+                .whenOrNull(
+                  data: (bookmarks) => bookmarks.any(
+                    (b) =>
+                        b.entityType == 'resource' && b.entityId == resource.id,
+                  ),
+                ) ==
             true;
 
     return Container(
@@ -95,7 +98,11 @@ class DownloadedResourceCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Positioned(top: 0, right: -6, child: _buildPopupMenu(context, ref, isBookmarked)),
+                Positioned(
+                  top: 0,
+                  right: -6,
+                  child: _buildPopupMenu(context, ref, isBookmarked),
+                ),
                 Positioned(
                   bottom: -4,
                   right: 12,
@@ -103,19 +110,31 @@ class DownloadedResourceCard extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
+                        constraints: const BoxConstraints(
+                          minWidth: 22,
+                          minHeight: 22,
+                        ),
                         padding: EdgeInsets.zero,
-                        onPressed: () => _handleBookmarkToggle(context, ref, isBookmarked),
+                        onPressed: () =>
+                            _handleBookmarkToggle(context, ref, isBookmarked),
                         icon: Icon(
-                          isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
+                          isBookmarked
+                              ? LucideIcons.bookmarkCheck
+                              : LucideIcons.bookmark,
                           color: isBookmarked
                               ? Colors.teal
-                              : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                              : theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.4,
+                                ),
                           size: 20,
                         ),
                       ),
                       const SizedBox(width: 2),
-                      const Icon(LucideIcons.circleCheck, color: Colors.green, size: 20),
+                      const Icon(
+                        LucideIcons.circleCheck,
+                        color: Colors.green,
+                        size: 20,
+                      ),
                     ],
                   ),
                 ),
@@ -148,7 +167,7 @@ class DownloadedResourceCard extends ConsumerWidget {
           clipBehavior: Clip.antiAlias,
           child: resource.thumbnailUrl.isNotEmpty
               ? CachedNetworkImage(
-                  imageUrl: resource.thumbnailUrl,
+                  imageUrl: ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
                   fit: BoxFit.cover,
                   placeholder: (context, _) => Icon(
                     LucideIcons.fileText,
@@ -161,7 +180,11 @@ class DownloadedResourceCard extends ConsumerWidget {
                     size: 30,
                   ),
                 )
-              : Icon(LucideIcons.fileText, color: theme.colorScheme.onSurface.withValues(alpha: 0.4), size: 30),
+              : Icon(
+                  LucideIcons.fileText,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  size: 30,
+                ),
         ),
       ],
     );
@@ -170,7 +193,8 @@ class DownloadedResourceCard extends ConsumerWidget {
   Widget _buildDetails(bool isDark, ThemeData theme) {
     final resource = downloadedFile.resource;
     final fileSize = _getFileSizeStr(downloadedFile.fileSizeBytes);
-    final dateStr = '${downloadedFile.modifiedAt.day}/${downloadedFile.modifiedAt.month}/${downloadedFile.modifiedAt.year}';
+    final dateStr =
+        '${downloadedFile.modifiedAt.day}/${downloadedFile.modifiedAt.month}/${downloadedFile.modifiedAt.year}';
 
     return Expanded(
       child: SizedBox(
@@ -207,7 +231,9 @@ class DownloadedResourceCard extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              resource.description.isNotEmpty ? resource.description : resource.type,
+              resource.description.isNotEmpty
+                  ? resource.description
+                  : resource.type,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelMedium?.copyWith(
@@ -219,9 +245,19 @@ class DownloadedResourceCard extends ConsumerWidget {
             const Spacer(),
             Row(
               children: [
-                _buildMiniInfoTile(theme, isDark, LucideIcons.hardDrive, fileSize),
+                _buildMiniInfoTile(
+                  theme,
+                  isDark,
+                  LucideIcons.hardDrive,
+                  fileSize,
+                ),
                 const SizedBox(width: 8),
-                _buildMiniInfoTile(theme, isDark, LucideIcons.calendar, dateStr),
+                _buildMiniInfoTile(
+                  theme,
+                  isDark,
+                  LucideIcons.calendar,
+                  dateStr,
+                ),
               ],
             ),
           ],
@@ -230,11 +266,18 @@ class DownloadedResourceCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildMiniInfoTile(ThemeData theme, bool isDark, IconData icon, String value) {
+  Widget _buildMiniInfoTile(
+    ThemeData theme,
+    bool isDark,
+    IconData icon,
+    String value,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isDark ? theme.colorScheme.surface.withValues(alpha: 0.5) : Colors.grey.shade50,
+        color: isDark
+            ? theme.colorScheme.surface.withValues(alpha: 0.5)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade100,
@@ -243,7 +286,11 @@ class DownloadedResourceCard extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 10, color: isDark ? Colors.white70 : Colors.grey.shade600),
+          Icon(
+            icon,
+            size: 10,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
+          ),
           const SizedBox(width: 4),
           Text(
             value,
@@ -258,7 +305,11 @@ class DownloadedResourceCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildPopupMenu(BuildContext context, WidgetRef ref, bool isBookmarked) {
+  Widget _buildPopupMenu(
+    BuildContext context,
+    WidgetRef ref,
+    bool isBookmarked,
+  ) {
     final theme = Theme.of(context);
     return PopupMenuButton<String>(
       padding: EdgeInsets.zero,
@@ -292,34 +343,49 @@ class DownloadedResourceCard extends ConsumerWidget {
         }
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(height: 34, 
+        const PopupMenuItem(
+          height: 34,
           value: 'open',
           child: _PopupItem(icon: LucideIcons.externalLink, text: 'Open with'),
         ),
-        const PopupMenuItem(height: 34, 
+        const PopupMenuItem(
+          height: 34,
           value: 'share',
           child: _PopupItem(icon: LucideIcons.share2, text: 'Share'),
         ),
-        const PopupMenuItem(height: 34, 
+        const PopupMenuItem(
+          height: 34,
           value: 'info',
           child: _PopupItem(icon: LucideIcons.info, text: 'Info'),
         ),
-        PopupMenuItem(height: 34,
+        PopupMenuItem(
+          height: 34,
           value: 'bookmark',
           child: _PopupItem(
-            icon: isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
+            icon: isBookmarked
+                ? LucideIcons.bookmarkCheck
+                : LucideIcons.bookmark,
             text: isBookmarked ? 'Remove Bookmark' : 'Bookmark',
             errorColor: isBookmarked ? theme.appColors.destructiveColor : null,
           ),
         ),
         if (downloadedFile.resource.id.isNotEmpty)
-          const PopupMenuItem(height: 34, 
+          const PopupMenuItem(
+            height: 34,
             value: 'view_course',
-            child: _PopupItem(icon: LucideIcons.arrowRightFromLine, text: 'View in Course'),
+            child: _PopupItem(
+              icon: LucideIcons.arrowRightFromLine,
+              text: 'View in Course',
+            ),
           ),
-        PopupMenuItem(height: 34, 
+        PopupMenuItem(
+          height: 34,
           value: 'delete',
-          child: _PopupItem(icon: LucideIcons.trash2, text: 'Delete', errorColor: theme.appColors.destructiveColor),
+          child: _PopupItem(
+            icon: LucideIcons.trash2,
+            text: 'Delete',
+            errorColor: theme.appColors.destructiveColor,
+          ),
         ),
       ],
     );
@@ -340,7 +406,9 @@ class DownloadedResourceCard extends ConsumerWidget {
     if (isBookmarked) {
       final bookmarks = ref.read(userBookmarksProvider(userId)).value ?? [];
       final match = bookmarks.where(
-        (b) => b.entityType == 'resource' && b.entityId == downloadedFile.resource.id,
+        (b) =>
+            b.entityType == 'resource' &&
+            b.entityId == downloadedFile.resource.id,
       );
       final bookmarkId = match.isNotEmpty ? match.first.id : null;
       if (bookmarkId == null) return;
@@ -359,7 +427,9 @@ class DownloadedResourceCard extends ConsumerWidget {
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
                 'Remove',
-                style: TextStyle(color: Theme.of(context).appColors.destructiveColor),
+                style: TextStyle(
+                  color: Theme.of(context).appColors.destructiveColor,
+                ),
               ),
             ),
           ],
@@ -367,7 +437,9 @@ class DownloadedResourceCard extends ConsumerWidget {
       );
       if (confirmed != true) return;
 
-      final result = await ref.read(bookmarkRepositoryProvider).removeBookmark(bookmarkId);
+      final result = await ref
+          .read(bookmarkRepositoryProvider)
+          .removeBookmark(bookmarkId);
       result.fold(
         (failure) => Fluttertoast.showToast(msg: 'Failed to remove bookmark'),
         (_) {
@@ -382,7 +454,9 @@ class DownloadedResourceCard extends ConsumerWidget {
         entityType: 'resource',
         entityId: downloadedFile.resource.id,
       );
-      final result = await ref.read(bookmarkRepositoryProvider).addBookmark(bookmark);
+      final result = await ref
+          .read(bookmarkRepositoryProvider)
+          .addBookmark(bookmark);
       result.fold(
         (failure) => Fluttertoast.showToast(msg: 'Failed to add bookmark'),
         (_) {
@@ -428,7 +502,9 @@ class DownloadedResourceCard extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete File?'),
-        content: const Text('This will permanently remove the file from your local storage.'),
+        content: const Text(
+          'This will permanently remove the file from your local storage.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -481,20 +557,13 @@ class _PopupItem extends StatelessWidget {
   final IconData icon;
   final String text;
   final Color? errorColor;
-  const _PopupItem({
-    required this.icon,
-    required this.text,
-    this.errorColor,
-  });
+  const _PopupItem({required this.icon, required this.text, this.errorColor});
   @override
   Widget build(BuildContext context) => Row(
     children: [
       Icon(icon, size: 16, color: errorColor),
       const SizedBox(width: 8),
-      Text(
-        text,
-        style: TextStyle(fontSize: 13, color: errorColor),
-      ),
+      Text(text, style: TextStyle(fontSize: 13, color: errorColor)),
     ],
   );
 }

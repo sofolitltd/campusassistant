@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/di.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../services/firebase_api.dart';
 import '../../data/datasources/auth_local_data_source.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -59,7 +62,11 @@ class CurrentUser extends _$CurrentUser {
   @override
   Future<User?> build() async {
     _repository = ref.watch(authRepositoryProvider);
-    return _checkAuthStatus();
+    final user = await _checkAuthStatus();
+    if (user != null) {
+      unawaited(FirebaseApi().initNotifications());
+    }
+    return user;
   }
 
   Future<User?> _checkAuthStatus() async {
@@ -103,12 +110,16 @@ class CurrentUser extends _$CurrentUser {
     final result = await _repository.login(email: email, password: password);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (user) => state = AsyncValue.data(user),
+      (user) {
+        state = AsyncValue.data(user);
+        unawaited(FirebaseApi().initNotifications());
+      },
     );
   }
 
   Future<void> logout() async {
     state = const AsyncValue.loading();
+    await FirebaseApi().unregisterCurrentDevice();
     await _repository.logout();
     state = const AsyncValue.data(null);
   }

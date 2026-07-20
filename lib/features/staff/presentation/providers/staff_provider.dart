@@ -52,17 +52,23 @@ Future<List<Staff>> staffsByDepartment(
 @riverpod
 Future<Staff> Function(Staff) createStaff(Ref ref) {
   final repository = ref.watch(staffRepositoryProvider);
-  return (Staff staff) => repository.createStaff(staff).then((res) => res.fold((l) => throw l, (r) => r));
+  return (Staff staff) => repository
+      .createStaff(staff)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }
 
 @riverpod
 Future<Staff> Function(Staff) updateStaff(Ref ref) {
   final repository = ref.watch(staffRepositoryProvider);
-  return (Staff staff) => repository.updateStaff(staff).then((res) => res.fold((l) => throw l, (r) => r));
+  return (Staff staff) => repository
+      .updateStaff(staff)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }
 
 @riverpod
 Future<void> Function(String) deleteStaff(Ref ref) {
   final repository = ref.watch(staffRepositoryProvider);
-  return (String id) => repository.deleteStaff(id).then((res) => res.fold((l) => throw l, (r) => r));
+  return (String id) => repository
+      .deleteStaff(id)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }

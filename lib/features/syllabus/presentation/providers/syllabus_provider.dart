@@ -108,7 +108,8 @@ class SyllabusPagination extends _$SyllabusPagination {
       offset: currentState.syllabi.length,
     );
     result.fold(
-      (_) => state = AsyncValue.data(currentState.copyWith(isLoadingMore: false)),
+      (_) =>
+          state = AsyncValue.data(currentState.copyWith(isLoadingMore: false)),
       (paginated) {
         final newSyllabi = [...currentState.syllabi, ...paginated.syllabi];
         state = AsyncValue.data(

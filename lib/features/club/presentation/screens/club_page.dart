@@ -5,13 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/club/domain/entities/club.dart';
 import '/features/club/presentation/providers/club_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/api_endpoints.dart';
 
 class ClubsPage extends ConsumerStatefulWidget {
   const ClubsPage({super.key});
@@ -38,7 +39,7 @@ class _ClubsPageState extends ConsumerState<ClubsPage>
 
   @override
   Widget build(BuildContext context) {
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Clubs & Organizations',
       searchHint: 'Search clubs...',
       body: Column(
@@ -167,7 +168,7 @@ class _ClubCard extends StatelessWidget {
             children: [
               club.bannerUrl != null && club.bannerUrl!.isNotEmpty
                   ? CachedNetworkImage(
-                      imageUrl: club.bannerUrl!,
+                      imageUrl: ApiEndpoints.resolveImageUrl(club.bannerUrl),
                       height: 120,
                       fit: BoxFit.cover,
                       errorWidget: (context, url, error) => Container(
@@ -208,7 +209,9 @@ class _ClubCard extends StatelessWidget {
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(24),
                               child: CachedNetworkImage(
-                                imageUrl: club.logoUrl!,
+                                imageUrl: ApiEndpoints.resolveImageUrl(
+                                  club.logoUrl,
+                                ),
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) => Icon(
                                   LucideIcons.users,

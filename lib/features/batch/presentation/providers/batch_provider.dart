@@ -44,7 +44,11 @@ Future<List<Batch>> batchesByDepartment(Ref ref, String departmentId) async {
 }
 
 @riverpod
-Future<Batch?> batchById(Ref ref, {required String departmentId, required String id}) async {
+Future<Batch?> batchById(
+  Ref ref, {
+  required String departmentId,
+  required String id,
+}) async {
   final batches = await ref.watch(
     batchesByDepartmentProvider(departmentId).future,
   );
@@ -57,7 +61,9 @@ Future<Batch?> batchById(Ref ref, {required String departmentId, required String
 
 @riverpod
 String batchName(Ref ref, {required String departmentId, required String id}) {
-  final batchAsync = ref.watch(batchByIdProvider(departmentId: departmentId, id: id));
+  final batchAsync = ref.watch(
+    batchByIdProvider(departmentId: departmentId, id: id),
+  );
   return batchAsync.when(
     data: (b) => b?.name ?? id,
     loading: () => '...',

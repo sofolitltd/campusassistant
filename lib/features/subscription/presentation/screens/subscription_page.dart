@@ -12,6 +12,7 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class SubscriptionPage extends ConsumerStatefulWidget {
   const SubscriptionPage({super.key});
@@ -27,15 +28,9 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: const Text(
-          'Premium Access',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+    return CustomHeaderLayout(
+      title: 'Premium Access',
+      showSearchBar: false,
       body: userAsync.when(
         data: (user) {
           final params = (

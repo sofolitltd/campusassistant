@@ -62,7 +62,9 @@ class TeacherRepositoryImpl implements TeacherRepository {
         final teachers = cachedData
             .map((json) => TeacherModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[TeacherRepo] Returning ${teachers.length} cached teachers');
+        debugPrint(
+          '[TeacherRepo] Returning ${teachers.length} cached teachers',
+        );
         return Right(teachers);
       }
     } catch (e) {
@@ -71,9 +73,11 @@ class TeacherRepositoryImpl implements TeacherRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached teachers available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached teachers available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch teachers'));
@@ -122,9 +126,11 @@ class TeacherRepositoryImpl implements TeacherRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached teacher data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached teacher data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch teacher'));
@@ -133,9 +139,9 @@ class TeacherRepositoryImpl implements TeacherRepository {
   @override
   Future<Either<Failure, Teacher>> createTeacher(Teacher teacher) async {
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'Internet connection required to create teacher',
-      ));
+      return const Left(
+        NetworkFailure('Internet connection required to create teacher'),
+      );
     }
     try {
       final teacherModel = TeacherModel.fromEntity(teacher);
@@ -149,9 +155,9 @@ class TeacherRepositoryImpl implements TeacherRepository {
   @override
   Future<Either<Failure, Teacher>> updateTeacher(Teacher teacher) async {
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'Internet connection required to update teacher',
-      ));
+      return const Left(
+        NetworkFailure('Internet connection required to update teacher'),
+      );
     }
     try {
       final teacherModel = TeacherModel.fromEntity(teacher);
@@ -165,9 +171,9 @@ class TeacherRepositoryImpl implements TeacherRepository {
   @override
   Future<Either<Failure, void>> deleteTeacher(String teacherId) async {
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'Internet connection required to delete teacher',
-      ));
+      return const Left(
+        NetworkFailure('Internet connection required to delete teacher'),
+      );
     }
     try {
       await remoteDataSource.deleteTeacher(teacherId);

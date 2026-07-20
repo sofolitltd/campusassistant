@@ -140,7 +140,10 @@ Future<PaginatedStudents> studentsWithTotalByBatchPaginated(
 @riverpod
 Future<List<Student>> studentsByBatch(Ref ref, String batchId) async {
   final repository = ref.watch(studentRepositoryProvider);
-  final paginated = await repository.getStudents(batchId: batchId, limit: kDefaultPageSize);
+  final paginated = await repository.getStudents(
+    batchId: batchId,
+    limit: kDefaultPageSize,
+  );
   return _enrichStudents(ref, paginated.students);
 }
 

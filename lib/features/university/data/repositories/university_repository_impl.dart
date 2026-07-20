@@ -48,14 +48,14 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
     // Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final universities = cachedData
             .map((json) => UniversityModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[UniversityRepo] Returning ${universities.length} cached universities');
+        debugPrint(
+          '[UniversityRepo] Returning ${universities.length} cached universities',
+        );
         return Right(universities);
       }
     } catch (e) {
@@ -63,9 +63,11 @@ class UniversityRepositoryImpl implements UniversityRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached university data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached university data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch universities'));
@@ -164,9 +166,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
     // Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final halls = cachedData
             .map((json) => HallModel.fromJson(json).toEntity())
@@ -179,9 +179,11 @@ class UniversityRepositoryImpl implements UniversityRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached hall data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached hall data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch halls'));

@@ -5,11 +5,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../widgets/custom_drawer.dart';
 import '../core/theme/app_colors.dart';
+import 'web_side_nav.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
   const ScaffoldWithNavBar({super.key, required this.navigationShell});
 
-  static final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  static final GlobalKey<ScaffoldState> scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   final StatefulNavigationShell navigationShell;
 
@@ -18,85 +20,25 @@ class ScaffoldWithNavBar extends StatelessWidget {
     final isLargeScreen = MediaQuery.of(context).size.width >= 800;
 
     if (isLargeScreen) {
-      // --- 🖥️ Large Screen Layout: NavigationRail ---
+      // --- 🖥️ Large Screen Layout: left sidebar (matches the admin dashboard) ---
       return Scaffold(
-        body: Column(
+        body: Row(
           children: [
+            WebSideNav(
+              currentIndex: navigationShell.currentIndex,
+              onDestinationSelected: (index) {
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                );
+              },
+            ),
             Expanded(
-              child: Row(
-                children: [
-                  NavigationRail(
-                    selectedIndex: navigationShell.currentIndex,
-                    groupAlignment: 0,
-                    onDestinationSelected: (index) {
-                      navigationShell.goBranch(
-                        index,
-                        initialLocation: index == navigationShell.currentIndex,
-                      );
-                    },
-                    labelType: NavigationRailLabelType.all,
-                    leading: IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            opaque: false,
-                            barrierDismissible: true,
-                            barrierColor: Colors.black38,
-                            pageBuilder: (_, _, _) => const CustomDrawer(),
-                            transitionsBuilder: (_, anim, _, child) {
-                              final offset = Tween<Offset>(
-                                begin: const Offset(-1, 0),
-                                end: Offset.zero,
-                              ).animate(anim);
-
-                              return SlideTransition(
-                                position: offset,
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: SizedBox(
-                                    width: 300,
-                                    child: child,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.menu),
-                    ),
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home_outlined),
-                        selectedIcon: Icon(Icons.home),
-                        label: Text('Home'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.school_outlined),
-                        selectedIcon: Icon(Icons.school),
-                        label: Text('Study'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.people_outline),
-                        selectedIcon: Icon(Icons.people),
-                        label: Text('Community'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.person_outline),
-                        selectedIcon: Icon(Icons.person),
-                        label: Text('Profile'),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Container(
-                        constraints: BoxConstraints(maxWidth: 700),
-                        child: navigationShell,
-                      ),
-                    ),
-                  ),
-                ],
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 700),
+                  child: navigationShell,
+                ),
               ),
             ),
           ],
@@ -144,10 +86,26 @@ class _BlurryBottomNavBar extends StatelessWidget {
   });
 
   static const _items = [
-    _NavItem(icon: LucideIcons.house, selectedIcon: LucideIcons.house, label: 'Home'),
-    _NavItem(icon: LucideIcons.bookOpen, selectedIcon: LucideIcons.bookOpen, label: 'Study'),
-    _NavItem(icon: LucideIcons.users, selectedIcon: LucideIcons.users, label: 'Community'),
-    _NavItem(icon: LucideIcons.userRound, selectedIcon: LucideIcons.userRound, label: 'Profile'),
+    _NavItem(
+      icon: LucideIcons.house,
+      selectedIcon: LucideIcons.house,
+      label: 'Home',
+    ),
+    _NavItem(
+      icon: LucideIcons.bookOpen,
+      selectedIcon: LucideIcons.bookOpen,
+      label: 'Study',
+    ),
+    _NavItem(
+      icon: LucideIcons.users,
+      selectedIcon: LucideIcons.users,
+      label: 'Community',
+    ),
+    _NavItem(
+      icon: LucideIcons.userRound,
+      selectedIcon: LucideIcons.userRound,
+      label: 'Profile',
+    ),
   ];
 
   @override
@@ -227,7 +185,9 @@ class _BlurryBottomNavBar extends StatelessWidget {
                               item.label,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
                                 color: isSelected ? primaryColor : Colors.grey,
                               ),
                             ),

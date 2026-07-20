@@ -13,14 +13,10 @@ class BkashCredentialsSandbox {
 }
 
 class BkashCredentialsProduction {
-  static String get username =>
-      dotenv.env['BKASH_PROD_USERNAME'] ?? '';
-  static String get password =>
-      dotenv.env['BKASH_PROD_PASSWORD'] ?? '';
-  static String get appKey =>
-      dotenv.env['BKASH_PROD_APP_KEY'] ?? '';
-  static String get appSecret =>
-      dotenv.env['BKASH_PROD_APP_SECRET'] ?? '';
+  static String get username => dotenv.env['BKASH_PROD_USERNAME'] ?? '';
+  static String get password => dotenv.env['BKASH_PROD_PASSWORD'] ?? '';
+  static String get appKey => dotenv.env['BKASH_PROD_APP_KEY'] ?? '';
+  static String get appSecret => dotenv.env['BKASH_PROD_APP_SECRET'] ?? '';
 }
 
 //https://medium.com/@Coder-pranav/fix-xmlhttprequest-error-for-the-3rd-party-api-with-cloudflare-7a00e90ae744

@@ -22,7 +22,6 @@ class Headline extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
           ),
-          
         ],
       ),
     );

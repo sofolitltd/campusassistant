@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/features/banner/domain/entities/banner.dart' as entity show Banner;
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 
 class ImageCarousel extends StatefulWidget {
@@ -126,7 +127,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                     return GestureDetector(
                       onTap: () => _handleBannerTap(banner),
                       child: CachedNetworkImage(
-                        imageUrl: banner.imageUrl,
+                        imageUrl: ApiEndpoints.resolveImageUrl(banner.imageUrl),
                         fit: BoxFit.cover,
                         placeholder: (context, url) =>
                             Container(color: Colors.grey.shade200),

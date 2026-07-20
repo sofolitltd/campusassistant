@@ -80,19 +80,25 @@ Future<Teacher> singleTeacher(Ref ref, String teacherId) async {
 @riverpod
 Future<Teacher> Function(Teacher) createTeacher(Ref ref) {
   final repository = ref.watch(teacherRepositoryProvider);
-  return (Teacher teacher) => repository.createTeacher(teacher).then((res) => res.fold((l) => throw l, (r) => r));
+  return (Teacher teacher) => repository
+      .createTeacher(teacher)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }
 
 @riverpod
 Future<Teacher> Function(Teacher) updateTeacher(Ref ref) {
   final repository = ref.watch(teacherRepositoryProvider);
-  return (Teacher teacher) => repository.updateTeacher(teacher).then((res) => res.fold((l) => throw l, (r) => r));
+  return (Teacher teacher) => repository
+      .updateTeacher(teacher)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }
 
 @riverpod
 Future<void> Function(String) deleteTeacher(Ref ref) {
   final repository = ref.watch(teacherRepositoryProvider);
-  return (String id) => repository.deleteTeacher(id).then((res) => res.fold((l) => throw l, (r) => r));
+  return (String id) => repository
+      .deleteTeacher(id)
+      .then((res) => res.fold((l) => throw l, (r) => r));
 }
 
 @riverpod

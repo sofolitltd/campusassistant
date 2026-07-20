@@ -69,6 +69,17 @@ class ThemeSection extends ConsumerWidget {
               color: isDark ? Colors.white10 : Colors.grey.shade300,
             ),
             _PreferenceTile(
+              icon: LucideIcons.smartphone,
+              title: 'Manage Devices',
+              onTap: () {
+                context.pushNamed(AppRoute.manageDevices.name);
+              },
+            ),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.grey.shade300,
+            ),
+            _PreferenceTile(
               icon: LucideIcons.database,
               title: 'Manage Cache',
               onTap: () {

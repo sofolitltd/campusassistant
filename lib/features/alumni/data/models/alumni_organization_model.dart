@@ -19,11 +19,11 @@ abstract class AlumniOrganizationModel with _$AlumniOrganizationModel {
       _$AlumniOrganizationModelFromJson(json);
 
   AlumniOrganization toEntity() => AlumniOrganization(
-        id: id,
-        name: name,
-        logoUrl: logoUrl,
-        website: website,
-      );
+    id: id,
+    name: name,
+    logoUrl: logoUrl,
+    website: website,
+  );
 
   factory AlumniOrganizationModel.fromEntity(AlumniOrganization org) =>
       AlumniOrganizationModel(

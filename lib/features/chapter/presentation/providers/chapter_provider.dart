@@ -36,10 +36,7 @@ Future<List<Chapter>> chaptersForCourse(
   String? batchId,
 }) async {
   final repository = ref.watch(chapterRepositoryProvider);
-  final result = await repository.getChapters(
-    courseCode,
-    batchId: batchId,
-  );
+  final result = await repository.getChapters(courseCode, batchId: batchId);
   return result.fold((failure) => throw failure, (chapters) => chapters);
 }
 
@@ -53,7 +50,9 @@ class ChapterActions {
   final ChapterRepository repository;
   ChapterActions(this.repository);
 
-  Future<void> createChapter(Chapter chapter) => repository.createChapter(chapter);
-  Future<void> updateChapter(Chapter chapter) => repository.updateChapter(chapter);
+  Future<void> createChapter(Chapter chapter) =>
+      repository.createChapter(chapter);
+  Future<void> updateChapter(Chapter chapter) =>
+      repository.updateChapter(chapter);
   Future<void> deleteChapter(String id) => repository.deleteChapter(id);
 }

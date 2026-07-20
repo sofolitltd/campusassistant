@@ -8,7 +8,7 @@ import '/routes/app_route.dart';
 import '/features/transport/presentation/providers/transport_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class TransportPage extends ConsumerWidget {
   const TransportPage({super.key});
@@ -17,7 +17,7 @@ class TransportPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final transportAsync = ref.watch(myTransportsProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Transport Service',
       showSearchBar: false,
       body: transportAsync.when(

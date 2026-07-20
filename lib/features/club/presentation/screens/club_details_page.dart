@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '/core/widgets/custom_header_layout.dart';
 import '/features/club/domain/entities/club.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/api_endpoints.dart';
 
 class ClubDetailsPage extends StatelessWidget {
   final Club club;
@@ -15,8 +17,9 @@ class ClubDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Club Details'), centerTitle: true),
+    return CustomHeaderLayout(
+      title: 'Club Details',
+      showSearchBar: false,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -24,7 +27,7 @@ class ClubDetailsPage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(RadiusToken.md),
               child: CachedNetworkImage(
-                imageUrl: club.bannerUrl!,
+                imageUrl: ApiEndpoints.resolveImageUrl(club.bannerUrl),
                 height: 180,
                 fit: BoxFit.cover,
               ),
@@ -49,7 +52,7 @@ class ClubDetailsPage extends StatelessWidget {
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(28),
                         child: CachedNetworkImage(
-                          imageUrl: club.logoUrl!,
+                          imageUrl: ApiEndpoints.resolveImageUrl(club.logoUrl),
                           fit: BoxFit.cover,
                         ),
                       )

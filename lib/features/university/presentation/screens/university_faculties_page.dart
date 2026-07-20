@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/features/department/presentation/providers/department_provider.dart';
 import '/features/department/domain/entities/department.dart';
@@ -23,7 +23,7 @@ class UniversityFacultiesPage extends ConsumerWidget {
           departmentsByUniversityProvider(university.id),
         );
 
-        return RedHeaderLayout(
+        return CustomHeaderLayout(
           title: 'Faculties',
           showSearchBar: false,
           body: deptsAsync.when(

@@ -25,28 +25,28 @@ abstract class DepartmentModel with _$DepartmentModel {
       _$DepartmentModelFromJson(json);
 
   Department toEntity() => Department(
-        id: id,
-        name: name,
-        acronym: acronym,
-        slug: slug,
-        universityId: universityId,
-        establishedYear: establishedYear,
-        about: about,
-        logoUrl: logoUrl,
-        websiteUrl: websiteUrl,
-        images: images,
-      );
+    id: id,
+    name: name,
+    acronym: acronym,
+    slug: slug,
+    universityId: universityId,
+    establishedYear: establishedYear,
+    about: about,
+    logoUrl: logoUrl,
+    websiteUrl: websiteUrl,
+    images: images,
+  );
 
   factory DepartmentModel.fromEntity(Department department) => DepartmentModel(
-        id: department.id,
-        name: department.name,
-        acronym: department.acronym,
-        slug: department.slug,
-        universityId: department.universityId,
-        establishedYear: department.establishedYear,
-        about: department.about,
-        logoUrl: department.logoUrl,
-        websiteUrl: department.websiteUrl,
-        images: department.images,
-      );
+    id: department.id,
+    name: department.name,
+    acronym: department.acronym,
+    slug: department.slug,
+    universityId: department.universityId,
+    establishedYear: department.establishedYear,
+    about: department.about,
+    logoUrl: department.logoUrl,
+    websiteUrl: department.websiteUrl,
+    images: department.images,
+  );
 }

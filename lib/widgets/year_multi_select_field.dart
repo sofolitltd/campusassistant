@@ -149,10 +149,9 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Theme.of(context)
-                              .appColors
-                              .primaryColor
-                              .withValues(alpha: 0.12)
+                          ? Theme.of(
+                              context,
+                            ).appColors.primaryColor.withValues(alpha: 0.12)
                           : Colors.white,
                       border: Border.all(
                         color: isSelected
@@ -175,7 +174,7 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
               },
             ),
           ),
-           SizedBox(height: Spacing.lg),
+          SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 50,

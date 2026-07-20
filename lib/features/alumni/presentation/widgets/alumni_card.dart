@@ -8,6 +8,7 @@ import '/widgets/open_app.dart';
 import '/features/alumni/domain/entities/alumni.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/api_endpoints.dart';
 
 class AlumniCard extends StatelessWidget {
   final Alumni alumni;
@@ -201,7 +202,9 @@ class AlumniCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(40),
                                 child: a.profileImage.isNotEmpty
                                     ? CachedNetworkImage(
-                                        imageUrl: a.profileImage,
+                                        imageUrl: ApiEndpoints.resolveImageUrl(
+                                          a.profileImage,
+                                        ),
                                         fit: BoxFit.cover,
                                         errorWidget: (context, url, error) {
                                           final h =
@@ -696,7 +699,9 @@ class AlumniCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(28),
                           child: a.profileImage.isNotEmpty
                               ? CachedNetworkImage(
-                                  imageUrl: a.profileImage,
+                                  imageUrl: ApiEndpoints.resolveImageUrl(
+                                    a.profileImage,
+                                  ),
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => Container(
                                     color: isDark
@@ -846,7 +851,9 @@ class AlumniCard extends StatelessWidget {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(4),
                                   child: CachedNetworkImage(
-                                    imageUrl: a.organizationRef!.logoUrl,
+                                    imageUrl: ApiEndpoints.resolveImageUrl(
+                                      a.organizationRef!.logoUrl,
+                                    ),
                                     width: 14,
                                     height: 14,
                                     fit: BoxFit.cover,

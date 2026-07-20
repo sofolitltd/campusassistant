@@ -217,7 +217,9 @@ class CourseFilterButton extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? primary.withValues(alpha: isDark ? 0.22 : 0.12)
+                                  ? primary.withValues(
+                                      alpha: isDark ? 0.22 : 0.12,
+                                    )
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -264,9 +266,9 @@ class CourseFilterButton extends StatelessWidget {
                                 if (isSelected)
                                   Icon(
                                     LucideIcons.check,
-                                    color: Theme.of(context)
-                                        .appColors
-                                        .primaryColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).appColors.primaryColor,
                                     size: 20,
                                   ),
                               ],

@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/cache/cache_manager.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/theme/tokens/app_radius.dart';
+import '../../../core/widgets/custom_header_layout.dart';
 
 class CacheManagementPage extends ConsumerStatefulWidget {
   const CacheManagementPage({super.key});
@@ -96,49 +97,33 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final hasSelection = _selected.isNotEmpty;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(hasSelection ? '${_selected.length} selected' : 'Manage Cache'),
-        actions: [
-          if (_stats != null && _stats!.isNotEmpty)
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  if (_selected.length == _stats!.length) {
-                    _selected.clear();
-                  } else {
-                    _selected.addAll(_stats!.map((s) => s.entityType));
-                  }
-                });
-              },
-              icon: Icon(
-                _selected.length == (_stats?.length ?? 0)
-                    ? Icons.check_box
-                    : Icons.check_box_outline_blank,
-              ),
-              tooltip: _selected.length == (_stats?.length ?? 0)
-                  ? 'Deselect All'
-                  : 'Select All',
+    return CustomHeaderLayout(
+      title: hasSelection ? '${_selected.length} selected' : 'Manage Cache',
+      showSearchBar: false,
+      actions: [
+        if (_stats != null && _stats!.isNotEmpty)
+          IconButton(
+            onPressed: () {
+              setState(() {
+                if (_selected.length == _stats!.length) {
+                  _selected.clear();
+                } else {
+                  _selected.addAll(_stats!.map((s) => s.entityType));
+                }
+              });
+            },
+            icon: Icon(
+              _selected.length == (_stats?.length ?? 0)
+                  ? Icons.check_box
+                  : Icons.check_box_outline_blank,
+              color: Colors.white,
             ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? Center(child: Text('Failed to load cache: $_error'))
-                  : _stats == null || _stats!.isEmpty
-                      ? const Center(child: Text('No cached data'))
-                      : _buildContent(isDark, hasSelection),
-          if (_clearing)
-            Container(
-              color: Colors.black26,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-        ],
-      ),
-      bottomNavigationBar: hasSelection
+            tooltip: _selected.length == (_stats?.length ?? 0)
+                ? 'Deselect All'
+                : 'Select All',
+          ),
+      ],
+      bottomBar: hasSelection
           ? SafeArea(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -148,28 +133,28 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                     onPressed: _clearing
                         ? null
                         : () async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: Text('Clear ${_selected.length} Items'),
-                          content: const Text(
-                            'This will remove the selected cached data. '
-                            'It will be re-fetched when needed.',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text('Clear'),
-                            ),
-                          ],
-                        ),
-                      );
-                      if (confirm == true) await _clearSelected();
-                    },
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: Text('Clear ${_selected.length} Items'),
+                                content: const Text(
+                                  'This will remove the selected cached data. '
+                                  'It will be re-fetched when needed.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: const Text('Clear'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) await _clearSelected();
+                          },
                     icon: const Icon(LucideIcons.trash2, size: 18),
                     label: Text('Clear Selected (${_selected.length})'),
                     style: ElevatedButton.styleFrom(
@@ -182,13 +167,33 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
               ),
             )
           : null,
+      body: Stack(
+        children: [
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+              ? Center(child: Text('Failed to load cache: $_error'))
+              : _stats == null || _stats!.isEmpty
+              ? const Center(child: Text('No cached data'))
+              : _buildContent(isDark, hasSelection),
+          if (_clearing)
+            Container(
+              color: Colors.black26,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+        ],
+      ),
     );
   }
 
   Widget _buildContent(bool isDark, bool hasSelection) {
     final totalEntries = _stats!.fold<int>(0, (sum, s) => sum + s.entryCount);
     final totalBytes = _stats!.fold<int>(0, (sum, s) => sum + s.totalBytes);
-    final formattedTotal = CacheStat(entityType: '', entryCount: 0, totalBytes: totalBytes).formattedSize;
+    final formattedTotal = CacheStat(
+      entityType: '',
+      entryCount: 0,
+      totalBytes: totalBytes,
+    ).formattedSize;
 
     return RefreshIndicator(
       onRefresh: _loadStats,
@@ -205,27 +210,27 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
               onPressed: _clearing
                   ? null
                   : () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Clear All Cache'),
-                    content: const Text(
-                      'This will remove all cached data. It will be re-fetched when needed.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('Clear All'),
-                      ),
-                    ],
-                  ),
-                );
-                if (confirm == true) await _clearAll();
-              },
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Clear All Cache'),
+                          content: const Text(
+                            'This will remove all cached data. It will be re-fetched when needed.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Clear All'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) await _clearAll();
+                    },
               icon: const Icon(LucideIcons.trash2, size: 18),
               label: const Text('Clear All Cache'),
               style: OutlinedButton.styleFrom(
@@ -241,11 +246,17 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
     );
   }
 
-  Widget _buildSummaryCard(bool isDark, int totalEntries, String formattedTotal) {
+  Widget _buildSummaryCard(
+    bool isDark,
+    int totalEntries,
+    String formattedTotal,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         border: Border.all(
           color: isDark ? Colors.white10 : Colors.grey.shade300,
@@ -292,7 +303,9 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
         child: Container(
           decoration: BoxDecoration(
             color: selected
-                ? (isDark ? Colors.blue.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.05))
+                ? (isDark
+                      ? Colors.blue.withValues(alpha: 0.1)
+                      : Colors.blue.withValues(alpha: 0.05))
                 : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(RadiusToken.lg),
             border: Border.all(
@@ -303,10 +316,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
             ),
           ),
           child: ListTile(
-            leading: Icon(
-              icon,
-              color: selected ? Colors.blue : Colors.grey,
-            ),
+            leading: Icon(icon, color: selected ? Colors.blue : Colors.grey),
             title: Text(
               name,
               style: TextStyle(
@@ -322,16 +332,25 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
               ),
             ),
             trailing: selected
-                ? const Icon(LucideIcons.checkCircle, color: Colors.blue, size: 22)
+                ? const Icon(
+                    LucideIcons.checkCircle,
+                    color: Colors.blue,
+                    size: 22,
+                  )
                 : SizedBox(
                     height: 32,
                     child: TextButton(
-                      onPressed: _clearing ? null : () => _clearEntity(stat.entityType),
+                      onPressed: _clearing
+                          ? null
+                          : () => _clearEntity(stat.entityType),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.red,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                       ),
-                      child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                      child: const Text(
+                        'Clear',
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                   ),
           ),

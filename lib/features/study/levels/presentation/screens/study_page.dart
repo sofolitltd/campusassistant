@@ -138,136 +138,139 @@ class _StudyPageState extends ConsumerState<StudyPage>
                             ),
                           ),
 
-                      // Levels header row
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+                          // Levels header row
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () =>
-                                        setState(() => isGridView = false),
-                                    child: Icon(
-                                      Icons.list_alt,
-                                      color: !isGridView
-                                          ? theme.colorScheme.onSurface
-                                          : theme.colorScheme.onSurface
-                                              .withAlpha(100),
-                                    ),
+                                  Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () =>
+                                            setState(() => isGridView = false),
+                                        child: Icon(
+                                          Icons.list_alt,
+                                          color: !isGridView
+                                              ? theme.colorScheme.onSurface
+                                              : theme.colorScheme.onSurface
+                                                    .withAlpha(100),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      GestureDetector(
+                                        onTap: () =>
+                                            setState(() => isGridView = true),
+                                        child: Icon(
+                                          Icons.grid_view_outlined,
+                                          color: isGridView
+                                              ? theme.colorScheme.onSurface
+                                              : theme.colorScheme.onSurface
+                                                    .withAlpha(100),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 16),
-                                  GestureDetector(
-                                    onTap: () =>
-                                        setState(() => isGridView = true),
-                                    child: Icon(
-                                      Icons.grid_view_outlined,
-                                      color: isGridView
-                                          ? theme.colorScheme.onSurface
-                                          : theme.colorScheme.onSurface
-                                              .withAlpha(100),
-                                    ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () => setState(
+                                          () =>
+                                              _sortAscending = !_sortAscending,
+                                        ),
+                                        child: Icon(
+                                          _sortAscending
+                                              ? LucideIcons.arrowUpWideNarrow
+                                              : LucideIcons.arrowDownWideNarrow,
+                                          size: 20,
+                                          color: theme.colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const BatchDropdown(),
+                                    ],
                                   ),
                                 ],
                               ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => setState(
-                                      () => _sortAscending = !_sortAscending,
-                                    ),
-                                    child: Icon(
-                                      _sortAscending
-                                          ? LucideIcons.arrowUpWideNarrow
-                                          : LucideIcons.arrowDownWideNarrow,
-                                      size: 20,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const BatchDropdown(),
-                                ],
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
 
-                      // Semesters content
-                      if (displaySemesters.isEmpty)
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 60),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  LucideIcons.frown,
-                                  size: 48,
-                                  color: theme.colorScheme.onSurface
-                                      .withAlpha(100),
+                          // Semesters content
+                          if (displaySemesters.isEmpty)
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 60,
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  "No semesters found.",
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onSurface
-                                        .withAlpha(128),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      else if (isGridView)
-                        SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          sliver: SliverMasonryGrid.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                            childCount: displaySemesters.length,
-                            itemBuilder: (context, index) {
-                              final semester = displaySemesters[index];
-                              return GestureDetector(
-                                onTap: () => _goToSemester(semester),
-                                child: SemesterGridCard(semester: semester),
-                              );
-                            },
-                          ),
-                        )
-                      else
-                        SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final semester = displaySemesters[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: GestureDetector(
-                                    onTap: () => _goToSemester(semester),
-                                    child: SemesterListCard(
-                                      semester: semester,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      LucideIcons.frown,
+                                      size: 48,
+                                      color: theme.colorScheme.onSurface
+                                          .withAlpha(100),
                                     ),
-                                  ),
-                                );
-                              },
-                              childCount: displaySemesters.length,
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      "No semesters found.",
+                                      style: TextStyle(
+                                        color: theme.colorScheme.onSurface
+                                            .withAlpha(128),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          else if (isGridView)
+                            SliverPadding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              sliver: SliverMasonryGrid.count(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childCount: displaySemesters.length,
+                                itemBuilder: (context, index) {
+                                  final semester = displaySemesters[index];
+                                  return GestureDetector(
+                                    onTap: () => _goToSemester(semester),
+                                    child: SemesterGridCard(semester: semester),
+                                  );
+                                },
+                              ),
+                            )
+                          else
+                            SliverPadding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              sliver: SliverList(
+                                delegate: SliverChildBuilderDelegate((
+                                  context,
+                                  index,
+                                ) {
+                                  final semester = displaySemesters[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: GestureDetector(
+                                      onTap: () => _goToSemester(semester),
+                                      child: SemesterListCard(
+                                        semester: semester,
+                                      ),
+                                    ),
+                                  );
+                                }, childCount: displaySemesters.length),
+                              ),
                             ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+                        ],
+                      ),
               ),
             ),
-          ],
-        ),
-      
+          ),
+        ],
+      ),
     );
   }
 
@@ -287,4 +290,3 @@ class _StudyPageState extends ConsumerState<StudyPage>
     context.push(uri.toString());
   }
 }
-

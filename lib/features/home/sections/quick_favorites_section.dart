@@ -17,6 +17,13 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  // Both tabs have exactly 6 items — used to size the grid's height exactly
+  // for whatever crossAxisCount the current width resolves to.
+  static const _gridItemCount = 6;
+  static const _crossAxisSpacing = 10.0;
+  static const _mainAxisSpacing = 10.0;
+  static const _childAspectRatio = 1.3;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +34,26 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  /// 3 columns on phone widths; more on tablet/desktop/web so cells don't
+  /// stretch into oversized rectangles on wide viewports.
+  int _crossAxisCountFor(double width) {
+    if (width >= 700) return 6;
+    if (width >= 480) return 4;
+    return 3;
+  }
+
+  /// TabBarView needs a bounded height ancestor, so the grid can't just
+  /// size itself — compute the exact pixel height for the current width and
+  /// column count instead of a hardcoded constant tuned for one layout.
+  double _gridHeightFor(double contentWidth, int crossAxisCount) {
+    final gridWidth = contentWidth - Spacing.md * 2;
+    final cellWidth =
+        (gridWidth - _crossAxisSpacing * (crossAxisCount - 1)) / crossAxisCount;
+    final cellHeight = cellWidth / _childAspectRatio;
+    final rows = (_gridItemCount / crossAxisCount).ceil();
+    return rows * cellHeight + (rows - 1) * _mainAxisSpacing + Spacing.md;
   }
 
   @override
@@ -54,49 +81,65 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                Spacing.md,
-                Spacing.md,
-                Spacing.md,
-                0,
-              ),
-              child: Text(
-                'Quick Favorites',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : Colors.grey.shade800,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final crossAxisCount = _crossAxisCountFor(constraints.maxWidth);
+            final gridHeight = _gridHeightFor(
+              constraints.maxWidth,
+              crossAxisCount,
+            );
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.md,
+                    Spacing.md,
+                    Spacing.md,
+                    0,
+                  ),
+                  child: Text(
+                    'Quick Favorites',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: isDark ? Colors.white70 : Colors.grey.shade800,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-              child: SectionTabBar(
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'University'),
-                  Tab(text: 'Department'),
-                ],
-              ),
-            ),
-            const SizedBox(height: Spacing.xl),
-            SizedBox(
-              height: 188,
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _FavoritesGrid(items: _universityItems),
-                  _FavoritesGrid(items: _departmentItems),
-                ],
-              ),
-            ),
-          ],
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
+                  child: SectionTabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'University'),
+                      Tab(text: 'Department'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: Spacing.xl),
+                SizedBox(
+                  height: gridHeight,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _FavoritesGrid(
+                        items: _universityItems,
+                        crossAxisCount: crossAxisCount,
+                      ),
+                      _FavoritesGrid(
+                        items: _departmentItems,
+                        crossAxisCount: crossAxisCount,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -105,16 +148,17 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
 
 class _FavoritesGrid extends StatelessWidget {
   final List<_FavoriteItem> items;
+  final int crossAxisCount;
 
-  const _FavoritesGrid({required this.items});
+  const _FavoritesGrid({required this.items, required this.crossAxisCount});
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(Spacing.md, 0, Spacing.md, Spacing.md),
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
         childAspectRatio: 1.3,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,

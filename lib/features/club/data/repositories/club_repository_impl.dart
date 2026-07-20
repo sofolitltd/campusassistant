@@ -26,7 +26,8 @@ class ClubRepositoryImpl implements ClubRepository {
     String? departmentId,
     required String type,
   }) async {
-    final cacheKey = 'uni_$universityId${departmentId != null ? '_dept_$departmentId' : ''}_type_$type';
+    final cacheKey =
+        'uni_$universityId${departmentId != null ? '_dept_$departmentId' : ''}_type_$type';
 
     // 1. Try remote if online
     if (connectivity.isConnected) {
@@ -71,9 +72,9 @@ class ClubRepositoryImpl implements ClubRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached clubs available',
-      ));
+      return const Left(
+        NetworkFailure('No internet connection and no cached clubs available'),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch clubs'));

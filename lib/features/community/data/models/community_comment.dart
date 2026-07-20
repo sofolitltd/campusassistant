@@ -28,12 +28,15 @@ class CommunityComment {
       id: json['id'],
       content: json['content'],
       authorId: json['author_id'],
-      authorName: author != null ? '${author['first_name']} ${author['last_name']}' : 'Anonymous',
+      authorName: author != null
+          ? '${author['first_name']} ${author['last_name']}'
+          : 'Anonymous',
       authorAvatar: author?['profile_image'] ?? author?['avatar_url'],
       createdAt: DateTime.parse(json['created_at']),
       likesCount: json['likes_count'] ?? 0,
       isLiked: json['is_liked'] ?? false,
-      replies: repliesJson?.map((e) => CommunityComment.fromJson(e)).toList() ?? [],
+      replies:
+          repliesJson?.map((e) => CommunityComment.fromJson(e)).toList() ?? [],
     );
   }
 }

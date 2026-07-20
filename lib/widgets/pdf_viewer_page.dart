@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +9,9 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '/core/network/api_endpoints.dart';
 
 class PdfViewerPage extends StatefulWidget {
   final String filePath;
@@ -27,14 +31,18 @@ class PdfViewerPage extends StatefulWidget {
 
 class _PdfViewerPageState extends State<PdfViewerPage> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
-  late File _pdfFile;
+  File? _pdfFile;
   bool _showAppBar = true;
   bool _isLandscape = false;
 
   @override
   void initState() {
     super.initState();
-    _pdfFile = File(widget.filePath);
+    // Web has no local filesystem — SfPdfViewer.network streams widget.url
+    // directly instead, so _pdfFile is never touched there.
+    if (!kIsWeb) {
+      _pdfFile = File(widget.filePath);
+    }
   }
 
   void _toggleAppBar() {
@@ -96,14 +104,26 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       body: SafeArea(
         top: true, // Always reserve space for the status bar
         bottom: false,
-        child: SfPdfViewer.file(
-          _pdfFile,
-          key: _pdfViewerKey,
-          onTap: (details) => _toggleAppBar(),
-          canShowScrollHead: true,
-          canShowPaginationDialog: true,
-          pageSpacing: 4,
-        ),
+        child: kIsWeb
+            ? SfPdfViewer.network(
+                // Same proxy used for images — R2 has no CORS policy, so a
+                // direct cross-origin fetch of the PDF bytes fails on web
+                // even though it works fine natively (no CORS there).
+                ApiEndpoints.resolveImageUrl(widget.url),
+                key: _pdfViewerKey,
+                onTap: (details) => _toggleAppBar(),
+                canShowScrollHead: true,
+                canShowPaginationDialog: true,
+                pageSpacing: 4,
+              )
+            : SfPdfViewer.file(
+                _pdfFile!,
+                key: _pdfViewerKey,
+                onTap: (details) => _toggleAppBar(),
+                canShowScrollHead: true,
+                canShowPaginationDialog: true,
+                pageSpacing: 4,
+              ),
       ),
     );
   }
@@ -121,52 +141,87 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
             break;
           case 'share':
             await SharePlus.instance.share(
-              ShareParams(
-                files: [XFile(widget.filePath)],
-                text: widget.title,
-              ),
+              ShareParams(files: [XFile(widget.filePath)], text: widget.title),
             );
             break;
           case 'open_with':
             await OpenFilex.open(widget.filePath);
             break;
+          case 'open_browser':
+            await launchUrl(
+              Uri.parse(widget.url),
+              mode: LaunchMode.externalApplication,
+            );
+            break;
+          case 'share_link':
+            await SharePlus.instance.share(
+              ShareParams(text: '${widget.title}\n${widget.url}'),
+            );
+            break;
         }
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'save',
-          height: 36,
-          child: Row(
-            children: [
-              Icon(LucideIcons.download, size: 18),
-              SizedBox(width: 10),
-              Text('Save to Downloads', style: TextStyle(fontSize: 13)),
+      itemBuilder: (context) => kIsWeb
+          ? [
+              // Web has no local filesystem — no save/share-file/open-with,
+              // just the browser-native equivalents.
+              const PopupMenuItem(
+                value: 'open_browser',
+                height: 36,
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.externalLink, size: 18),
+                    SizedBox(width: 10),
+                    Text('Open in Browser', style: TextStyle(fontSize: 13)),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'share_link',
+                height: 36,
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.share2, size: 18),
+                    SizedBox(width: 10),
+                    Text('Share Link', style: TextStyle(fontSize: 13)),
+                  ],
+                ),
+              ),
+            ]
+          : [
+              const PopupMenuItem(
+                value: 'save',
+                height: 36,
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.download, size: 18),
+                    SizedBox(width: 10),
+                    Text('Save to Downloads', style: TextStyle(fontSize: 13)),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'share',
+                height: 36,
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.share2, size: 18),
+                    SizedBox(width: 10),
+                    Text('Share', style: TextStyle(fontSize: 13)),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'open_with',
+                height: 36,
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.externalLink, size: 18),
+                    SizedBox(width: 10),
+                    Text('Open with', style: TextStyle(fontSize: 13)),
+                  ],
+                ),
+              ),
             ],
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'share',
-          height: 36,
-          child: Row(
-            children: [
-              Icon(LucideIcons.share2, size: 18),
-              SizedBox(width: 10),
-              Text('Share', style: TextStyle(fontSize: 13)),
-            ],
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'open_with',
-          height: 36,
-          child: Row(
-            children: [
-              Icon(LucideIcons.externalLink, size: 18),
-              SizedBox(width: 10),
-              Text('Open with', style: TextStyle(fontSize: 13)),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

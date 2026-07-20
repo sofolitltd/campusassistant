@@ -8,6 +8,7 @@ import '/core/di.dart';
 import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class CommentItem extends ConsumerStatefulWidget {
   final CommunityComment comment;
@@ -147,7 +148,11 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                   context,
                 ).primaryColor.withValues(alpha: 0.1),
                 backgroundImage: widget.comment.authorAvatar != null
-                    ? NetworkImage(widget.comment.authorAvatar!)
+                    ? NetworkImage(
+                        ApiEndpoints.resolveImageUrl(
+                          widget.comment.authorAvatar,
+                        ),
+                      )
                     : null,
                 child: widget.comment.authorAvatar == null
                     ? Text(

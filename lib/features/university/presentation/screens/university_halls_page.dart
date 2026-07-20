@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../providers/university_provider.dart';
@@ -15,7 +15,7 @@ class UniversityHallsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hallsAsync = ref.watch(hallsProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Hall List',
       showSearchBar: false,
       body: hallsAsync.when(

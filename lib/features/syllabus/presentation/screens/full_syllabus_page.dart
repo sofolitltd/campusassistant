@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/syllabus_provider.dart';
 import '../../../study/shortcut/syllabus/syllabus_card.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class FullSyllabusPage extends ConsumerStatefulWidget {
   const FullSyllabusPage({super.key});
@@ -53,7 +53,7 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
   Widget build(BuildContext context) {
     final syllabusAsync = ref.watch(syllabusPaginationProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Full Syllabus',
       showSearchBar: true,
       searchHint: 'Search syllabus...',

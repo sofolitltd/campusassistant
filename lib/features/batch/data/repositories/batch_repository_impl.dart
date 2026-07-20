@@ -49,9 +49,7 @@ class BatchRepositoryImpl implements BatchRepository {
 
     // Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final batches = cachedData
             .map((json) => BatchModel.fromJson(json).toEntity())
@@ -64,9 +62,11 @@ class BatchRepositoryImpl implements BatchRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached batch data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached batch data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch batches'));

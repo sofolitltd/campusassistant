@@ -42,7 +42,11 @@ class OpenApp {
     }
   }
 
-  static Future<void> withEmailNew(String email, {String? subject, String? message}) async {
+  static Future<void> withEmailNew(
+    String email, {
+    String? subject,
+    String? message,
+  }) async {
     if (email.isEmpty) {
       Fluttertoast.showToast(msg: 'No email found');
     } else {

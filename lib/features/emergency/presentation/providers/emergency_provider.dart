@@ -126,17 +126,14 @@ class EmergencyPagination extends _$EmergencyPagination {
       ),
     );
 
-    return result.fold(
-      (failure) => throw failure,
-      (paginated) {
-        return EmergencyState(
-          contacts: paginated.contacts,
-          hasMore: paginated.total > (offset + paginated.contacts.length),
-          isLoadingMore: false,
-          offset: offset + paginated.contacts.length,
-        );
-      },
-    );
+    return result.fold((failure) => throw failure, (paginated) {
+      return EmergencyState(
+        contacts: paginated.contacts,
+        hasMore: paginated.total > (offset + paginated.contacts.length),
+        isLoadingMore: false,
+        offset: offset + paginated.contacts.length,
+      );
+    });
   }
 
   Future<void> loadMore() async {

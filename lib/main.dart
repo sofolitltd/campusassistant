@@ -1,5 +1,9 @@
 import '/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite/sqflite.dart' show databaseFactory;
+import 'firebase_options.dart';
 import 'routes/router_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +13,7 @@ import 'package:flutter_web_plugins/url_strategy.dart'
 import 'package:go_router/go_router.dart';
 import '/core/providers/theme_provider.dart';
 import '/core/providers/app_refresh_provider.dart';
+import '/core/theme/app_scroll_behavior.dart';
 import '/core/theme/app_theme.dart';
 import '/core/cache/cache_manager.dart';
 import '/core/cache/connectivity_service.dart';
@@ -16,14 +21,20 @@ import '/core/cache/sync_manager.dart';
 import '/core/websocket/websocket_service.dart';
 import '/core/widgets/offline_banner.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
+import '/services/firebase_api.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseApi().initBackgroundHandler();
   await dotenv.load(fileName: ".env");
 
   if (kIsWeb) {
     setUrlStrategy(PathUrlStrategy());
+    // sqflite has no native web implementation — this backs it with sql.js
+    // (wasm) + IndexedDB via web/sqlite3.wasm and web/sqflite_sw.js (see
+    // `dart run sqflite_common_ffi_web:setup`), so ChatDatabase works on web.
+    databaseFactory = databaseFactoryFfiWeb;
   }
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
@@ -75,8 +86,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   void _initWebSocket() {
-    // Listen for auth state changes to connect/disconnect WebSocket
-    ref.listen(currentUserProvider, (previous, next) {
+    // Listen for auth state changes to connect/disconnect WebSocket.
+    // ref.listen only works inside build(); this runs from a post-frame
+    // callback, so it needs listenManual instead (auto-disposed with this
+    // State, same as ref.listen would be).
+    ref.listenManual(currentUserProvider, (previous, next) {
       final user = next.value;
       if (user != null && !kIsWeb) {
         // User logged in - connect WebSocket
@@ -118,9 +132,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // If user just cleared cache, skip automatic refresh
-      ref.read(cacheManagerProvider).isRecentlyCleared().then((recentlyCleared) {
+      ref.read(cacheManagerProvider).isRecentlyCleared().then((
+        recentlyCleared,
+      ) {
         if (!recentlyCleared) {
-          ref.read(refreshAppDataProvider);
+          ref.read(appRefreshProvider.notifier).trigger();
         }
       });
 
@@ -145,6 +161,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       data: (themeMode) => MaterialApp.router(
         title: 'Campus Assistant',
         debugShowCheckedModeBanner: false,
+        scrollBehavior: AppScrollBehavior(),
         themeMode: themeMode,
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
@@ -155,6 +172,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       loading: () => MaterialApp.router(
         title: 'Campus Assistant',
         debugShowCheckedModeBanner: false,
+        scrollBehavior: AppScrollBehavior(),
         themeMode: ThemeMode.system,
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
@@ -165,6 +183,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       error: (_, _) => MaterialApp.router(
         title: 'Campus Assistant',
         debugShowCheckedModeBanner: false,
+        scrollBehavior: AppScrollBehavior(),
         themeMode: ThemeMode.system,
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),

@@ -7,6 +7,7 @@ import '/features/course/domain/entities/course.dart';
 import '/widgets/headline.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/api_endpoints.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard({
@@ -104,7 +105,7 @@ class _CourseCardContent extends StatelessWidget {
             width: 80,
             height: 90,
             child: CachedNetworkImage(
-              imageUrl: courseModel.thumbnailURL,
+              imageUrl: ApiEndpoints.resolveImageUrl(courseModel.thumbnailURL),
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
                   color: isDark

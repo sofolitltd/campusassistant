@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class CrCard extends StatelessWidget {
   const CrCard({super.key, required this.cr});
@@ -45,7 +46,7 @@ class CrCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: cr.imageUrl,
+                    imageUrl: ApiEndpoints.resolveImageUrl(cr.imageUrl),
                     fadeInDuration: const Duration(milliseconds: 500),
                     imageBuilder: (_, imageProvider) => Container(
                       decoration: BoxDecoration(

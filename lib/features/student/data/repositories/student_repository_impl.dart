@@ -71,7 +71,9 @@ class StudentRepositoryImpl implements StudentRepository {
         );
 
         return PaginatedStudents(
-          students: data.map((json) => StudentModel.fromJson(json).toEntity()).toList(),
+          students: data
+              .map((json) => StudentModel.fromJson(json).toEntity())
+              .toList(),
           total: total,
         );
       } catch (e) {
@@ -89,7 +91,9 @@ class StudentRepositoryImpl implements StudentRepository {
         final students = cachedData
             .map((json) => StudentModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[StudentRepo] Returning ${students.length} cached students');
+        debugPrint(
+          '[StudentRepo] Returning ${students.length} cached students',
+        );
         return PaginatedStudents(students: students, total: students.length);
       }
     } catch (e) {

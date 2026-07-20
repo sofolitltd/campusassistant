@@ -10,7 +10,7 @@ import '/features/university/domain/entities/university.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class UniversityLocationPage extends ConsumerStatefulWidget {
   const UniversityLocationPage({super.key});
@@ -36,7 +36,7 @@ class _UniversityLocationPageState
     final theme = Theme.of(context);
 
     return universityAsync.when(
-      data: (university) => RedHeaderLayout(
+      data: (university) => CustomHeaderLayout(
         title: 'Campus Map',
         showSearchBar: false,
         body: Column(

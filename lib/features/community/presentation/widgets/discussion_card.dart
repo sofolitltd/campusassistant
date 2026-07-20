@@ -17,6 +17,7 @@ import '/features/community/presentation/widgets/comments_sheet.dart';
 import '/features/community/presentation/widgets/interaction_button.dart';
 import '/features/community/presentation/providers/community_posts_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 
 class DiscussionCard extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -99,7 +100,11 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                             context,
                           ).primaryColor.withValues(alpha: 0.1),
                           backgroundImage: widget.post.authorAvatar != null
-                              ? NetworkImage(widget.post.authorAvatar!)
+                              ? NetworkImage(
+                                  ApiEndpoints.resolveImageUrl(
+                                    widget.post.authorAvatar,
+                                  ),
+                                )
                               : null,
                           child: widget.post.authorAvatar == null
                               ? Text(
@@ -165,7 +170,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                           return ClipRRect(
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: CachedNetworkImage(
-                              imageUrl: url,
+                              imageUrl: ApiEndpoints.resolveImageUrl(url),
                               fit: BoxFit.cover,
                               placeholder: (_, _) => Container(
                                 color: isDark
@@ -329,7 +334,9 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                   context,
                 ).primaryColor.withValues(alpha: 0.1),
                 backgroundImage: post.authorAvatar != null
-                    ? NetworkImage(post.authorAvatar!)
+                    ? NetworkImage(
+                        ApiEndpoints.resolveImageUrl(post.authorAvatar),
+                      )
                     : null,
                 child: post.authorAvatar == null
                     ? Text(
@@ -668,7 +675,9 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     final text = '${post.authorName}: ${post.content}';
 
     if (post.imageUrls.isEmpty) {
-      await SharePlus.instance.share(ShareParams(text: text, subject: 'Post from ${post.authorName}'));
+      await SharePlus.instance.share(
+        ShareParams(text: text, subject: 'Post from ${post.authorName}'),
+      );
       return;
     }
 
@@ -676,16 +685,29 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
       final dio = Dio();
       final files = <XFile>[];
       for (final url in post.imageUrls) {
-        final response = await dio.get(url, options: Options(responseType: ResponseType.bytes));
+        final response = await dio.get(
+          url,
+          options: Options(responseType: ResponseType.bytes),
+        );
         final tempDir = await getTemporaryDirectory();
         final ext = url.split('.').last.split('?').first;
-        final file = File('${tempDir.path}/share_${post.id}_${files.length}.$ext');
+        final file = File(
+          '${tempDir.path}/share_${post.id}_${files.length}.$ext',
+        );
         await file.writeAsBytes(response.data);
         files.add(XFile(file.path));
       }
-      await SharePlus.instance.share(ShareParams(files: files, text: text, subject: 'Post from ${post.authorName}'));
+      await SharePlus.instance.share(
+        ShareParams(
+          files: files,
+          text: text,
+          subject: 'Post from ${post.authorName}',
+        ),
+      );
     } catch (e) {
-      await SharePlus.instance.share(ShareParams(text: text, subject: 'Post from ${post.authorName}'));
+      await SharePlus.instance.share(
+        ShareParams(text: text, subject: 'Post from ${post.authorName}'),
+      );
     }
   }
 }

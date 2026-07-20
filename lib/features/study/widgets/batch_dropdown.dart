@@ -22,8 +22,8 @@ class BatchDropdown extends ConsumerWidget {
     final borderColor = redBg
         ? Colors.white.withValues(alpha: 0.4)
         : (theme.brightness == Brightness.dark
-            ? Colors.white24
-            : Colors.grey.shade300);
+              ? Colors.white24
+              : Colors.grey.shade300);
 
     return batchesAsync.when(
       data: (batches) {
@@ -42,11 +42,7 @@ class BatchDropdown extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  LucideIcons.users,
-                  size: 14,
-                  color: textColor,
-                ),
+                Icon(LucideIcons.users, size: 14, color: textColor),
                 const SizedBox(width: 6),
                 Text(
                   batch?.name ?? 'All Batches',
@@ -57,11 +53,7 @@ class BatchDropdown extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 16,
-                  color: textColor,
-                ),
+                Icon(Icons.keyboard_arrow_down, size: 16, color: textColor),
               ],
             ),
           ),
@@ -71,9 +63,7 @@ class BatchDropdown extends ConsumerWidget {
         width: 100,
         height: 32,
         child: Center(
-          child: CupertinoActivityIndicator(
-            color: redBg ? Colors.white : null,
-          ),
+          child: CupertinoActivityIndicator(color: redBg ? Colors.white : null),
         ),
       ),
       error: (_, _) => const SizedBox(),

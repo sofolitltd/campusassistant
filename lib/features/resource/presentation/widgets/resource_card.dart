@@ -18,6 +18,7 @@ import '/features/resource/domain/entities/resource.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/core/cache/cache_manager.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/providers/download_counter_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
@@ -34,7 +35,11 @@ class ResourceCard extends ConsumerStatefulWidget {
   /// deep-link straight to a resource from a "new resource" notification.
   final bool autoOpen;
 
-  const ResourceCard({super.key, required this.resource, this.autoOpen = false});
+  const ResourceCard({
+    super.key,
+    required this.resource,
+    this.autoOpen = false,
+  });
 
   @override
   ConsumerState<ResourceCard> createState() => _ResourceCardState();
@@ -62,6 +67,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _checkFileStatus() async {
+    // No local filesystem on web — path_provider has no web implementation.
+    // "Downloaded" isn't a meaningful state there; content just streams.
+    if (kIsWeb) return;
     final fileName = _getFileName();
     final directory = await getApplicationDocumentsDirectory();
     _localPath = '${directory.path}/$fileName';
@@ -101,39 +109,46 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     final userId = profileData?.uid ?? '';
     if (userId.isNotEmpty) {
       final bookmarksValue = ref.watch(userBookmarksProvider(userId));
-      bookmarksValue.whenOrNull(data: (bookmarks) {
-        final match = bookmarks.where(
-          (b) => b.entityType == 'resource' && b.entityId == widget.resource.id,
-        );
-        final found = match.isNotEmpty;
-        if (found != _isBookmarked ||
-            (found && _bookmarkId != match.first.id)) {
-          if (mounted) {
-            setState(() {
-              _isBookmarked = found;
-              _bookmarkId = found ? match.first.id : null;
-            });
+      bookmarksValue.whenOrNull(
+        data: (bookmarks) {
+          final match = bookmarks.where(
+            (b) =>
+                b.entityType == 'resource' && b.entityId == widget.resource.id,
+          );
+          final found = match.isNotEmpty;
+          if (found != _isBookmarked ||
+              (found && _bookmarkId != match.first.id)) {
+            if (mounted) {
+              setState(() {
+                _isBookmarked = found;
+                _bookmarkId = found ? match.first.id : null;
+              });
+            }
           }
-        }
-      });
+        },
+      );
     }
 
     ref.listen(userBookmarksProvider(userId), (_, next) {
       if (userId.isEmpty) return;
-      next.whenOrNull(data: (bookmarks) {
-        final match = bookmarks.where(
-          (b) => b.entityType == 'resource' && b.entityId == widget.resource.id,
-        );
-        final found = match.isNotEmpty;
-        if (found != _isBookmarked || (found && _bookmarkId != match.first.id)) {
-          if (mounted) {
-            setState(() {
-              _isBookmarked = found;
-              _bookmarkId = found ? match.first.id : null;
-            });
+      next.whenOrNull(
+        data: (bookmarks) {
+          final match = bookmarks.where(
+            (b) =>
+                b.entityType == 'resource' && b.entityId == widget.resource.id,
+          );
+          final found = match.isNotEmpty;
+          if (found != _isBookmarked ||
+              (found && _bookmarkId != match.first.id)) {
+            if (mounted) {
+              setState(() {
+                _isBookmarked = found;
+                _bookmarkId = found ? match.first.id : null;
+              });
+            }
           }
-        }
-      });
+        },
+      );
     });
 
     return Container(
@@ -156,8 +171,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           InkWell(
             borderRadius: BorderRadius.circular(RadiusToken.sm),
             onTap: () async {
-              if (kIsWeb) return;
-
               if (isProContent && !isProUser) {
                 _showProDialog(context);
               } else {
@@ -229,7 +242,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   size: 30,
                 )
               : CachedNetworkImage(
-                  imageUrl: widget.resource.thumbnailUrl,
+                  imageUrl: ApiEndpoints.resolveImageUrl(
+                    widget.resource.thumbnailUrl,
+                  ),
                   fit: BoxFit.cover,
                   placeholder: (context, _) => Icon(
                     LucideIcons.fileText,
@@ -368,10 +383,13 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       },
       itemBuilder: (context) => [
         if (!_isDownloaded && !_isLoading)
-          const PopupMenuItem(
+          PopupMenuItem(
             height: 34,
             value: 'download',
-            child: _PopupItem(icon: LucideIcons.download, text: 'Download'),
+            child: _PopupItem(
+              icon: kIsWeb ? LucideIcons.eye : LucideIcons.download,
+              text: kIsWeb ? 'View' : 'Download',
+            ),
           ),
         if (_isLoading || _isPaused)
           PopupMenuItem(
@@ -397,11 +415,15 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           value: 'share',
           child: _PopupItem(icon: LucideIcons.share2, text: 'Share'),
         ),
-        const PopupMenuItem(
-          height: 34,
-          value: 'open_with',
-          child: _PopupItem(icon: LucideIcons.externalLink, text: 'Open with'),
-        ),
+        if (!kIsWeb)
+          const PopupMenuItem(
+            height: 34,
+            value: 'open_with',
+            child: _PopupItem(
+              icon: LucideIcons.externalLink,
+              text: 'Open with',
+            ),
+          ),
         if (_isDownloaded)
           PopupMenuItem(
             height: 34,
@@ -599,6 +621,24 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _handleOpenContent() async {
+    // Web streams the PDF straight from the URL (see PdfViewerPage) — no
+    // local download step needed or possible.
+    if (kIsWeb) {
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PdfViewerPage(
+              filePath: '',
+              url: widget.resource.fileUrl,
+              title: widget.resource.title,
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
     if (!_isDownloaded) await _downloadIfNeeded();
     if (_isDownloaded && _localPath.isNotEmpty) {
       if (mounted) {
@@ -700,6 +740,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _handleShare() async {
+    // No local file to attach on web — share the link instead.
+    if (kIsWeb) {
+      await SharePlus.instance.share(
+        ShareParams(
+          text: '${widget.resource.title}\n${widget.resource.fileUrl}',
+        ),
+      );
+      return;
+    }
+
     if (!_isDownloaded) await _downloadIfNeeded();
     if (_isDownloaded && _localPath.isNotEmpty) {
       await SharePlus.instance.share(
@@ -764,9 +814,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: const Text('Remove Bookmark'),
-          content: const Text(
-            'Are you sure you want to remove this bookmark?',
-          ),
+          content: const Text('Are you sure you want to remove this bookmark?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
@@ -776,7 +824,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
                 'Remove',
-                style: TextStyle(color: Theme.of(context).appColors.destructiveColor),
+                style: TextStyle(
+                  color: Theme.of(context).appColors.destructiveColor,
+                ),
               ),
             ),
           ],

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
 import 'staff_card.dart';
@@ -23,7 +23,7 @@ class _StaffPageState extends ConsumerState<StaffPage> {
     final staffAsync = ref.watch(staffListProvider);
     final userAsync = ref.watch(userProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Office Staff',
       searchHint: 'Search staff...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/cr_model.dart';
@@ -38,7 +38,7 @@ class _CrPageState extends ConsumerState<CrPage>
   Widget build(BuildContext context) {
     final crAsync = ref.watch(crProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Class Representative',
       searchHint: 'Search class representatives...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),

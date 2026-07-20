@@ -6,7 +6,8 @@ class EditBanner extends StatelessWidget {
   final VoidCallback onCancel;
   final bool isDark;
 
-  const EditBanner({super.key, 
+  const EditBanner({
+    super.key,
     required this.oldText,
     required this.onCancel,
     required this.isDark,
@@ -18,7 +19,11 @@ class EditBanner extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1F2C33) : Colors.white,
-        border: Border(top: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade300)),
+        border: Border(
+          top: BorderSide(
+            color: isDark ? Colors.white10 : Colors.grey.shade300,
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -29,14 +34,21 @@ class EditBanner extends StatelessWidget {
               children: [
                 const Text(
                   'Editing',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.teal),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.teal,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   oldText,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : Colors.grey.shade500),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white38 : Colors.grey.shade500,
+                  ),
                 ),
               ],
             ),

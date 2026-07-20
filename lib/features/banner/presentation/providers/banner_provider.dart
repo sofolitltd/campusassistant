@@ -78,8 +78,8 @@ class BannersListNotifier extends AsyncNotifier<List<Banner>> {
 // Presentation Providers
 final bannersListProvider =
     AsyncNotifierProvider<BannersListNotifier, List<Banner>>(
-  BannersListNotifier.new,
-);
+      BannersListNotifier.new,
+    );
 
 // Admin management providers
 final createBannerProvider = Provider((ref) {

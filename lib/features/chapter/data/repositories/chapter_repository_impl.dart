@@ -30,21 +30,23 @@ class ChapterRepositoryImpl implements ChapterRepository {
 
     // 0. In-memory cache (instant)
     if (_chaptersCache.containsKey(cacheKey)) {
-      debugPrint('[ChapterRepo] Returning ${_chaptersCache[cacheKey]!.length} chapters from in-memory cache');
+      debugPrint(
+        '[ChapterRepo] Returning ${_chaptersCache[cacheKey]!.length} chapters from in-memory cache',
+      );
       return Right(_chaptersCache[cacheKey]!);
     }
 
     // 1. Try DB cache
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final chapters = cachedData
             .map((json) => ChapterModel.fromJson(json).toEntity())
             .toList();
         _chaptersCache[cacheKey] = chapters;
-        debugPrint('[ChapterRepo] Returning ${chapters.length} cached chapters');
+        debugPrint(
+          '[ChapterRepo] Returning ${chapters.length} cached chapters',
+        );
         return Right(chapters);
       }
     } catch (e) {
@@ -76,9 +78,11 @@ class ChapterRepositoryImpl implements ChapterRepository {
 
     // 3. No data
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached chapter data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached chapter data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch chapters'));

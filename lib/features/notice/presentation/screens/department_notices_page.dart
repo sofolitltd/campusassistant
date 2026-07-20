@@ -7,7 +7,7 @@ import '../../data/models/notice_model.dart';
 import '../providers/notice_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
-import '/core/widgets/red_header_layout.dart';
+import '/core/widgets/custom_header_layout.dart';
 
 class DepartmentNoticesPage extends ConsumerWidget {
   const DepartmentNoticesPage({super.key});
@@ -16,7 +16,7 @@ class DepartmentNoticesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final noticesAsync = ref.watch(departmentNoticesProvider);
 
-    return RedHeaderLayout(
+    return CustomHeaderLayout(
       title: 'Notices',
       showSearchBar: false,
       body: noticesAsync.when(
@@ -100,7 +100,9 @@ class _NoticeCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).appColors.primaryColor.withValues(alpha: 0.1),
+                  color: Theme.of(
+                    context,
+                  ).appColors.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: Icon(
@@ -218,7 +220,9 @@ class _FallbackNoticeList extends StatelessWidget {
         imageUrl: [],
         batch: [],
         seen: [],
-        time: DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
+        time: DateTime.now()
+            .subtract(const Duration(hours: 2))
+            .toIso8601String(),
       ),
       NoticeModel(
         uploader: 'Academic Committee',
@@ -227,7 +231,9 @@ class _FallbackNoticeList extends StatelessWidget {
         imageUrl: [],
         batch: [],
         seen: [],
-        time: DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+        time: DateTime.now()
+            .subtract(const Duration(days: 1))
+            .toIso8601String(),
       ),
       NoticeModel(
         uploader: 'Faculty Advisor',
@@ -236,7 +242,9 @@ class _FallbackNoticeList extends StatelessWidget {
         imageUrl: [],
         batch: [],
         seen: [],
-        time: DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
+        time: DateTime.now()
+            .subtract(const Duration(days: 3))
+            .toIso8601String(),
       ),
     ];
 

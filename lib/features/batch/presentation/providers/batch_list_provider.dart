@@ -12,7 +12,9 @@ final batchProviderAll = FutureProvider<List<Batch>>((ref) async {
     final user = await ref.watch(userProvider.future);
     final departmentId = user.information.departmentId;
     if (departmentId == null || departmentId.isEmpty) return [];
-    final batches = await ref.watch(batchesByDepartmentProvider(departmentId).future);
+    final batches = await ref.watch(
+      batchesByDepartmentProvider(departmentId).future,
+    );
     return List<Batch>.from(batches)..sort((a, b) => b.name.compareTo(a.name));
   } catch (_) {
     return [];

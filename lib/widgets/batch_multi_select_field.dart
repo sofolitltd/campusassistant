@@ -226,10 +226,9 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Theme.of(context)
-                              .appColors
-                              .primaryColor
-                              .withValues(alpha: 0.12)
+                          ? Theme.of(
+                              context,
+                            ).appColors.primaryColor.withValues(alpha: 0.12)
                           : Colors.white,
                       border: Border.all(
                         color: isSelected

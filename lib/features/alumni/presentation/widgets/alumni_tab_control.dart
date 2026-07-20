@@ -53,11 +53,15 @@ class AlumniTabControl extends StatelessWidget {
 
   Widget _buildSmoothTab(String label, int index, bool isDark) {
     final double animationValue = tabController.animation!.value;
-    final double progress = (1.0 - (animationValue - index).abs()).clamp(0.0, 1.0);
+    final double progress = (1.0 - (animationValue - index).abs()).clamp(
+      0.0,
+      1.0,
+    );
 
     final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor =
-        isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white;
+    final Color inactiveColor = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : Colors.white;
     final Color activeTextColor = isDark ? Colors.black : Colors.white;
     final Color inactiveTextColor = Colors.grey.shade600;
 

@@ -49,14 +49,14 @@ class SessionRepositoryImpl implements SessionRepository {
 
     // Try cached data
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         final sessions = cachedData
             .map((json) => SessionModel.fromJson(json).toEntity())
             .toList();
-        debugPrint('[SessionRepo] Returning ${sessions.length} cached sessions');
+        debugPrint(
+          '[SessionRepo] Returning ${sessions.length} cached sessions',
+        );
         return Right(sessions);
       }
     } catch (e) {
@@ -64,9 +64,11 @@ class SessionRepositoryImpl implements SessionRepository {
     }
 
     if (!connectivity.isConnected) {
-      return const Left(NetworkFailure(
-        'No internet connection and no cached session data available',
-      ));
+      return const Left(
+        NetworkFailure(
+          'No internet connection and no cached session data available',
+        ),
+      );
     }
 
     return Left(ServerFailure('Failed to fetch sessions'));

@@ -24,8 +24,8 @@ class CustomDrawer extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
               ),
-              //from right side
 
+              //from right side
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -280,12 +280,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) =>
                         const NoTransitionPage(child: MySubmissionsPage()),
                   ),
-                  GoRoute(
-                    name: AppRoute.noticeGroup.name,
-                    path: AppRoute.noticeGroup.path,
-                    pageBuilder: (context, state) =>
-                        const NoTransitionPage(child: DepartmentNoticesPage()),
-                  ),
                 ],
               ),
             ],

@@ -78,6 +78,15 @@ class ApiEndpoints {
   static const String bookmarks = '/bookmarks';
   static const String clubs = '/clubs';
 
+  // Notices
+  static const String notices = '/notices';
+  static String noticeLike(String id) => '/notices/$id/like';
+  static String noticeUnlike(String id) => '/notices/$id/unlike';
+  static String noticeView(String id) => '/notices/$id/view';
+  static String noticeComments(String id) => '/notices/$id/comments';
+  static String noticeCommentDetail(String id) => '/notices/comments/$id';
+  static const String noticeLikedIds = '/notices/liked-ids';
+
   // Notifications
   static const String notifications = '/notifications';
   static String notificationRead(String id) => '/notifications/$id/read';

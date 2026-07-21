@@ -4,6 +4,7 @@ import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/error/failures.dart';
 import '../../data/datasources/notice_remote_data_source.dart';
 import '../../domain/repositories/notice_repository.dart';
+import '../models/notice_comment_model.dart';
 import '../models/notice_model.dart';
 
 class NoticeRepositoryImpl implements NoticeRepository {
@@ -27,10 +28,23 @@ class NoticeRepositoryImpl implements NoticeRepository {
     // 1. Try remote if online
     if (connectivity.isConnected) {
       try {
-        final notices = await remoteDataSource.getNotices(
+        var notices = await remoteDataSource.getNotices(
           universityId: universityId,
           departmentId: departmentId,
         );
+
+        // Merge in the current user's like state (best-effort).
+        try {
+          final likedIds = await remoteDataSource.getLikedNoticeIds(
+            departmentId: departmentId,
+          );
+          final likedSet = likedIds.toSet();
+          notices = notices
+              .map((n) => n.copyWith(isLiked: likedSet.contains(n.id)))
+              .toList();
+        } catch (e) {
+          debugPrint('[NoticeRepo] Failed to fetch liked state: $e');
+        }
 
         // Cache the result
         final cacheItems = notices.map((n) => n.toJson()).toList();
@@ -68,5 +82,54 @@ class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     throw ServerFailure('Failed to fetch notices');
+  }
+
+  @override
+  Future<List<String>> getLikedNoticeIds({required String departmentId}) {
+    return remoteDataSource.getLikedNoticeIds(departmentId: departmentId);
+  }
+
+  @override
+  Future<void> likeNotice(String id) {
+    if (!connectivity.isConnected) {
+      throw NetworkFailure('Internet connection required');
+    }
+    return remoteDataSource.likeNotice(id);
+  }
+
+  @override
+  Future<void> unlikeNotice(String id) {
+    if (!connectivity.isConnected) {
+      throw NetworkFailure('Internet connection required');
+    }
+    return remoteDataSource.unlikeNotice(id);
+  }
+
+  @override
+  Future<void> viewNotice(String id) {
+    if (!connectivity.isConnected) return Future.value();
+    return remoteDataSource.viewNotice(id);
+  }
+
+  @override
+  Future<List<NoticeCommentModel>> getComments(String noticeId) {
+    if (!connectivity.isConnected) return Future.value([]);
+    return remoteDataSource.getComments(noticeId);
+  }
+
+  @override
+  Future<NoticeCommentModel> addComment(String noticeId, String content) {
+    if (!connectivity.isConnected) {
+      throw NetworkFailure('Internet connection required to add a comment');
+    }
+    return remoteDataSource.addComment(noticeId, content);
+  }
+
+  @override
+  Future<void> deleteComment(String id) {
+    if (!connectivity.isConnected) {
+      throw NetworkFailure('Internet connection required');
+    }
+    return remoteDataSource.deleteComment(id);
   }
 }

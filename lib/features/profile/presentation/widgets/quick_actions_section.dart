@@ -17,7 +17,7 @@ class QuickActionsSection extends StatelessWidget {
       _ActionItem(
         icon: LucideIcons.megaphone,
         label: 'Notice Group',
-        onTap: () => context.push(AppRoute.noticeGroup.path),
+        onTap: () => context.push('/department/notices'),
       ),
       _ActionItem(
         icon: LucideIcons.inbox,

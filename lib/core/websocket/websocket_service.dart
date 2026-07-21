@@ -3,9 +3,11 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../network/api_endpoints.dart';
+import '/features/auth/data/datasources/auth_local_data_source.dart';
 
 /// A general-purpose WebSocket event.
 class WebSocketMessage {
@@ -48,6 +50,7 @@ class WebSocketService {
     final uri = _buildUri(token);
     try {
       _channel = WebSocketChannel.connect(uri);
+      await _channel!.ready;
       _connected = true;
       _reconnectAttempts = 0;
 
@@ -114,7 +117,7 @@ class WebSocketService {
   /// Reconnect if not already connected.
   Future<void> reconnectIfNeeded() async {
     if (!_connected && _token != null) {
-      await connect(_token!);
+      await _reconnectWithFreshToken();
     }
   }
 
@@ -134,8 +137,19 @@ class WebSocketService {
       '[WS] Reconnecting in ${delay.inSeconds}s (attempt $_reconnectAttempts)',
     );
     _reconnectTimer = Timer(delay, () {
-      if (_token != null) connect(_token!);
+      if (_token != null) _reconnectWithFreshToken();
     });
+  }
+
+  /// Re-reads the access token from secure storage before reconnecting.
+  /// The token cached in [_token] can go stale (access tokens are
+  /// short-lived); reusing it would make every reconnect attempt fail
+  /// with the same auth error forever once it expires.
+  Future<void> _reconnectWithFreshToken() async {
+    final freshToken = await const FlutterSecureStorage().read(
+      key: AuthLocalDataSourceImpl.cachedTokenKey,
+    );
+    await connect(freshToken ?? _token!);
   }
 
   void _startHeartbeat() {

@@ -49,11 +49,8 @@
 //           log('topic: $topic');
 //
 //           if (!kIsWeb) {
-//             //
-//             // await FirebaseMessaging.instance.subscribeToTopic('all-users');
-//
-//             //
-//             // await FirebaseMessaging.instance.subscribeToTopic(topic);
+//             // topic subscriptions are now reconciled server-side, see
+//             // DeviceTopicService in campusassistant-api
 //           }
 //
 //           //

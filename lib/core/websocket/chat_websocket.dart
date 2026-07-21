@@ -78,6 +78,7 @@ class ChatWebSocketService {
     final uri = _wsUri(conversationId, token);
     try {
       _channel = WebSocketChannel.connect(uri);
+      await _channel!.ready;
       _connected = true;
 
       _channel!.stream.listen(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io' show Platform;
+import 'dart:io' show File, Platform;
+import 'dart:typed_data' show Uint8List;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -9,11 +10,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import '/core/network/api_client.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/providers/app_refresh_provider.dart';
 import '/features/auth/data/datasources/auth_local_data_source.dart';
+import '/routes/app_route.dart';
 import '/routes/router_config.dart' show rootNavigatorKey;
 import 'device_repository.dart';
 
@@ -162,9 +166,28 @@ class FirebaseApi {
         ?.createNotificationChannel(_channel);
   }
 
-  void _handleForegroundMessage(RemoteMessage message) {
+  void _handleForegroundMessage(RemoteMessage message) async {
     final notification = message.notification;
     if (notification == null) return;
+
+    final imageUrl = notification.android?.imageUrl ?? notification.apple?.imageUrl;
+    final imageBytes = await _downloadImage(imageUrl);
+
+    BigPictureStyleInformation? bigPictureStyle;
+    List<DarwinNotificationAttachment>? iosAttachments;
+    if (imageBytes != null) {
+      bigPictureStyle = BigPictureStyleInformation(
+        ByteArrayAndroidBitmap(imageBytes),
+        largeIcon: ByteArrayAndroidBitmap(imageBytes),
+        contentTitle: notification.title,
+        summaryText: notification.body,
+      );
+      final iosAttachmentPath = await _writeToTempFile(imageBytes, notification.hashCode);
+      if (iosAttachmentPath != null) {
+        iosAttachments = [DarwinNotificationAttachment(iosAttachmentPath)];
+      }
+    }
+
     _localNotifications.show(
       id: notification.hashCode,
       title: notification.title,
@@ -175,21 +198,56 @@ class FirebaseApi {
           _channel.name,
           channelDescription: _channel.description,
           icon: '@mipmap/ic_launcher',
+          styleInformation: bigPictureStyle,
         ),
+        iOS: DarwinNotificationDetails(attachments: iosAttachments),
       ),
       payload: jsonEncode(message.toMap()),
     );
     _refreshNotifications();
   }
 
+  /// Best-effort image fetch for a foreground notification's big-picture
+  /// style — the app builds/shows this notification itself (unlike the
+  /// background/killed-app case, which FCM's native SDK auto-displays with
+  /// the image already, no extra code needed), so the bytes have to be
+  /// fetched here.
+  Future<Uint8List?> _downloadImage(String? url) async {
+    if (url == null || url.isEmpty) return null;
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) return response.bodyBytes;
+    } catch (e) {
+      log('[FCM] failed to fetch notification image: $e');
+    }
+    return null;
+  }
+
+  /// iOS notification attachments require a file path, not raw bytes.
+  Future<String?> _writeToTempFile(Uint8List bytes, int id) async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/fcm_notification_$id.jpg');
+      await file.writeAsBytes(bytes);
+      return file.path;
+    } catch (e) {
+      log('[FCM] failed to write notification image to disk: $e');
+      return null;
+    }
+  }
+
   void _handleTap(RemoteMessage? message) {
     _refreshNotifications();
-    if (message == null) return;
-    final actionRoute = message.data['action_route'];
-    if (actionRoute == null || (actionRoute as String).isEmpty) return;
     final context = rootNavigatorKey.currentContext;
     if (context == null) return;
-    GoRouter.of(context).push(actionRoute);
+    final actionRoute = message?.data['action_route'] as String?;
+    if (actionRoute != null && actionRoute.isNotEmpty) {
+      GoRouter.of(context).push(actionRoute);
+    } else if (message != null) {
+      // No deep link on this notification — still take the user somewhere
+      // relevant instead of leaving the tap looking like it did nothing.
+      GoRouter.of(context).push(AppRoute.notifications.path);
+    }
   }
 
   /// Bumps the app-wide refresh signal so notificationsProvider (and the

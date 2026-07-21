@@ -140,6 +140,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         }
       });
 
+      // Re-sync FCM topic subscriptions on resume, in case the account's
+      // university/department/batch changed server-side while this session
+      // stayed logged in without a token refresh. Idempotent and best-effort.
+      FirebaseApi().initNotifications();
+
       // Process pending syncs when app resumes
       if (!kIsWeb) {
         final syncManager = ref.read(syncManagerProvider);

@@ -132,7 +132,6 @@ class AppRoute {
     name: 'mySubmissions',
     path: '/my-submissions',
   );
-  static const noticeGroup = AppRoute(name: 'noticeGroup', path: '/notices');
   static const contributors = AppRoute(
     name: 'contributors',
     path: '/contributors',

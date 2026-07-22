@@ -77,6 +77,7 @@ class ApiEndpoints {
   static String communityCommentDetail(String id) => '/community/comments/$id';
   static const String bookmarks = '/bookmarks';
   static const String clubs = '/clubs';
+  static const String clubsByLocation = '/clubs-by-location';
 
   // Notices
   static const String notices = '/notices';

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -116,9 +115,6 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           const SizedBox(height: 12),
           _buildPlansSelector(context, plans),
           const SizedBox(height: 24),
-          if (selectedPlan != null)
-            _buildProjectedDateCard(context, selectedPlan!),
-          const SizedBox(height: 24),
           _buildPaymentSection(),
           const SizedBox(height: 32),
           _buildSubscribeButton(context),
@@ -208,6 +204,17 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     return Column(
       children: plans.map((plan) {
         final isSelected = selectedPlan?.id == plan.id;
+        final String accessLine;
+        if (plan.isLifetime) {
+          accessLine = 'Lifetime access';
+        } else {
+          final expiryDate = DateTime.now().add(
+            Duration(days: plan.durationDays),
+          );
+          accessLine =
+              'Access until ${DateFormat('MMM dd, yyyy').format(expiryDate)}';
+        }
+
         return GestureDetector(
           onTap: () => setState(() => selectedPlan = plan),
           child: AnimatedContainer(
@@ -215,7 +222,9 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isSelected
+                  ? primaryColor.withValues(alpha: 0.04)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(RadiusToken.sm),
               border: Border.all(
                 color: isSelected ? primaryColor : Colors.grey.shade200,
@@ -233,21 +242,6 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
             ),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? primaryColor.withValues(alpha: 0.1)
-                        : const Color(0xFFF1F5F9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isSelected ? LucideIcons.check : LucideIcons.circle,
-                    color: isSelected ? primaryColor : Colors.grey,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,12 +256,31 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                               : const Color(0xFF64748B),
                         ),
                       ),
-                      Text(
-                        _formatDuration(plan.durationDays),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 13,
-                        ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            plan.isLifetime
+                                ? LucideIcons.infinity
+                                : LucideIcons.calendarDays,
+                            size: 13,
+                            color: isSelected
+                                ? primaryColor
+                                : Colors.grey.shade500,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            accessLine,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected
+                                  ? primaryColor
+                                  : Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -275,6 +288,16 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
+                    if (plan.discount > 0)
+                      Text(
+                        '৳${plan.mainPrice}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          decoration: TextDecoration.lineThrough,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     Text(
                       '৳${plan.price}',
                       style: TextStyle(
@@ -287,7 +310,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                     ),
                     if (plan.discount > 0)
                       Text(
-                        '${plan.discount}% OFF',
+                        '${plan.discount}% OFF · Save ৳${plan.savedAmount}',
                         style: const TextStyle(
                           color: Colors.green,
                           fontSize: 11,
@@ -301,52 +324,6 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildProjectedDateCard(BuildContext context, SubscriptionPlan plan) {
-    final expiryDate = DateTime.now().add(Duration(days: plan.durationDays));
-    final formattedDate = DateFormat('MMMM dd, yyyy').format(expiryDate);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            LucideIcons.calendarDays,
-            color: Theme.of(context).primaryColor,
-            size: 22,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontFamily: GoogleFonts.outfit().fontFamily,
-                  color: Color(0xFF64748B),
-                  fontSize: 14,
-                ),
-                children: [
-                  const TextSpan(text: 'Access valid until  '),
-                  TextSpan(
-                    text: formattedDate,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 15,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -393,25 +370,17 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   }
 
   Widget _buildSubscribeButton(BuildContext context) {
+    // Inherits the app-wide elevatedButtonTheme (brand teal, RadiusToken.lg,
+    // bold label) instead of a one-off style, so it matches every other
+    // primary CTA button in the app.
     return SizedBox(
       width: double.infinity,
+      height: 52,
       child: ElevatedButton(
         onPressed: selectedPlan == null
             ? null
             : () => _handleSubscribe(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(RadiusToken.sm),
-          ),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Activate Premium',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
+        child: const Text('Activate Premium'),
       ),
     );
   }
@@ -419,22 +388,13 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   void _handleSubscribe(BuildContext context) {
     if (selectedPlan == null) return;
 
+    // plan_title/amount are display-only on PaymentPage — the actual charge
+    // is always computed server-side from plan_id, never trusted from here.
     final params = {
-      'plan': selectedPlan!.title,
+      'plan_id': selectedPlan!.id,
+      'plan_title': selectedPlan!.title,
       'amount': selectedPlan!.price.toString(),
     };
     context.pushNamed(AppRoute.payment.name, queryParameters: params);
-  }
-
-  String _formatDuration(int days) {
-    if (days >= 365) {
-      final years = days ~/ 365;
-      return '$years Year${years > 1 ? 's' : ''}';
-    } else if (days >= 30) {
-      final months = days ~/ 30;
-      return '$months Month${months > 1 ? 's' : ''}';
-    } else {
-      return '$days Days';
-    }
   }
 }

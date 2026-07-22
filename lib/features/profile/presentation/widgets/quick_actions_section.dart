@@ -24,6 +24,11 @@ class QuickActionsSection extends StatelessWidget {
         label: 'Inbox',
         onTap: () => context.push(AppRoute.inbox.path),
       ),
+      _ActionItem(
+        icon: LucideIcons.users,
+        label: 'My Clubs',
+        onTap: () => context.push(AppRoute.myClubs.path),
+      ),
     ];
 
     return Padding(

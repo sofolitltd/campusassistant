@@ -22,6 +22,12 @@ abstract class ClubModel with _$ClubModel {
     Map<String, dynamic>? socialLinks,
     String? contactEmail,
     String? contactPhone,
+    @Default(0) int followersCount,
+    @Default(false) bool isFollowing,
+    String? category,
+    @Default(false) bool isVerified,
+    @Default(0) int membersCount,
+    @Default(false) bool isMember,
   }) = _ClubModel;
 
   factory ClubModel.fromJson(Map<String, dynamic> json) =>
@@ -41,6 +47,12 @@ abstract class ClubModel with _$ClubModel {
     socialLinks: socialLinks,
     contactEmail: contactEmail,
     contactPhone: contactPhone,
+    followersCount: followersCount,
+    isFollowing: isFollowing,
+    category: category,
+    isVerified: isVerified,
+    membersCount: membersCount,
+    isMember: isMember,
   );
 
   factory ClubModel.fromEntity(Club club) => ClubModel(
@@ -57,5 +69,11 @@ abstract class ClubModel with _$ClubModel {
     socialLinks: club.socialLinks,
     contactEmail: club.contactEmail,
     contactPhone: club.contactPhone,
+    followersCount: club.followersCount,
+    isFollowing: club.isFollowing,
+    category: club.category,
+    isVerified: club.isVerified,
+    membersCount: club.membersCount,
+    isMember: club.isMember,
   );
 }

@@ -11,9 +11,11 @@ import '/features/bkash/views/bkash_web_view.dart';
 import '/features/alumni/presentation/screens/alumni_page.dart';
 import '/features/blood/presentation/screens/blood_bank_page.dart';
 import '/features/bookmark/presentation/screens/bookmark_page.dart';
-import '/features/club/presentation/screens/add_club_page.dart';
 import '/features/club/presentation/screens/club_details_page.dart';
 import '/features/club/presentation/screens/club_page.dart';
+import '/features/club/presentation/screens/suggest_club_page.dart';
+import '/features/club/presentation/screens/my_clubs_page.dart';
+import '/features/club/presentation/screens/manage_club_page.dart';
 import '/features/community/presentation/screens/community_page.dart';
 import '/features/inbox/presentation/screens/inbox_page.dart';
 import '/features/inbox/presentation/screens/chat_page.dart';
@@ -29,6 +31,7 @@ import '/features/staff/presentation/screens/staff_page.dart';
 import '/features/student/presentation/screens/all_students_page.dart';
 import '/features/student/presentation/screens/batch_students_page.dart';
 import '/features/subscription/presentation/screens/payment_page.dart';
+import '/features/subscription/presentation/screens/transaction_history_page.dart';
 import '/features/subscription/presentation/screens/subscription_page.dart';
 import '/features/teacher/presentation/screens/teacher_details_screen.dart';
 import '/features/teacher/presentation/screens/teacher_page.dart';
@@ -38,6 +41,7 @@ import '/features/university/presentation/screens/university_location_page.dart'
 import '/features/university/presentation/screens/university_halls_page.dart';
 import '/features/university/presentation/screens/university_departments_page.dart';
 import '/features/university/presentation/screens/university_faculties_page.dart';
+import '/features/university/presentation/screens/faculty_details_page.dart';
 import '/features/course/presentation/screens/course_page.dart';
 import '/features/study/presentation/screens/details/chapter_notes_screen.dart';
 import '/features/study/presentation/screens/details/course_details_page.dart';
@@ -48,6 +52,8 @@ import '/features/study/shortcut/research/research_page.dart';
 import '/features/syllabus/presentation/screens/full_syllabus_page.dart';
 import '/widgets/in_app_webview_page.dart';
 import '/widgets/youtube_player_page.dart';
+import '/features/skill/data/models/skill.dart';
+import '/features/skill/presentation/screens/skill_details_page.dart';
 import '/features/resource/presentation/screens/add_edit_resource_screen.dart';
 import '/widgets/image_viewer.dart';
 import '/features/club/domain/entities/club.dart';
@@ -388,18 +394,41 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: ':clubId',
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) {
-              final club = state.extra as Club;
-              return NoTransitionPage(child: ClubDetailsPage(club: club));
+              // extra carries the already-fetched Club when reached via a
+              // list-card tap (no refetch needed); it's null when reached
+              // via a deep link (e.g. a club-event push notification), in
+              // which case ClubDetailsPage fetches it by clubId itself.
+              final club = state.extra as Club?;
+              final clubId = state.pathParameters['clubId']!;
+              return NoTransitionPage(
+                child: ClubDetailsPage(clubId: clubId, club: club),
+              );
             },
           ),
         ],
       ),
       GoRoute(
-        name: AppRoute.addClub.name,
-        path: AppRoute.addClub.path,
+        name: AppRoute.suggestClub.name,
+        path: AppRoute.suggestClub.path,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
-            const NoTransitionPage(child: AddClubPage()),
+            const NoTransitionPage(child: SuggestClubPage()),
+      ),
+      GoRoute(
+        name: AppRoute.myClubs.name,
+        path: AppRoute.myClubs.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: MyClubsPage()),
+      ),
+      GoRoute(
+        name: AppRoute.manageClub.name,
+        path: AppRoute.manageClub.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final clubId = state.pathParameters['clubId']!;
+          return NoTransitionPage(child: ManageClubPage(clubId: clubId));
+        },
       ),
       GoRoute(
         name: AppRoute.bookmarks.name,
@@ -427,12 +456,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>?;
-          final plan =
-              args?['plan'] ?? state.uri.queryParameters['plan'] ?? 'basic';
+          final planId =
+              args?['plan_id'] ?? state.uri.queryParameters['plan_id'] ?? '';
+          final planTitle =
+              args?['plan_title'] ??
+              state.uri.queryParameters['plan_title'] ??
+              'Plan';
           final amount =
               args?['amount'] ?? state.uri.queryParameters['amount'] ?? '0';
-          return PaymentPage(plan: plan, amount: amount);
+          return PaymentPage(
+            planId: planId,
+            planTitle: planTitle,
+            amount: amount,
+          );
         },
+      ),
+      GoRoute(
+        name: AppRoute.transactionHistory.name,
+        path: AppRoute.transactionHistory.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: TransactionHistoryPage()),
       ),
       GoRoute(
         name: AppRoute.bkashWebView.name,
@@ -491,6 +535,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: UniversityFacultiesPage()),
+          ),
+          GoRoute(
+            name: AppRoute.facultyDetails.name,
+            path: AppRoute.facultyDetails.path,
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final facultyId = state.pathParameters['facultyId'] ?? '';
+              final extra = state.extra as Map<String, dynamic>?;
+              final facultyName = extra?['facultyName'] as String? ?? '';
+              return NoTransitionPage(
+                child: FacultyDetailsPage(
+                  facultyId: facultyId,
+                  facultyName: facultyName,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -706,6 +766,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           final videoId = state.pathParameters['videoId']!;
           final title = state.uri.queryParameters['title'] ?? 'Video Player';
           return YoutubePlayerPage(videoId: videoId, title: title);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.skillDetails.name,
+        path: AppRoute.skillDetails.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final skill = state.extra as Skill?;
+          return SkillDetailsPage(skill: skill);
         },
       ),
       GoRoute(

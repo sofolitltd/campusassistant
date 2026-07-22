@@ -15,6 +15,8 @@ import 'package:uuid/uuid.dart';
 
 import '../data/models/content_model.dart';
 import '/widgets/pdf_viewer_page.dart';
+import '/core/ads/download_ad_gate.dart';
+import '/core/providers/is_pro_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
@@ -86,7 +88,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     );
     contentBatches.sort((a, b) => b.compareTo(a));
 
-    final isProUser = profileData?.information.status?.subscriber == 'pro';
+    final isProUser = ref.watch(isProUserProvider);
     final isProContent = widget.contentModel.status == 'pro';
 
     final userId = profileData?.uid ?? '';
@@ -803,25 +805,31 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   }
 
   Future<void> _downloadIfNeeded() async {
-    if (!_isDownloaded && !_isLoading) {
+    // No local filesystem on web — nothing to download to, and the ad gate
+    // below relies on google_mobile_ads, which has no web implementation.
+    if (kIsWeb) return;
+    if (_isDownloaded || _isLoading) return;
+
+    final shouldDownload = await showDownloadAdGate(context, ref);
+    if (!shouldDownload || !mounted) return;
+
+    setState(() {
+      _isLoading = true;
+      _isPaused = false;
+    });
+    _cancelToken = CancelToken();
+    final success = await _downloadFile(
+      widget.contentModel.fileUrl,
+      _localPath,
+    );
+    if (mounted) {
       setState(() {
-        _isLoading = true;
-        _isPaused = false;
+        _isLoading = false;
+        if (success) {
+          _isDownloaded = true;
+          _isPaused = false;
+        }
       });
-      _cancelToken = CancelToken();
-      final success = await _downloadFile(
-        widget.contentModel.fileUrl,
-        _localPath,
-      );
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          if (success) {
-            _isDownloaded = true;
-            _isPaused = false;
-          }
-        });
-      }
     }
   }
 
@@ -871,27 +879,11 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       return;
     }
 
-    if (!_isLoading) {
-      setState(() {
-        _isLoading = true;
-        _isPaused = false;
-      });
-      _cancelToken = CancelToken();
-      final success = await _downloadFile(
-        widget.contentModel.fileUrl,
-        _localPath,
-      );
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          if (success) {
-            _isDownloaded = true;
-            _isPaused = false;
-          }
-        });
-      }
-      if (success) _openInAppViewer();
-    }
+    // Routes through the same gated path _downloadIfNeeded uses (rather
+    // than downloading inline here) so the ad gate can't be bypassed by
+    // opening a card directly instead of using its download button.
+    await _downloadIfNeeded();
+    if (_isDownloaded) _openInAppViewer();
   }
 
   void _openInAppViewer() {

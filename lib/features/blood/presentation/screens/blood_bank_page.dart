@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/custom_header_layout.dart';
+import '/core/widgets/numbered_pagination.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/utils/constants.dart';
 import '/features/session/presentation/providers/session_provider.dart';
@@ -20,41 +21,36 @@ class BloodBank extends ConsumerStatefulWidget {
 class _BloodBankState extends ConsumerState<BloodBank>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         ref.read(bloodBankScopeProvider.notifier).update(_tabController.index);
-      }
-    });
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
-        ref.read(bloodBankPaginationProvider.notifier).loadMore();
+        setState(() => _currentPage = 1);
       }
     });
   }
 
   void _onSearchChanged(String query) {
     ref.read(bloodBankSearchQueryProvider.notifier).update(query);
+    setState(() => _currentPage = 1);
   }
+
+  void _setPage(int page) => setState(() => _currentPage = page);
 
   @override
   void dispose() {
     _tabController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloodAsync = ref.watch(bloodBankPaginationProvider);
-    final selectedBlood = ref.watch(bloodBankSelectedGroupProvider);
+    final pageAsync = ref.watch(bloodBankPageProvider(_currentPage));
     final currentScope = ref.watch(bloodBankScopeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -62,7 +58,9 @@ class _BloodBankState extends ConsumerState<BloodBank>
       title: 'Blood Bank',
       searchHint: 'Search donor name...',
       onSearchChanged: _onSearchChanged,
-      searchTrailing: _BloodGroupDropdown(selectedBlood: selectedBlood),
+      searchTrailing: _BloodGroupDropdown(
+        onChanged: () => setState(() => _currentPage = 1),
+      ),
       body: Column(
         children: [
           Padding(
@@ -73,16 +71,20 @@ class _BloodBankState extends ConsumerState<BloodBank>
                 Tab(text: 'Batch'),
                 Tab(text: 'Department'),
                 Tab(text: 'University'),
-                Tab(text: 'National'),
               ],
             ),
           ),
           Expanded(
-            child: bloodAsync.when(
+            child: pageAsync.when(
               data: (state) {
-                if (state.students.isEmpty && !state.isLoadingMore) {
+                if (state.students.isEmpty) {
                   return const Center(child: Text('No donors found.'));
                 }
+
+                final totalPages = (state.total / bloodBankPageSize).ceil();
+                final startIndex = (_currentPage - 1) * bloodBankPageSize + 1;
+                final endIndex = (startIndex + state.students.length - 1)
+                    .clamp(0, state.total);
 
                 return Column(
                   children: [
@@ -103,23 +105,35 @@ class _BloodBankState extends ConsumerState<BloodBank>
                     ),
                     Expanded(
                       child: ListView.separated(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                        itemCount:
-                            state.students.length + (state.hasMore ? 1 : 0),
-                        separatorBuilder: (_, _) => const SizedBox(height: 10),
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          0,
+                          16,
+                          totalPages > 1 ? 0 : 16,
+                        ),
+                        itemCount: totalPages > 1
+                            ? state.students.length + 1
+                            : state.students.length,
+                        separatorBuilder: (_, index) {
+                          if (totalPages > 1 &&
+                              index == state.students.length - 1) {
+                            return const SizedBox(height: 0);
+                          }
+                          return const SizedBox(height: 10);
+                        },
                         itemBuilder: (context, index) {
-                          if (index < state.students.length) {
-                            final p = state.students[index];
-                            return _buildDonorCard(p, currentScope, isDark);
-                          } else {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: CupertinoActivityIndicator(),
-                              ),
+                          if (totalPages > 1 && index == state.students.length) {
+                            return NumberedPagination(
+                              currentPage: _currentPage,
+                              totalPages: totalPages,
+                              totalItems: state.total,
+                              startIndex: startIndex,
+                              endIndex: endIndex,
+                              onPageChanged: _setPage,
                             );
                           }
+                          final p = state.students[index];
+                          return _buildDonorCard(p, currentScope, isDark);
                         },
                       ),
                     ),
@@ -248,48 +262,6 @@ class _BloodBankState extends ConsumerState<BloodBank>
                     ),
                   ],
                 ],
-
-                // Scope 3 – National: Name · Session · Department · University
-                if (scope == 3) ...[
-                  Consumer(
-                    builder: (context, ref, _) {
-                      final sessionName = ref.watch(
-                        sessionNameProvider((
-                          universityId: p.universityId,
-                          id: p.sessionId,
-                        )),
-                      );
-                      return Text(
-                        'Session: $sessionName',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      );
-                    },
-                  ),
-                  if (p.departmentName != null &&
-                      p.departmentName!.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      p.departmentName!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.grey.shade700,
-                      ),
-                    ),
-                  ],
-                  if (p.universityName != null &&
-                      p.universityName!.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      p.universityName!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white54 : Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
-                ],
               ],
             ),
           ),
@@ -323,13 +295,14 @@ class _BloodBankState extends ConsumerState<BloodBank>
 
 /// Blood group filter dropdown used as trailing widget in the search bar.
 class _BloodGroupDropdown extends ConsumerWidget {
-  const _BloodGroupDropdown({required this.selectedBlood});
+  const _BloodGroupDropdown({required this.onChanged});
 
-  final String? selectedBlood;
+  final VoidCallback onChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedBlood = ref.watch(bloodBankSelectedGroupProvider);
 
     return Theme(
       data: Theme.of(
@@ -386,6 +359,7 @@ class _BloodGroupDropdown extends ConsumerWidget {
           ],
           onChanged: (val) {
             ref.read(bloodBankSelectedGroupProvider.notifier).update(val);
+            onChanged();
           },
         ),
       ),

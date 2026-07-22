@@ -58,6 +58,10 @@ class ProfileModel {
 
 class Information {
   String? batch;
+  // The batch's actual UUID (distinct from `batch`, which is its display
+  // name) — required for server-side filtering, e.g. blood bank / alumni
+  // "Batch" scope queries that pass a batch_id to the API.
+  String? batchId;
   String? id;
   String? session;
   String? hall;
@@ -68,6 +72,7 @@ class Information {
 
   Information({
     this.batch,
+    this.batchId,
     this.id,
     this.session,
     this.hall,
@@ -80,6 +85,7 @@ class Information {
   factory Information.fromJson(Map<String, dynamic> json) {
     return Information(
       batch: json['batch'] ?? '',
+      batchId: json['batchId'] ?? '',
       id: json['id'] ?? '',
       session: json['session'] ?? '',
       hall: json['hall'] ?? '',
@@ -93,6 +99,7 @@ class Information {
   Map<String, dynamic> toJson() {
     return {
       'batch': batch,
+      'batchId': batchId,
       'id': id,
       'session': session,
       'hall': hall,

@@ -1,117 +1,107 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:go_router/go_router.dart';
+import '/core/di.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/features/subscription/data/models/subscription_model.dart';
+import '/features/subscription/domain/entities/subscription.dart';
 import '/routes/app_route.dart';
-import 'apis/bkash_apis.dart';
+
+/// Outcome of a bKash payment attempt.
+///
+/// `status` is one of:
+/// - `success`   — payment was verified and a subscription was granted
+/// - `redirecting` — web only: the browser is navigating to bKash's hosted
+///   checkout page; the eventual result is picked up by [Bkash.executePayment]
+///   from [PaymentPage] after bKash redirects back
+/// - `cancel` / `failure` — the user backed out or bKash reported a failure
+/// - `error` — starting the payment itself failed (network, bad plan, etc.)
+typedef BkashResult = ({String status, Subscription? subscription});
 
 class Bkash {
-  /// Initiates and executes the bKash payment process
-  /// Returns 'success' / 'cancel' for mobile, and null for web (handled via redirect)
-  static Future<String?> payment(
-    BuildContext context, {
-    required bool isProduction,
-    required String amount,
-    required String subscriptionPlan,
+  /// Starts a bKash checkout session for [planId] via our backend — the
+  /// backend owns all bKash credentials and computes the charge from the
+  /// plan server-side, so nothing sensitive or price-related ever lives in
+  /// this client. On mobile, also finalizes the payment immediately after
+  /// the in-app WebView reports success.
+  static Future<BkashResult> payment(
+    BuildContext context,
+    WidgetRef ref, {
+    required String planId,
   }) async {
     try {
-      // Step 1: Grant token
-      final grantTokenResponse = await BkashApis(isProduction).grantToken();
-
-      // Step 2: Create payment session
-      final createPaymentResponse = await BkashApis(isProduction).createPayment(
-        idToken: grantTokenResponse.idToken,
-        subscriptionPlan: subscriptionPlan,
-        amount: amount,
-        invoiceNumber: DateTime.now().millisecondsSinceEpoch.toString(),
+      final apiClient = ref.read(apiClientProvider);
+      final response = await apiClient.post(
+        '/payments/bkash/create',
+        data: {'plan_id': planId},
       );
+      final data = response.data as Map<String, dynamic>;
+      final paymentId = data['payment_id'] as String;
+      final bkashUrl = data['bkash_url'] as String;
 
       if (kIsWeb) {
-        // Step 3: Web — redirect to bKash directly in same tab
-        final paymentUrl = Uri.parse(createPaymentResponse.bkashURL);
-
+        final paymentUrl = Uri.parse(bkashUrl);
         if (await canLaunchUrl(paymentUrl)) {
           await launchUrl(
             paymentUrl,
             mode: LaunchMode.platformDefault,
-            webOnlyWindowName: "_self", // open in current tab
+            webOnlyWindowName: "_self", // same tab
           );
-          // After redirect back to callback URL, PaymentPage handles it
-          return null;
         } else {
           Fluttertoast.showToast(msg: "Could not open payment page.");
-          return 'cancel';
         }
-      } else {
-        // Step 3 (Mobile): In-app WebView payment flow
-        if (!context.mounted) return null;
-        final result = await context.push<String?>(
-          AppRoute.bkashWebView.path,
-          extra: {
-            'url': createPaymentResponse.bkashURL,
-            'successURL': createPaymentResponse.successCallbackURL,
-            'failureURL': createPaymentResponse.failureCallbackURL,
-            'cancelURL': createPaymentResponse.cancelledCallbackURL,
-          },
-        );
-        return result;
+        return (status: 'redirecting', subscription: null);
       }
+
+      if (!context.mounted) return (status: 'error', subscription: null);
+      final webViewResult = await context.push<String?>(
+        AppRoute.bkashWebView.path,
+        extra: {
+          'url': bkashUrl,
+          'successURL': data['success_url'] as String? ?? '',
+          'failureURL': data['failure_url'] as String? ?? '',
+          'cancelURL': data['cancel_url'] as String? ?? '',
+        },
+      );
+
+      if (webViewResult != 'success') {
+        return (status: webViewResult ?? 'cancel', subscription: null);
+      }
+
+      final subscription = await executePayment(ref, paymentId: paymentId);
+      return (status: 'success', subscription: subscription);
     } catch (e) {
       Fluttertoast.showToast(msg: 'Payment Error: $e');
       debugPrint('Bkash Payment Error: $e');
-      return 'cancel';
+      return (status: 'error', subscription: null);
     }
   }
 
-  /// Finalizes a successful transaction by confirming it with bKash
-  /// and updating subscription data.
-  static Future<void> executePaymentAndFinalize(
-    BuildContext context, {
-    required String userId, // Changed from Firebase user
-    required String paymentID,
-    required String subscriptionPlan,
-    required String amount,
-    bool isProduction = false,
+  /// Finalizes a payment with our backend, which re-verifies with bKash
+  /// directly — this is the only step that actually grants a subscription.
+  /// A client-forged "success" only ever triggers a real re-verification
+  /// here, which bKash will reject if the payment never actually completed.
+  static Future<Subscription> executePayment(
+    WidgetRef ref, {
+    required String paymentId,
   }) async {
-    final grantTokenResponse = await BkashApis(isProduction).grantToken();
-    final executePaymentResponse = await BkashApis(
-      isProduction,
-    ).executePayment(idToken: grantTokenResponse.idToken, paymentID: paymentID);
-
-    if (executePaymentResponse.transactionStatus != "Completed") {
-      throw Exception("Payment execution failed");
-    }
-
-    // final now = DateTime.now();
-    // DateTime? endDate;
-
-    // switch (subscriptionPlan) {
-    //   case "1 Year":
-    //     endDate = DateTime(now.year + 1, now.month, now.day);
-    //     break;
-    //   case "2 Year":
-    //     endDate = DateTime(now.year + 2, now.month, now.day);
-    //     break;
-    //   case "3 Year":
-    //     endDate = DateTime(now.year + 3, now.month, now.day);
-    //     break;
-    //   case "Lifetime":
-    //     endDate = null;
-    //     break;
-    //   default:
-    //     endDate = DateTime(now.year, now.month, now.day);
-    // }
-
-    // TODO: Implement subscription update in Go backend
-    // This should send the transaction details to the backend to verify and update the user status
-
-    // log('Subscription Plan: $subscriptionPlan');
-    // log('Amount: $amount');
-
-    Fluttertoast.showToast(
-      msg: "$subscriptionPlan subscription activated! (Pending backend sync)",
+    final apiClient = ref.read(apiClientProvider);
+    final response = await apiClient.post(
+      '/payments/bkash/execute',
+      data: {'payment_id': paymentId},
     );
+    final subscription = SubscriptionModel.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
+
+    // Reflects the new Pro status app-wide immediately (isProUserProvider
+    // etc.) instead of requiring a manual refresh/re-login.
+    ref.invalidate(currentUserProvider);
+
+    return subscription;
   }
 }

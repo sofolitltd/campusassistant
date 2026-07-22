@@ -6,8 +6,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
-import '/features/department/presentation/providers/department_provider.dart';
-import '/features/department/domain/entities/department.dart';
+import '/routes/app_route.dart';
+import '/features/university/data/models/faculty.dart';
+import '/features/university/presentation/providers/faculty_provider.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 
 class UniversityFacultiesPage extends ConsumerWidget {
@@ -19,18 +20,15 @@ class UniversityFacultiesPage extends ConsumerWidget {
 
     return universityAsync.when(
       data: (university) {
-        final deptsAsync = ref.watch(
-          departmentsByUniversityProvider(university.id),
+        final facultiesAsync = ref.watch(
+          facultiesByUniversityProvider(university.id),
         );
 
         return CustomHeaderLayout(
           title: 'Faculties',
           showSearchBar: false,
-          body: deptsAsync.when(
-            data: (departments) => _FacultiesList(
-              departments: departments,
-              totalFaculties: university.totalFaculties,
-            ),
+          body: facultiesAsync.when(
+            data: (faculties) => _FacultiesList(faculties: faculties),
             loading: () => const Center(child: CupertinoActivityIndicator()),
             error: (err, _) => Center(
               child: Padding(
@@ -67,18 +65,45 @@ class UniversityFacultiesPage extends ConsumerWidget {
 }
 
 class _FacultiesList extends StatelessWidget {
-  final List<Department> departments;
-  final String totalFaculties;
+  final List<Faculty> faculties;
 
-  const _FacultiesList({
-    required this.departments,
-    required this.totalFaculties,
-  });
+  const _FacultiesList({required this.faculties});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
+
+    if (faculties.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    LucideIcons.layers,
+                    size: 56,
+                    color: Colors.grey.shade300,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No faculties listed yet',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -118,7 +143,7 @@ class _FacultiesList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    totalFaculties,
+                    '${faculties.length}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF3B82F6),
@@ -138,30 +163,30 @@ class _FacultiesList extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          'All Departments',
+          'All Faculties',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          '${departments.length} departments under the faculties',
+          'Tap a faculty to see its departments',
           style: TextStyle(
             color: isDark ? Colors.white54 : Colors.grey.shade600,
             fontSize: 13,
           ),
         ),
         const SizedBox(height: 16),
-        ...departments.map((dept) => _FacultyCard(department: dept)),
+        ...faculties.map((faculty) => _FacultyCard(faculty: faculty)),
       ],
     );
   }
 }
 
 class _FacultyCard extends StatelessWidget {
-  final Department department;
+  final Faculty faculty;
 
-  const _FacultyCard({required this.department});
+  const _FacultyCard({required this.faculty});
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +210,11 @@ class _FacultyCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        onTap: () => context.push('/department'),
+        onTap: () => context.pushNamed(
+          AppRoute.facultyDetails.name,
+          pathParameters: {'facultyId': faculty.id},
+          extra: {'facultyName': faculty.name},
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -199,9 +228,9 @@ class _FacultyCard extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    department.acronym.isNotEmpty
-                        ? department.acronym.substring(0, 2).toUpperCase()
-                        : department.name.substring(0, 2).toUpperCase(),
+                    faculty.name.isNotEmpty
+                        ? faculty.name.substring(0, 2).toUpperCase()
+                        : '??',
                     style: const TextStyle(
                       color: Color(0xFF3B82F6),
                       fontWeight: FontWeight.w800,
@@ -212,27 +241,14 @@ class _FacultyCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      department.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Est. ${department.establishedYear}',
-                      style: TextStyle(
-                        color: isDark ? Colors.white54 : Colors.grey.shade600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  faculty.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Icon(

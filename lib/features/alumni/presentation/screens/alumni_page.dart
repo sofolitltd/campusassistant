@@ -29,7 +29,7 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final scope = ref.read(alumniScopeProvider);
@@ -67,15 +67,71 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
     super.dispose();
   }
 
+  Widget _buildOrgFilterTrailing() {
+    final selectedOrg = ref.watch(alumniSelectedOrganizationProvider);
+    return IntrinsicWidth(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () => showOrganizationFilterSheet(context, ref),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    LucideIcons.building2,
+                    color: Colors.grey.shade600,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Org.',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.grey.shade600,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (selectedOrg != null)
+            InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => ref
+                  .read(alumniSelectedOrganizationProvider.notifier)
+                  .update(null),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12, left: 2),
+                child: Icon(
+                  Icons.close_rounded,
+                  color: Colors.grey.shade500,
+                  size: 18,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final alumniStateAsync = ref.watch(alumniPaginationProvider);
+    final selectedOrg = ref.watch(alumniSelectedOrganizationProvider);
 
     return CustomHeaderLayout(
       title: 'Alumni Network',
       searchHint: 'Search alumni...',
-      actionIcon: LucideIcons.building2,
-      onActionTap: () => showOrganizationFilterSheet(context, ref),
+      searchTrailing: _buildOrgFilterTrailing(),
       onSearchChanged: _onSearchChanged,
       body: Column(
         children: [
@@ -87,10 +143,34 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
                 Tab(text: 'Batch'),
                 Tab(text: 'Department'),
                 Tab(text: 'University'),
-                Tab(text: 'National'),
               ],
             ),
           ),
+          if (selectedOrg != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Row(
+                children: [
+                  Icon(
+                    LucideIcons.building2,
+                    size: 14,
+                    color: Colors.grey.shade500,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Filtered by ${selectedOrg.name}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: alumniStateAsync.when(
               data: (state) {

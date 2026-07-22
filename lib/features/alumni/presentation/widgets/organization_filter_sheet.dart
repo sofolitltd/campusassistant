@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../providers/alumni_provider.dart';
-import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
 Future<void> showOrganizationFilterSheet(BuildContext context, WidgetRef ref) {
@@ -78,22 +78,37 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                     color: isDark ? Colors.white : Colors.grey.shade900,
                   ),
                 ),
-                if (selectedOrg != null)
-                  TextButton(
-                    onPressed: () {
-                      ref
-                          .read(alumniSelectedOrganizationProvider.notifier)
-                          .update(null);
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Clear Filter',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (selectedOrg != null)
+                      TextButton(
+                        onPressed: () {
+                          ref
+                              .read(alumniSelectedOrganizationProvider.notifier)
+                              .update(null);
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'Clear Filter',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.redAccent,
+                          ),
+                        ),
                       ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
+                      ),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                  ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -101,11 +116,12 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
+              height: 48,
               decoration: BoxDecoration(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.08)
                     : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(RadiusToken.md),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
                 onChanged: (val) {
@@ -117,12 +133,13 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                 decoration: InputDecoration(
                   hintText: 'Search organizations...',
                   hintStyle: TextStyle(
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
-                    fontSize: 14,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade400,
+                    fontSize: 15,
                   ),
                   prefixIcon: Icon(
-                    Icons.search_rounded,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                    LucideIcons.search,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade400,
+                    size: 20,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(

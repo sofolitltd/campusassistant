@@ -55,6 +55,11 @@ const kDeveloperMobile = '01704340860';
 const kAppEmail = 'campusassistantbd@gmail.com';
 const kDeveloperFb = 'https://www.facebook.com/asifuzzamanreyad';
 
+// admin contact (shown as a fallback while a club request is pending review)
+const kAdminContactName = kDeveloperName;
+const kAdminContactPhone = kDeveloperMobile;
+const kAdminContactEmail = kAppEmail;
+
 // official fb gr
 const kFbGroup = 'https://www.facebook.com/campusassistantbd';
 const kYoutubeUrl = 'https://www.youtube.com/@campusassistantbd';

@@ -48,7 +48,6 @@ class AppRoute {
     name: 'clubDetails',
     path: '/clubs/:clubId',
   );
-  static const addClub = AppRoute(name: 'addClub', path: '/add-club');
   static const blood = AppRoute(name: 'blood', path: '/blood-bank');
 
   //
@@ -62,6 +61,10 @@ class AppRoute {
   static const bkashWebView = AppRoute(
     name: 'bkashWebView',
     path: '/bkash-webview',
+  );
+  static const transactionHistory = AppRoute(
+    name: 'transactionHistory',
+    path: '/transactions',
   );
 
   //
@@ -81,6 +84,19 @@ class AppRoute {
   static const universityFaculties = AppRoute(
     name: 'universityFaculties',
     path: 'faculties',
+  );
+  static const facultyDetails = AppRoute(
+    name: 'facultyDetails',
+    path: 'faculties/:facultyId',
+  );
+  static const suggestClub = AppRoute(
+    name: 'suggestClub',
+    path: '/suggest-club',
+  );
+  static const myClubs = AppRoute(name: 'myClubs', path: '/my-clubs');
+  static const manageClub = AppRoute(
+    name: 'manageClub',
+    path: '/manage-club/:clubId',
   );
   static const department = AppRoute(name: 'department', path: '/department');
   static const teacher = AppRoute(name: 'teacher', path: '/teacher');
@@ -102,6 +118,12 @@ class AppRoute {
   static const youtubePlayer = AppRoute(
     name: 'youtubePlayer',
     path: '/video-player/:videoId',
+  );
+
+  //// skill up ////
+  static const skillDetails = AppRoute(
+    name: 'skillDetails',
+    path: '/skill/:skillId',
   );
 
   static const library = AppRoute(name: 'library', path: '/library');

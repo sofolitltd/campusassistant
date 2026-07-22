@@ -8,17 +8,22 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/bkash/bkash_payment.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
 
 class PaymentPage extends ConsumerStatefulWidget {
-  const PaymentPage({super.key, required this.plan, required this.amount});
+  const PaymentPage({
+    super.key,
+    required this.planId,
+    required this.planTitle,
+    required this.amount,
+  });
 
+  final String planId;
+  final String planTitle;
   final String amount;
-  final String plan;
 
   @override
   ConsumerState<PaymentPage> createState() => _PaymentPageState();
@@ -26,7 +31,7 @@ class PaymentPage extends ConsumerStatefulWidget {
 
 class _PaymentPageState extends ConsumerState<PaymentPage> {
   bool _isProcessing = true;
-  bool _isSuccess = false; // Added to track success state
+  bool _isSuccess = false;
   String _statusMessage = 'Initializing Payment...';
 
   @override
@@ -36,13 +41,16 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
   }
 
   Future<void> _handleOnLoad() async {
+    // Web only: bKash redirects the browser back here with its own
+    // ?status=...&paymentID=... — that's only ever a *signal* to verify,
+    // never trusted directly (the backend re-checks with bKash before
+    // granting anything).
     final uri = Uri.base;
     final status = uri.queryParameters['status'];
-    final trxID =
-        uri.queryParameters['paymentID'] ?? uri.queryParameters['trxID'];
+    final paymentId = uri.queryParameters['paymentID'];
 
-    if (status != null) {
-      await _processWebCallback(status, trxID);
+    if (status != null && paymentId != null) {
+      await _processWebCallback(status, paymentId);
     } else {
       await _startPaymentProcess();
     }
@@ -56,67 +64,40 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
       _statusMessage = 'Redirecting to bKash...';
     });
 
-    try {
-      await Bkash.payment(
-        context,
-        isProduction: false,
-        amount: widget.amount,
-        subscriptionPlan: widget.plan,
-      );
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-          _statusMessage = 'Payment failed to start.';
-        });
-      }
-      Fluttertoast.showToast(msg: 'Payment initiation failed');
-    }
-  }
+    final result = await Bkash.payment(context, ref, planId: widget.planId);
+    if (!mounted) return;
 
-  Future<void> _processWebCallback(String status, String? trxID) async {
-    if (status == 'success' && trxID != null) {
-      setState(() {
-        _isProcessing = true;
-        _statusMessage = 'Verifying your payment...';
-      });
-
-      try {
-        final user = await ref.read(currentUserProvider.future);
-        final userId = user?.id ?? '';
-
-        if (!mounted) return;
-        await Bkash.executePaymentAndFinalize(
-          context,
-          userId: userId,
-          paymentID: trxID,
-          subscriptionPlan: widget.plan,
-          amount: widget.amount,
-        );
-
-        if (!mounted) return;
-
+    switch (result.status) {
+      case 'success':
         setState(() {
           _isProcessing = false;
           _isSuccess = true;
           _statusMessage = 'Payment Successful!';
         });
-
-        // Optional: Auto-redirect after 3 seconds
-        // Future.delayed(const Duration(seconds: 4), () {
-        //   if (mounted && _isSuccess) {
-        //     context.goNamed(AppRoute.home.name);
-        //   }
-        // });
-      } catch (e) {
+      case 'redirecting':
+        // Web: the browser is navigating to bKash's checkout page — leave
+        // the spinner up, this page is about to unload.
+        break;
+      case 'cancel':
         setState(() {
           _isProcessing = false;
-          _isSuccess = false;
-          _statusMessage = 'Verification Failed';
+          _statusMessage = 'Payment Cancelled';
         });
-        Fluttertoast.showToast(msg: 'Error: $e');
-      }
-    } else {
+      case 'failure':
+        setState(() {
+          _isProcessing = false;
+          _statusMessage = 'Payment Failed';
+        });
+      default:
+        setState(() {
+          _isProcessing = false;
+          _statusMessage = 'Payment failed to start.';
+        });
+    }
+  }
+
+  Future<void> _processWebCallback(String status, String paymentId) async {
+    if (status != 'success') {
       setState(() {
         _isProcessing = false;
         _isSuccess = false;
@@ -124,6 +105,30 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
             ? 'Payment Cancelled'
             : 'Payment Failed';
       });
+      return;
+    }
+
+    setState(() {
+      _isProcessing = true;
+      _statusMessage = 'Verifying your payment...';
+    });
+
+    try {
+      await Bkash.executePayment(ref, paymentId: paymentId);
+      if (!mounted) return;
+      setState(() {
+        _isProcessing = false;
+        _isSuccess = true;
+        _statusMessage = 'Payment Successful!';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isProcessing = false;
+        _isSuccess = false;
+        _statusMessage = 'Verification Failed';
+      });
+      Fluttertoast.showToast(msg: 'Error: $e');
     }
   }
 
@@ -181,7 +186,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                       child: Column(
                         children: [
                           Text(
-                            'Plan: ${widget.plan}',
+                            'Plan: ${widget.planTitle}',
                             style: const TextStyle(fontSize: 18),
                           ),
                           const SizedBox(height: 4),

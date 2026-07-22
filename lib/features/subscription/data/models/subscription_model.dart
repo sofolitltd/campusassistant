@@ -47,6 +47,7 @@ abstract class SubscriptionPlanModel with _$SubscriptionPlanModel {
     required int price,
     required int discount,
     @JsonKey(name: 'duration_days') required int durationDays,
+    @JsonKey(name: 'is_lifetime') @Default(false) bool isLifetime,
     required int index,
     required List<SubscriptionTargetModel> targets,
   }) = _SubscriptionPlanModel;
@@ -60,6 +61,7 @@ abstract class SubscriptionPlanModel with _$SubscriptionPlanModel {
     price: price,
     discount: discount,
     durationDays: durationDays,
+    isLifetime: isLifetime,
     index: index,
     targets: targets.map((t) => t.toEntity()).toList(),
   );
@@ -71,6 +73,7 @@ abstract class SubscriptionPlanModel with _$SubscriptionPlanModel {
         price: plan.price,
         discount: plan.discount,
         durationDays: plan.durationDays,
+        isLifetime: plan.isLifetime,
         index: plan.index,
         targets: plan.targets
             .map((t) => SubscriptionTargetModel.fromEntity(t))

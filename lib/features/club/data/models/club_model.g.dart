@@ -20,6 +20,12 @@ _ClubModel _$ClubModelFromJson(Map<String, dynamic> json) => _ClubModel(
   socialLinks: json['social_links'] as Map<String, dynamic>?,
   contactEmail: json['contact_email'] as String?,
   contactPhone: json['contact_phone'] as String?,
+  followersCount: (json['followers_count'] as num?)?.toInt() ?? 0,
+  isFollowing: json['is_following'] as bool? ?? false,
+  category: json['category'] as String?,
+  isVerified: json['is_verified'] as bool? ?? false,
+  membersCount: (json['members_count'] as num?)?.toInt() ?? 0,
+  isMember: json['is_member'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$ClubModelToJson(_ClubModel instance) =>
@@ -37,4 +43,10 @@ Map<String, dynamic> _$ClubModelToJson(_ClubModel instance) =>
       'social_links': ?instance.socialLinks,
       'contact_email': ?instance.contactEmail,
       'contact_phone': ?instance.contactPhone,
+      'followers_count': instance.followersCount,
+      'is_following': instance.isFollowing,
+      'category': ?instance.category,
+      'is_verified': instance.isVerified,
+      'members_count': instance.membersCount,
+      'is_member': instance.isMember,
     };

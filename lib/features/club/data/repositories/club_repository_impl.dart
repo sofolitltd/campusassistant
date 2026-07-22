@@ -79,4 +79,56 @@ class ClubRepositoryImpl implements ClubRepository {
 
     return Left(ServerFailure('Failed to fetch clubs'));
   }
+
+  @override
+  Future<Either<Failure, void>> followClub(String clubId) async {
+    try {
+      await remoteDataSource.followClub(clubId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to follow club: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> unfollowClub(String clubId) async {
+    try {
+      await remoteDataSource.unfollowClub(clubId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to unfollow club: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> joinClub(String clubId) async {
+    try {
+      await remoteDataSource.joinClub(clubId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to join club: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> leaveClub(String clubId) async {
+    try {
+      await remoteDataSource.leaveClub(clubId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to leave club: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Club>> suggestClub(Club club) async {
+    try {
+      final saved = await remoteDataSource.suggestClub(
+        ClubModel.fromEntity(club),
+      );
+      return Right(saved.toEntity());
+    } catch (e) {
+      return Left(ServerFailure('Failed to submit club: $e'));
+    }
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '/core/ads/ad_list_helper.dart';
 import '/features/course/domain/entities/course.dart';
 import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
@@ -153,6 +154,14 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                   return Center(child: Text('No ${widget.courseType} found!'));
                 }
 
+                final adList = withPeriodicAds(
+                  realCount: resources.length,
+                  realItemBuilder: (context, index) {
+                    final resource = resources[index];
+                    return ResourceCard(resource: resource);
+                  },
+                );
+
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
@@ -160,12 +169,9 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                     horizontal: 12,
                     vertical: 12,
                   ),
-                  itemCount: resources.length,
+                  itemCount: adList.itemCount,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final resource = resources[index];
-                    return ResourceCard(resource: resource);
-                  },
+                  itemBuilder: adList.itemBuilder,
                 );
               },
               loading: () => const Center(child: CupertinoActivityIndicator()),

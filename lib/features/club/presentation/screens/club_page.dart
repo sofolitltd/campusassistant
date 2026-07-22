@@ -42,6 +42,8 @@ class _ClubsPageState extends ConsumerState<ClubsPage>
     return CustomHeaderLayout(
       title: 'Clubs & Organizations',
       searchHint: 'Search clubs...',
+      actionIcon: LucideIcons.plus,
+      onActionTap: () => context.push(AppRoute.suggestClub.path),
       body: Column(
         children: [
           Padding(
@@ -69,18 +71,43 @@ class _ClubsPageState extends ConsumerState<ClubsPage>
   }
 }
 
-class ClubsList extends ConsumerWidget {
+const _clubCategories = [
+  'Academic',
+  'Cultural',
+  'Sports',
+  'Technology',
+  'Arts',
+  'Social Service',
+  'Debate',
+  'Other',
+];
+
+class ClubsList extends ConsumerStatefulWidget {
   final String filterType;
 
   const ClubsList({super.key, required this.filterType});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncClubs = ref.watch(clubsListProvider(filterType));
+  ConsumerState<ClubsList> createState() => _ClubsListState();
+}
+
+class _ClubsListState extends ConsumerState<ClubsList> {
+  String? _selectedCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncClubs = ref.watch(clubsListProvider(widget.filterType));
 
     return asyncClubs.when(
-      data: (clubs) {
-        if (clubs.isEmpty) {
+      data: (allClubs) {
+        final categoriesPresent = _clubCategories
+            .where((c) => allClubs.any((club) => club.category == c))
+            .toList();
+        final clubs = _selectedCategory == null
+            ? allClubs
+            : allClubs.where((c) => c.category == _selectedCategory).toList();
+
+        if (allClubs.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -112,18 +139,103 @@ class ClubsList extends ConsumerWidget {
           );
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-          itemCount: clubs.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 14),
-          itemBuilder: (context, index) {
-            final club = clubs[index];
-            return _ClubCard(club: club);
-          },
+        return Column(
+          children: [
+            if (categoriesPresent.isNotEmpty)
+              SizedBox(
+                height: 36,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    _CategoryChip(
+                      label: 'All',
+                      selected: _selectedCategory == null,
+                      onTap: () => setState(() => _selectedCategory = null),
+                    ),
+                    ...categoriesPresent.map(
+                      (cat) => _CategoryChip(
+                        label: cat,
+                        selected: _selectedCategory == cat,
+                        onTap: () => setState(() => _selectedCategory = cat),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: clubs.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No clubs in this category',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                      itemCount: clubs.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      itemBuilder: (context, index) =>
+                          _ClubCard(club: clubs[index]),
+                    ),
+            ),
+          ],
         );
       },
       loading: () => const Center(child: CupertinoActivityIndicator()),
       error: (err, _) => Center(child: Text('Error: $err')),
+    );
+  }
+}
+
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _CategoryChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: selected
+                ? primaryColor
+                : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected
+                  ? primaryColor
+                  : (isDark ? Colors.white10 : Colors.grey.shade300),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: selected
+                  ? Colors.white
+                  : (isDark ? Colors.white70 : Colors.grey.shade700),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -140,8 +252,9 @@ class _ClubCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.push(
-          AppRoute.clubDetails.toPath({'clubId': club.id}),
+        context.pushNamed(
+          AppRoute.clubDetails.name,
+          pathParameters: {'clubId': club.id},
           extra: club,
         );
       },
@@ -231,15 +344,31 @@ class _ClubCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            club.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: isDark ? Colors.white : Colors.black87,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  club.name,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: isDark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (club.isVerified) ...[
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.verified,
+                                  size: 14,
+                                  color: Colors.blue.shade400,
+                                ),
+                              ],
+                            ],
                           ),
                           const SizedBox(height: 2),
                           Row(

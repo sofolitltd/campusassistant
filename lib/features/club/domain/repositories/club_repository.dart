@@ -8,4 +8,10 @@ abstract class ClubRepository {
     String? departmentId,
     required String type,
   });
+  Future<Either<Failure, void>> followClub(String clubId);
+  Future<Either<Failure, void>> unfollowClub(String clubId);
+  // Join/leave the formal Members roster — independent of Follow.
+  Future<Either<Failure, void>> joinClub(String clubId);
+  Future<Either<Failure, void>> leaveClub(String clubId);
+  Future<Either<Failure, Club>> suggestClub(Club club);
 }

@@ -212,3 +212,96 @@ final class ClubsListFamily extends $Family
   @override
   String toString() => r'clubsListProvider';
 }
+
+/// Fetches a single club by ID — used when ClubDetailsPage is reached via a
+/// deep link (e.g. a club-event push notification) with no Club object
+/// already in hand, unlike the normal list-card tap which passes one via
+/// route `extra` and never needs this.
+
+@ProviderFor(clubById)
+final clubByIdProvider = ClubByIdFamily._();
+
+/// Fetches a single club by ID — used when ClubDetailsPage is reached via a
+/// deep link (e.g. a club-event push notification) with no Club object
+/// already in hand, unlike the normal list-card tap which passes one via
+/// route `extra` and never needs this.
+
+final class ClubByIdProvider
+    extends $FunctionalProvider<AsyncValue<Club>, Club, FutureOr<Club>>
+    with $FutureModifier<Club>, $FutureProvider<Club> {
+  /// Fetches a single club by ID — used when ClubDetailsPage is reached via a
+  /// deep link (e.g. a club-event push notification) with no Club object
+  /// already in hand, unlike the normal list-card tap which passes one via
+  /// route `extra` and never needs this.
+  ClubByIdProvider._({
+    required ClubByIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'clubByIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$clubByIdHash();
+
+  @override
+  String toString() {
+    return r'clubByIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Club> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Club> create(Ref ref) {
+    final argument = this.argument as String;
+    return clubById(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ClubByIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$clubByIdHash() => r'e8c8afd75ec4a6b3f1d069cdea834110e73490b7';
+
+/// Fetches a single club by ID — used when ClubDetailsPage is reached via a
+/// deep link (e.g. a club-event push notification) with no Club object
+/// already in hand, unlike the normal list-card tap which passes one via
+/// route `extra` and never needs this.
+
+final class ClubByIdFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Club>, String> {
+  ClubByIdFamily._()
+    : super(
+        retry: null,
+        name: r'clubByIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Fetches a single club by ID — used when ClubDetailsPage is reached via a
+  /// deep link (e.g. a club-event push notification) with no Club object
+  /// already in hand, unlike the normal list-card tap which passes one via
+  /// route `extra` and never needs this.
+
+  ClubByIdProvider call(String clubId) =>
+      ClubByIdProvider._(argument: clubId, from: this);
+
+  @override
+  String toString() => r'clubByIdProvider';
+}

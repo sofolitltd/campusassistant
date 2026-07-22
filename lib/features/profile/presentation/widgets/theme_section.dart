@@ -91,6 +91,17 @@ class ThemeSection extends ConsumerWidget {
               color: isDark ? Colors.white10 : Colors.grey.shade300,
             ),
             _PreferenceTile(
+              icon: LucideIcons.receiptText,
+              title: 'Transaction History',
+              onTap: () {
+                context.pushNamed(AppRoute.transactionHistory.name);
+              },
+            ),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.grey.shade300,
+            ),
+            _PreferenceTile(
               icon: LucideIcons.userPen,
               title: 'Edit Profile',
               onTap: () {

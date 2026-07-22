@@ -16,6 +16,7 @@ abstract class User with _$User {
     String? phone,
     String? gender,
     String? batch,
+    String? batchId,
     String? profession,
     String? session,
     String? hall,

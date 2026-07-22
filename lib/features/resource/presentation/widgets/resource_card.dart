@@ -16,6 +16,8 @@ import 'package:uuid/uuid.dart';
 
 import '/features/resource/domain/entities/resource.dart';
 import '/widgets/pdf_viewer_page.dart';
+import '/core/ads/download_ad_gate.dart';
+import '/core/providers/is_pro_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/core/cache/cache_manager.dart';
 import '/core/network/api_endpoints.dart';
@@ -103,7 +105,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     List<String> contentBatches = List<String>.from(widget.resource.batches);
     contentBatches.sort((a, b) => b.compareTo(a));
 
-    final isProUser = profileData?.information.status?.subscriber == 'pro';
+    final isProUser = ref.watch(isProUserProvider);
     final isProContent = widget.resource.status == 'pro';
 
     final userId = profileData?.uid ?? '';
@@ -657,7 +659,14 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _downloadIfNeeded() async {
+    // No local filesystem on web — nothing to download to, and the ad gate
+    // below relies on google_mobile_ads, which has no web implementation.
+    if (kIsWeb) return;
     if (_isDownloaded || _isLoading) return;
+
+    final shouldDownload = await showDownloadAdGate(context, ref);
+    if (!shouldDownload || !mounted) return;
+
     setState(() {
       _isLoading = true;
       _isPaused = false;

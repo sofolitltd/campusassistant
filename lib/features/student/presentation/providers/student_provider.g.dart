@@ -450,7 +450,7 @@ final class StudentsByBatchProvider
   }
 }
 
-String _$studentsByBatchHash() => r'4310942820f50c5fefa4719eae888f6758354d4d';
+String _$studentsByBatchHash() => r'617df33dfeea82eae2b60656286b79bf80bbaa96';
 
 final class StudentsByBatchFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Student>>, String> {
@@ -774,7 +774,7 @@ final class AllStudentsProvider
   }
 }
 
-String _$allStudentsHash() => r'01319833812169e739bf2cce9dff63f15850a7db';
+String _$allStudentsHash() => r'fd0bc0f8634bdee458f55384b07facd68a420226';
 
 final class AllStudentsFamily extends $Family
     with

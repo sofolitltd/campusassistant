@@ -88,10 +88,11 @@ class AlumniPagination extends _$AlumniPagination {
     // Mapped search scopes:
     // Batch scope -> scope == 0
     // Department scope -> scope <= 1
-    // University scope -> scope <= 2
-    // National scope -> scope == 3 (pass nulls to query across all)
+    // University scope -> scope <= 2 (broadest — always true, 3 tabs total)
     final universityId = scope <= 2 ? profile.information.universityId : null;
     final departmentId = scope <= 1 ? profile.information.departmentId : null;
+    // Alumni.Batch is a free-text field (not a Batch-table FK, unlike
+    // Student.BatchID), so this must stay the display name, not the UUID.
     final batch = scope == 0 ? profile.information.batch : null;
 
     final repo = ref.watch(alumniRepositoryProvider);
@@ -131,6 +132,8 @@ class AlumniPagination extends _$AlumniPagination {
 
     final universityId = scope <= 2 ? profile.information.universityId : null;
     final departmentId = scope <= 1 ? profile.information.departmentId : null;
+    // Alumni.Batch is a free-text field (not a Batch-table FK, unlike
+    // Student.BatchID), so this must stay the display name, not the UUID.
     final batch = scope == 0 ? profile.information.batch : null;
 
     final repo = ref.read(alumniRepositoryProvider);

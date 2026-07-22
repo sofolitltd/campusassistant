@@ -25,6 +25,7 @@ final userProvider = FutureProvider<ProfileModel>((ref) async {
     token: '',
     information: Information(
       batch: user.batch,
+      batchId: user.batchId,
       id: user.id,
       session: user.session,
       hall: user.hall,
@@ -63,7 +64,8 @@ final userProfileByUidProvider = FutureProvider.family<ProfileModel, String>((
     image: student.imageUrl,
     token: student.verificationCode,
     information: Information(
-      batch: student.batchId,
+      batch: student.batchName,
+      batchId: student.batchId,
       id: student.studentId,
       session: student.sessionId,
       hall: student.hallName,

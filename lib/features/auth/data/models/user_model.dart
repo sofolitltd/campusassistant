@@ -4,6 +4,13 @@ import '../../domain/entities/user.dart';
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
 
+// `batch` is the Batch's display name (e.g. "2021-22"), populated by the
+// backend at internal/delivery/http/handler/auth_handler.go GetMe from
+// Student.Batch.Name. It is NOT a filterable ID. The real batch UUID only
+// exists nested under `student.batch_id`, so it needs its own reader.
+Object? _readBatchId(Map<dynamic, dynamic> json, String key) =>
+    json['student'] is Map ? json['student']['batch_id'] : null;
+
 @freezed
 abstract class UserModel with _$UserModel {
   const UserModel._();
@@ -18,6 +25,7 @@ abstract class UserModel with _$UserModel {
     String? phone,
     String? gender,
     String? batch,
+    @JsonKey(readValue: _readBatchId) String? batchId,
     String? profession,
     String? session,
     String? hall,
@@ -47,6 +55,7 @@ abstract class UserModel with _$UserModel {
     phone: phone,
     gender: gender,
     batch: batch,
+    batchId: batchId,
     profession: profession,
     session: session,
     hall: hall,
@@ -73,6 +82,7 @@ abstract class UserModel with _$UserModel {
     phone: user.phone,
     gender: user.gender,
     batch: user.batch,
+    batchId: user.batchId,
     profession: user.profession,
     session: user.session,
     hall: user.hall,

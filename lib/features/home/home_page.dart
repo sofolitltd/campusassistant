@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/ads/banner_ad_widget.dart';
 import '/core/widgets/mouse_wheel_horizontal_scroll.dart';
 import '/routes/app_route.dart';
 import '../../features/auth/presentation/providers/user_profile_provider.dart';
 import 'sections/banner_section.dart';
 import 'sections/subscription_section.dart';
 import 'sections/quick_favorites_section.dart';
+import 'sections/skill_up_section.dart';
 import 'widgets/home_drawer.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -245,7 +247,11 @@ class _HomePageState extends ConsumerState<HomePage>
                     const SizedBox(height: Spacing.sm),
                     const QuickFavoritesSection(),
                     const SizedBox(height: Spacing.sm),
+                    const BannerAdWidget(),
+                    const SizedBox(height: Spacing.sm),
                     const BannerSection(),
+                    const SizedBox(height: Spacing.sm),
+                    const SkillUpSection(),
                     const SizedBox(height: Spacing.sm),
                   ],
                 ),

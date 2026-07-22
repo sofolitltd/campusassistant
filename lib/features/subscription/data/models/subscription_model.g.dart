@@ -36,6 +36,7 @@ _SubscriptionPlanModel _$SubscriptionPlanModelFromJson(
   price: (json['price'] as num).toInt(),
   discount: (json['discount'] as num).toInt(),
   durationDays: (json['duration_days'] as num).toInt(),
+  isLifetime: json['is_lifetime'] as bool? ?? false,
   index: (json['index'] as num).toInt(),
   targets: (json['targets'] as List<dynamic>)
       .map((e) => SubscriptionTargetModel.fromJson(e as Map<String, dynamic>))
@@ -50,6 +51,7 @@ Map<String, dynamic> _$SubscriptionPlanModelToJson(
   'price': instance.price,
   'discount': instance.discount,
   'duration_days': instance.durationDays,
+  'is_lifetime': instance.isLifetime,
   'index': instance.index,
   'targets': instance.targets,
 };

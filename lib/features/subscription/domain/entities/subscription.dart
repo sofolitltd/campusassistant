@@ -23,6 +23,7 @@ abstract class SubscriptionPlan with _$SubscriptionPlan {
     required int price,
     required int discount,
     required int durationDays,
+    @Default(false) bool isLifetime,
     required int index,
     required List<SubscriptionTarget> targets,
   }) = _SubscriptionPlan;
@@ -31,6 +32,9 @@ abstract class SubscriptionPlan with _$SubscriptionPlan {
     if (discount == 0) return price;
     return (price / (1 - (discount / 100))).round();
   }
+
+  /// Taka saved vs. the original (pre-discount) price.
+  int get savedAmount => mainPrice - price;
 }
 
 @freezed

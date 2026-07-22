@@ -24,7 +24,7 @@ class BloodGroupNotifier extends Notifier<String?> {
   void update(String? group) => state = group;
 }
 
-// Scope (0 = Department, 1 = University, 2 = National)
+// Scope (0 = Batch, 1 = Department, 2 = University)
 final bloodBankScopeProvider = NotifierProvider<ScopeNotifier, int>(
   () => ScopeNotifier(),
 );
@@ -38,106 +38,37 @@ class ScopeNotifier extends Notifier<int> {
 class BloodBankState {
   final List<Student> students;
   final int total;
-  final bool isLoadingMore;
-  final bool hasMore;
 
-  BloodBankState({
-    required this.students,
-    required this.total,
-    this.isLoadingMore = false,
-    this.hasMore = true,
-  });
-
-  BloodBankState copyWith({
-    List<Student>? students,
-    int? total,
-    bool? isLoadingMore,
-    bool? hasMore,
-  }) {
-    return BloodBankState(
-      students: students ?? this.students,
-      total: total ?? this.total,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      hasMore: hasMore ?? this.hasMore,
-    );
-  }
+  BloodBankState({required this.students, required this.total});
 }
 
-final bloodBankPaginationProvider =
-    AsyncNotifierProvider<BloodBankPaginationNotifier, BloodBankState>(
-      () => BloodBankPaginationNotifier(),
-    );
+const int bloodBankPageSize = 20;
 
-class BloodBankPaginationNotifier extends AsyncNotifier<BloodBankState> {
-  static const int _limit = 20;
+/// One page (numbered, not infinite-scroll) of blood bank results, keyed by
+/// page number — matches the tab/page-number pagination used on the All
+/// Students page instead of a cumulative loadMore() list.
+final bloodBankPageProvider =
+    FutureProvider.family<BloodBankState, int>((ref, page) async {
+      final search = ref.watch(bloodBankSearchQueryProvider);
+      final scope = ref.watch(bloodBankScopeProvider);
+      final bloodGroup = ref.watch(bloodBankSelectedGroupProvider);
+      final profile = await ref.watch(userProvider.future);
 
-  @override
-  Future<BloodBankState> build() async {
-    final search = ref.watch(bloodBankSearchQueryProvider);
-    final scope = ref.watch(bloodBankScopeProvider);
-    final bloodGroup = ref.watch(bloodBankSelectedGroupProvider);
-    final profile = await ref.watch(userProvider.future);
-
-    final params = GetStudentsParams(
-      universityId: scope <= 2 ? profile.information.universityId : null,
-      departmentId: scope <= 1 ? profile.information.departmentId : null,
-      batch: scope == 0 ? profile.information.batch : null,
-      search: search.isEmpty ? null : search,
-      bloodGroup: bloodGroup,
-      limit: _limit,
-      offset: 0,
-    );
-
-    final useCase = GetStudents(ref.read(studentRepositoryProvider));
-    final paginated = await useCase(params);
-
-    return BloodBankState(
-      students: paginated.students,
-      total: paginated.total,
-      hasMore: paginated.students.length < paginated.total,
-    );
-  }
-
-  Future<void> loadMore() async {
-    final currentState = state.asData?.value;
-    if (currentState == null ||
-        currentState.isLoadingMore ||
-        !currentState.hasMore) {
-      return;
-    }
-
-    state = AsyncValue.data(currentState.copyWith(isLoadingMore: true));
-
-    final search = ref.read(bloodBankSearchQueryProvider);
-    final scope = ref.read(bloodBankScopeProvider);
-    final bloodGroup = ref.read(bloodBankSelectedGroupProvider);
-    final profile = ref.read(userProvider).asData?.value;
-
-    if (profile == null) return;
-
-    final params = GetStudentsParams(
-      universityId: scope <= 2 ? profile.information.universityId : null,
-      departmentId: scope <= 1 ? profile.information.departmentId : null,
-      batch: scope == 0 ? profile.information.batch : null,
-      search: search.isEmpty ? null : search,
-      bloodGroup: bloodGroup,
-      limit: _limit,
-      offset: currentState.students.length,
-    );
-
-    final useCase = GetStudents(ref.read(studentRepositoryProvider));
-    try {
-      final paginated = await useCase(params);
-      final newStudents = [...currentState.students, ...paginated.students];
-      state = AsyncValue.data(
-        currentState.copyWith(
-          students: newStudents,
-          isLoadingMore: false,
-          hasMore: newStudents.length < paginated.total,
-        ),
+      final params = GetStudentsParams(
+        universityId: scope <= 2 ? profile.information.universityId : null,
+        departmentId: scope <= 1 ? profile.information.departmentId : null,
+        batch: scope == 0 ? profile.information.batchId : null,
+        search: search.isEmpty ? null : search,
+        bloodGroup: bloodGroup,
+        limit: bloodBankPageSize,
+        offset: (page - 1) * bloodBankPageSize,
       );
-    } catch (_) {
-      state = AsyncValue.data(currentState.copyWith(isLoadingMore: false));
-    }
-  }
-}
+
+      final useCase = GetStudents(ref.read(studentRepositoryProvider));
+      final paginated = await useCase(params);
+
+      return BloodBankState(
+        students: paginated.students,
+        total: paginated.total,
+      );
+    });

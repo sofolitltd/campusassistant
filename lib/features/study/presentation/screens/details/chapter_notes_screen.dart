@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/core/ads/ad_list_helper.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 
@@ -321,12 +322,9 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                             );
                           }
 
-                          return ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: resources.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: Spacing.md),
-                            itemBuilder: (context, index) {
+                          final adList = withPeriodicAds(
+                            realCount: resources.length,
+                            realItemBuilder: (context, index) {
                               final resource = resources[index];
                               return ResourceCard(
                                 resource: resource,
@@ -335,6 +333,14 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                                     resource.id == widget.resourceId,
                               );
                             },
+                          );
+
+                          return ListView.separated(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: adList.itemCount,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: Spacing.md),
+                            itemBuilder: adList.itemBuilder,
                           );
                         },
                       ),

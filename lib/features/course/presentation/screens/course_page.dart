@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/core/ads/banner_ad_widget.dart';
 import '/features/course/domain/entities/course.dart';
 import '/features/course/presentation/providers/course_provider.dart';
 import '/features/batch/domain/entities/batch.dart';
@@ -380,21 +381,22 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                     8,
                                     16,
                                   ),
-                                  children: categories
-                                      .map(
-                                        (cat) => CourseCard(
-                                          courseCategory: cat,
-                                          courses: coursesByCategory[cat]!,
-                                          selectedBatch:
-                                              isAllBatches(selectedBatch)
-                                              ? ''
-                                              : (selectedBatch?.slug ??
-                                                    selectedBatch?.id ??
-                                                    ''),
-                                          selectedSemester: currentSemesterName,
-                                        ),
-                                      )
-                                      .toList(),
+                                  children: [
+                                    ...categories.map(
+                                      (cat) => CourseCard(
+                                        courseCategory: cat,
+                                        courses: coursesByCategory[cat]!,
+                                        selectedBatch:
+                                            isAllBatches(selectedBatch)
+                                            ? ''
+                                            : (selectedBatch?.slug ??
+                                                  selectedBatch?.id ??
+                                                  ''),
+                                        selectedSemester: currentSemesterName,
+                                      ),
+                                    ),
+                                    const BannerAdWidget(),
+                                  ],
                                 ),
                               );
                             },

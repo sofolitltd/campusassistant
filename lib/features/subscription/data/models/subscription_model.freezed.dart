@@ -290,7 +290,7 @@ as DateTime?,
 /// @nodoc
 mixin _$SubscriptionPlanModel {
 
- String get id; String get title; int get price; int get discount;@JsonKey(name: 'duration_days') int get durationDays; int get index; List<SubscriptionTargetModel> get targets;
+ String get id; String get title; int get price; int get discount;@JsonKey(name: 'duration_days') int get durationDays;@JsonKey(name: 'is_lifetime') bool get isLifetime; int get index; List<SubscriptionTargetModel> get targets;
 /// Create a copy of SubscriptionPlanModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -303,16 +303,16 @@ $SubscriptionPlanModelCopyWith<SubscriptionPlanModel> get copyWith => _$Subscrip
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other.targets, targets));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.isLifetime, isLifetime) || other.isLifetime == isLifetime)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other.targets, targets));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,price,discount,durationDays,index,const DeepCollectionEquality().hash(targets));
+int get hashCode => Object.hash(runtimeType,id,title,price,discount,durationDays,isLifetime,index,const DeepCollectionEquality().hash(targets));
 
 @override
 String toString() {
-  return 'SubscriptionPlanModel(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, index: $index, targets: $targets)';
+  return 'SubscriptionPlanModel(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, isLifetime: $isLifetime, index: $index, targets: $targets)';
 }
 
 
@@ -323,7 +323,7 @@ abstract mixin class $SubscriptionPlanModelCopyWith<$Res>  {
   factory $SubscriptionPlanModelCopyWith(SubscriptionPlanModel value, $Res Function(SubscriptionPlanModel) _then) = _$SubscriptionPlanModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, int price, int discount,@JsonKey(name: 'duration_days') int durationDays, int index, List<SubscriptionTargetModel> targets
+ String id, String title, int price, int discount,@JsonKey(name: 'duration_days') int durationDays,@JsonKey(name: 'is_lifetime') bool isLifetime, int index, List<SubscriptionTargetModel> targets
 });
 
 
@@ -340,14 +340,15 @@ class _$SubscriptionPlanModelCopyWithImpl<$Res>
 
 /// Create a copy of SubscriptionPlanModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? price = null,Object? discount = null,Object? durationDays = null,Object? index = null,Object? targets = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? price = null,Object? discount = null,Object? durationDays = null,Object? isLifetime = null,Object? index = null,Object? targets = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as int,discount: null == discount ? _self.discount : discount // ignore: cast_nullable_to_non_nullable
 as int,durationDays: null == durationDays ? _self.durationDays : durationDays // ignore: cast_nullable_to_non_nullable
-as int,index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
+as int,isLifetime: null == isLifetime ? _self.isLifetime : isLifetime // ignore: cast_nullable_to_non_nullable
+as bool,index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
 as int,targets: null == targets ? _self.targets : targets // ignore: cast_nullable_to_non_nullable
 as List<SubscriptionTargetModel>,
   ));
@@ -434,10 +435,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  int price,  int discount, @JsonKey(name: 'duration_days')  int durationDays,  int index,  List<SubscriptionTargetModel> targets)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  int price,  int discount, @JsonKey(name: 'duration_days')  int durationDays, @JsonKey(name: 'is_lifetime')  bool isLifetime,  int index,  List<SubscriptionTargetModel> targets)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SubscriptionPlanModel() when $default != null:
-return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDays,_that.index,_that.targets);case _:
+return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDays,_that.isLifetime,_that.index,_that.targets);case _:
   return orElse();
 
 }
@@ -455,10 +456,10 @@ return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  int price,  int discount, @JsonKey(name: 'duration_days')  int durationDays,  int index,  List<SubscriptionTargetModel> targets)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  int price,  int discount, @JsonKey(name: 'duration_days')  int durationDays, @JsonKey(name: 'is_lifetime')  bool isLifetime,  int index,  List<SubscriptionTargetModel> targets)  $default,) {final _that = this;
 switch (_that) {
 case _SubscriptionPlanModel():
-return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDays,_that.index,_that.targets);case _:
+return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDays,_that.isLifetime,_that.index,_that.targets);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -475,10 +476,10 @@ return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  int price,  int discount, @JsonKey(name: 'duration_days')  int durationDays,  int index,  List<SubscriptionTargetModel> targets)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  int price,  int discount, @JsonKey(name: 'duration_days')  int durationDays, @JsonKey(name: 'is_lifetime')  bool isLifetime,  int index,  List<SubscriptionTargetModel> targets)?  $default,) {final _that = this;
 switch (_that) {
 case _SubscriptionPlanModel() when $default != null:
-return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDays,_that.index,_that.targets);case _:
+return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDays,_that.isLifetime,_that.index,_that.targets);case _:
   return null;
 
 }
@@ -490,7 +491,7 @@ return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDa
 @JsonSerializable()
 
 class _SubscriptionPlanModel extends SubscriptionPlanModel {
-  const _SubscriptionPlanModel({required this.id, required this.title, required this.price, required this.discount, @JsonKey(name: 'duration_days') required this.durationDays, required this.index, required final  List<SubscriptionTargetModel> targets}): _targets = targets,super._();
+  const _SubscriptionPlanModel({required this.id, required this.title, required this.price, required this.discount, @JsonKey(name: 'duration_days') required this.durationDays, @JsonKey(name: 'is_lifetime') this.isLifetime = false, required this.index, required final  List<SubscriptionTargetModel> targets}): _targets = targets,super._();
   factory _SubscriptionPlanModel.fromJson(Map<String, dynamic> json) => _$SubscriptionPlanModelFromJson(json);
 
 @override final  String id;
@@ -498,6 +499,7 @@ class _SubscriptionPlanModel extends SubscriptionPlanModel {
 @override final  int price;
 @override final  int discount;
 @override@JsonKey(name: 'duration_days') final  int durationDays;
+@override@JsonKey(name: 'is_lifetime') final  bool isLifetime;
 @override final  int index;
  final  List<SubscriptionTargetModel> _targets;
 @override List<SubscriptionTargetModel> get targets {
@@ -520,16 +522,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other._targets, _targets));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.isLifetime, isLifetime) || other.isLifetime == isLifetime)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other._targets, _targets));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,price,discount,durationDays,index,const DeepCollectionEquality().hash(_targets));
+int get hashCode => Object.hash(runtimeType,id,title,price,discount,durationDays,isLifetime,index,const DeepCollectionEquality().hash(_targets));
 
 @override
 String toString() {
-  return 'SubscriptionPlanModel(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, index: $index, targets: $targets)';
+  return 'SubscriptionPlanModel(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, isLifetime: $isLifetime, index: $index, targets: $targets)';
 }
 
 
@@ -540,7 +542,7 @@ abstract mixin class _$SubscriptionPlanModelCopyWith<$Res> implements $Subscript
   factory _$SubscriptionPlanModelCopyWith(_SubscriptionPlanModel value, $Res Function(_SubscriptionPlanModel) _then) = __$SubscriptionPlanModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, int price, int discount,@JsonKey(name: 'duration_days') int durationDays, int index, List<SubscriptionTargetModel> targets
+ String id, String title, int price, int discount,@JsonKey(name: 'duration_days') int durationDays,@JsonKey(name: 'is_lifetime') bool isLifetime, int index, List<SubscriptionTargetModel> targets
 });
 
 
@@ -557,14 +559,15 @@ class __$SubscriptionPlanModelCopyWithImpl<$Res>
 
 /// Create a copy of SubscriptionPlanModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? price = null,Object? discount = null,Object? durationDays = null,Object? index = null,Object? targets = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? price = null,Object? discount = null,Object? durationDays = null,Object? isLifetime = null,Object? index = null,Object? targets = null,}) {
   return _then(_SubscriptionPlanModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as int,discount: null == discount ? _self.discount : discount // ignore: cast_nullable_to_non_nullable
 as int,durationDays: null == durationDays ? _self.durationDays : durationDays // ignore: cast_nullable_to_non_nullable
-as int,index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
+as int,isLifetime: null == isLifetime ? _self.isLifetime : isLifetime // ignore: cast_nullable_to_non_nullable
+as bool,index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
 as int,targets: null == targets ? _self._targets : targets // ignore: cast_nullable_to_non_nullable
 as List<SubscriptionTargetModel>,
   ));

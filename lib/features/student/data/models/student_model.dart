@@ -1,9 +1,23 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/student.dart';
+import '../../domain/entities/student_address.dart';
 import '/features/auth/data/models/user_model.dart';
 
 part 'student_model.freezed.dart';
 part 'student_model.g.dart';
+
+// Returns the raw nested map, not a parsed StudentAddress — json_serializable
+// itself calls StudentAddress.fromJson on whatever readValue returns, so
+// returning an already-built StudentAddress here double-converts and throws
+// "type 'StudentAddress' is not a subtype of type 'Map<String, dynamic>'".
+Map<String, dynamic>? _readStudentAddress(Map<dynamic, dynamic> json, String key) {
+  final raw = json[key];
+  if (raw is! Map) return null;
+  return Map<String, dynamic>.from(raw);
+}
+
+Map<String, dynamic>? _writeStudentAddress(StudentAddress? address) =>
+    address?.toJson();
 
 Object? _readUniversityName(Map<dynamic, dynamic> json, String key) =>
     json['university_name'] ??
@@ -47,6 +61,10 @@ abstract class StudentModel with _$StudentModel {
     @JsonKey(readValue: _readDepartmentName) String? departmentName,
     @JsonKey(readValue: _readUniversityName) String? universityName,
     @JsonKey(readValue: _readSessionName) String? sessionName,
+    @JsonKey(name: 'present_address', readValue: _readStudentAddress, toJson: _writeStudentAddress)
+    StudentAddress? presentAddress,
+    @JsonKey(name: 'permanent_address', readValue: _readStudentAddress, toJson: _writeStudentAddress)
+    StudentAddress? permanentAddress,
   }) = _StudentModel;
 
   factory StudentModel.fromJson(Map<String, dynamic> json) =>
@@ -75,6 +93,8 @@ abstract class StudentModel with _$StudentModel {
     departmentName: departmentName,
     universityName: universityName,
     sessionName: sessionName,
+    presentAddress: presentAddress,
+    permanentAddress: permanentAddress,
   );
 
   factory StudentModel.fromEntity(Student student) => StudentModel(
@@ -100,5 +120,7 @@ abstract class StudentModel with _$StudentModel {
     departmentName: student.departmentName,
     universityName: student.universityName,
     sessionName: student.sessionName,
+    presentAddress: student.presentAddress,
+    permanentAddress: student.permanentAddress,
   );
 }

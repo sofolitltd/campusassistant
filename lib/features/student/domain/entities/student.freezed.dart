@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Student {
 
- String get id; String get studentId; String get universityId; String get departmentId; String get batchId; String get sessionId; String? get hallId; String get bloodGroup; String get verificationCode; bool get isClaimed; String? get studentName; String? get email; String? get phone; bool get isRegular; bool get isCR; String? get userId; User? get user; String? get hallName; String? get batchName; String? get departmentName; String? get universityName; String? get sessionName;
+ String get id; String get studentId; String get universityId; String get departmentId; String get batchId; String get sessionId; String? get hallId; String get bloodGroup; String get verificationCode; bool get isClaimed; String? get studentName; String? get email; String? get phone; bool get isRegular; bool get isCR; String? get userId; User? get user; String? get hallName; String? get batchName; String? get departmentName; String? get universityName; String? get sessionName; StudentAddress? get presentAddress; StudentAddress? get permanentAddress;
 /// Create a copy of Student
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $StudentCopyWith<Student> get copyWith => _$StudentCopyWithImpl<Student>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Student&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Student&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName]);
+int get hashCode => Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName,presentAddress,permanentAddress]);
 
 @override
 String toString() {
-  return 'Student(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName)';
+  return 'Student(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName, presentAddress: $presentAddress, permanentAddress: $permanentAddress)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $StudentCopyWith<$Res>  {
   factory $StudentCopyWith(Student value, $Res Function(Student) _then) = _$StudentCopyWithImpl;
 @useResult
 $Res call({
- String id, String studentId, String universityId, String departmentId, String batchId, String sessionId, String? hallId, String bloodGroup, String verificationCode, bool isClaimed, String? studentName, String? email, String? phone, bool isRegular, bool isCR, String? userId, User? user, String? hallName, String? batchName, String? departmentName, String? universityName, String? sessionName
+ String id, String studentId, String universityId, String departmentId, String batchId, String sessionId, String? hallId, String bloodGroup, String verificationCode, bool isClaimed, String? studentName, String? email, String? phone, bool isRegular, bool isCR, String? userId, User? user, String? hallName, String? batchName, String? departmentName, String? universityName, String? sessionName, StudentAddress? presentAddress, StudentAddress? permanentAddress
 });
 
 
@@ -62,7 +62,7 @@ class _$StudentCopyWithImpl<$Res>
 
 /// Create a copy of Student
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? studentId = null,Object? universityId = null,Object? departmentId = null,Object? batchId = null,Object? sessionId = null,Object? hallId = freezed,Object? bloodGroup = null,Object? verificationCode = null,Object? isClaimed = null,Object? studentName = freezed,Object? email = freezed,Object? phone = freezed,Object? isRegular = null,Object? isCR = null,Object? userId = freezed,Object? user = freezed,Object? hallName = freezed,Object? batchName = freezed,Object? departmentName = freezed,Object? universityName = freezed,Object? sessionName = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? studentId = null,Object? universityId = null,Object? departmentId = null,Object? batchId = null,Object? sessionId = null,Object? hallId = freezed,Object? bloodGroup = null,Object? verificationCode = null,Object? isClaimed = null,Object? studentName = freezed,Object? email = freezed,Object? phone = freezed,Object? isRegular = null,Object? isCR = null,Object? userId = freezed,Object? user = freezed,Object? hallName = freezed,Object? batchName = freezed,Object? departmentName = freezed,Object? universityName = freezed,Object? sessionName = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,studentId: null == studentId ? _self.studentId : studentId // ignore: cast_nullable_to_non_nullable
@@ -86,7 +86,9 @@ as String?,batchName: freezed == batchName ? _self.batchName : batchName // igno
 as String?,departmentName: freezed == departmentName ? _self.departmentName : departmentName // ignore: cast_nullable_to_non_nullable
 as String?,universityName: freezed == universityName ? _self.universityName : universityName // ignore: cast_nullable_to_non_nullable
 as String?,sessionName: freezed == sessionName ? _self.sessionName : sessionName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,presentAddress: freezed == presentAddress ? _self.presentAddress : presentAddress // ignore: cast_nullable_to_non_nullable
+as StudentAddress?,permanentAddress: freezed == permanentAddress ? _self.permanentAddress : permanentAddress // ignore: cast_nullable_to_non_nullable
+as StudentAddress?,
   ));
 }
 /// Create a copy of Student
@@ -183,10 +185,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String studentId,  String universityId,  String departmentId,  String batchId,  String sessionId,  String? hallId,  String bloodGroup,  String verificationCode,  bool isClaimed,  String? studentName,  String? email,  String? phone,  bool isRegular,  bool isCR,  String? userId,  User? user,  String? hallName,  String? batchName,  String? departmentName,  String? universityName,  String? sessionName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String studentId,  String universityId,  String departmentId,  String batchId,  String sessionId,  String? hallId,  String bloodGroup,  String verificationCode,  bool isClaimed,  String? studentName,  String? email,  String? phone,  bool isRegular,  bool isCR,  String? userId,  User? user,  String? hallName,  String? batchName,  String? departmentName,  String? universityName,  String? sessionName,  StudentAddress? presentAddress,  StudentAddress? permanentAddress)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Student() when $default != null:
-return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_that.batchId,_that.sessionId,_that.hallId,_that.bloodGroup,_that.verificationCode,_that.isClaimed,_that.studentName,_that.email,_that.phone,_that.isRegular,_that.isCR,_that.userId,_that.user,_that.hallName,_that.batchName,_that.departmentName,_that.universityName,_that.sessionName);case _:
+return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_that.batchId,_that.sessionId,_that.hallId,_that.bloodGroup,_that.verificationCode,_that.isClaimed,_that.studentName,_that.email,_that.phone,_that.isRegular,_that.isCR,_that.userId,_that.user,_that.hallName,_that.batchName,_that.departmentName,_that.universityName,_that.sessionName,_that.presentAddress,_that.permanentAddress);case _:
   return orElse();
 
 }
@@ -204,10 +206,10 @@ return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String studentId,  String universityId,  String departmentId,  String batchId,  String sessionId,  String? hallId,  String bloodGroup,  String verificationCode,  bool isClaimed,  String? studentName,  String? email,  String? phone,  bool isRegular,  bool isCR,  String? userId,  User? user,  String? hallName,  String? batchName,  String? departmentName,  String? universityName,  String? sessionName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String studentId,  String universityId,  String departmentId,  String batchId,  String sessionId,  String? hallId,  String bloodGroup,  String verificationCode,  bool isClaimed,  String? studentName,  String? email,  String? phone,  bool isRegular,  bool isCR,  String? userId,  User? user,  String? hallName,  String? batchName,  String? departmentName,  String? universityName,  String? sessionName,  StudentAddress? presentAddress,  StudentAddress? permanentAddress)  $default,) {final _that = this;
 switch (_that) {
 case _Student():
-return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_that.batchId,_that.sessionId,_that.hallId,_that.bloodGroup,_that.verificationCode,_that.isClaimed,_that.studentName,_that.email,_that.phone,_that.isRegular,_that.isCR,_that.userId,_that.user,_that.hallName,_that.batchName,_that.departmentName,_that.universityName,_that.sessionName);case _:
+return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_that.batchId,_that.sessionId,_that.hallId,_that.bloodGroup,_that.verificationCode,_that.isClaimed,_that.studentName,_that.email,_that.phone,_that.isRegular,_that.isCR,_that.userId,_that.user,_that.hallName,_that.batchName,_that.departmentName,_that.universityName,_that.sessionName,_that.presentAddress,_that.permanentAddress);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +226,10 @@ return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String studentId,  String universityId,  String departmentId,  String batchId,  String sessionId,  String? hallId,  String bloodGroup,  String verificationCode,  bool isClaimed,  String? studentName,  String? email,  String? phone,  bool isRegular,  bool isCR,  String? userId,  User? user,  String? hallName,  String? batchName,  String? departmentName,  String? universityName,  String? sessionName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String studentId,  String universityId,  String departmentId,  String batchId,  String sessionId,  String? hallId,  String bloodGroup,  String verificationCode,  bool isClaimed,  String? studentName,  String? email,  String? phone,  bool isRegular,  bool isCR,  String? userId,  User? user,  String? hallName,  String? batchName,  String? departmentName,  String? universityName,  String? sessionName,  StudentAddress? presentAddress,  StudentAddress? permanentAddress)?  $default,) {final _that = this;
 switch (_that) {
 case _Student() when $default != null:
-return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_that.batchId,_that.sessionId,_that.hallId,_that.bloodGroup,_that.verificationCode,_that.isClaimed,_that.studentName,_that.email,_that.phone,_that.isRegular,_that.isCR,_that.userId,_that.user,_that.hallName,_that.batchName,_that.departmentName,_that.universityName,_that.sessionName);case _:
+return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_that.batchId,_that.sessionId,_that.hallId,_that.bloodGroup,_that.verificationCode,_that.isClaimed,_that.studentName,_that.email,_that.phone,_that.isRegular,_that.isCR,_that.userId,_that.user,_that.hallName,_that.batchName,_that.departmentName,_that.universityName,_that.sessionName,_that.presentAddress,_that.permanentAddress);case _:
   return null;
 
 }
@@ -239,7 +241,7 @@ return $default(_that.id,_that.studentId,_that.universityId,_that.departmentId,_
 
 
 class _Student extends Student {
-  const _Student({required this.id, required this.studentId, required this.universityId, required this.departmentId, required this.batchId, required this.sessionId, this.hallId, required this.bloodGroup, required this.verificationCode, required this.isClaimed, this.studentName, this.email, this.phone, this.isRegular = true, this.isCR = false, this.userId, this.user, this.hallName, this.batchName, this.departmentName, this.universityName, this.sessionName}): super._();
+  const _Student({required this.id, required this.studentId, required this.universityId, required this.departmentId, required this.batchId, required this.sessionId, this.hallId, required this.bloodGroup, required this.verificationCode, required this.isClaimed, this.studentName, this.email, this.phone, this.isRegular = true, this.isCR = false, this.userId, this.user, this.hallName, this.batchName, this.departmentName, this.universityName, this.sessionName, this.presentAddress, this.permanentAddress}): super._();
   
 
 @override final  String id;
@@ -264,6 +266,8 @@ class _Student extends Student {
 @override final  String? departmentName;
 @override final  String? universityName;
 @override final  String? sessionName;
+@override final  StudentAddress? presentAddress;
+@override final  StudentAddress? permanentAddress;
 
 /// Create a copy of Student
 /// with the given fields replaced by the non-null parameter values.
@@ -275,16 +279,16 @@ _$StudentCopyWith<_Student> get copyWith => __$StudentCopyWithImpl<_Student>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Student&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Student&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName]);
+int get hashCode => Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName,presentAddress,permanentAddress]);
 
 @override
 String toString() {
-  return 'Student(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName)';
+  return 'Student(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName, presentAddress: $presentAddress, permanentAddress: $permanentAddress)';
 }
 
 
@@ -295,7 +299,7 @@ abstract mixin class _$StudentCopyWith<$Res> implements $StudentCopyWith<$Res> {
   factory _$StudentCopyWith(_Student value, $Res Function(_Student) _then) = __$StudentCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String studentId, String universityId, String departmentId, String batchId, String sessionId, String? hallId, String bloodGroup, String verificationCode, bool isClaimed, String? studentName, String? email, String? phone, bool isRegular, bool isCR, String? userId, User? user, String? hallName, String? batchName, String? departmentName, String? universityName, String? sessionName
+ String id, String studentId, String universityId, String departmentId, String batchId, String sessionId, String? hallId, String bloodGroup, String verificationCode, bool isClaimed, String? studentName, String? email, String? phone, bool isRegular, bool isCR, String? userId, User? user, String? hallName, String? batchName, String? departmentName, String? universityName, String? sessionName, StudentAddress? presentAddress, StudentAddress? permanentAddress
 });
 
 
@@ -312,7 +316,7 @@ class __$StudentCopyWithImpl<$Res>
 
 /// Create a copy of Student
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? studentId = null,Object? universityId = null,Object? departmentId = null,Object? batchId = null,Object? sessionId = null,Object? hallId = freezed,Object? bloodGroup = null,Object? verificationCode = null,Object? isClaimed = null,Object? studentName = freezed,Object? email = freezed,Object? phone = freezed,Object? isRegular = null,Object? isCR = null,Object? userId = freezed,Object? user = freezed,Object? hallName = freezed,Object? batchName = freezed,Object? departmentName = freezed,Object? universityName = freezed,Object? sessionName = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? studentId = null,Object? universityId = null,Object? departmentId = null,Object? batchId = null,Object? sessionId = null,Object? hallId = freezed,Object? bloodGroup = null,Object? verificationCode = null,Object? isClaimed = null,Object? studentName = freezed,Object? email = freezed,Object? phone = freezed,Object? isRegular = null,Object? isCR = null,Object? userId = freezed,Object? user = freezed,Object? hallName = freezed,Object? batchName = freezed,Object? departmentName = freezed,Object? universityName = freezed,Object? sessionName = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,}) {
   return _then(_Student(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,studentId: null == studentId ? _self.studentId : studentId // ignore: cast_nullable_to_non_nullable
@@ -336,7 +340,9 @@ as String?,batchName: freezed == batchName ? _self.batchName : batchName // igno
 as String?,departmentName: freezed == departmentName ? _self.departmentName : departmentName // ignore: cast_nullable_to_non_nullable
 as String?,universityName: freezed == universityName ? _self.universityName : universityName // ignore: cast_nullable_to_non_nullable
 as String?,sessionName: freezed == sessionName ? _self.sessionName : sessionName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,presentAddress: freezed == presentAddress ? _self.presentAddress : presentAddress // ignore: cast_nullable_to_non_nullable
+as StudentAddress?,permanentAddress: freezed == permanentAddress ? _self.permanentAddress : permanentAddress // ignore: cast_nullable_to_non_nullable
+as StudentAddress?,
   ));
 }
 

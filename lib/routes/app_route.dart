@@ -48,6 +48,19 @@ class AppRoute {
     name: 'clubDetails',
     path: '/clubs/:clubId',
   );
+  static const association = AppRoute(name: 'association', path: '/association');
+  static const associationDetails = AppRoute(
+    name: 'associationDetails',
+    path: '/associations/:associationId',
+  );
+  static const suggestAssociation = AppRoute(
+    name: 'suggestAssociation',
+    path: '/suggest-association',
+  );
+  static const joinedAssociations = AppRoute(
+    name: 'joinedAssociations',
+    path: '/joined-associations',
+  );
   static const blood = AppRoute(name: 'blood', path: '/blood-bank');
 
   //
@@ -124,6 +137,56 @@ class AppRoute {
   static const skillDetails = AppRoute(
     name: 'skillDetails',
     path: '/skill/:skillId',
+  );
+
+  //// marketplace ////
+  static const marketplace = AppRoute(
+    name: 'marketplace',
+    path: '/marketplace',
+  );
+  static const marketplaceProductDetails = AppRoute(
+    name: 'marketplaceProductDetails',
+    path: '/marketplace/:productId',
+  );
+  static const marketplaceCategoryProducts = AppRoute(
+    name: 'marketplaceCategoryProducts',
+    path: '/marketplace/category/:categoryId',
+  );
+  static const marketplaceCart = AppRoute(
+    name: 'marketplaceCart',
+    path: '/marketplace/cart',
+  );
+  static const marketplaceMerchantProfile = AppRoute(
+    name: 'marketplaceMerchantProfile',
+    path: '/marketplace/merchant/:merchantId',
+  );
+  static const marketplaceCheckout = AppRoute(
+    name: 'marketplaceCheckout',
+    path: '/marketplace/checkout',
+  );
+  static const marketplaceOrders = AppRoute(
+    name: 'marketplaceOrders',
+    path: '/marketplace/orders',
+  );
+  static const marketplaceOrderDetails = AppRoute(
+    name: 'marketplaceOrderDetails',
+    path: '/marketplace/orders/:orderId',
+  );
+  static const marketplaceAddresses = AppRoute(
+    name: 'marketplaceAddresses',
+    path: '/marketplace/addresses',
+  );
+  static const marketplaceAddressForm = AppRoute(
+    name: 'marketplaceAddressForm',
+    path: '/marketplace/addresses/add',
+  );
+  static const marketplaceAddressEdit = AppRoute(
+    name: 'marketplaceAddressEdit',
+    path: '/marketplace/addresses/edit/:addressId',
+  );
+  static const merchantApply = AppRoute(
+    name: 'merchantApply',
+    path: '/merchant/apply',
   );
 
   static const library = AppRoute(name: 'library', path: '/library');

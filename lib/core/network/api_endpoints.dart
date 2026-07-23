@@ -78,6 +78,9 @@ class ApiEndpoints {
   static const String bookmarks = '/bookmarks';
   static const String clubs = '/clubs';
   static const String clubsByLocation = '/clubs-by-location';
+  static const String associations = '/associations';
+  static const String associationsByLocation = '/associations-by-location';
+  static const String bdDistricts = '/bd-districts';
 
   // Notices
   static const String notices = '/notices';

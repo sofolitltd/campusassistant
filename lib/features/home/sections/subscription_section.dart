@@ -29,7 +29,11 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.teal.shade900, Colors.teal.shade600],
+              colors: [
+                Colors.teal.shade600,
+                Colors.teal.shade500,
+                Colors.teal.shade300,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

@@ -7,8 +7,9 @@ import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
 /// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFF00897B);
-const Color _darkBg = Color(0xFF121212);
+const Color _brandPrimary = Color(0xFF4DB6AC);
+// const Color _brandPrimary = Color(0xFF00897B);
+const Color _darkBg = Color.fromARGB(255, 18, 18, 18);
 const Color _darkCard = Color(0xFF1E1E1E);
 const Color _darkSurfaceAlt = Color(0xFF2A2A2A);
 const Color _darkAppBar = Color(0xFF1A1A1A);
@@ -123,22 +124,22 @@ ThemeData buildLightTheme() {
 
     // --- AppBar ---
     appBarTheme: AppBarTheme(
-      backgroundColor: colorScheme.surface,
-      surfaceTintColor: colorScheme.surface,
+      backgroundColor: _brandPrimary,
+      surfaceTintColor: Colors.transparent,
       centerTitle: true,
       elevation: 0,
       titleTextStyle: TextStyle(
         fontFamily: _outfitTextTheme.headlineSmall?.fontFamily,
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: colorScheme.onSurface,
+        color: Colors.white,
       ),
-      iconTheme: IconThemeData(color: colorScheme.onSurface),
+      iconTheme: IconThemeData(color: Colors.white),
     ),
 
     // --- Navigation ---
     navigationBarTheme: NavigationBarThemeData(
-      indicatorColor: colorScheme.outlineVariant,
+      indicatorColor: _brandPrimary,
       backgroundColor: colorScheme.surface,
       height: 64,
     ),
@@ -348,22 +349,22 @@ ThemeData buildDarkTheme() {
 
     // --- AppBar ---
     appBarTheme: AppBarTheme(
-      backgroundColor: _darkAppBar,
+      backgroundColor: _brandPrimary,
       surfaceTintColor: Colors.transparent,
       centerTitle: true,
       elevation: 0,
       titleTextStyle: TextStyle(
         fontFamily: _outfitTextTheme.headlineSmall?.fontFamily,
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: darkColorScheme.onSurface,
+        color: Colors.white,
       ),
-      iconTheme: IconThemeData(color: darkColorScheme.onSurface),
+      iconTheme: IconThemeData(color: Colors.white),
     ),
 
     // --- Navigation ---
     navigationBarTheme: NavigationBarThemeData(
-      indicatorColor: const Color(0xFF3D4050),
+      indicatorColor: _brandPrimary,
       backgroundColor: _darkAppBar,
       height: 64,
     ),

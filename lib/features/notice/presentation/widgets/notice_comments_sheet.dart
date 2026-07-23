@@ -185,7 +185,7 @@ class _NoticeCommentsSheetState extends ConsumerState<NoticeCommentsSheet> {
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CupertinoActivityIndicator(),
                         )
                       : Icon(
                           Icons.send,

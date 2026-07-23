@@ -1,3 +1,4 @@
+import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +42,8 @@ class SkillUpSection extends ConsumerWidget {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: Spacing.sm),
+
             SizedBox(
               height: 190,
               child: ListView.builder(
@@ -51,6 +53,7 @@ class SkillUpSection extends ConsumerWidget {
                 itemBuilder: (context, i) => _SkillCard(skill: skills[i]),
               ),
             ),
+            SizedBox(height: Spacing.xxl),
           ],
         );
       },
@@ -79,7 +82,7 @@ class _SkillCard extends StatelessWidget {
         extra: skill,
       ),
       child: Container(
-        width: 150,
+        width: 200,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -103,20 +106,19 @@ class _SkillCard extends StatelessWidget {
                 top: Radius.circular(RadiusToken.lg),
               ),
               child: SizedBox(
-                height: 90,
+                height: 120,
                 width: double.infinity,
                 child: skill.thumbnailUrl.isNotEmpty
                     ? Image.network(
                         skill.thumbnailUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Container(
-                              color: Colors.grey.shade100,
-                              child: Icon(
-                                LucideIcons.sparkles,
-                                color: Colors.grey.shade400,
-                              ),
-                            ),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey.shade100,
+                          child: Icon(
+                            LucideIcons.sparkles,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
                       )
                     : Container(
                         color: Colors.grey.shade100,
@@ -155,9 +157,7 @@ class _SkillCard extends StatelessWidget {
                         '${skill.videos.length} videos',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark
-                              ? Colors.white54
-                              : Colors.grey.shade600,
+                          color: isDark ? Colors.white54 : Colors.grey.shade600,
                         ),
                       ),
                     ],

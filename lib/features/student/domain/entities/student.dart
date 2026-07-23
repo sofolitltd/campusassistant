@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '/features/auth/domain/entities/user.dart';
+import 'student_address.dart';
 
 part 'student.freezed.dart';
 
@@ -30,6 +31,8 @@ abstract class Student with _$Student {
     String? departmentName,
     String? universityName,
     String? sessionName,
+    StudentAddress? presentAddress,
+    StudentAddress? permanentAddress,
   }) = _Student;
 
   String get name => user?.fullName ?? studentName ?? 'Unclaimed Profile';

@@ -2,6 +2,7 @@ import 'dart:io';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +11,18 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../data/models/profile_model.dart';
+import '/features/student/domain/entities/student_address.dart';
+import '/features/student/presentation/providers/student_provider.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/utils/constants.dart';
 
+import '/core/di.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/network/api_endpoints.dart';
+import '/widgets/district_sub_district_picker.dart';
 
 class EditProfilePage extends ConsumerWidget {
   final String uid;
@@ -27,12 +32,17 @@ class EditProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileByUidProvider(uid));
+    final studentAsync = ref.watch(studentByUserIdProvider(uid));
 
     return CustomHeaderLayout(
       title: 'Edit Profile',
       showSearchBar: false,
       body: profileAsync.when(
-        data: (profile) => _EditProfileForm(profile: profile),
+        data: (profile) => _EditProfileForm(
+          profile: profile,
+          presentAddress: studentAsync.value?.presentAddress,
+          permanentAddress: studentAsync.value?.permanentAddress,
+        ),
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
@@ -43,8 +53,14 @@ class EditProfilePage extends ConsumerWidget {
 /// ✅ Form (ConsumerStatefulWidget)
 class _EditProfileForm extends ConsumerStatefulWidget {
   final ProfileModel profile;
+  final StudentAddress? presentAddress;
+  final StudentAddress? permanentAddress;
 
-  const _EditProfileForm({required this.profile});
+  const _EditProfileForm({
+    required this.profile,
+    this.presentAddress,
+    this.permanentAddress,
+  });
 
   @override
   ConsumerState<_EditProfileForm> createState() => _EditProfileFormState();
@@ -62,6 +78,20 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   File? _pickedMobileImage;
   Uint8List _webImage = Uint8List(8);
 
+  // Present/permanent address section.
+  final _presentAddressLineController = TextEditingController();
+  final _permanentAddressLineController = TextEditingController();
+  String? _presentDistrictId;
+  String? _presentDistrictName;
+  String? _presentSubDistrictId;
+  String? _presentSubDistrictName;
+  String? _permanentDistrictId;
+  String? _permanentDistrictName;
+  String? _permanentSubDistrictId;
+  String? _permanentSubDistrictName;
+  bool _permanentSameAsPresent = false;
+  bool _addressDirty = false;
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +99,29 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     _mobileController.text = widget.profile.mobile;
     _selectedHall = widget.profile.information.hall;
     _selectedBloodGroup = _validBloodGroup(widget.profile.information.blood);
+
+    final present = widget.presentAddress;
+    if (present != null) {
+      _presentDistrictId = present.districtId;
+      _presentDistrictName = present.districtName;
+      _presentSubDistrictId = present.subDistrictId;
+      _presentSubDistrictName = present.subDistrictName;
+      _presentAddressLineController.text = present.addressLine ?? '';
+    }
+    final permanent = widget.permanentAddress;
+    if (permanent != null) {
+      _permanentDistrictId = permanent.districtId;
+      _permanentDistrictName = permanent.districtName;
+      _permanentSubDistrictId = permanent.subDistrictId;
+      _permanentSubDistrictName = permanent.subDistrictName;
+      _permanentAddressLineController.text = permanent.addressLine ?? '';
+    }
+    _permanentSameAsPresent =
+        present != null &&
+        permanent != null &&
+        present.districtId == permanent.districtId &&
+        present.subDistrictId == permanent.subDistrictId &&
+        present.addressLine == permanent.addressLine;
 
     _nameController.addListener(_onFormChanged);
     _mobileController.addListener(_onFormChanged);
@@ -89,6 +142,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     _mobileController.removeListener(_onFormChanged);
     _nameController.dispose();
     _mobileController.dispose();
+    _presentAddressLineController.dispose();
+    _permanentAddressLineController.dispose();
     super.dispose();
   }
 
@@ -97,7 +152,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
         _mobileController.text.trim() != widget.profile.mobile ||
         _selectedHall != widget.profile.information.hall ||
         _selectedBloodGroup != widget.profile.information.blood ||
-        _pickedMobileImage != null;
+        _pickedMobileImage != null ||
+        _addressDirty;
   }
 
   @override
@@ -277,6 +333,122 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             error: (e, _) => Text('Error loading halls: $e'),
                           ),
 
+                          const SizedBox(height: Spacing.lg),
+
+                          /// ---- PRESENT ADDRESS ----
+                          const Text(
+                            'Present Address',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          DistrictSubDistrictPicker(
+                            districtId: _presentDistrictId,
+                            subDistrictId: _presentSubDistrictId,
+                            onDistrictChanged: (d) => setState(() {
+                              _presentDistrictId = d?.id;
+                              _presentDistrictName = d?.name;
+                              _addressDirty = true;
+                              if (_permanentSameAsPresent) {
+                                _permanentDistrictId = d?.id;
+                                _permanentDistrictName = d?.name;
+                              }
+                            }),
+                            onSubDistrictChanged: (s) => setState(() {
+                              _presentSubDistrictId = s?.id;
+                              _presentSubDistrictName = s?.name;
+                              _addressDirty = true;
+                              if (_permanentSameAsPresent) {
+                                _permanentSubDistrictId = s?.id;
+                                _permanentSubDistrictName = s?.name;
+                              }
+                            }),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _presentAddressLineController,
+                            decoration: const InputDecoration(
+                              hintText: 'House/road/hall name',
+                            ),
+                            onChanged: (v) {
+                              _addressDirty = true;
+                              if (_permanentSameAsPresent) {
+                                setState(
+                                  () => _permanentAddressLineController.text =
+                                      v,
+                                );
+                              }
+                            },
+                          ),
+
+                          const SizedBox(height: Spacing.lg),
+
+                          /// ---- PERMANENT ADDRESS ----
+                          Row(
+                            children: [
+                              const Expanded(
+                                child: Text(
+                                  'Permanent Address',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    'Same as present',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Checkbox(
+                                    value: _permanentSameAsPresent,
+                                    onChanged: (checked) => setState(() {
+                                      _permanentSameAsPresent =
+                                          checked ?? false;
+                                      _addressDirty = true;
+                                      if (_permanentSameAsPresent) {
+                                        _permanentDistrictId =
+                                            _presentDistrictId;
+                                        _permanentDistrictName =
+                                            _presentDistrictName;
+                                        _permanentSubDistrictId =
+                                            _presentSubDistrictId;
+                                        _permanentSubDistrictName =
+                                            _presentSubDistrictName;
+                                        _permanentAddressLineController.text =
+                                            _presentAddressLineController
+                                                .text;
+                                      }
+                                    }),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          if (!_permanentSameAsPresent) ...[
+                            const SizedBox(height: 8),
+                            DistrictSubDistrictPicker(
+                              districtId: _permanentDistrictId,
+                              subDistrictId: _permanentSubDistrictId,
+                              onDistrictChanged: (d) => setState(() {
+                                _permanentDistrictId = d?.id;
+                                _permanentDistrictName = d?.name;
+                                _addressDirty = true;
+                              }),
+                              onSubDistrictChanged: (s) => setState(() {
+                                _permanentSubDistrictId = s?.id;
+                                _permanentSubDistrictName = s?.name;
+                                _addressDirty = true;
+                              }),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _permanentAddressLineController,
+                              decoration: const InputDecoration(
+                                hintText: 'House/road/village name',
+                              ),
+                              onChanged: (_) => _addressDirty = true,
+                            ),
+                          ],
+
                           const SizedBox(height: 24),
 
                           /// ---- SAVE BUTTON ----
@@ -428,79 +600,119 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     setState(() => _isLoading = true);
 
     try {
-      String imageUrl = widget.profile.image;
+      String? imageUrl;
       if (_pickedMobileImage != null) {
         imageUrl = await _uploadAndGetImageUrl();
       }
 
-      await _updateUserInformation(imageUrl);
-      await _updateStudentInformation(imageUrl);
+      String? hallId;
+      if (_selectedHall != null &&
+          _selectedHall != widget.profile.information.hall) {
+        final halls = await ref.read(
+          hallsByUniversityProvider(widget.profile.university).future,
+        );
+        hallId = halls.firstWhereOrNull((h) => h.name == _selectedHall)?.id;
+      }
+
+      final nameParts = _nameController.text.trim().split(RegExp(r'\s+'));
+      final firstName = nameParts.first;
+      final lastName = nameParts.length > 1
+          ? nameParts.sublist(1).join(' ')
+          : '';
+
+      await updateMyUser(
+        ref,
+        firstName: firstName,
+        lastName: lastName,
+        avatarUrl: imageUrl,
+      );
+
+      await updateMyStudent(
+        ref,
+        phone: _mobileController.text.trim(),
+        bloodGroup: _selectedBloodGroup,
+        hallId: hallId,
+      );
+
+      if (_addressDirty) {
+        StudentAddress? present;
+        if (_presentDistrictId != null) {
+          present = StudentAddress(
+            districtId: _presentDistrictId!,
+            districtName: _presentDistrictName ?? '',
+            subDistrictId: _presentSubDistrictId,
+            subDistrictName: _presentSubDistrictName,
+            addressLine: _presentAddressLineController.text.trim(),
+          );
+        }
+        StudentAddress? permanent;
+        final permanentDistrictId = _permanentSameAsPresent
+            ? _presentDistrictId
+            : _permanentDistrictId;
+        if (permanentDistrictId != null) {
+          permanent = StudentAddress(
+            districtId: permanentDistrictId,
+            districtName:
+                (_permanentSameAsPresent
+                    ? _presentDistrictName
+                    : _permanentDistrictName) ??
+                '',
+            subDistrictId: _permanentSameAsPresent
+                ? _presentSubDistrictId
+                : _permanentSubDistrictId,
+            subDistrictName: _permanentSameAsPresent
+                ? _presentSubDistrictName
+                : _permanentSubDistrictName,
+            addressLine: _permanentAddressLineController.text.trim(),
+          );
+        }
+        await updateMyStudentAddress(
+          ref,
+          present: present,
+          permanent: permanent,
+        );
+      }
+
+      ref.invalidate(userProvider);
+      ref.invalidate(userProfileByUidProvider(widget.profile.uid));
+      ref.invalidate(studentByUserIdProvider(widget.profile.uid));
 
       if (!mounted) return;
+      _addressDirty = false;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: $e')),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  Future<String> _uploadAndGetImageUrl() async {
-    /*
-    final ref = FirebaseStorage.instance
-        .ref('Users')
-        .child(widget.profile.university)
-        .child(widget.profile.department)
-        .child('${widget.profile.information.id!}.jpg');
-
+  Future<String?> _uploadAndGetImageUrl() async {
+    final apiClient = ref.read(apiClientProvider);
     if (kIsWeb) {
-      await ref.putData(_webImage);
-    } else {
-      await ref.putFile(_pickedMobileImage!);
+      final response = await apiClient.uploadBytes(
+        '/upload',
+        bytes: _webImage,
+        fileName: 'avatar.jpg',
+        fieldName: 'image',
+        data: {'folder': 'avatars'},
+      );
+      return response.data['file_url'] as String?;
     }
-    return ref.getDownloadURL();
-    */
-    return widget.profile.image;
-  }
-
-  Future<void> _updateUserInformation(String image) async {
-    /*
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.profile.uid)
-        .update({
-          'name': _nameController.text.trim(),
-          'image': image,
-          'mobile': _mobileController.text.trim(),
-          'information': {
-            'batch': widget.profile.information.batch,
-            'id': widget.profile.information.id,
-            'session': widget.profile.information.session,
-            'hall': _selectedHall,
-            'blood': _selectedBloodGroup,
-            'status': widget.profile.information.status!.toJson(),
-          },
-        });
-    */
-  }
-
-  Future<void> _updateStudentInformation(String image) async {
-    /*
-    await FirebaseFirestore.instance
-        .collection('students')
-        .where('university', isEqualTo: widget.profile.university)
-        .where('department', isEqualTo: widget.profile.department)
-        .where('batch', isEqualTo: widget.profile.information.batch)
-        .where('id', isEqualTo: widget.profile.information.id)
-        .get()
-        .then((val) {
-          val.docs.first.reference.update({
-            'phone': _mobileController.text.trim(),
-            'hall': _selectedHall,
-            'blood': _selectedBloodGroup,
-            'imageUrl': image,
-          });
-        });
-    */
+    final file = _pickedMobileImage;
+    if (file == null) return null;
+    final response = await apiClient.uploadFile(
+      '/upload',
+      filePath: file.path,
+      fieldName: 'image',
+      data: {'folder': 'avatars'},
+    );
+    return response.data['file_url'] as String?;
   }
 }

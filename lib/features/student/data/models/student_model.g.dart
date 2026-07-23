@@ -32,6 +32,18 @@ _StudentModel _$StudentModelFromJson(Map<String, dynamic> json) =>
       departmentName: _readDepartmentName(json, 'department_name') as String?,
       universityName: _readUniversityName(json, 'university_name') as String?,
       sessionName: _readSessionName(json, 'session_name') as String?,
+      presentAddress: _readStudentAddress(json, 'present_address') == null
+          ? null
+          : StudentAddress.fromJson(
+              _readStudentAddress(json, 'present_address')
+                  as Map<String, dynamic>,
+            ),
+      permanentAddress: _readStudentAddress(json, 'permanent_address') == null
+          ? null
+          : StudentAddress.fromJson(
+              _readStudentAddress(json, 'permanent_address')
+                  as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$StudentModelToJson(_StudentModel instance) =>
@@ -58,4 +70,6 @@ Map<String, dynamic> _$StudentModelToJson(_StudentModel instance) =>
       'department_name': ?instance.departmentName,
       'university_name': ?instance.universityName,
       'session_name': ?instance.sessionName,
+      'present_address': ?_writeStudentAddress(instance.presentAddress),
+      'permanent_address': ?_writeStudentAddress(instance.permanentAddress),
     };

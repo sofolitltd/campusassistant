@@ -1,3 +1,6 @@
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import '../../core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/notification/presentation/widgets/notification_badge.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +16,7 @@ import 'sections/banner_section.dart';
 import 'sections/subscription_section.dart';
 import 'sections/quick_favorites_section.dart';
 import 'sections/skill_up_section.dart';
+import 'sections/marketplace_section.dart';
 import 'widgets/home_drawer.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -56,9 +60,17 @@ class _HomePageState extends ConsumerState<HomePage>
             // Header Section
             Container(
               decoration: BoxDecoration(
-                // color: Color(0xFFD32F2F),
-                color: Color(0xFF00897B),
-                //  color: Colors.teal.shade600,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.teal.shade600,
+                    Colors.teal.shade300,
+                    Colors.teal.shade100,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0.0, 0.55, 1.0],
+                  tileMode: TileMode.decal,
+                ),
               ),
               child: SafeArea(
                 bottom: false,
@@ -184,10 +196,16 @@ class _HomePageState extends ConsumerState<HomePage>
 
                     // Shortcut Cards
                     SizedBox(
-                      height: 100,
+                      height: 200,
                       child: MouseWheelHorizontalScroll(
                         controller: _shortcutsScrollController,
-                        child: ListView(
+                        child: MasonryGridView(
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          gridDelegate:
+                              SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                              ),
                           controller: _shortcutsScrollController,
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(
@@ -197,42 +215,49 @@ class _HomePageState extends ConsumerState<HomePage>
                           children: [
                             _buildShortcutCard(
                               theme: theme,
-                              title: 'Routine',
+                              title: 'Class\nRoutine',
                               icon: LucideIcons.calendarDays,
                               route: '/routine',
                               color: const Color(0xFF3B82F6),
                             ),
                             _buildShortcutCard(
                               theme: theme,
-                              title: 'Alumni',
+                              title: 'Alumni\nNetwork',
                               icon: LucideIcons.graduationCap,
                               route: '/alumni',
                               color: const Color(0xFF8B5CF6),
                             ),
                             _buildShortcutCard(
                               theme: theme,
-                              title: 'Emergency',
+                              title: 'Emergency\nContacts',
                               icon: LucideIcons.phoneCall,
                               route: '/emergency',
                               color: const Color(0xFFEF4444),
                             ),
                             _buildShortcutCard(
                               theme: theme,
-                              title: 'Transport',
+                              title: 'Transport\nServices',
                               icon: LucideIcons.bus,
                               route: '/transport',
                               color: const Color(0xFFF59E0B),
                             ),
                             _buildShortcutCard(
                               theme: theme,
-                              title: 'Clubs',
+                              title: 'Clubs &\nOrganizations',
                               icon: LucideIcons.heart,
                               route: '/club',
                               color: const Color(0xFFEC4899),
                             ),
                             _buildShortcutCard(
                               theme: theme,
-                              title: 'Blood Bank',
+                              title: 'Student\nAssociations',
+                              icon: LucideIcons.landmark,
+                              route: '/association',
+                              color: const Color(0xFF0EA5E9),
+                            ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Blood\nBank',
                               icon: LucideIcons.droplets,
                               route: '/blood-bank',
                               color: const Color(0xFFDC2626),
@@ -252,6 +277,8 @@ class _HomePageState extends ConsumerState<HomePage>
                     const BannerSection(),
                     const SizedBox(height: Spacing.sm),
                     const SkillUpSection(),
+                    const SizedBox(height: Spacing.sm),
+                    const MarketplaceSection(),
                     const SizedBox(height: Spacing.sm),
                   ],
                 ),
@@ -282,69 +309,48 @@ class _HomePageState extends ConsumerState<HomePage>
     return GestureDetector(
       onTap: () => context.push(route),
       child: Container(
-        width: 140,
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.fromLTRB(12, 11, 12, 10),
+        width: 96,
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              isDark
-                  ? Colors.white.withValues(alpha: 0.25)
-                  : Colors.white.withValues(alpha: 2),
-              isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.white.withValues(alpha: 0.9),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(2, 2),
-            ),
-          ],
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(RadiusToken.lg),
+              border: Border.all(
+                color: isDark ? Colors.white10 : Colors.grey.shade200,
+                width: 1,
+              ),
+            
+      
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: color,
-                  ),
-                  child: Icon(icon, size: 14, color: Colors.white),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  LucideIcons.chevronRight,
-                  size: 20,
-                  color: isDark ? Colors.white54 : Colors.grey.shade400,
-                ),
-              ],
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              child: Icon(icon, size: 16, color: color),
             ),
-            const SizedBox(height: Spacing.md),
+
+            const SizedBox(height: Spacing.sm),
 
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
-                  // fontSize: 16,
-                  height: 1.2,
-                  // fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
+                textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 11,
+                    height: 1.2,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.grey.shade700,
+                  ),
               ),
             ),
           ],

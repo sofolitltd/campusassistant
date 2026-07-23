@@ -350,8 +350,7 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
               ? const SizedBox(
                   height: 18,
                   width: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
+                  child: CupertinoActivityIndicator(
                     color: Colors.white,
                   ),
                 )
@@ -588,7 +587,7 @@ class _EventsTabState extends ConsumerState<_EventsTab> {
               ? const SizedBox(
                   height: 16,
                   width: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CupertinoActivityIndicator(),
                 )
               : const Text('Add Event'),
         ),
@@ -725,7 +724,7 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
               ? const SizedBox(
                   height: 16,
                   width: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CupertinoActivityIndicator(),
                 )
               : const Text('Post Update'),
         ),

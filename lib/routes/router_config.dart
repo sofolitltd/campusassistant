@@ -16,6 +16,11 @@ import '/features/club/presentation/screens/club_page.dart';
 import '/features/club/presentation/screens/suggest_club_page.dart';
 import '/features/club/presentation/screens/my_clubs_page.dart';
 import '/features/club/presentation/screens/manage_club_page.dart';
+import '/features/association/domain/entities/association.dart';
+import '/features/association/presentation/screens/association_details_page.dart';
+import '/features/association/presentation/screens/association_page.dart';
+import '/features/association/presentation/screens/suggest_association_page.dart';
+import '/features/association/presentation/screens/joined_associations_page.dart';
 import '/features/community/presentation/screens/community_page.dart';
 import '/features/inbox/presentation/screens/inbox_page.dart';
 import '/features/inbox/presentation/screens/chat_page.dart';
@@ -54,6 +59,19 @@ import '/widgets/in_app_webview_page.dart';
 import '/widgets/youtube_player_page.dart';
 import '/features/skill/data/models/skill.dart';
 import '/features/skill/presentation/screens/skill_details_page.dart';
+import '/features/marketplace/data/models/product.dart';
+import '/features/marketplace/presentation/widgets/marketplace_shell.dart';
+import '/features/marketplace/presentation/screens/product_detail_screen.dart';
+import '/features/marketplace/presentation/screens/merchant_apply_screen.dart';
+import '/features/marketplace/presentation/screens/product_list_screen.dart';
+import '/features/marketplace/presentation/screens/checkout_screen.dart';
+import '/features/marketplace/presentation/screens/order_history_screen.dart';
+import '/features/marketplace/presentation/screens/order_detail_screen.dart';
+import '/features/marketplace/presentation/screens/address_list_screen.dart';
+import '/features/marketplace/presentation/screens/address_form_screen.dart';
+import '/features/marketplace/presentation/screens/cart_screen.dart';
+import '/features/marketplace/presentation/screens/merchant_profile_screen.dart';
+import '/features/marketplace/data/models/category.dart';
 import '/features/resource/presentation/screens/add_edit_resource_screen.dart';
 import '/widgets/image_viewer.dart';
 import '/features/club/domain/entities/club.dart';
@@ -413,6 +431,49 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: SuggestClubPage()),
+      ),
+      GoRoute(
+        name: AppRoute.association.name,
+        path: AppRoute.association.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: AssociationsPage()),
+        routes: [
+          GoRoute(
+            name: AppRoute.associationDetails.name,
+            path: ':associationId',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              // extra carries the already-fetched Association when reached
+              // via a list-card tap (no refetch needed); it's null when
+              // reached via a deep link (e.g. an association-event push
+              // notification), in which case AssociationDetailsPage fetches
+              // it by associationId itself.
+              final association = state.extra as Association?;
+              final associationId = state.pathParameters['associationId']!;
+              return NoTransitionPage(
+                child: AssociationDetailsPage(
+                  associationId: associationId,
+                  association: association,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        name: AppRoute.suggestAssociation.name,
+        path: AppRoute.suggestAssociation.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: SuggestAssociationPage()),
+      ),
+      GoRoute(
+        name: AppRoute.joinedAssociations.name,
+        path: AppRoute.joinedAssociations.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: JoinedAssociationsPage()),
       ),
       GoRoute(
         name: AppRoute.myClubs.name,
@@ -775,6 +836,99 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final skill = state.extra as Skill?;
           return SkillDetailsPage(skill: skill);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.marketplace.name,
+        path: AppRoute.marketplace.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const MarketplaceShell(),
+      ),
+      // NOTE: static /marketplace/* routes must be registered before the
+      // dynamic /marketplace/:productId route below — go_router matches
+      // routes in declaration order, and :productId would otherwise swallow
+      // literal paths like /marketplace/checkout.
+      GoRoute(
+        name: AppRoute.merchantApply.name,
+        path: AppRoute.merchantApply.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const MerchantApplyScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceCategoryProducts.name,
+        path: AppRoute.marketplaceCategoryProducts.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final category = extra?['category'] as Category?;
+          final categoryId = state.pathParameters['categoryId'] ?? category?.id;
+          return ProductListScreen(category: category, categoryId: categoryId);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceCart.name,
+        path: AppRoute.marketplaceCart.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceMerchantProfile.name,
+        path: AppRoute.marketplaceMerchantProfile.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final merchantId = state.pathParameters['merchantId'] ?? '';
+          return MerchantProfileScreen(merchantId: merchantId);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceCheckout.name,
+        path: AppRoute.marketplaceCheckout.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceOrders.name,
+        path: AppRoute.marketplaceOrders.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const OrderHistoryScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceOrderDetails.name,
+        path: AppRoute.marketplaceOrderDetails.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId'] ?? '';
+          return OrderDetailScreen(orderId: orderId);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceAddresses.name,
+        path: AppRoute.marketplaceAddresses.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AddressListScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceAddressForm.name,
+        path: AppRoute.marketplaceAddressForm.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AddressFormScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceAddressEdit.name,
+        path: AppRoute.marketplaceAddressEdit.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final addressId = state.pathParameters['addressId'] ?? '';
+          return AddressFormScreen(addressId: addressId);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceProductDetails.name,
+        path: AppRoute.marketplaceProductDetails.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final product = state.extra as Product?;
+          return ProductDetailScreen(product: product);
         },
       ),
       GoRoute(

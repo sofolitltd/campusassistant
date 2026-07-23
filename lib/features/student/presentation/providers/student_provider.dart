@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/cache/cache_manager.dart';
@@ -10,6 +11,7 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/student/data/repositories/student_repository_impl.dart';
 import '/utils/constants.dart';
 import '/features/student/domain/entities/student.dart';
+import '/features/student/domain/entities/student_address.dart';
 import '/features/student/domain/repositories/student_repository.dart';
 
 import 'package:collection/collection.dart';
@@ -279,6 +281,67 @@ Future<List<Student>> allStudents(
     paginated.students,
     universityId: effectiveUniversityId,
     departmentId: effectiveDepartmentId,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Self-service profile writes — JWT-gated /my/user and /my/student routes.
+// Reads go through the existing studentProfileProvider/studentByUserIdProvider
+// (which already surface presentAddress/permanentAddress via StudentModel).
+// ---------------------------------------------------------------------------
+
+/// Updates the current user's own name/photo.
+/// [avatarUrl] is expected to already be an uploaded file URL (see the
+/// generic `/upload` endpoint via `ApiClient.uploadFile`/`uploadBytes`).
+Future<void> updateMyUser(
+  WidgetRef ref, {
+  String? firstName,
+  String? lastName,
+  String? avatarUrl,
+}) async {
+  final apiClient = ref.read(apiClientProvider);
+  await apiClient.put(
+    '/my/user',
+    data: {
+      'first_name': ?firstName,
+      'last_name': ?lastName,
+      'avatar_url': ?avatarUrl,
+    },
+  );
+}
+
+/// Updates the current user's own phone/blood group/hall.
+Future<void> updateMyStudent(
+  WidgetRef ref, {
+  String? phone,
+  String? bloodGroup,
+  String? hallId,
+}) async {
+  final apiClient = ref.read(apiClientProvider);
+  await apiClient.put(
+    '/my/student',
+    data: {
+      'phone': ?phone,
+      'blood_group': ?bloodGroup,
+      'hall_id': ?hallId,
+    },
+  );
+}
+
+/// Updates the current user's present/permanent address. Either may be
+/// omitted to leave it unchanged.
+Future<void> updateMyStudentAddress(
+  WidgetRef ref, {
+  StudentAddress? present,
+  StudentAddress? permanent,
+}) async {
+  final apiClient = ref.read(apiClientProvider);
+  await apiClient.put(
+    '/my/student/address',
+    data: {
+      if (present != null) 'present_address': present.toJson(),
+      if (permanent != null) 'permanent_address': permanent.toJson(),
+    },
   );
 }
 

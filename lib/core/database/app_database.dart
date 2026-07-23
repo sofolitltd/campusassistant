@@ -332,8 +332,9 @@ class CacheStat {
 
   String get formattedSize {
     if (totalBytes < 1024) return '$totalBytes B';
-    if (totalBytes < 1024 * 1024)
+    if (totalBytes < 1024 * 1024) {
       return '${(totalBytes / 1024).toStringAsFixed(1)} KB';
+    }
     return '${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }

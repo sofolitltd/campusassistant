@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -170,7 +171,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
       body: Stack(
         children: [
           _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: CupertinoActivityIndicator())
               : _error != null
               ? Center(child: Text('Failed to load cache: $_error'))
               : _stats == null || _stats!.isEmpty
@@ -179,7 +180,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
           if (_clearing)
             Container(
               color: Colors.black26,
-              child: const Center(child: CircularProgressIndicator()),
+              child: const Center(child: CupertinoActivityIndicator()),
             ),
         ],
       ),

@@ -38,6 +38,7 @@ abstract class Association with _$Association {
     @Default(false) bool isVerified,
     @Default(0) int membersCount,
     @Default(false) bool isMember,
+    @Default(false) bool isPendingMember,
   }) = _Association;
 
   factory Association.fromJson(Map<String, dynamic> json) =>

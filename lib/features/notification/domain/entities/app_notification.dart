@@ -7,6 +7,7 @@ class AppNotification {
   final NotificationType type;
   final bool isRead;
   final DateTime timestamp;
+  final String? imageUrl;
   final String? actionRoute;
   final Map<String, String>? actionParams;
 
@@ -17,6 +18,7 @@ class AppNotification {
     required this.type,
     this.isRead = false,
     required this.timestamp,
+    this.imageUrl,
     this.actionRoute,
     this.actionParams,
   });
@@ -30,6 +32,7 @@ class AppNotification {
       type: NotificationType.fromJson(json['type'] as String),
       isRead: json['is_read'] as bool? ?? false,
       timestamp: DateTime.parse(json['created_at'] as String),
+      imageUrl: json['image_url'] as String?,
       actionRoute: data?['action_route'] as String?,
       actionParams: (data?['action_params'] as Map<String, dynamic>?)?.map(
         (k, v) => MapEntry(k, v as String),
@@ -44,6 +47,7 @@ class AppNotification {
       'body': body,
       'type': type.toJson(),
       'is_read': isRead,
+      'image_url': imageUrl,
       'created_at': timestamp.toIso8601String(),
       'data': {
         if (actionRoute != null) 'action_route': actionRoute,
@@ -59,6 +63,7 @@ class AppNotification {
     NotificationType? type,
     bool? isRead,
     DateTime? timestamp,
+    String? imageUrl,
     String? actionRoute,
     Map<String, String>? actionParams,
   }) {
@@ -69,6 +74,7 @@ class AppNotification {
       type: type ?? this.type,
       isRead: isRead ?? this.isRead,
       timestamp: timestamp ?? this.timestamp,
+      imageUrl: imageUrl ?? this.imageUrl,
       actionRoute: actionRoute ?? this.actionRoute,
       actionParams: actionParams ?? this.actionParams,
     );

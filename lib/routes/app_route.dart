@@ -112,6 +112,23 @@ class AppRoute {
     path: '/manage-club/:clubId',
   );
   static const department = AppRoute(name: 'department', path: '/department');
+  static const career = AppRoute(name: 'career', path: '/career');
+  static const careerJobCreate = AppRoute(
+    name: 'careerJobCreate',
+    path: '/career/jobs/create',
+  );
+  static const careerJobDetails = AppRoute(
+    name: 'careerJobDetails',
+    path: '/career/jobs/:jobId',
+  );
+  static const careerJobEdit = AppRoute(
+    name: 'careerJobEdit',
+    path: '/career/jobs/:jobId/edit',
+  );
+  static const careerCircularDetails = AppRoute(
+    name: 'careerCircularDetails',
+    path: '/career/circular/:circularId',
+  );
   static const teacher = AppRoute(name: 'teacher', path: '/teacher');
   static const student = AppRoute(name: 'student', path: '/student');
 
@@ -137,6 +154,20 @@ class AppRoute {
   static const skillDetails = AppRoute(
     name: 'skillDetails',
     path: '/skill/:skillId',
+  );
+
+  //// lost & found ////
+  static const lostFound = AppRoute(
+    name: 'lostFound',
+    path: '/lost-found',
+  );
+  static const lostFoundCreate = AppRoute(
+    name: 'lostFoundCreate',
+    path: '/lost-found/create',
+  );
+  static const lostFoundItemDetails = AppRoute(
+    name: 'lostFoundItemDetails',
+    path: '/lost-found/:itemId',
   );
 
   //// marketplace ////
@@ -216,6 +247,10 @@ class AppRoute {
   static const mySubmissions = AppRoute(
     name: 'mySubmissions',
     path: '/my-submissions',
+  );
+  static const developer = AppRoute(
+    name: 'developer',
+    path: '/developer',
   );
   static const contributors = AppRoute(
     name: 'contributors',

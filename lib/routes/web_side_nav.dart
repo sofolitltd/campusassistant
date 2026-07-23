@@ -37,6 +37,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
   static const _items = [
     _NavItem(icon: LucideIcons.house, label: 'Home'),
     _NavItem(icon: LucideIcons.bookOpen, label: 'Study'),
+    _NavItem(icon: LucideIcons.briefcase, label: 'Career'),
     _NavItem(icon: LucideIcons.users, label: 'Community'),
     _NavItem(icon: LucideIcons.userRound, label: 'Profile'),
   ];

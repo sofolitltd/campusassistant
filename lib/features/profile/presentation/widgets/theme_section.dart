@@ -14,93 +14,25 @@ class ThemeSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider).value ?? ThemeMode.system;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.lg),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Text(
-                'My Preferences',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white70 : Colors.grey.shade800,
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle(context, 'Appearance'),
+          const SizedBox(height: 8),
+          _PreferenceCard(children: [
             _PreferenceTile(
               icon: LucideIcons.palette,
               title: 'App Theme',
               onTap: () => _showThemeModal(context, ref, themeMode),
             ),
-            Divider(
-              height: 1,
-              color: isDark ? Colors.white10 : Colors.grey.shade300,
-            ),
-            _PreferenceTile(
-              icon: LucideIcons.lockKeyhole,
-              title: 'Change Password',
-              onTap: () {
-                context.pushNamed(AppRoute.changePassword.name);
-              },
-            ),
-            Divider(
-              height: 1,
-              color: isDark ? Colors.white10 : Colors.grey.shade300,
-            ),
-            _PreferenceTile(
-              icon: LucideIcons.smartphone,
-              title: 'Manage Devices',
-              onTap: () {
-                context.pushNamed(AppRoute.manageDevices.name);
-              },
-            ),
-            Divider(
-              height: 1,
-              color: isDark ? Colors.white10 : Colors.grey.shade300,
-            ),
-            _PreferenceTile(
-              icon: LucideIcons.database,
-              title: 'Manage Cache',
-              onTap: () {
-                context.pushNamed(AppRoute.cacheManagement.name);
-              },
-            ),
-            Divider(
-              height: 1,
-              color: isDark ? Colors.white10 : Colors.grey.shade300,
-            ),
-            _PreferenceTile(
-              icon: LucideIcons.receiptText,
-              title: 'Transaction History',
-              onTap: () {
-                context.pushNamed(AppRoute.transactionHistory.name);
-              },
-            ),
-            Divider(
-              height: 1,
-              color: isDark ? Colors.white10 : Colors.grey.shade300,
-            ),
+          ]),
+          const SizedBox(height: 16),
+          _sectionTitle(context, 'Account'),
+          const SizedBox(height: 8),
+          _PreferenceCard(children: [
             _PreferenceTile(
               icon: LucideIcons.userPen,
               title: 'Edit Profile',
@@ -114,7 +46,60 @@ class ThemeSection extends ConsumerWidget {
                 }
               },
             ),
-          ],
+            _PreferenceTile(
+              icon: LucideIcons.receiptText,
+              title: 'Transaction History',
+              onTap: () {
+                context.pushNamed(AppRoute.transactionHistory.name);
+              },
+            ),
+          ]),
+          const SizedBox(height: 16),
+          _sectionTitle(context, 'Security'),
+          const SizedBox(height: 8),
+          _PreferenceCard(children: [
+            _PreferenceTile(
+              icon: LucideIcons.lockKeyhole,
+              title: 'Change Password',
+              onTap: () {
+                context.pushNamed(AppRoute.changePassword.name);
+              },
+            ),
+            _PreferenceTile(
+              icon: LucideIcons.smartphone,
+              title: 'Manage Devices',
+              onTap: () {
+                context.pushNamed(AppRoute.manageDevices.name);
+              },
+            ),
+          ]),
+          const SizedBox(height: 16),
+          _sectionTitle(context, 'Data'),
+          const SizedBox(height: 8),
+          _PreferenceCard(children: [
+            _PreferenceTile(
+              icon: LucideIcons.database,
+              title: 'Manage Cache',
+              onTap: () {
+                context.pushNamed(AppRoute.cacheManagement.name);
+              },
+            ),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionTitle(BuildContext context, String title) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: isDark ? Colors.white70 : Colors.grey.shade800,
         ),
       ),
     );
@@ -199,6 +184,50 @@ class ThemeSection extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _PreferenceCard extends StatelessWidget {
+  final List<Widget> children;
+
+  const _PreferenceCard({
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(children.length, (i) {
+          return Column(
+            children: [
+              if (i > 0)
+                Divider(
+                  height: 1,
+                  color: isDark ? Colors.white10 : Colors.grey.shade300,
+                ),
+              children[i],
+            ],
+          );
+        }),
+      ),
     );
   }
 }

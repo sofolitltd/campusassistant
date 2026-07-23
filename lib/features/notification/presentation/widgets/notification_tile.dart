@@ -93,15 +93,34 @@ class NotificationTile extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: isDark ? 0.15 : 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(icon, color: color, size: 20),
-                ),
+                notification.imageUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          notification.imageUrl!,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: isDark ? 0.15 : 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(icon, color: color, size: 20),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: isDark ? 0.15 : 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(icon, color: color, size: 20),
+                      ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

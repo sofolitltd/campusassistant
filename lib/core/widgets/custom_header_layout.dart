@@ -62,15 +62,7 @@ class CustomHeaderLayout extends StatelessWidget {
                         backgroundColor: Colors.transparent,
                         elevation: 0,
                         scrolledUnderElevation: 0,
-                        iconTheme: const IconThemeData(color: Colors.white),
-                        title: Text(
-                          title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
+                        title: Text(title),
                         centerTitle: true,
                         actions:
                             actions ??

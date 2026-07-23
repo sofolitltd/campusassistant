@@ -6,29 +6,22 @@ import 'tokens/app_elevation.dart';
 import 'tokens/app_radius.dart';
 import 'tokens/app_spacing.dart';
 
-/// Brand primary color used as the Material 3 seed.
-const Color _brandPrimary = Color(0xFF4DB6AC);
-// const Color _brandPrimary = Color(0xFF00897B);
-const Color _darkBg = Color.fromARGB(255, 18, 18, 18);
-const Color _darkCard = Color(0xFF1E1E1E);
-const Color _darkSurfaceAlt = Color(0xFF2A2A2A);
-const Color _darkAppBar = Color(0xFF1A1A1A);
-
 /// Cached Outfit font family so GoogleFonts.outfit() is called only once.
 final TextTheme _outfitTextTheme = GoogleFonts.outfitTextTheme();
 
 ThemeData buildLightTheme() {
+  final colors = AppColors.light;
   final colorScheme = ColorScheme.fromSeed(
-    seedColor: _brandPrimary,
+    seedColor: colors.primaryColor,
     brightness: Brightness.light,
   );
 
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
-    cardColor: Colors.white,
+    cardColor: colors.cardBg,
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    scaffoldBackgroundColor: const Color(0xFFF9F9F8),
+    scaffoldBackgroundColor: colors.scaffoldBg,
     dividerColor: colorScheme.outlineVariant,
     extensions: const [AppColors.light],
     textTheme: ThemeData.light().textTheme.apply(
@@ -40,7 +33,7 @@ ThemeData buildLightTheme() {
     inputDecorationTheme: InputDecorationTheme(
       isDense: true,
       filled: true,
-      fillColor: Colors.grey.shade100,
+      fillColor: colors.surfaceAltBg,
       hintStyle: TextStyle(color: Colors.grey.shade400),
       contentPadding: const EdgeInsets.symmetric(
         vertical: Spacing.md,
@@ -56,7 +49,7 @@ ThemeData buildLightTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        borderSide: const BorderSide(color: _brandPrimary, width: 1.5),
+        borderSide: BorderSide(color: colors.primaryColor, width: 1.5),
       ),
     ),
 
@@ -64,7 +57,7 @@ ThemeData buildLightTheme() {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
-        backgroundColor: _brandPrimary,
+        backgroundColor: colors.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
         visualDensity: VisualDensity.compact,
@@ -82,7 +75,7 @@ ThemeData buildLightTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: _brandPrimary,
+        foregroundColor: colors.primaryColor,
         side: BorderSide(color: colorScheme.outline),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
@@ -97,7 +90,7 @@ ThemeData buildLightTheme() {
       style: TextButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: _brandPrimary,
+        foregroundColor: colors.primaryColor,
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
@@ -108,13 +101,13 @@ ThemeData buildLightTheme() {
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: colorScheme.primary,
-      foregroundColor: colorScheme.onPrimary,
+      backgroundColor: colors.primaryColor,
+      foregroundColor: Colors.white,
     ),
 
     // --- Cards ---
     cardTheme: CardThemeData(
-      color: Colors.white,
+      color: colors.cardBg,
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -124,7 +117,7 @@ ThemeData buildLightTheme() {
 
     // --- AppBar ---
     appBarTheme: AppBarTheme(
-      backgroundColor: _brandPrimary,
+      backgroundColor: colors.primaryColor,
       surfaceTintColor: Colors.transparent,
       centerTitle: true,
       elevation: 0,
@@ -139,8 +132,8 @@ ThemeData buildLightTheme() {
 
     // --- Navigation ---
     navigationBarTheme: NavigationBarThemeData(
-      indicatorColor: _brandPrimary,
-      backgroundColor: colorScheme.surface,
+      indicatorColor: colors.primaryColor,
+      backgroundColor: colors.navBarBg,
       height: 64,
     ),
     navigationRailTheme: NavigationRailThemeData(
@@ -234,14 +227,15 @@ ThemeData buildLightTheme() {
 }
 
 ThemeData buildDarkTheme() {
+  final colors = AppColors.dark;
   final colorScheme = ColorScheme.fromSeed(
-    seedColor: _brandPrimary,
+    seedColor: colors.primaryColor,
     brightness: Brightness.dark,
   );
 
   final ColorScheme darkColorScheme = colorScheme.copyWith(
-    surface: _darkCard,
-    surfaceContainerHighest: _darkSurfaceAlt,
+    surface: colors.cardBg,
+    surfaceContainerHighest: colors.surfaceAltBg,
     onSurface: const Color(0xFFE8E9ED),
     onSurfaceVariant: const Color(0xFFB0B0B0),
     outline: const Color(0xFF333333),
@@ -251,9 +245,9 @@ ThemeData buildDarkTheme() {
   return ThemeData(
     useMaterial3: true,
     colorScheme: darkColorScheme,
-    cardColor: _darkCard,
+    cardColor: colors.cardBg,
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    scaffoldBackgroundColor: _darkBg,
+    scaffoldBackgroundColor: colors.scaffoldBg,
     dividerColor: const Color(0xFF2E2E2E),
     extensions: const [AppColors.dark],
     textTheme: ThemeData.dark().textTheme.apply(
@@ -265,7 +259,7 @@ ThemeData buildDarkTheme() {
     inputDecorationTheme: InputDecorationTheme(
       isDense: true,
       filled: true,
-      fillColor: _darkSurfaceAlt,
+      fillColor: colors.surfaceAltBg,
       hintStyle: const TextStyle(color: Color(0xFF888888)),
       contentPadding: const EdgeInsets.symmetric(
         vertical: Spacing.md,
@@ -281,7 +275,7 @@ ThemeData buildDarkTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        borderSide: const BorderSide(color: _brandPrimary, width: 1.5),
+        borderSide: BorderSide(color: colors.primaryColor, width: 1.5),
       ),
     ),
 
@@ -289,7 +283,7 @@ ThemeData buildDarkTheme() {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
-        backgroundColor: _brandPrimary,
+        backgroundColor: colors.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
         visualDensity: VisualDensity.compact,
@@ -307,7 +301,7 @@ ThemeData buildDarkTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: _brandPrimary,
+        foregroundColor: colors.primaryColor,
         side: const BorderSide(color: Color(0xFF333333)),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
@@ -322,7 +316,7 @@ ThemeData buildDarkTheme() {
       style: TextButton.styleFrom(
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
-        foregroundColor: _brandPrimary,
+        foregroundColor: colors.primaryColor,
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
@@ -333,13 +327,13 @@ ThemeData buildDarkTheme() {
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: _brandPrimary,
+      backgroundColor: colors.primaryColor,
       foregroundColor: Colors.white,
     ),
 
     // --- Cards ---
     cardTheme: CardThemeData(
-      color: _darkCard,
+      color: colors.cardBg,
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -349,7 +343,7 @@ ThemeData buildDarkTheme() {
 
     // --- AppBar ---
     appBarTheme: AppBarTheme(
-      backgroundColor: _brandPrimary,
+      backgroundColor: colors.primaryColor,
       surfaceTintColor: Colors.transparent,
       centerTitle: true,
       elevation: 0,
@@ -364,21 +358,21 @@ ThemeData buildDarkTheme() {
 
     // --- Navigation ---
     navigationBarTheme: NavigationBarThemeData(
-      indicatorColor: _brandPrimary,
-      backgroundColor: _darkAppBar,
+      indicatorColor: colors.primaryColor,
+      backgroundColor: colors.navBarBg,
       height: 64,
     ),
-    navigationRailTheme: NavigationRailThemeData(backgroundColor: _darkAppBar),
+    navigationRailTheme: NavigationRailThemeData(backgroundColor: colors.navBarBg),
 
     // --- Dialogs & Sheets ---
     dialogTheme: DialogThemeData(
-      backgroundColor: _darkCard,
+      backgroundColor: colors.cardBg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(RadiusToken.xl),
       ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: _darkCard,
+      backgroundColor: colors.cardBg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(RadiusToken.xl),
@@ -409,13 +403,13 @@ ThemeData buildDarkTheme() {
 
     // --- Progress ---
     progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: _brandPrimary,
-      linearTrackColor: _darkSurfaceAlt,
+      color: colors.primaryColor,
+      linearTrackColor: colors.surfaceAltBg,
     ),
 
     // --- SnackBar ---
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: _darkCard,
+      backgroundColor: colors.cardBg,
       contentTextStyle: TextStyle(color: darkColorScheme.onSurface),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
@@ -438,8 +432,8 @@ ThemeData buildDarkTheme() {
 
     // --- Tabs ---
     tabBarTheme: TabBarThemeData(
-      indicatorColor: _brandPrimary,
-      labelColor: _brandPrimary,
+      indicatorColor: colors.primaryColor,
+      labelColor: colors.primaryColor,
       unselectedLabelColor: darkColorScheme.onSurfaceVariant,
       labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       indicatorSize: TabBarIndicatorSize.tab,
@@ -449,7 +443,7 @@ ThemeData buildDarkTheme() {
     tooltipTheme: TooltipThemeData(
       textStyle: TextStyle(color: Colors.white),
       decoration: BoxDecoration(
-        color: _darkCard,
+        color: colors.cardBg,
         borderRadius: BorderRadius.circular(RadiusToken.md),
       ),
     ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Association {
 
- String get id; String get name; String get description; String get associationType; String get universityId; String get districtId; String get districtName; String? get subDistrictId; String? get subDistrictName; String? get logoUrl; String? get bannerUrl; int? get foundedYear; bool get isActive; Map<String, dynamic>? get socialLinks; String? get contactEmail; String? get contactPhone; int get followersCount; bool get isFollowing; String? get category; bool get isVerified; int get membersCount; bool get isMember;
+ String get id; String get name; String get description; String get associationType; String get universityId; String get districtId; String get districtName; String? get subDistrictId; String? get subDistrictName; String? get logoUrl; String? get bannerUrl; int? get foundedYear; bool get isActive; Map<String, dynamic>? get socialLinks; String? get contactEmail; String? get contactPhone; int get followersCount; bool get isFollowing; String? get category; bool get isVerified; int get membersCount; bool get isMember; bool get isPendingMember;
 /// Create a copy of Association
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AssociationCopyWith<Association> get copyWith => _$AssociationCopyWithImpl<Asso
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Association&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.associationType, associationType) || other.associationType == associationType)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.districtId, districtId) || other.districtId == districtId)&&(identical(other.districtName, districtName) || other.districtName == districtName)&&(identical(other.subDistrictId, subDistrictId) || other.subDistrictId == subDistrictId)&&(identical(other.subDistrictName, subDistrictName) || other.subDistrictName == subDistrictName)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.bannerUrl, bannerUrl) || other.bannerUrl == bannerUrl)&&(identical(other.foundedYear, foundedYear) || other.foundedYear == foundedYear)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&const DeepCollectionEquality().equals(other.socialLinks, socialLinks)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.followersCount, followersCount) || other.followersCount == followersCount)&&(identical(other.isFollowing, isFollowing) || other.isFollowing == isFollowing)&&(identical(other.category, category) || other.category == category)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.membersCount, membersCount) || other.membersCount == membersCount)&&(identical(other.isMember, isMember) || other.isMember == isMember));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Association&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.associationType, associationType) || other.associationType == associationType)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.districtId, districtId) || other.districtId == districtId)&&(identical(other.districtName, districtName) || other.districtName == districtName)&&(identical(other.subDistrictId, subDistrictId) || other.subDistrictId == subDistrictId)&&(identical(other.subDistrictName, subDistrictName) || other.subDistrictName == subDistrictName)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.bannerUrl, bannerUrl) || other.bannerUrl == bannerUrl)&&(identical(other.foundedYear, foundedYear) || other.foundedYear == foundedYear)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&const DeepCollectionEquality().equals(other.socialLinks, socialLinks)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.followersCount, followersCount) || other.followersCount == followersCount)&&(identical(other.isFollowing, isFollowing) || other.isFollowing == isFollowing)&&(identical(other.category, category) || other.category == category)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.membersCount, membersCount) || other.membersCount == membersCount)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&(identical(other.isPendingMember, isPendingMember) || other.isPendingMember == isPendingMember));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,description,associationType,universityId,districtId,districtName,subDistrictId,subDistrictName,logoUrl,bannerUrl,foundedYear,isActive,const DeepCollectionEquality().hash(socialLinks),contactEmail,contactPhone,followersCount,isFollowing,category,isVerified,membersCount,isMember]);
+int get hashCode => Object.hashAll([runtimeType,id,name,description,associationType,universityId,districtId,districtName,subDistrictId,subDistrictName,logoUrl,bannerUrl,foundedYear,isActive,const DeepCollectionEquality().hash(socialLinks),contactEmail,contactPhone,followersCount,isFollowing,category,isVerified,membersCount,isMember,isPendingMember]);
 
 @override
 String toString() {
-  return 'Association(id: $id, name: $name, description: $description, associationType: $associationType, universityId: $universityId, districtId: $districtId, districtName: $districtName, subDistrictId: $subDistrictId, subDistrictName: $subDistrictName, logoUrl: $logoUrl, bannerUrl: $bannerUrl, foundedYear: $foundedYear, isActive: $isActive, socialLinks: $socialLinks, contactEmail: $contactEmail, contactPhone: $contactPhone, followersCount: $followersCount, isFollowing: $isFollowing, category: $category, isVerified: $isVerified, membersCount: $membersCount, isMember: $isMember)';
+  return 'Association(id: $id, name: $name, description: $description, associationType: $associationType, universityId: $universityId, districtId: $districtId, districtName: $districtName, subDistrictId: $subDistrictId, subDistrictName: $subDistrictName, logoUrl: $logoUrl, bannerUrl: $bannerUrl, foundedYear: $foundedYear, isActive: $isActive, socialLinks: $socialLinks, contactEmail: $contactEmail, contactPhone: $contactPhone, followersCount: $followersCount, isFollowing: $isFollowing, category: $category, isVerified: $isVerified, membersCount: $membersCount, isMember: $isMember, isPendingMember: $isPendingMember)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AssociationCopyWith<$Res>  {
   factory $AssociationCopyWith(Association value, $Res Function(Association) _then) = _$AssociationCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String description, String associationType, String universityId, String districtId, String districtName, String? subDistrictId, String? subDistrictName, String? logoUrl, String? bannerUrl, int? foundedYear, bool isActive, Map<String, dynamic>? socialLinks, String? contactEmail, String? contactPhone, int followersCount, bool isFollowing, String? category, bool isVerified, int membersCount, bool isMember
+ String id, String name, String description, String associationType, String universityId, String districtId, String districtName, String? subDistrictId, String? subDistrictName, String? logoUrl, String? bannerUrl, int? foundedYear, bool isActive, Map<String, dynamic>? socialLinks, String? contactEmail, String? contactPhone, int followersCount, bool isFollowing, String? category, bool isVerified, int membersCount, bool isMember, bool isPendingMember
 });
 
 
@@ -65,7 +65,7 @@ class _$AssociationCopyWithImpl<$Res>
 
 /// Create a copy of Association
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? associationType = null,Object? universityId = null,Object? districtId = null,Object? districtName = null,Object? subDistrictId = freezed,Object? subDistrictName = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? foundedYear = freezed,Object? isActive = null,Object? socialLinks = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? followersCount = null,Object? isFollowing = null,Object? category = freezed,Object? isVerified = null,Object? membersCount = null,Object? isMember = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? associationType = null,Object? universityId = null,Object? districtId = null,Object? districtName = null,Object? subDistrictId = freezed,Object? subDistrictName = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? foundedYear = freezed,Object? isActive = null,Object? socialLinks = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? followersCount = null,Object? isFollowing = null,Object? category = freezed,Object? isVerified = null,Object? membersCount = null,Object? isMember = null,Object? isPendingMember = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -89,6 +89,7 @@ as bool,category: freezed == category ? _self.category : category // ignore: cas
 as String?,isVerified: null == isVerified ? _self.isVerified : isVerified // ignore: cast_nullable_to_non_nullable
 as bool,membersCount: null == membersCount ? _self.membersCount : membersCount // ignore: cast_nullable_to_non_nullable
 as int,isMember: null == isMember ? _self.isMember : isMember // ignore: cast_nullable_to_non_nullable
+as bool,isPendingMember: null == isPendingMember ? _self.isPendingMember : isPendingMember // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -174,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String associationType,  String universityId,  String districtId,  String districtName,  String? subDistrictId,  String? subDistrictName,  String? logoUrl,  String? bannerUrl,  int? foundedYear,  bool isActive,  Map<String, dynamic>? socialLinks,  String? contactEmail,  String? contactPhone,  int followersCount,  bool isFollowing,  String? category,  bool isVerified,  int membersCount,  bool isMember)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String associationType,  String universityId,  String districtId,  String districtName,  String? subDistrictId,  String? subDistrictName,  String? logoUrl,  String? bannerUrl,  int? foundedYear,  bool isActive,  Map<String, dynamic>? socialLinks,  String? contactEmail,  String? contactPhone,  int followersCount,  bool isFollowing,  String? category,  bool isVerified,  int membersCount,  bool isMember,  bool isPendingMember)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Association() when $default != null:
-return $default(_that.id,_that.name,_that.description,_that.associationType,_that.universityId,_that.districtId,_that.districtName,_that.subDistrictId,_that.subDistrictName,_that.logoUrl,_that.bannerUrl,_that.foundedYear,_that.isActive,_that.socialLinks,_that.contactEmail,_that.contactPhone,_that.followersCount,_that.isFollowing,_that.category,_that.isVerified,_that.membersCount,_that.isMember);case _:
+return $default(_that.id,_that.name,_that.description,_that.associationType,_that.universityId,_that.districtId,_that.districtName,_that.subDistrictId,_that.subDistrictName,_that.logoUrl,_that.bannerUrl,_that.foundedYear,_that.isActive,_that.socialLinks,_that.contactEmail,_that.contactPhone,_that.followersCount,_that.isFollowing,_that.category,_that.isVerified,_that.membersCount,_that.isMember,_that.isPendingMember);case _:
   return orElse();
 
 }
@@ -195,10 +196,10 @@ return $default(_that.id,_that.name,_that.description,_that.associationType,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String associationType,  String universityId,  String districtId,  String districtName,  String? subDistrictId,  String? subDistrictName,  String? logoUrl,  String? bannerUrl,  int? foundedYear,  bool isActive,  Map<String, dynamic>? socialLinks,  String? contactEmail,  String? contactPhone,  int followersCount,  bool isFollowing,  String? category,  bool isVerified,  int membersCount,  bool isMember)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String associationType,  String universityId,  String districtId,  String districtName,  String? subDistrictId,  String? subDistrictName,  String? logoUrl,  String? bannerUrl,  int? foundedYear,  bool isActive,  Map<String, dynamic>? socialLinks,  String? contactEmail,  String? contactPhone,  int followersCount,  bool isFollowing,  String? category,  bool isVerified,  int membersCount,  bool isMember,  bool isPendingMember)  $default,) {final _that = this;
 switch (_that) {
 case _Association():
-return $default(_that.id,_that.name,_that.description,_that.associationType,_that.universityId,_that.districtId,_that.districtName,_that.subDistrictId,_that.subDistrictName,_that.logoUrl,_that.bannerUrl,_that.foundedYear,_that.isActive,_that.socialLinks,_that.contactEmail,_that.contactPhone,_that.followersCount,_that.isFollowing,_that.category,_that.isVerified,_that.membersCount,_that.isMember);case _:
+return $default(_that.id,_that.name,_that.description,_that.associationType,_that.universityId,_that.districtId,_that.districtName,_that.subDistrictId,_that.subDistrictName,_that.logoUrl,_that.bannerUrl,_that.foundedYear,_that.isActive,_that.socialLinks,_that.contactEmail,_that.contactPhone,_that.followersCount,_that.isFollowing,_that.category,_that.isVerified,_that.membersCount,_that.isMember,_that.isPendingMember);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +216,10 @@ return $default(_that.id,_that.name,_that.description,_that.associationType,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String description,  String associationType,  String universityId,  String districtId,  String districtName,  String? subDistrictId,  String? subDistrictName,  String? logoUrl,  String? bannerUrl,  int? foundedYear,  bool isActive,  Map<String, dynamic>? socialLinks,  String? contactEmail,  String? contactPhone,  int followersCount,  bool isFollowing,  String? category,  bool isVerified,  int membersCount,  bool isMember)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String description,  String associationType,  String universityId,  String districtId,  String districtName,  String? subDistrictId,  String? subDistrictName,  String? logoUrl,  String? bannerUrl,  int? foundedYear,  bool isActive,  Map<String, dynamic>? socialLinks,  String? contactEmail,  String? contactPhone,  int followersCount,  bool isFollowing,  String? category,  bool isVerified,  int membersCount,  bool isMember,  bool isPendingMember)?  $default,) {final _that = this;
 switch (_that) {
 case _Association() when $default != null:
-return $default(_that.id,_that.name,_that.description,_that.associationType,_that.universityId,_that.districtId,_that.districtName,_that.subDistrictId,_that.subDistrictName,_that.logoUrl,_that.bannerUrl,_that.foundedYear,_that.isActive,_that.socialLinks,_that.contactEmail,_that.contactPhone,_that.followersCount,_that.isFollowing,_that.category,_that.isVerified,_that.membersCount,_that.isMember);case _:
+return $default(_that.id,_that.name,_that.description,_that.associationType,_that.universityId,_that.districtId,_that.districtName,_that.subDistrictId,_that.subDistrictName,_that.logoUrl,_that.bannerUrl,_that.foundedYear,_that.isActive,_that.socialLinks,_that.contactEmail,_that.contactPhone,_that.followersCount,_that.isFollowing,_that.category,_that.isVerified,_that.membersCount,_that.isMember,_that.isPendingMember);case _:
   return null;
 
 }
@@ -230,7 +231,7 @@ return $default(_that.id,_that.name,_that.description,_that.associationType,_tha
 @JsonSerializable()
 
 class _Association implements Association {
-  const _Association({required this.id, required this.name, required this.description, required this.associationType, required this.universityId, required this.districtId, required this.districtName, this.subDistrictId, this.subDistrictName, this.logoUrl, this.bannerUrl, this.foundedYear, this.isActive = true, final  Map<String, dynamic>? socialLinks, this.contactEmail, this.contactPhone, this.followersCount = 0, this.isFollowing = false, this.category, this.isVerified = false, this.membersCount = 0, this.isMember = false}): _socialLinks = socialLinks;
+  const _Association({required this.id, required this.name, required this.description, required this.associationType, required this.universityId, required this.districtId, required this.districtName, this.subDistrictId, this.subDistrictName, this.logoUrl, this.bannerUrl, this.foundedYear, this.isActive = true, final  Map<String, dynamic>? socialLinks, this.contactEmail, this.contactPhone, this.followersCount = 0, this.isFollowing = false, this.category, this.isVerified = false, this.membersCount = 0, this.isMember = false, this.isPendingMember = false}): _socialLinks = socialLinks;
   factory _Association.fromJson(Map<String, dynamic> json) => _$AssociationFromJson(json);
 
 @override final  String id;
@@ -263,6 +264,7 @@ class _Association implements Association {
 @override@JsonKey() final  bool isVerified;
 @override@JsonKey() final  int membersCount;
 @override@JsonKey() final  bool isMember;
+@override@JsonKey() final  bool isPendingMember;
 
 /// Create a copy of Association
 /// with the given fields replaced by the non-null parameter values.
@@ -277,16 +279,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Association&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.associationType, associationType) || other.associationType == associationType)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.districtId, districtId) || other.districtId == districtId)&&(identical(other.districtName, districtName) || other.districtName == districtName)&&(identical(other.subDistrictId, subDistrictId) || other.subDistrictId == subDistrictId)&&(identical(other.subDistrictName, subDistrictName) || other.subDistrictName == subDistrictName)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.bannerUrl, bannerUrl) || other.bannerUrl == bannerUrl)&&(identical(other.foundedYear, foundedYear) || other.foundedYear == foundedYear)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&const DeepCollectionEquality().equals(other._socialLinks, _socialLinks)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.followersCount, followersCount) || other.followersCount == followersCount)&&(identical(other.isFollowing, isFollowing) || other.isFollowing == isFollowing)&&(identical(other.category, category) || other.category == category)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.membersCount, membersCount) || other.membersCount == membersCount)&&(identical(other.isMember, isMember) || other.isMember == isMember));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Association&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.associationType, associationType) || other.associationType == associationType)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.districtId, districtId) || other.districtId == districtId)&&(identical(other.districtName, districtName) || other.districtName == districtName)&&(identical(other.subDistrictId, subDistrictId) || other.subDistrictId == subDistrictId)&&(identical(other.subDistrictName, subDistrictName) || other.subDistrictName == subDistrictName)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.bannerUrl, bannerUrl) || other.bannerUrl == bannerUrl)&&(identical(other.foundedYear, foundedYear) || other.foundedYear == foundedYear)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&const DeepCollectionEquality().equals(other._socialLinks, _socialLinks)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.followersCount, followersCount) || other.followersCount == followersCount)&&(identical(other.isFollowing, isFollowing) || other.isFollowing == isFollowing)&&(identical(other.category, category) || other.category == category)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.membersCount, membersCount) || other.membersCount == membersCount)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&(identical(other.isPendingMember, isPendingMember) || other.isPendingMember == isPendingMember));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,description,associationType,universityId,districtId,districtName,subDistrictId,subDistrictName,logoUrl,bannerUrl,foundedYear,isActive,const DeepCollectionEquality().hash(_socialLinks),contactEmail,contactPhone,followersCount,isFollowing,category,isVerified,membersCount,isMember]);
+int get hashCode => Object.hashAll([runtimeType,id,name,description,associationType,universityId,districtId,districtName,subDistrictId,subDistrictName,logoUrl,bannerUrl,foundedYear,isActive,const DeepCollectionEquality().hash(_socialLinks),contactEmail,contactPhone,followersCount,isFollowing,category,isVerified,membersCount,isMember,isPendingMember]);
 
 @override
 String toString() {
-  return 'Association(id: $id, name: $name, description: $description, associationType: $associationType, universityId: $universityId, districtId: $districtId, districtName: $districtName, subDistrictId: $subDistrictId, subDistrictName: $subDistrictName, logoUrl: $logoUrl, bannerUrl: $bannerUrl, foundedYear: $foundedYear, isActive: $isActive, socialLinks: $socialLinks, contactEmail: $contactEmail, contactPhone: $contactPhone, followersCount: $followersCount, isFollowing: $isFollowing, category: $category, isVerified: $isVerified, membersCount: $membersCount, isMember: $isMember)';
+  return 'Association(id: $id, name: $name, description: $description, associationType: $associationType, universityId: $universityId, districtId: $districtId, districtName: $districtName, subDistrictId: $subDistrictId, subDistrictName: $subDistrictName, logoUrl: $logoUrl, bannerUrl: $bannerUrl, foundedYear: $foundedYear, isActive: $isActive, socialLinks: $socialLinks, contactEmail: $contactEmail, contactPhone: $contactPhone, followersCount: $followersCount, isFollowing: $isFollowing, category: $category, isVerified: $isVerified, membersCount: $membersCount, isMember: $isMember, isPendingMember: $isPendingMember)';
 }
 
 
@@ -297,7 +299,7 @@ abstract mixin class _$AssociationCopyWith<$Res> implements $AssociationCopyWith
   factory _$AssociationCopyWith(_Association value, $Res Function(_Association) _then) = __$AssociationCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String description, String associationType, String universityId, String districtId, String districtName, String? subDistrictId, String? subDistrictName, String? logoUrl, String? bannerUrl, int? foundedYear, bool isActive, Map<String, dynamic>? socialLinks, String? contactEmail, String? contactPhone, int followersCount, bool isFollowing, String? category, bool isVerified, int membersCount, bool isMember
+ String id, String name, String description, String associationType, String universityId, String districtId, String districtName, String? subDistrictId, String? subDistrictName, String? logoUrl, String? bannerUrl, int? foundedYear, bool isActive, Map<String, dynamic>? socialLinks, String? contactEmail, String? contactPhone, int followersCount, bool isFollowing, String? category, bool isVerified, int membersCount, bool isMember, bool isPendingMember
 });
 
 
@@ -314,7 +316,7 @@ class __$AssociationCopyWithImpl<$Res>
 
 /// Create a copy of Association
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? associationType = null,Object? universityId = null,Object? districtId = null,Object? districtName = null,Object? subDistrictId = freezed,Object? subDistrictName = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? foundedYear = freezed,Object? isActive = null,Object? socialLinks = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? followersCount = null,Object? isFollowing = null,Object? category = freezed,Object? isVerified = null,Object? membersCount = null,Object? isMember = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? associationType = null,Object? universityId = null,Object? districtId = null,Object? districtName = null,Object? subDistrictId = freezed,Object? subDistrictName = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? foundedYear = freezed,Object? isActive = null,Object? socialLinks = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? followersCount = null,Object? isFollowing = null,Object? category = freezed,Object? isVerified = null,Object? membersCount = null,Object? isMember = null,Object? isPendingMember = null,}) {
   return _then(_Association(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -338,6 +340,7 @@ as bool,category: freezed == category ? _self.category : category // ignore: cas
 as String?,isVerified: null == isVerified ? _self.isVerified : isVerified // ignore: cast_nullable_to_non_nullable
 as bool,membersCount: null == membersCount ? _self.membersCount : membersCount // ignore: cast_nullable_to_non_nullable
 as int,isMember: null == isMember ? _self.isMember : isMember // ignore: cast_nullable_to_non_nullable
+as bool,isPendingMember: null == isPendingMember ? _self.isPendingMember : isPendingMember // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

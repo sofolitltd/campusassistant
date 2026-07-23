@@ -103,12 +103,23 @@ class NotificationDetailScreen extends ConsumerWidget {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
+                      if (notif.imageUrl != null)
+                        Image.network(
+                          notif.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => _gradientBg(color),
+                        )
+                      else
+                        _gradientBg(color),
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [color, color.withValues(alpha: 0.7)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.6),
+                            ],
                           ),
                         ),
                       ),
@@ -347,6 +358,18 @@ class NotificationDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _gradientBg(Color color) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color, color.withValues(alpha: 0.7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
     );

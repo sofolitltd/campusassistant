@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -6,7 +5,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/utils/constants.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
-import '/core/theme/tokens/app_spacing.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -44,7 +42,7 @@ class CustomDrawer extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleSmall!
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
-                          const SizedBox(height: Spacing.lg),
+                          const SizedBox(height: 16.0),
                           Container(
                             height: 100,
                             width: 100,
@@ -59,7 +57,7 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: Spacing.lg),
+                          const SizedBox(height: 16.0),
                           Text(
                             kDeveloperName,
                             style: Theme.of(context).textTheme.titleMedium!
@@ -125,81 +123,56 @@ class CustomDrawer extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleSmall!
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
-                          const SizedBox(height: 8),
-                          Container(
-                            color: Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                //call
-                                MaterialButton(
-                                  onPressed: () {
-                                    OpenApp.withNumber(kDeveloperMobile);
-                                  },
-                                  minWidth: 32,
-                                  elevation: 2,
-                                  color: Colors.green,
-                                  shape: const CircleBorder(),
-                                  padding: const EdgeInsets.all(
-                                    kIsWeb ? 16 : 8,
-                                  ),
-                                  child: const Icon(
-                                    LucideIcons.phone,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ),
 
-                                //mail
-                                MaterialButton(
-                                  onPressed: () {
-                                    OpenApp.withEmail(kAppEmail);
-                                  },
-                                  minWidth: 32,
-                                  elevation: 2,
-                                  color: Colors.red,
-                                  shape: const CircleBorder(),
-                                  padding: const EdgeInsets.all(
-                                    kIsWeb ? 16 : 8,
-                                  ),
-                                  child: const Icon(
-                                    LucideIcons.mail,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ),
+                          const SizedBox(height: 12),
 
-                                //facebook
-                                MaterialButton(
-                                  onPressed: () {
-                                    OpenApp.withUrl(kDeveloperFb);
-                                  },
-                                  minWidth: 32,
-                                  elevation: 2,
-                                  color: Colors.blue,
-                                  shape: const CircleBorder(),
-                                  padding: const EdgeInsets.all(
-                                    kIsWeb ? 16 : 8,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.push('/developer');
+                            },
+                            child: Container(
+                              width: 154,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: .05),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              child: Row(
+                                spacing: 8,
+                                children: [
+                                  Text(
+                                    "Contact Developer",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(
+                                          height: 1,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.teal.shade300,
+                                        ),
                                   ),
-                                  child: const Icon(
-                                    LucideIcons.link,
-                                    color: Colors.white,
-                                    size: 18,
+                                  Icon(
+                                    LucideIcons.arrowUpRight,
+                                    size: 14,
+                                    color: Colors.teal.shade300,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
 
+                    const SizedBox(height: 8),
+
                     //
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -305,7 +278,7 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(height: Spacing.lg),
+                            const SizedBox(height: 16.0),
                           ],
                         ),
                       ),

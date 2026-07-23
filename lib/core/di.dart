@@ -5,7 +5,11 @@ import 'network/api_client.dart';
 import 'network/api_endpoints.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
 import '../features/auth/presentation/providers/auth_provider.dart';
+import '../features/career/circular/data/repositories/circular_repository.dart';
+import '../features/career/jobs/data/repositories/career_job_repository.dart';
+import '../features/career/reminders/data/repositories/career_reminder_repository.dart';
 import '../features/community/data/repositories/community_repository.dart';
+import '../features/lost_found/data/repositories/lost_found_repository.dart';
 import 'cache/cache_manager.dart';
 import 'cache/connectivity_service.dart';
 import 'websocket/websocket_service.dart';
@@ -64,6 +68,26 @@ final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
     connectivity: connectivity,
     webSocketService: wsService,
   );
+});
+
+final lostFoundRepositoryProvider = Provider<LostFoundRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return LostFoundRepository(apiClient);
+});
+
+final circularRepositoryProvider = Provider<CircularRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return CircularRepository(apiClient);
+});
+
+final careerJobRepositoryProvider = Provider<CareerJobRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return CareerJobRepository(apiClient);
+});
+
+final careerReminderRepositoryProvider = Provider<CareerReminderRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return CareerReminderRepository(apiClient);
 });
 
 // Syllabus repository is provided via riverpod_generator in

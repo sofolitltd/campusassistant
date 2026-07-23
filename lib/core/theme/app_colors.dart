@@ -12,6 +12,10 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.warningColor,
     required this.infoColor,
     required this.destructiveColor,
+    required this.scaffoldBg,
+    required this.cardBg,
+    required this.surfaceAltBg,
+    required this.navBarBg,
   });
 
   // -- Existing slots --
@@ -26,15 +30,25 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color infoColor;
   final Color destructiveColor;
 
+  // -- Background slots --
+  final Color scaffoldBg;
+  final Color cardBg;
+  final Color surfaceAltBg;
+  final Color navBarBg;
+
   static const light = AppColors(
     academicRowBg: Color(0xFFF5F6FA),
     logoutButtonBg: Color(0xFFFFEBEE),
     iconContainerBg: Color(0xFFF5F5F5),
-    primaryColor: Color(0xFF00897B),
+    primaryColor: Color(0xFF4DB6AC),
     successColor: Color(0xFF22C55E),
     warningColor: Color(0xFFF59E0B),
     infoColor: Color(0xFF3B82F6),
     destructiveColor: Color(0xFF00897B),
+    scaffoldBg: Color(0xFFF9F9F8),
+    cardBg: Colors.white,
+    surfaceAltBg: Color(0xFFF5F5F5),
+    navBarBg: Colors.white,
   );
 
   static const dark = AppColors(
@@ -46,6 +60,10 @@ class AppColors extends ThemeExtension<AppColors> {
     warningColor: Color(0xFFFBBF24),
     infoColor: Color(0xFF60A5FA),
     destructiveColor: Color(0xFF4DB6AC),
+    scaffoldBg: Color.fromARGB(255, 18, 18, 18),
+    cardBg: Color(0xFF1E1E1E),
+    surfaceAltBg: Color(0xFF2A2A2A),
+    navBarBg: Color(0xFF1A1A1A),
   );
 
   @override
@@ -58,6 +76,10 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? warningColor,
     Color? infoColor,
     Color? destructiveColor,
+    Color? scaffoldBg,
+    Color? cardBg,
+    Color? surfaceAltBg,
+    Color? navBarBg,
   }) {
     return AppColors(
       academicRowBg: academicRowBg ?? this.academicRowBg,
@@ -68,6 +90,10 @@ class AppColors extends ThemeExtension<AppColors> {
       warningColor: warningColor ?? this.warningColor,
       infoColor: infoColor ?? this.infoColor,
       destructiveColor: destructiveColor ?? this.destructiveColor,
+      scaffoldBg: scaffoldBg ?? this.scaffoldBg,
+      cardBg: cardBg ?? this.cardBg,
+      surfaceAltBg: surfaceAltBg ?? this.surfaceAltBg,
+      navBarBg: navBarBg ?? this.navBarBg,
     );
   }
 
@@ -87,6 +113,10 @@ class AppColors extends ThemeExtension<AppColors> {
       warningColor: Color.lerp(warningColor, o.warningColor, t)!,
       infoColor: Color.lerp(infoColor, o.infoColor, t)!,
       destructiveColor: Color.lerp(destructiveColor, o.destructiveColor, t)!,
+      scaffoldBg: Color.lerp(scaffoldBg, o.scaffoldBg, t)!,
+      cardBg: Color.lerp(cardBg, o.cardBg, t)!,
+      surfaceAltBg: Color.lerp(surfaceAltBg, o.surfaceAltBg, t)!,
+      navBarBg: Color.lerp(navBarBg, o.navBarBg, t)!,
     );
   }
 }

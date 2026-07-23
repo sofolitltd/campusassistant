@@ -183,18 +183,14 @@ class _SuggestedAssociationsRow extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 210,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: suggested.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) => SizedBox(
-                    width: 220,
-                    child: AssociationCard(association: suggested[index]),
-                  ),
-                ),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: suggested.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                itemBuilder: (context, index) =>
+                    _SuggestedAssociationTile(association: suggested[index]),
               ),
               const SizedBox(height: 12),
             ],
@@ -203,6 +199,158 @@ class _SuggestedAssociationsRow extends ConsumerWidget {
       },
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _SuggestedAssociationTile extends StatelessWidget {
+  final Association association;
+
+  const _SuggestedAssociationTile({required this.association});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).primaryColor;
+    final isSubDistrictMatch = association.associationType == 'sub_district';
+    final locationLabel = isSubDistrictMatch
+        ? '${association.subDistrictName}, ${association.districtName}'
+        : association.districtName;
+    final matchLabel = isSubDistrictMatch
+        ? 'Matches your sub-district — join to stay updated'
+        : 'Matches your district — join to stay updated';
+
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed(
+          AppRoute.associationDetails.name,
+          pathParameters: {'associationId': association.id},
+          extra: association,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? Theme.of(context).cardColor : Colors.white,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(
+            color: isDark ? Colors.white10 : Colors.grey.shade200,
+            width: 1.0,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey.shade100,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isDark ? Colors.white10 : Colors.grey.shade200,
+                  width: 2,
+                ),
+              ),
+              child:
+                  association.logoUrl != null &&
+                      association.logoUrl!.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: CachedNetworkImage(
+                        imageUrl: ApiEndpoints.resolveImageUrl(
+                          association.logoUrl,
+                        ),
+                        fit: BoxFit.cover,
+                        errorWidget: (context, url, error) => Icon(
+                          LucideIcons.landmark,
+                          color: Colors.grey.shade400,
+                          size: 20,
+                        ),
+                      ),
+                    )
+                  : Icon(
+                      LucideIcons.landmark,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          association.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (association.isVerified) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.verified,
+                          size: 13,
+                          color: Colors.blue.shade400,
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Icon(
+                        LucideIcons.mapPin,
+                        size: 11,
+                        color: isDark ? Colors.white54 : Colors.grey.shade500,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          locationLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? Colors.white54
+                                : Colors.grey.shade500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    matchLabel,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              LucideIcons.chevronRight,
+              size: 16,
+              color: isDark ? Colors.white38 : Colors.grey.shade400,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -80,6 +80,7 @@ class _AssociationDetailsViewState
   bool _followPending = false;
 
   late bool isMember = widget.association.isMember;
+  late bool isPendingMember = widget.association.isPendingMember;
   late int membersCount = widget.association.membersCount;
   bool _memberPending = false;
 
@@ -114,25 +115,39 @@ class _AssociationDetailsViewState
     }
   }
 
+  // Tri-state action: not a member/requester -> submit a join request
+  // (goes pending, awaiting admin approval); pending requester -> cancel the
+  // request; approved member -> leave. joinAssociation/leaveAssociation are
+  // the same two API calls as before — leaveAssociation now also handles
+  // canceling a still-pending request on the backend.
   Future<void> _toggleMembership() async {
     if (_memberPending) return;
+    final wasMember = isMember;
+    final wasPending = isPendingMember;
     setState(() {
       _memberPending = true;
-      isMember = !isMember;
-      membersCount += isMember ? 1 : -1;
+      if (wasMember) {
+        isMember = false;
+        membersCount -= 1;
+      } else if (wasPending) {
+        isPendingMember = false;
+      } else {
+        isPendingMember = true;
+      }
     });
     try {
-      if (isMember) {
-        await joinAssociation(ref, widget.association.id);
-      } else {
+      if (wasMember || wasPending) {
         await leaveAssociation(ref, widget.association.id);
+      } else {
+        await joinAssociation(ref, widget.association.id);
       }
       ref.invalidate(associationMembersProvider(widget.association.id));
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        isMember = !isMember;
-        membersCount += isMember ? 1 : -1;
+        isMember = wasMember;
+        isPendingMember = wasPending;
+        if (wasMember) membersCount += 1;
       });
       Fluttertoast.showToast(msg: 'Something went wrong. Try again.');
     } finally {
@@ -289,6 +304,7 @@ class _AssociationDetailsViewState
                 _MembersTab(
                   association: association,
                   isMember: isMember,
+                  isPendingMember: isPendingMember,
                   memberPending: _memberPending,
                   onToggleMembership: _toggleMembership,
                 ),
@@ -502,12 +518,14 @@ class _ContactTab extends StatelessWidget {
 class _MembersTab extends ConsumerWidget {
   final Association association;
   final bool isMember;
+  final bool isPendingMember;
   final bool memberPending;
   final VoidCallback onToggleMembership;
 
   const _MembersTab({
     required this.association,
     required this.isMember,
+    required this.isPendingMember,
     required this.memberPending,
     required this.onToggleMembership,
   });
@@ -520,17 +538,37 @@ class _MembersTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: memberPending ? null : onToggleMembership,
-            icon: Icon(
-              isMember ? Icons.check_circle : Icons.group_add,
-              size: 18,
+        if (isPendingMember) ...[
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: null,
+              icon: const Icon(Icons.hourglass_top, size: 18),
+              label: const Text('Pending Approval'),
             ),
-            label: Text(isMember ? 'Joined' : 'Join Association'),
           ),
-        ),
+          const SizedBox(height: 8),
+          Center(
+            child: TextButton(
+              onPressed: memberPending ? null : onToggleMembership,
+              child: const Text('Cancel Request'),
+            ),
+          ),
+        ] else
+          SizedBox(
+            width: double.infinity,
+            child: isMember
+                ? OutlinedButton.icon(
+                    onPressed: memberPending ? null : onToggleMembership,
+                    icon: const Icon(Icons.logout, size: 18),
+                    label: const Text('Leave'),
+                  )
+                : FilledButton.icon(
+                    onPressed: memberPending ? null : onToggleMembership,
+                    icon: const Icon(Icons.group_add, size: 18),
+                    label: const Text('Join Association'),
+                  ),
+          ),
         const SizedBox(height: Spacing.lg),
         membersAsync.when(
           data: (members) {

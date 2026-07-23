@@ -29,6 +29,7 @@ _Association _$AssociationFromJson(Map<String, dynamic> json) => _Association(
   isVerified: json['is_verified'] as bool? ?? false,
   membersCount: (json['members_count'] as num?)?.toInt() ?? 0,
   isMember: json['is_member'] as bool? ?? false,
+  isPendingMember: json['is_pending_member'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$AssociationToJson(_Association instance) =>
@@ -55,4 +56,5 @@ Map<String, dynamic> _$AssociationToJson(_Association instance) =>
       'is_verified': instance.isVerified,
       'members_count': instance.membersCount,
       'is_member': instance.isMember,
+      'is_pending_member': instance.isPendingMember,
     };

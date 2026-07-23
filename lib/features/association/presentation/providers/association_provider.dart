@@ -29,13 +29,18 @@ Future<List<Association>> associationsList(Ref ref) async {
       .toList();
 }
 
-/// Associations scoped to the current student's own home district (from
-/// their present address) — "Suggested for you" on the associations tab.
-/// Reuses the same /associations-by-location endpoint as
-/// [associationsListProvider], just with an added district_id filter.
-/// Deliberately omits sub_district_id: the backend ANDs filters together,
-/// so adding it would exclude district-wide associations that don't target
-/// a specific upazila.
+/// Associations that genuinely match the current student's home address —
+/// "Suggested for you" on the associations tab. Reuses the same
+/// /associations-by-location endpoint as [associationsListProvider] with an
+/// added district_id filter (deliberately omitting sub_district_id from the
+/// query itself, since the backend ANDs filters together and that would
+/// exclude district-wide associations that don't target a specific upazila).
+/// On top of that server-side filter, this provider then drops anything
+/// that isn't actually relevant: associations the student already joined
+/// or has a pending join request for, and sub-district-scoped associations
+/// whose upazila doesn't match the student's own — a sub-district
+/// association from elsewhere in the same district isn't a real match just
+/// because the district matches.
 final suggestedAssociationsProvider = FutureProvider<List<Association>>((
   ref,
 ) async {
@@ -43,7 +48,8 @@ final suggestedAssociationsProvider = FutureProvider<List<Association>>((
   if (userId == null) return [];
 
   final student = await ref.watch(studentByUserIdProvider(userId).future);
-  final districtId = student?.presentAddress?.districtId;
+  final address = student?.presentAddress;
+  final districtId = address?.districtId;
   if (districtId == null) return [];
 
   final university = await ref.watch(myUniversityProvider.future);
@@ -53,9 +59,17 @@ final suggestedAssociationsProvider = FutureProvider<List<Association>>((
     queryParameters: {'university_id': university.id, 'district_id': districtId},
   );
   final data = response.data as List;
-  return data
+  final associations = data
       .map((e) => Association.fromJson(e as Map<String, dynamic>))
       .toList();
+
+  return associations.where((a) {
+    if (a.isMember || a.isPendingMember) return false;
+    if (a.associationType == 'sub_district') {
+      return a.subDistrictId != null && a.subDistrictId == address?.subDistrictId;
+    }
+    return true;
+  }).toList();
 });
 
 /// Associations the current user has formally joined — powers "My Joined

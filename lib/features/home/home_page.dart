@@ -262,6 +262,13 @@ class _HomePageState extends ConsumerState<HomePage>
                               route: '/blood-bank',
                               color: const Color(0xFFDC2626),
                             ),
+                            _buildShortcutCard(
+                              theme: theme,
+                              title: 'Lost &\nFound',
+                              icon: LucideIcons.searchCheck,
+                              route: '/lost-found',
+                              color: const Color(0xFF14B8A6),
+                            ),
                           ],
                         ),
                       ),

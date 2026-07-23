@@ -21,6 +21,7 @@ import '/features/association/presentation/screens/association_details_page.dart
 import '/features/association/presentation/screens/association_page.dart';
 import '/features/association/presentation/screens/suggest_association_page.dart';
 import '/features/association/presentation/screens/joined_associations_page.dart';
+import '/features/career/presentation/screens/career_page.dart';
 import '/features/community/presentation/screens/community_page.dart';
 import '/features/inbox/presentation/screens/inbox_page.dart';
 import '/features/inbox/presentation/screens/chat_page.dart';
@@ -59,6 +60,14 @@ import '/widgets/in_app_webview_page.dart';
 import '/widgets/youtube_player_page.dart';
 import '/features/skill/data/models/skill.dart';
 import '/features/skill/presentation/screens/skill_details_page.dart';
+import '/features/career/circular/presentation/screens/circular_detail_screen.dart';
+import '/features/career/jobs/data/models/career_job.dart';
+import '/features/career/jobs/presentation/screens/create_job_screen.dart';
+import '/features/career/jobs/presentation/screens/edit_job_screen.dart';
+import '/features/career/jobs/presentation/screens/job_detail_screen.dart';
+import '/features/lost_found/presentation/screens/create_lost_found_screen.dart';
+import '/features/lost_found/presentation/screens/lost_found_detail_screen.dart';
+import '/features/lost_found/presentation/screens/lost_found_page.dart';
 import '/features/marketplace/data/models/product.dart';
 import '/features/marketplace/presentation/widgets/marketplace_shell.dart';
 import '/features/marketplace/presentation/screens/product_detail_screen.dart';
@@ -82,6 +91,7 @@ import '/features/profile/presentation/screens/edit_profile_page.dart';
 import '/features/profile/presentation/screens/manage_devices_page.dart';
 import '/features/profile/presentation/screens/my_submissions_page.dart';
 import '/features/profile/presentation/screens/profile_page.dart';
+import '/features/developer/presentation/screens/developer_page.dart';
 import '/features/contributor/presentation/screens/contributor_page.dart';
 import '/features/notification/presentation/screens/notification_detail_screen.dart';
 import '/features/notification/presentation/screens/notification_screen.dart';
@@ -257,6 +267,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ],
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: AppRoute.career.name,
+                path: AppRoute.career.path,
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: CareerPage()),
               ),
             ],
           ),
@@ -839,6 +859,66 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        name: AppRoute.lostFound.name,
+        path: AppRoute.lostFound.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LostFoundPage(),
+      ),
+      // NOTE: static /lost-found/create must be registered before the
+      // dynamic /lost-found/:itemId route below — go_router matches routes
+      // in declaration order, same reasoning as the marketplace routes.
+      GoRoute(
+        name: AppRoute.lostFoundCreate.name,
+        path: AppRoute.lostFoundCreate.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CreateLostFoundScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.lostFoundItemDetails.name,
+        path: AppRoute.lostFoundItemDetails.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final itemId = state.pathParameters['itemId']!;
+          return LostFoundDetailScreen(itemId: itemId);
+        },
+      ),
+      // NOTE: static /career/jobs/create must be registered before the
+      // dynamic /career/jobs/:jobId route below — same declaration-order
+      // reasoning as marketplace/lost-found.
+      GoRoute(
+        name: AppRoute.careerJobCreate.name,
+        path: AppRoute.careerJobCreate.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CreateJobScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.careerJobDetails.name,
+        path: AppRoute.careerJobDetails.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final jobId = state.pathParameters['jobId']!;
+          return JobDetailScreen(jobId: jobId);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.careerJobEdit.name,
+        path: AppRoute.careerJobEdit.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final job = state.extra as CareerJob;
+          return EditJobScreen(job: job);
+        },
+      ),
+      GoRoute(
+        name: AppRoute.careerCircularDetails.name,
+        path: AppRoute.careerCircularDetails.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final circularId = state.pathParameters['circularId']!;
+          return CircularDetailScreen(circularId: circularId);
+        },
+      ),
+      GoRoute(
         name: AppRoute.marketplace.name,
         path: AppRoute.marketplace.path,
         parentNavigatorKey: rootNavigatorKey,
@@ -979,6 +1059,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           );
         },
+      ),
+      GoRoute(
+        name: AppRoute.developer.name,
+        path: AppRoute.developer.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: DeveloperPage()),
       ),
       GoRoute(
         name: AppRoute.contributors.name,

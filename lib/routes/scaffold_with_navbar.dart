@@ -97,6 +97,11 @@ class _BlurryBottomNavBar extends StatelessWidget {
       label: 'Study',
     ),
     _NavItem(
+      icon: LucideIcons.briefcase,
+      selectedIcon: LucideIcons.briefcase,
+      label: 'Career',
+    ),
+    _NavItem(
       icon: LucideIcons.users,
       selectedIcon: LucideIcons.users,
       label: 'Community',

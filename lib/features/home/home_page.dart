@@ -1,3 +1,4 @@
+import 'package:campusassistant/core/theme/app_colors.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../core/theme/tokens/app_radius.dart';
@@ -230,21 +231,21 @@ class _HomePageState extends ConsumerState<HomePage>
                             _buildShortcutCard(
                               theme: theme,
                               title: 'Emergency\nContacts',
-                              icon: LucideIcons.phoneCall,
+                              icon: LucideIcons.siren,
                               route: '/emergency',
                               color: const Color(0xFFEF4444),
                             ),
                             _buildShortcutCard(
                               theme: theme,
                               title: 'Transport\nServices',
-                              icon: LucideIcons.bus,
+                              icon: LucideIcons.tramFront,
                               route: '/transport',
                               color: const Color(0xFFF59E0B),
                             ),
                             _buildShortcutCard(
                               theme: theme,
                               title: 'Clubs &\nOrganizations',
-                              icon: LucideIcons.heart,
+                              icon: LucideIcons.club,
                               route: '/club',
                               color: const Color(0xFFEC4899),
                             ),
@@ -258,7 +259,7 @@ class _HomePageState extends ConsumerState<HomePage>
                             _buildShortcutCard(
                               theme: theme,
                               title: 'Blood\nBank',
-                              icon: LucideIcons.droplets,
+                              icon: LucideIcons.heartPulse,
                               route: '/blood-bank',
                               color: const Color(0xFFDC2626),
                             ),
@@ -313,56 +314,109 @@ class _HomePageState extends ConsumerState<HomePage>
   }) {
     final isDark = theme.brightness == Brightness.dark;
 
-    return GestureDetector(
-      onTap: () => context.push(route),
-      child: Container(
-        width: 96,
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
-        decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(RadiusToken.lg),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade200,
-                width: 1,
-              ),
-            
-      
+    // return GestureDetector(
+    // onTap: () => context.push(route),
+    // child: Container(
+    //   width: 96,
+    //   padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
+    //   decoration: BoxDecoration(
+    //     color: Theme.of(context).cardColor,
+    //     borderRadius: BorderRadius.circular(RadiusToken.lg),
+    //     border: Border.all(
+    //       color: isDark ? Colors.white10 : Colors.grey.shade200,
+    //     ),
+    //     boxShadow: [
+    //       BoxShadow(
+    //         color: Colors.black.withValues(alpha: 0.02),
+    //         blurRadius: 10,
+    //         offset: const Offset(0, 4),
+    //       ),
+    //     ],
+    //   ),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Container(
+    //         width: 36,
+    //         height: 36,
+    //         decoration: BoxDecoration(
+    //           shape: BoxShape.circle,
+    //           color: Colors.grey.shade200,
+    //         ),
+    //         child: Icon(icon, size: 16, color: color),
+    //       ),
+
+    //       const SizedBox(height: Spacing.sm),
+
+    //       Expanded(
+    //         child: Text(
+    //           title,
+    //           textAlign: TextAlign.center,
+    //           maxLines: 2,
+    //           overflow: TextOverflow.ellipsis,
+    //           style: theme.textTheme.bodySmall?.copyWith(
+    //             fontSize: 11,
+    //             height: 1.2,
+    //             fontWeight: FontWeight.w600,
+    //             color: isDark ? Colors.white70 : Colors.grey.shade700,
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
+    return Container(
+      width: 100,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey.shade200,
-              ),
-              child: Icon(icon, size: 16, color: color),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
+          onTap: () => context.push(route),
 
-            const SizedBox(height: Spacing.sm),
-
-            Expanded(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: 11,
+          child: Padding(
+            padding: .fromLTRB(8, 12, 8, 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: Theme.of(context).appColors.primaryColor,
+                  // color: color,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  textAlign: .center,
+                  style: TextStyle(
+                    fontSize: 12,
                     height: 1.2,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white70 : Colors.grey.shade700,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+
+    // );
   }
 }

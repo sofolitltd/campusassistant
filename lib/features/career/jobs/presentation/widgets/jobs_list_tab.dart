@@ -76,6 +76,7 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                   final job = filtered[index];
                   return JobCard(
                     job: job,
+                    
                     onTap: () => context.pushNamed(
                       AppRoute.careerJobDetails.name,
                       pathParameters: {'jobId': job.id},

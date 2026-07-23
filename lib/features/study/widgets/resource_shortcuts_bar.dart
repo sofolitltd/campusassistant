@@ -1,3 +1,4 @@
+import 'package:campusassistant/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -86,12 +87,18 @@ class _ResourceShortcutsBarState extends State<ResourceShortcutsBar> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: shortcut.color,
+                            // color: shortcut.color,
+                            color: Theme.of(
+                              context,
+                            ).appColors.primaryColor.withValues(alpha: .1),
+
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             shortcut.icon,
-                            color: Colors.white,
+                            // color: Colors.white,
+                            color: Theme.of(context).appColors.primaryColor,
+
                             size: 22,
                           ),
                         ),

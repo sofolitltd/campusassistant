@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/routes/app_route.dart';
-import '/features/career/presentation/screens/career_page.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 
@@ -30,87 +29,66 @@ class QuickActionsSection extends StatelessWidget {
         label: 'My Clubs',
         onTap: () => context.push(AppRoute.myClubs.path),
       ),
-      _ActionItem(
-        icon: LucideIcons.briefcase,
-        label: 'Job Posts',
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const CareerPage(initialTab: 1)),
-        ),
-      ),
-      _ActionItem(
-        icon: LucideIcons.bell,
-        label: 'Dates Reminder',
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const CareerPage(initialTab: 2)),
-        ),
-      ),
     ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: SizedBox(
-        height: 96,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: items.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 12),
-          padding: const EdgeInsets.symmetric(horizontal: 0),
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return SizedBox(
-              width: 96,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                  border: Border.all(
-                    color: isDark ? Colors.white10 : Colors.grey.shade200,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
+      child: Row(
+        children: items
+            .map(
+              (item) => Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(right: item == items.last ? 0 : 12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(RadiusToken.lg),
-                    onTap: item.onTap,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 8,
+                    border: Border.all(
+                      color: isDark ? Colors.white10 : Colors.grey.shade200,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            item.icon,
-                            size: 24,
-                            color: Theme.of(context).appColors.primaryColor,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item.label,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: isDark ? Colors.white : Colors.black87,
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(RadiusToken.lg),
+                      onTap: item.onTap,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 12,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              item.icon,
+                              size: 24,
+                              color: Theme.of(context).appColors.primaryColor,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 10),
+                            Text(
+                              item.label,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            );
-          },
-        ),
+            )
+            .toList(),
       ),
     );
   }

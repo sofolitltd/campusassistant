@@ -99,19 +99,11 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
           return const Scaffold(body: Center(child: Text('Job not found')));
         }
         return Scaffold(
-          extendBodyBehindAppBar: true,
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Job', style: TextStyle(fontWeight: FontWeight.bold, color: cs.onSurface)),
-            backgroundColor: Colors.transparent,
+            title: Text('Job Details'),
             elevation: 0,
-            leading: IconButton(
-              icon: CircleAvatar(
-                backgroundColor: cs.surfaceContainerHighest,
-                child: Icon(LucideIcons.arrowLeft, size: 16, color: cs.onSurface),
-              ),
-              onPressed: () => context.pop(),
-            ),
+      
             actions: [
               PopupMenuButton<String>(
                 icon: CircleAvatar(
@@ -192,7 +184,7 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                     else
                       buildEmptyJobMedia(context),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(Spacing.xxl, Spacing.xl, Spacing.xxl, Spacing.xxl),
+                      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, Spacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -232,7 +224,7 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                               ],
                             ],
                           ),
-                          const SizedBox(height: Spacing.xxxl),
+                          const SizedBox(height: Spacing.xl),
                           if (job.publishDate != null)
                             buildJobInfoCard(context, LucideIcons.calendar, 'Published', job.publishDate!),
                           if (job.deadlineDate != null)

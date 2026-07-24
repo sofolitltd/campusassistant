@@ -12,8 +12,9 @@ import '../providers/career_job_provider.dart';
 /// SegmentedButton.
 class JobStatusBadge extends ConsumerWidget {
   final CareerJob job;
+  final GlobalKey _badgeKey = GlobalKey();
 
-  const JobStatusBadge({super.key, required this.job});
+  JobStatusBadge({super.key, required this.job});
 
   Color _dotColor(ColorScheme cs) {
     switch (job.status) {
@@ -52,6 +53,7 @@ class JobStatusBadge extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     return GestureDetector(
+      key: _badgeKey,
       onTap: () => _showStatusPicker(context, ref),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
@@ -75,40 +77,55 @@ class JobStatusBadge extends ConsumerWidget {
 
   void _showStatusPicker(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    showModalBottomSheet(
+    final renderBox = _badgeKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    showMenu<String>(
       context: context,
-      backgroundColor: cs.surfaceContainerHighest,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(RadiusToken.xl))),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(Spacing.xxl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy + size.height + 4,
+        position.dx + size.width,
+        position.dy + size.height + 4,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+      color: cs.surfaceContainerHighest,
+      items: CareerJobStatus.values.map((status) {
+        final isSelected = job.status == status;
+        return PopupMenuItem<String>(
+          value: status.name,
+          child: Row(
             children: [
-              Text('Change Status', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
-              const SizedBox(height: Spacing.xl),
-              for (final status in CareerJobStatus.values)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: Spacing.sm),
-                  child: ListTile(
-                    shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.md)),
-                    tileColor: job.status == status ? cs.primaryContainer : cs.surfaceContainerLow,
-                    leading: Icon(_icon(status), color: job.status == status ? cs.primary : cs.onSurfaceVariant),
-                    title: Text(_label(status), style: TextStyle(fontWeight: job.status == status ? FontWeight.bold : FontWeight.normal)),
-                    trailing: job.status == status ? Icon(LucideIcons.check, color: cs.primary) : null,
-                    onTap: () {
-                      if (job.status != status) {
-                        ref.read(careerJobActionsProvider).setStatus(job.id, status);
-                      }
-                      Navigator.pop(context);
-                    },
+              Icon(
+                _icon(status),
+                size: 18,
+                color: isSelected ? cs.primary : cs.onSurfaceVariant,
+              ),
+              const SizedBox(width: Spacing.md),
+              Expanded(
+                child: Text(
+                  _label(status),
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected ? cs.primary : cs.onSurface,
                   ),
                 ),
+              ),
+              if (isSelected) Icon(LucideIcons.check, size: 16, color: cs.primary),
             ],
           ),
-        ),
-      ),
-    );
+        );
+      }).toList(),
+    ).then((value) {
+      if (value != null) {
+        final newStatus = careerJobStatusFromString(value);
+        if (job.status != newStatus) {
+          ref.read(careerJobActionsProvider).setStatus(job.id, newStatus);
+        }
+      }
+    });
   }
 }

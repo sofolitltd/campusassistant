@@ -72,16 +72,18 @@ Widget buildModernDateTile(
   bool isUrgent = false,
 }) {
   final cs = Theme.of(context).colorScheme;
-  return Card(
-    margin: const EdgeInsets.only(bottom: Spacing.lg),
-    elevation: 0,
-    color: cs.surface,
-    shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+  return Container(
+    margin: const EdgeInsets.only(bottom: Spacing.sm),
+    decoration: BoxDecoration(
+      color: Theme.of(context).cardColor,
+      border: Border.all(color: cs.outlineVariant, width: .2),
+      borderRadius: RadiusToken.circular(RadiusToken.md),
+    ),
     child: InkWell(
       onTap: onTap,
       borderRadius: RadiusToken.circular(RadiusToken.sm),
       child: Padding(
-        padding: const EdgeInsets.all(Spacing.xl),
+        padding: const EdgeInsets.all(Spacing.lg),
         child: Row(
           children: [
             Icon(icon, color: isUrgent ? cs.error : cs.outline, size: 20),
@@ -112,11 +114,12 @@ Widget buildModernDateTile(
 Widget buildEmptyAttachmentPlaceholder(BuildContext context) {
   final cs = Theme.of(context).colorScheme;
   return Container(
+    width: 120,
     padding: const EdgeInsets.all(Spacing.xxxl),
     decoration: BoxDecoration(
-      color: cs.surface,
-      borderRadius: RadiusToken.circular(RadiusToken.sm),
-      border: Border.all(color: cs.outlineVariant),
+      color: Theme.of(context).cardColor,
+      borderRadius: RadiusToken.circular(RadiusToken.md),
+      border: Border.all(color: cs.outlineVariant, width: .2),
     ),
     child: Column(
       children: [
@@ -124,6 +127,7 @@ Widget buildEmptyAttachmentPlaceholder(BuildContext context) {
         const SizedBox(height: Spacing.xs),
         Text(
           'No files attached',
+          textAlign: .center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],

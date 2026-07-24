@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/routes/app_route.dart';
@@ -14,19 +13,9 @@ import '../../../reminders/presentation/widgets/set_reminder_sheet.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import '../widgets/job_detail_helpers.dart';
+import '../widgets/job_image_gallery.dart';
 import '../widgets/job_status_badge.dart';
 
-/// Ported "same to same" from personalassistant's JobDetailsScreen: media
-/// gallery, title/org header, tappable status badge, info cards
-/// (Published/Deadline-with-live-countdown), link sections. Two differences
-/// from the reference, both consequences of this app's data model rather
-/// than styling choices:
-///  - No "Share to Circular" action — sharing scope (batch/department/
-///    university) is chosen once at creation time (see CreateJobScreen),
-///    not toggled from the detail page.
-///  - "Add Reminder" lives in the app bar menu instead of Edit, since
-///    reminders here are a separate server-scheduled entity, not a field
-///    edited inline on the job.
 class JobDetailScreen extends ConsumerStatefulWidget {
   final String jobId;
   const JobDetailScreen({super.key, required this.jobId});
@@ -37,6 +26,7 @@ class JobDetailScreen extends ConsumerStatefulWidget {
 
 class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
   Timer? _countdownTimer;
+  int _imageIndex = 0;
 
   @override
   void initState() {
@@ -70,14 +60,27 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: RadiusToken.circular(RadiusToken.sm),
+        ),
         title: const Text('Delete this job?'),
-        content: const Text('This will permanently remove the job from your list.'),
+        content: const Text(
+          'This will permanently remove the job from your list.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Delete', style: TextStyle(color: cs.error, fontWeight: FontWeight.bold)),
+            child: Text(
+              'Delete',
+              style: TextStyle(
+                color: cs.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -101,26 +104,36 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Job Details'),
+            title: const Text('Job Details'),
             elevation: 0,
-      
             actions: [
               PopupMenuButton<String>(
                 icon: CircleAvatar(
                   backgroundColor: cs.surfaceContainerHighest,
-                  child: Icon(LucideIcons.moreHorizontal, color: cs.onSurface),
+                  child: Icon(
+                    LucideIcons.moreHorizontal,
+                    color: cs.onSurface,
+                  ),
                 ),
-                shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: RadiusToken.circular(RadiusToken.sm),
+                ),
                 onSelected: (value) {
                   if (value == 'edit') {
-                    context.pushNamed(AppRoute.careerJobEdit.name, pathParameters: {'jobId': job.id}, extra: job);
+                    context.pushNamed(
+                      AppRoute.careerJobEdit.name,
+                      pathParameters: {'jobId': job.id},
+                      extra: job,
+                    );
                   } else if (value == 'reminder') {
                     showSetReminderSheet(
                       context,
                       ref,
                       jobId: job.id,
                       suggestedTitle: job.title,
-                      suggestedTime: job.deadlineDate?.subtract(const Duration(hours: 8)),
+                      suggestedTime: job.deadlineDate?.subtract(
+                        const Duration(hours: 8),
+                      ),
                     );
                   } else if (value == 'delete') {
                     _confirmDelete(job);
@@ -131,7 +144,11 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                     value: 'edit',
                     child: Row(
                       children: [
-                        Icon(LucideIcons.edit3, color: cs.onSurface, size: 18),
+                        Icon(
+                          LucideIcons.edit3,
+                          color: cs.onSurface,
+                          size: 18,
+                        ),
                         const SizedBox(width: Spacing.md),
                         const Text('Edit'),
                       ],
@@ -153,7 +170,10 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                       children: [
                         Icon(LucideIcons.trash2, color: cs.error, size: 18),
                         const SizedBox(width: Spacing.md),
-                        Text('Delete', style: TextStyle(color: cs.error)),
+                        Text(
+                          'Delete',
+                          style: TextStyle(color: cs.error),
+                        ),
                       ],
                     ),
                   ),
@@ -170,53 +190,83 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (job.attachmentUrls.isNotEmpty)
-                      AspectRatio(
-                        aspectRatio: 16 / 10,
-                        child: PageView(
-                          children: job.attachmentUrls
-                              .map((url) => CachedNetworkImage(
-                                    imageUrl: ApiEndpoints.resolveImageUrl(url),
-                                    fit: BoxFit.cover,
-                                  ))
-                              .toList(),
-                        ),
+                      JobImageGallery(
+                        attachmentUrls: job.attachmentUrls,
+                        imageIndex: _imageIndex,
+                        onPageChanged: (i) =>
+                            setState(() => _imageIndex = i),
+                        title: job.title,
+                        organization: job.organization,
                       )
                     else
                       buildEmptyJobMedia(context),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, Spacing.lg),
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        Spacing.lg,
+                        Spacing.lg,
+                        Spacing.lg,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             job.title,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, fontSize: 20),
-                          ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 20,
+                                ),
+                          ).animate().fadeIn(delay: 200.ms),
                           if (job.organization.isNotEmpty)
                             Text(
                               job.organization,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.primary, fontWeight: FontWeight.bold),
-                            ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: cs.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ).animate().fadeIn(),
                           const SizedBox(height: Spacing.xxl),
                           Row(
                             children: [
                               JobStatusBadge(job: job),
-                              if (job.scope != CareerJobScope.private_) ...[
+                              if (job.scope !=
+                                  CareerJobScope.private_) ...[
                                 const SizedBox(width: Spacing.sm),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Spacing.md,
+                                    vertical: Spacing.sm,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: cs.primaryContainer,
-                                    borderRadius: RadiusToken.circular(RadiusToken.sm),
+                                    borderRadius: RadiusToken.circular(
+                                      RadiusToken.sm,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(LucideIcons.radio, size: 12, color: cs.primary),
+                                      Icon(
+                                        LucideIcons.radio,
+                                        size: 12,
+                                        color: cs.primary,
+                                      ),
                                       const SizedBox(width: Spacing.sm),
                                       Text(
                                         'Shared with ${_scopeLabel(job.scope)}',
-                                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: cs.primary),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: cs.primary,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -226,7 +276,12 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                           ),
                           const SizedBox(height: Spacing.xl),
                           if (job.publishDate != null)
-                            buildJobInfoCard(context, LucideIcons.calendar, 'Published', job.publishDate!),
+                            buildJobInfoCard(
+                              context,
+                              LucideIcons.calendar,
+                              'Published',
+                              job.publishDate!,
+                            ),
                           if (job.deadlineDate != null)
                             buildJobInfoCard(
                               context,
@@ -237,13 +292,26 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                               timeLeft: _timeLeft(job.deadlineDate!),
                             ),
                           if (job.notes.isNotEmpty) ...[
-                            Text(job.notes, style: Theme.of(context).textTheme.bodyMedium),
+                            Text(
+                              job.notes,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                             const SizedBox(height: Spacing.xl),
                           ],
                           if (job.postLink.isNotEmpty)
-                            buildJobLinkSection(context, 'Job Posting', job.postLink, LucideIcons.externalLink),
+                            buildJobLinkSection(
+                              context,
+                              'Job Posting',
+                              job.postLink,
+                              LucideIcons.externalLink,
+                            ),
                           if (job.resourceLink.isNotEmpty)
-                            buildJobLinkSection(context, 'Resources', job.resourceLink, LucideIcons.link),
+                            buildJobLinkSection(
+                              context,
+                              'Resources',
+                              job.resourceLink,
+                              LucideIcons.link,
+                            ),
                         ],
                       ),
                     ),
@@ -254,8 +322,11 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
           ),
         );
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, _) => Scaffold(body: Center(child: Text('Failed to load job: $err'))),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, _) => Scaffold(
+        body: Center(child: Text('Failed to load job: $err')),
+      ),
     );
   }
 

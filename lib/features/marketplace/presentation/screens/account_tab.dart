@@ -11,7 +11,7 @@ class AccountTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final merchantAsync = ref.watch(myMerchantProvider);
+    final merchantsAsync = ref.watch(myMerchantsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Account')),
@@ -32,20 +32,20 @@ class AccountTab extends ConsumerWidget {
             onTap: () => context.push(AppRoute.marketplaceAddresses.path),
           ),
           const SizedBox(height: 8),
-          merchantAsync.when(
-            data: (merchant) {
-              if (merchant != null) {
+          merchantsAsync.when(
+            data: (merchants) {
+              if (merchants.isEmpty) {
                 return _ListTile(
                   icon: LucideIcons.store,
-                  title: 'My Merchant Profile',
-                  subtitle: merchant.businessName,
+                  title: 'Become a Merchant',
+                  subtitle: 'Sell your products on campus',
                   onTap: () => context.push(AppRoute.merchantApply.path),
                 );
               }
               return _ListTile(
                 icon: LucideIcons.store,
-                title: 'Become a Merchant',
-                subtitle: 'Sell your products on campus',
+                title: 'My Businesses',
+                subtitle: merchants.length == 1 ? merchants.first.businessName : '${merchants.length} businesses',
                 onTap: () => context.push(AppRoute.merchantApply.path),
               );
             },

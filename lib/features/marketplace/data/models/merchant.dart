@@ -13,6 +13,17 @@ class Merchant {
   final String status; // pending | approved | rejected
   final bool isPlatform;
   final String? rejectionReason;
+  final String? website;
+  final String? socialMediaLink;
+  // Verification documents — admin/self-service only, same visibility rule
+  // as phone/email: redacted from the public storefront lookup.
+  final String? studentIdProofUrl;
+  final String? nidProofUrl;
+  // Where commission-adjusted revenue is paid out — distinct from
+  // phone/email, which are just contact details. Same admin/self-service
+  // only visibility.
+  final String? payoutMethod; // "bkash" | "nagad" | "bank"
+  final String? payoutAccount;
 
   Merchant({
     required this.id,
@@ -26,6 +37,12 @@ class Merchant {
     required this.status,
     required this.isPlatform,
     this.rejectionReason,
+    this.website,
+    this.socialMediaLink,
+    this.studentIdProofUrl,
+    this.nidProofUrl,
+    this.payoutMethod,
+    this.payoutAccount,
   });
 
   factory Merchant.fromJson(Map<String, dynamic> json) {
@@ -41,6 +58,12 @@ class Merchant {
       status: json['status'] as String? ?? 'pending',
       isPlatform: json['is_platform'] as bool? ?? false,
       rejectionReason: json['rejection_reason'] as String?,
+      website: json['website'] as String?,
+      socialMediaLink: json['social_media_link'] as String?,
+      studentIdProofUrl: json['student_id_proof_url'] as String?,
+      nidProofUrl: json['nid_proof_url'] as String?,
+      payoutMethod: json['payout_method'] as String?,
+      payoutAccount: json['payout_account'] as String?,
     );
   }
 }

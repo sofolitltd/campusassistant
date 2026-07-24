@@ -1,3 +1,4 @@
+import '../../../circular/data/models/circular_category.dart';
 import 'career_user.dart';
 
 enum CareerJobStatus { pending, applied, completed }
@@ -41,6 +42,9 @@ class CareerJob {
   final String? circularId;
   final String title;
   final String organization;
+  // Reuses the same taxonomy as CareerCircular (e.g. Government Job, Bank Job).
+  final String? categoryId;
+  final CircularCategory? category;
   final String postLink;
   final String resourceLink;
   final List<String> attachmentUrls;
@@ -57,6 +61,8 @@ class CareerJob {
     this.circularId,
     required this.title,
     required this.organization,
+    this.categoryId,
+    this.category,
     required this.postLink,
     required this.resourceLink,
     this.attachmentUrls = const [],
@@ -75,11 +81,16 @@ class CareerJob {
   factory CareerJob.fromJson(Map<String, dynamic> json) {
     final attachmentsJson = json['attachment_urls'] as List? ?? [];
     final posterJson = json['poster'] as Map<String, dynamic>?;
+    final categoryJson = json['category'] as Map<String, dynamic>?;
     return CareerJob(
       id: json['id'] as String? ?? '',
       circularId: json['circular_id'] as String?,
       title: json['title'] as String? ?? '',
       organization: json['organization'] as String? ?? '',
+      categoryId: json['category_id'] as String?,
+      category: categoryJson != null && (categoryJson['id'] as String?)?.isNotEmpty == true
+          ? CircularCategory.fromJson(categoryJson)
+          : null,
       postLink: json['post_link'] as String? ?? '',
       resourceLink: json['resource_link'] as String? ?? '',
       attachmentUrls: attachmentsJson.map((e) => e.toString()).toList(),
@@ -104,6 +115,7 @@ class CareerJob {
     return {
       'title': title,
       'organization': organization,
+      if (categoryId != null) 'category_id': categoryId,
       'post_link': postLink,
       'resource_link': resourceLink,
       'attachment_urls': attachmentUrls,

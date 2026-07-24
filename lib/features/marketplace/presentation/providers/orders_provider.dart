@@ -26,6 +26,35 @@ final orderDetailsProvider =
   return Order.fromJson(response.data as Map<String, dynamic>);
 });
 
+/// Orders containing at least one item sold by the given merchant — the
+/// seller-facing view, distinct from `ordersListProvider` (the buyer view).
+final merchantOrdersProvider =
+    FutureProvider.family<List<Order>, String>((ref, merchantId) async {
+  final apiClient = ref.watch(apiClientProvider);
+  final response = await apiClient.get('/my/merchants/$merchantId/orders');
+  final rawData = response.data;
+  final items = rawData is List
+      ? rawData
+      : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
+  return items.map((e) => Order.fromJson(e as Map<String, dynamic>)).toList();
+});
+
+/// Lets a merchant progress fulfillment on one of their own orders. The
+/// backend only allows "shipped"/"delivered" here — payment/cancellation
+/// states stay admin-only.
+Future<void> updateMerchantOrderStatus(
+  WidgetRef ref, {
+  required String merchantId,
+  required String orderId,
+  required String status,
+}) async {
+  final apiClient = ref.read(apiClientProvider);
+  await apiClient.put(
+    '/my/merchants/$merchantId/orders/$orderId/status',
+    data: {'status': status},
+  );
+}
+
 class CheckoutResult {
   final String orderId;
   final String bkashUrl;

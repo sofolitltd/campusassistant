@@ -9,6 +9,9 @@ class Order {
   final String shippingCity;
   final List<OrderItem> items;
   final String createdAt;
+  // Only present on the merchant-facing "my merchant orders" endpoint, not
+  // the buyer's own /my/orders (which is already scoped to that buyer).
+  final String? buyerId;
 
   Order({
     required this.id,
@@ -21,6 +24,7 @@ class Order {
     required this.shippingCity,
     required this.items,
     required this.createdAt,
+    this.buyerId,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -36,6 +40,7 @@ class Order {
       shippingCity: json['shipping_city'] as String? ?? '',
       items: itemsJson.map((e) => OrderItem.fromJson(e as Map<String, dynamic>)).toList(),
       createdAt: json['created_at'] as String? ?? '',
+      buyerId: json['buyer_id'] as String?,
     );
   }
 }
@@ -47,6 +52,9 @@ class OrderItem {
   final String merchantId;
   final int quantity;
   final int unitPrice;
+  // Commission percentage locked in at checkout time — used to compute a
+  // merchant's net payout for this line item.
+  final double commissionRateSnapshot;
 
   OrderItem({
     required this.id,
@@ -55,9 +63,11 @@ class OrderItem {
     required this.merchantId,
     required this.quantity,
     required this.unitPrice,
+    this.commissionRateSnapshot = 0,
   });
 
   int get totalPrice => unitPrice * quantity;
+  double get netPayout => totalPrice * (1 - commissionRateSnapshot / 100);
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
@@ -67,6 +77,7 @@ class OrderItem {
       merchantId: json['merchant_id'] as String? ?? '',
       quantity: json['quantity'] as int? ?? 0,
       unitPrice: json['unit_price'] as int? ?? 0,
+      commissionRateSnapshot: (json['commission_rate_snapshot'] as num?)?.toDouble() ?? 0,
     );
   }
 }

@@ -71,7 +71,9 @@ import '/features/lost_found/presentation/screens/lost_found_page.dart';
 import '/features/marketplace/data/models/product.dart';
 import '/features/marketplace/presentation/widgets/marketplace_shell.dart';
 import '/features/marketplace/presentation/screens/product_detail_screen.dart';
+import '/features/marketplace/data/models/merchant.dart';
 import '/features/marketplace/presentation/screens/merchant_apply_screen.dart';
+import '/features/marketplace/presentation/screens/merchant_manage_screen.dart';
 import '/features/marketplace/presentation/screens/product_list_screen.dart';
 import '/features/marketplace/presentation/screens/checkout_screen.dart';
 import '/features/marketplace/presentation/screens/order_history_screen.dart';
@@ -933,6 +935,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.merchantApply.path,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const MerchantApplyScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.merchantManage.name,
+        path: AppRoute.merchantManage.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final merchant = state.extra as Merchant;
+          return MerchantManageScreen(merchant: merchant);
+        },
       ),
       GoRoute(
         name: AppRoute.marketplaceCategoryProducts.name,

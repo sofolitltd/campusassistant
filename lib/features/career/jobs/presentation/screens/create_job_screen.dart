@@ -13,6 +13,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
+import '../../../circular/presentation/providers/circular_provider.dart';
 import '../../../reminders/presentation/providers/career_reminder_provider.dart';
 
 /// Ported "same to same" from personalassistant's AddJobScreen: sectioned
@@ -39,6 +40,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
   final _resourceLinkController = TextEditingController();
   final _postLinkController = TextEditingController();
 
+  String? _categoryId;
   DateTime? _publishDate;
   DateTime? _deadlineDate;
   DateTime? _reminderDateTime;
@@ -95,8 +97,11 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     if (pickedTime != null && mounted) {
       setState(() {
         _deadlineDate = DateTime(
-          pickedDate.year, pickedDate.month, pickedDate.day,
-          pickedTime.hour, pickedTime.minute,
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
         );
       });
     }
@@ -110,10 +115,19 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       lastDate: DateTime(2101),
     );
     if (date == null || !mounted) return;
-    final time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (time != null && mounted) {
       setState(() {
-        _reminderDateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+        _reminderDateTime = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          time.hour,
+          time.minute,
+        );
       });
     }
   }
@@ -122,12 +136,15 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     if (_reminderDateTime != null && _deadlineDate != null) {
       if (_reminderDateTime!.isAfter(_deadlineDate!)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reminder cannot be after the deadline!')),
+          const SnackBar(
+            content: Text('Reminder cannot be after the deadline!'),
+          ),
         );
         return;
       }
     }
-    if (_reminderDateTime != null && !_reminderDateTime!.isAfter(DateTime.now())) {
+    if (_reminderDateTime != null &&
+        !_reminderDateTime!.isAfter(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Reminder must be in the future')),
       );
@@ -136,7 +153,10 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() { _isUploading = true; _uploadProgress = 0; });
+    setState(() {
+      _isUploading = true;
+      _uploadProgress = 0;
+    });
     try {
       final attachmentUrls = <String>[];
       final apiClient = ref.read(apiClientProvider);
@@ -148,7 +168,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
           fieldName: 'image',
           data: {'folder': 'career'},
         );
-        attachmentUrls.add((response.data['file_url'] ?? response.data['url']) as String);
+        attachmentUrls.add(
+          (response.data['file_url'] ?? response.data['url']) as String,
+        );
         setState(() => _uploadProgress = (i + 1) / _selectedFiles.length);
       }
 
@@ -156,6 +178,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
         id: '',
         title: _titleController.text.trim(),
         organization: _orgController.text.trim(),
+        categoryId: _categoryId,
         postLink: _postLinkController.text.trim(),
         resourceLink: _resourceLinkController.text.trim(),
         attachmentUrls: attachmentUrls,
@@ -168,7 +191,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       final job = await ref.read(careerJobActionsProvider).createJob(draft);
 
       if (_reminderDateTime != null) {
-        await ref.read(careerReminderActionsProvider).createReminder(
+        await ref
+            .read(careerReminderActionsProvider)
+            .createReminder(
               jobId: job.id,
               title: job.title,
               remindAt: _reminderDateTime!,
@@ -178,7 +203,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -192,34 +219,106 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.all(Spacing.xxl),
+            padding: const EdgeInsets.all(Spacing.lg),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildSectionTitle(context, 'Job Identity'),
-                  buildCustomField(context, 'Job Title *', _titleController, LucideIcons.briefcase,
-                    (v) => v!.isEmpty ? 'Required' : null,
-                  ),
-                  buildCustomField(context, 'Organization *', _orgController, LucideIcons.building,
-                    (v) => v!.isEmpty ? 'Required' : null,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: Spacing.sm,
+                      horizontal: Spacing.lg,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                        width: .2,
+                      ),
+
+                      borderRadius: RadiusToken.circular(RadiusToken.sm),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 4),
+                        buildCustomField(
+                          context,
+                          'Job Title *',
+                          _titleController,
+                          LucideIcons.briefcase,
+                          (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        buildCustomField(
+                          context,
+                          'Organization *',
+                          _orgController,
+                          LucideIcons.building,
+                          (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        _buildCategoryField(context),
+                      ],
+                    ),
                   ),
 
                   const SizedBox(height: Spacing.xl),
                   buildSectionTitle(context, 'Connections'),
-                  buildCustomField(context, 'Resource Link (URL)', _resourceLinkController, LucideIcons.link),
-                  buildCustomField(context, 'Job Post Link (URL)', _postLinkController, LucideIcons.externalLink),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                        width: .2,
+                      ),
+                      borderRadius: RadiusToken.circular(RadiusToken.sm),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: Spacing.sm,
+                      horizontal: Spacing.lg,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 4),
+                        buildCustomField(
+                          context,
+                          'Resource Link (URL)',
+                          _resourceLinkController,
+                          LucideIcons.link,
+                        ),
+                        buildCustomField(
+                          context,
+                          'Job Post Link (URL)',
+                          _postLinkController,
+                          LucideIcons.externalLink,
+                        ),
+                      ],
+                    ),
+                  ),
 
                   const SizedBox(height: Spacing.xl),
                   buildSectionTitle(context, 'Important Dates'),
-                  buildModernDateTile(context, 'Publish Date', _publishDate, LucideIcons.calendar,
+                  buildModernDateTile(
+                    context,
+                    'Publish Date',
+                    _publishDate,
+                    LucideIcons.calendar,
                     _selectPublishDate,
                   ),
-                  buildModernDateTile(context, 'Deadline Date & Time', _deadlineDate, LucideIcons.clock,
-                    _selectDeadline, isUrgent: true,
+                  buildModernDateTile(
+                    context,
+                    'Deadline Date & Time',
+                    _deadlineDate,
+                    LucideIcons.clock,
+                    _selectDeadline,
+                    isUrgent: true,
                   ),
-                  buildModernDateTile(context, 'Reminder Date & Time', _reminderDateTime, LucideIcons.bell,
+                  buildModernDateTile(
+                    context,
+                    'Reminder Date & Time',
+                    _reminderDateTime,
+                    LucideIcons.bell,
                     _selectReminderDateTime,
                   ),
 
@@ -242,7 +341,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                       child: ReorderableListView.builder(
                         scrollDirection: Axis.horizontal,
                         proxyDecorator: (child, index, animation) => Material(
-                          elevation: 10, color: Colors.transparent, child: child,
+                          elevation: 10,
+                          color: Colors.transparent,
+                          child: child,
                         ),
                         itemCount: _selectedFiles.length,
                         onReorderItem: (oldIndex, newIndex) {
@@ -251,14 +352,15 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                             _selectedFiles.insert(newIndex, item);
                           });
                         },
-                        itemBuilder: (context, index) => _buildFilePreview(_selectedFiles[index], index),
+                        itemBuilder: (context, index) =>
+                            _buildFilePreview(_selectedFiles[index], index),
                       ),
                     )
                   else
-                    buildEmptyAttachmentPlaceholder(context),
+                    GestureDetector(onTap: _pickFiles, child: buildEmptyAttachmentPlaceholder(context)),
 
                   const SizedBox(height: Spacing.xl),
-                  buildSectionTitle(context, 'Share With'),
+                  buildSectionTitle(context, 'Want to share with Others?'),
                   Text(
                     'Optionally share this posting with other students — like a Community post.',
                     style: Theme.of(context).textTheme.bodySmall,
@@ -271,22 +373,29 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                       ChoiceChip(
                         label: const Text('Just me'),
                         selected: _shareScope == CareerJobScope.private_,
-                        onSelected: (_) => setState(() => _shareScope = CareerJobScope.private_),
+                        onSelected: (_) => setState(
+                          () => _shareScope = CareerJobScope.private_,
+                        ),
                       ),
                       ChoiceChip(
                         label: const Text('My Batch'),
                         selected: _shareScope == CareerJobScope.batch,
-                        onSelected: (_) => setState(() => _shareScope = CareerJobScope.batch),
+                        onSelected: (_) =>
+                            setState(() => _shareScope = CareerJobScope.batch),
                       ),
                       ChoiceChip(
                         label: const Text('My Department'),
                         selected: _shareScope == CareerJobScope.department,
-                        onSelected: (_) => setState(() => _shareScope = CareerJobScope.department),
+                        onSelected: (_) => setState(
+                          () => _shareScope = CareerJobScope.department,
+                        ),
                       ),
                       ChoiceChip(
                         label: const Text('My University'),
                         selected: _shareScope == CareerJobScope.university,
-                        onSelected: (_) => setState(() => _shareScope = CareerJobScope.university),
+                        onSelected: (_) => setState(
+                          () => _shareScope = CareerJobScope.university,
+                        ),
                       ),
                     ],
                   ),
@@ -310,10 +419,65 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     );
   }
 
+  Widget _buildCategoryField(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final categoriesAsync = ref.watch(circularCategoriesProvider);
+    final categories = categoriesAsync.maybeWhen(
+      data: (v) => v,
+      orElse: () => const [],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Spacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Category', style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: Spacing.xs),
+          DropdownButtonFormField<String?>(
+            initialValue: _categoryId,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(LucideIcons.tag, size: 18),
+              border: OutlineInputBorder(
+                borderRadius: RadiusToken.circular(RadiusToken.sm),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: RadiusToken.circular(RadiusToken.sm),
+                borderSide: BorderSide(color: cs.outlineVariant),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: RadiusToken.circular(RadiusToken.sm),
+                borderSide: BorderSide(color: cs.primary, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: Spacing.md,
+                vertical: Spacing.md,
+              ),
+              filled: true,
+              fillColor: cs.surface,
+            ),
+            items: [
+              const DropdownMenuItem(value: null, child: Text('Uncategorized')),
+              for (final category in categories)
+                DropdownMenuItem(
+                  value: category.id,
+                  child: Text(category.name),
+                ),
+            ],
+            onChanged: (value) => setState(() => _categoryId = value),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFilePreview(PlatformFile file, int index) {
     final cs = Theme.of(context).colorScheme;
     final name = file.name.toLowerCase();
-    final isImage = name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png');
+    final isImage =
+        name.endsWith('.jpg') ||
+        name.endsWith('.jpeg') ||
+        name.endsWith('.png');
     final isPdf = name.endsWith('.pdf');
     return Container(
       key: ValueKey('file_$index'),
@@ -328,16 +492,26 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
           ClipRRect(
             borderRadius: RadiusToken.circular(RadiusToken.sm),
             child: (!kIsWeb && isImage && file.path != null)
-                ? Image.file(File(file.path!), width: 120, height: 160, fit: BoxFit.cover)
+                ? Image.file(
+                    File(file.path!),
+                    width: 120,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  )
                 : Container(
                     width: 120,
                     height: 160,
                     color: cs.surfaceContainerHighest,
-                    child: Icon(isPdf ? LucideIcons.fileText : LucideIcons.image, color: cs.outline, size: 32),
+                    child: Icon(
+                      isPdf ? LucideIcons.fileText : LucideIcons.image,
+                      color: cs.outline,
+                      size: 32,
+                    ),
                   ),
           ),
           Positioned(
-            top: 4, right: 4,
+            top: 4,
+            right: 4,
             child: GestureDetector(
               onTap: () => setState(() => _selectedFiles.removeAt(index)),
               child: CircleAvatar(

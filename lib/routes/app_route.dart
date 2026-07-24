@@ -219,6 +219,10 @@ class AppRoute {
     name: 'merchantApply',
     path: '/merchant/apply',
   );
+  static const merchantManage = AppRoute(
+    name: 'merchantManage',
+    path: '/merchant/manage/:merchantId',
+  );
 
   static const library = AppRoute(name: 'library', path: '/library');
   static const questions = AppRoute(name: 'questions', path: '/questions');

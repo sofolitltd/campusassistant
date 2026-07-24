@@ -1,3 +1,4 @@
+import 'package:campusassistant/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -185,17 +186,17 @@ class _FavoritesGrid extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(item.icon, size: 24, color: item.color),
+                Icon(item.icon, size: 24, color: Theme.of(context).appColors.primaryColor),
                 const SizedBox(height: 8),
                 Text(
                   item.name,
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white70 : Colors.grey.shade700,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    // color: isDark ? Colors.white70 : Colors.grey.shade700,
                   ),
                 ),
               ],

@@ -36,8 +36,7 @@ class CartScreen extends ConsumerWidget {
 
     final groupedByMerchant = <String, List<CartItem>>{};
     for (final item in cartItems) {
-      final name = item.product.merchant?.businessName ?? 'Campus Assistant';
-      groupedByMerchant.putIfAbsent(name, () => []).add(item);
+      groupedByMerchant.putIfAbsent(item.product.merchantId, () => []).add(item);
     }
 
     return Scaffold(
@@ -46,8 +45,12 @@ class CartScreen extends ConsumerWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.all(16),
         children: groupedByMerchant.entries.map((entry) {
+          final merchant = entry.value.first.product.merchant;
           return _MerchantGroup(
-            merchantName: entry.key,
+            merchantId: entry.key,
+            merchantName: merchant?.businessName ?? 'Campus Assistant',
+            logoUrl: merchant?.logoUrl,
+            isPlatform: merchant?.isPlatform ?? true,
             items: entry.value,
             ref: ref,
           );
@@ -92,18 +95,25 @@ class CartScreen extends ConsumerWidget {
 }
 
 class _MerchantGroup extends StatelessWidget {
+  final String merchantId;
   final String merchantName;
+  final String? logoUrl;
+  final bool isPlatform;
   final List<CartItem> items;
   final WidgetRef ref;
 
   const _MerchantGroup({
+    required this.merchantId,
     required this.merchantName,
+    required this.logoUrl,
+    required this.isPlatform,
     required this.items,
     required this.ref,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -111,12 +121,56 @@ class _MerchantGroup extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              children: [
-                Icon(LucideIcons.store, size: 16, color: Colors.grey),
-                const SizedBox(width: 6),
-                Text(merchantName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-              ],
+            child: Material(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(RadiusToken.md),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(RadiusToken.md),
+                onTap: isPlatform
+                    ? null
+                    : () => context.pushNamed(
+                          AppRoute.marketplaceMerchantProfile.name,
+                          pathParameters: {'merchantId': merchantId},
+                        ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
+                    border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
+                        child: logoUrl != null && logoUrl!.isNotEmpty
+                            ? Image.network(
+                                logoUrl!,
+                                width: 28,
+                                height: 28,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => Container(
+                                  width: 28,
+                                  height: 28,
+                                  color: Colors.grey.shade100,
+                                  child: Icon(LucideIcons.store, size: 16, color: Colors.grey),
+                                ),
+                              )
+                            : Container(
+                                width: 28,
+                                height: 28,
+                                color: Colors.grey.shade100,
+                                child: Icon(LucideIcons.store, size: 16, color: Colors.grey),
+                              ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(merchantName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      ),
+                      if (!isPlatform) Icon(LucideIcons.chevronRight, size: 16, color: Colors.grey),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
           ...items.map((item) => _CartItemTile(item: item, ref: ref)),

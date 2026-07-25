@@ -66,7 +66,7 @@ Future<bool> showDownloadAdGate(BuildContext context, WidgetRef ref) async {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: FilledButton(
+              child: ElevatedButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
                 child: const Text('Watch Ad'),
               ),

@@ -188,7 +188,7 @@ class _BkashWebViewState extends State<BkashWebView> {
                             child: const Text('Cancel'),
                           ),
                           const SizedBox(width: 12),
-                          FilledButton(
+                          ElevatedButton(
                             onPressed: _retry,
                             child: const Text('Retry'),
                           ),

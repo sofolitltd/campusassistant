@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
@@ -157,7 +158,7 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
                         imageUrl: ApiEndpoints.resolveImageUrl(url),
                         fit: BoxFit.contain,
                         placeholder: (c, u) =>
-                            const CircularProgressIndicator(),
+                            const CupertinoActivityIndicator(),
                       ),
                     ),
                   );

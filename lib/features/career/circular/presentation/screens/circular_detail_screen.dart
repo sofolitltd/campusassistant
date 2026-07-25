@@ -77,7 +77,10 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
   Widget build(BuildContext context) {
     final circularAsync = ref.watch(circularDetailProvider(widget.circularId));
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(title: const Text('Circular Details')),
       body: circularAsync.when(
         data: (circular) {
@@ -166,6 +169,8 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Failed to load circular: $err')),
+      ),
+        ),
       ),
     );
   }

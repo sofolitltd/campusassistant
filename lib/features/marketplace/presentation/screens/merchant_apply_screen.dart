@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/di.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -473,7 +474,7 @@ class _MerchantCard extends StatelessWidget {
                 borderRadius: RadiusToken.circular(RadiusToken.md),
                 child: merchant.logoUrl.isNotEmpty
                     ? Image.network(
-                        merchant.logoUrl,
+                        ApiEndpoints.resolveImageUrl(merchant.logoUrl),
                         width: 52,
                         height: 52,
                         fit: BoxFit.cover,

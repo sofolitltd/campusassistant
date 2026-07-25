@@ -9,6 +9,41 @@ import '/core/theme/tokens/app_spacing.dart';
 // Ported from personalassistant's JobDetailsScreen widgets/info_card.dart,
 // restyled with this app's Spacing/RadiusToken tokens.
 
+/// Shared confirmation dialog for the status/category/scope popup badges on
+/// the job detail page — same shape as JobDetailScreen's own delete-confirm
+/// dialog. Returns true only if the user tapped Confirm.
+Future<bool> confirmJobFieldChange(
+  BuildContext context, {
+  required String title,
+  required String message,
+}) async {
+  final cs = Theme.of(context).colorScheme;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: RadiusToken.circular(RadiusToken.sm),
+      ),
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(
+            'Confirm',
+            style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    ),
+  );
+  return confirmed ?? false;
+}
+
 Widget buildJobInfoCard(
   BuildContext context,
   IconData icon,
@@ -35,8 +70,8 @@ Widget buildJobInfoCard(
         ),
       ],
     ),
-    margin: const EdgeInsets.only(bottom: Spacing.xl),
-    padding: const EdgeInsets.all(Spacing.lg),
+      margin: const EdgeInsets.only(bottom: 12),
+    padding: .only(left: 12, top:10, bottom: 10, right: 12),
     child: Row(
       children: [
         Container(
@@ -51,7 +86,7 @@ Widget buildJobInfoCard(
               color: isUrgent ? cs.error : cs.primary,
             ),
           ),
-          const SizedBox(width: Spacing.xl),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,55 +149,66 @@ Widget buildJobLinkSection(
   IconData icon,
 ) {
   final cs = Theme.of(context).colorScheme;
-  return Card(
-    margin: const EdgeInsets.only(bottom: Spacing.xl),
-    elevation: 0,
-    color: cs.surface,
-    shape: RoundedRectangleBorder(
-      borderRadius: RadiusToken.circular(RadiusToken.xl),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(Spacing.lg),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(Spacing.sm),
-            decoration: BoxDecoration(
-              color: cs.primaryContainer,
-              borderRadius: RadiusToken.circular(RadiusToken.md),
-            ),
-            child: Icon(icon, color: cs.primary, size: 20),
-          ),
-          const SizedBox(width: Spacing.xl),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
-                ),
-                Text(
-                  url,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: cs.onSurface,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            onPressed: () =>
-                launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-            icon: Icon(LucideIcons.arrowUpRight, color: cs.primary),
-          ),
-        ],
+  return Container(
+    decoration: BoxDecoration(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(RadiusToken.lg),
+      border: Border.all(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white10
+            : Colors.grey.shade200,
       ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: .only(left: 12, top:6, bottom: 6),
+    child: Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(Spacing.sm),
+          decoration: BoxDecoration(
+            color: cs.primaryContainer,
+            borderRadius: RadiusToken.circular(RadiusToken.md),
+          ),
+          child: Icon(icon, size: 18, color: cs.primary),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+              ),
+              const SizedBox(height: Spacing.xxs),
+              Text(
+                url,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: cs.onSurface,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: Spacing.xl),
+        IconButton(
+          onPressed: () =>
+              launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+          icon: Icon(LucideIcons.arrowUpRight, color: cs.primary),
+        ),
+      ],
     ),
   );
 }

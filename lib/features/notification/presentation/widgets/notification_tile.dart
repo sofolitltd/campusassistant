@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 
 class NotificationTile extends StatelessWidget {
@@ -66,10 +67,10 @@ class NotificationTile extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
+          color: Colors.red.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
-        child: Icon(LucideIcons.checkCheck, color: color, size: 24),
+        child: const Icon(LucideIcons.trash2, color: Colors.red, size: 22),
       ),
       onDismissed: (_) => onDismiss?.call(),
       child: GestureDetector(
@@ -97,7 +98,7 @@ class NotificationTile extends StatelessWidget {
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
-                          notification.imageUrl!,
+                          ApiEndpoints.resolveImageUrl(notification.imageUrl),
                           width: 40,
                           height: 40,
                           fit: BoxFit.cover,

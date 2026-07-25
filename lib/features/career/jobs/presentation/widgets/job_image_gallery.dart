@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:http/http.dart' as http;
@@ -91,7 +92,7 @@ class _PdfThumbnailWidgetState extends State<PdfThumbnailWidget> {
     if (_isLoading) {
       return Container(
         color: cs.surfaceContainerHighest,
-        child: const Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
+        child: const Center(child: CupertinoActivityIndicator()),
       );
     }
     if (_bytes != null) {
@@ -203,7 +204,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                                   imageUrl: _resolveUrl(url),
                                   fit: BoxFit.contain,
                                   placeholder: (c, u) => const Center(
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CupertinoActivityIndicator(),
                                   ),
                                   errorWidget: (c, e, s) => Icon(
                                     LucideIcons.file,

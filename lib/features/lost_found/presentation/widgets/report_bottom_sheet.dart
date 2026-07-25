@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,7 +42,7 @@ class _ReportSheetState extends State<_ReportSheet> {
         content: Text('Reason: $reason\n\nOur team will review it shortly.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Report')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Report')),
         ],
       ),
     );
@@ -83,7 +84,7 @@ class _ReportSheetState extends State<_ReportSheet> {
           if (_submitting)
             const Padding(
               padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(),
+              child: CupertinoActivityIndicator(),
             )
           else
             ..._reportReasons.map(

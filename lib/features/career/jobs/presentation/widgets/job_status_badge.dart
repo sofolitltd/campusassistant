@@ -6,6 +6,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
+import 'job_detail_helpers.dart';
 
 /// Ported from personalassistant's StatusBadge/status_picker.dart — tapping
 /// the pill opens a bottom sheet to change status, instead of an inline
@@ -119,12 +120,19 @@ class JobStatusBadge extends ConsumerWidget {
           ),
         );
       }).toList(),
-    ).then((value) {
-      if (value != null) {
-        final newStatus = careerJobStatusFromString(value);
-        if (job.status != newStatus) {
-          ref.read(careerJobActionsProvider).setStatus(job.id, newStatus);
-        }
+    ).then((value) async {
+      if (value == null) return;
+      final newStatus = careerJobStatusFromString(value);
+      if (job.status == newStatus) return;
+      if (!context.mounted) return;
+
+      final confirmed = await confirmJobFieldChange(
+        context,
+        title: 'Change status?',
+        message: 'Mark this job as "${_label(newStatus)}"?',
+      );
+      if (confirmed) {
+        ref.read(careerJobActionsProvider).setStatus(job.id, newStatus);
       }
     });
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -79,7 +80,7 @@ class _AppPdfViewerState extends State<AppPdfViewer> {
         ),
       );
     }
-    if (_isLoading) return const Center(child: CircularProgressIndicator());
+    if (_isLoading) return const Center(child: CupertinoActivityIndicator());
     if (_pdfController == null) {
       return Center(
         child: Text('Could not load PDF', style: TextStyle(color: cs.onSurface)),

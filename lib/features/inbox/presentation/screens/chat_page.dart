@@ -433,7 +433,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final userAsync = ref.watch(currentUserProvider);
     final s = ref.watch(conversationMessagesProvider(widget.conversationId));
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       backgroundColor: isDark ? const Color(0xFF111B21) : Colors.grey.shade50,
       appBar: _selectMode ? _selectAppBar(isDark) : _chatAppBar(isDark),
       body: Column(
@@ -491,6 +494,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               isMultiline: _isMultiline,
             ),
         ],
+      ),
+        ),
       ),
     );
   }

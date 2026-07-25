@@ -563,7 +563,7 @@ class _MembersTab extends ConsumerWidget {
                     icon: const Icon(Icons.logout, size: 18),
                     label: const Text('Leave'),
                   )
-                : FilledButton.icon(
+                : ElevatedButton.icon(
                     onPressed: memberPending ? null : onToggleMembership,
                     icon: const Icon(Icons.group_add, size: 18),
                     label: const Text('Join Association'),

@@ -31,138 +31,202 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Checkout')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text('Shipping Address', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 8),
-          addressesAsync.when(
-            data: (addresses) {
-              final defaultAddr = addresses.where((a) => a.isDefault).firstOrNull;
-              _selectedAddress ??= defaultAddr ?? addresses.firstOrNull;
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const Text(
+                'Shipping Address',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              addressesAsync.when(
+                data: (addresses) {
+                  final defaultAddr = addresses
+                      .where((a) => a.isDefault)
+                      .firstOrNull;
+                  _selectedAddress ??= defaultAddr ?? addresses.firstOrNull;
 
-              if (_selectedAddress == null) {
-                return GestureDetector(
-                  onTap: () => context.push(AppRoute.marketplaceAddressForm.path).then((_) => ref.invalidate(addressesProvider)),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(RadiusToken.md),
-                      color: Colors.grey.shade50,
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(LucideIcons.plus, size: 20),
-                        SizedBox(width: 8),
-                        Text('Add a shipping address'),
-                      ],
-                    ),
-                  ),
-                );
-              }
-
-              return GestureDetector(
-                onTap: () => context.push(AppRoute.marketplaceAddresses.path).then((_) {
-                  ref.invalidate(addressesProvider);
-                  setState(() { _selectedAddress = null; });
-                }),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(RadiusToken.md),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  if (_selectedAddress == null) {
+                    return GestureDetector(
+                      onTap: () => context
+                          .push(AppRoute.marketplaceAddressForm.path)
+                          .then((_) => ref.invalidate(addressesProvider)),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            style: BorderStyle.solid,
+                          ),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
+                          color: Colors.grey.shade50,
+                        ),
+                        child: const Row(
                           children: [
-                            Text('${_selectedAddress!.label} — ${_selectedAddress!.recipientName}',
-                                style: const TextStyle(fontWeight: FontWeight.w600)),
-                            Text(_selectedAddress!.phone, style: const TextStyle(color: Colors.grey)),
-                            Text('${_selectedAddress!.addressLine}, ${_selectedAddress!.city}',
-                                style: const TextStyle(color: Colors.grey)),
+                            Icon(LucideIcons.plus, size: 20),
+                            SizedBox(width: 8),
+                            Text('Add a shipping address'),
                           ],
                         ),
                       ),
-                      const Icon(LucideIcons.chevronRight),
+                    );
+                  }
+
+                  return GestureDetector(
+                    onTap: () => context
+                        .push(AppRoute.marketplaceAddresses.path)
+                        .then((_) {
+                          ref.invalidate(addressesProvider);
+                          setState(() {
+                            _selectedAddress = null;
+                          });
+                        }),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${_selectedAddress!.label} — ${_selectedAddress!.recipientName}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  _selectedAddress!.phone,
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                                Text(
+                                  '${_selectedAddress!.addressLine}, ${_selectedAddress!.city}',
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(LucideIcons.chevronRight),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const CupertinoActivityIndicator(),
+                error: (e, _) => Text('Error: $e'),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Order Summary',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              ...cartItems.map(
+                (item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${item.product.title} x${item.quantity}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        '৳${item.totalPrice}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
-              );
-            },
-            loading: () => const CupertinoActivityIndicator(),
-            error: (e, _) => Text('Error: $e'),
-          ),
-          const SizedBox(height: 24),
-          const Text('Order Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 8),
-          ...cartItems.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text('${item.product.title} x${item.quantity}',
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Total',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  Text(
+                    '৳$totalAmount',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Payment Method',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              _PaymentMethodTile(
+                icon: LucideIcons.smartphone,
+                title: 'Pay with bKash',
+                subtitle: 'Pay online now via bKash',
+                selected: _paymentMethod == MarketplacePaymentMethod.bkash,
+                onTap: _isProcessing
+                    ? null
+                    : () => setState(
+                        () => _paymentMethod = MarketplacePaymentMethod.bkash,
+                      ),
+              ),
+              const SizedBox(height: 10),
+              _PaymentMethodTile(
+                icon: LucideIcons.banknote,
+                title: 'Cash on Delivery',
+                subtitle: 'Pay in cash when your order arrives',
+                selected:
+                    _paymentMethod == MarketplacePaymentMethod.cashOnDelivery,
+                onTap: _isProcessing
+                    ? null
+                    : () => setState(
+                        () => _paymentMethod =
+                            MarketplacePaymentMethod.cashOnDelivery,
+                      ),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _selectedAddress == null || _isProcessing
+                      ? null
+                      : _placeOrder,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: _isProcessing
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CupertinoActivityIndicator(),
+                        )
+                      : Text(
+                          _paymentMethod == MarketplacePaymentMethod.bkash
+                              ? 'Place Order — Pay with bKash'
+                              : 'Place Order — Cash on Delivery',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
                 ),
-                Text('৳${item.totalPrice}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-          )),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Total', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              Text('৳$totalAmount', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
             ],
           ),
-          const SizedBox(height: 24),
-          const Text('Payment Method', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 8),
-          _PaymentMethodTile(
-            icon: LucideIcons.smartphone,
-            title: 'Pay with bKash',
-            subtitle: 'Pay online now via bKash',
-            selected: _paymentMethod == MarketplacePaymentMethod.bkash,
-            onTap: _isProcessing
-                ? null
-                : () => setState(() => _paymentMethod = MarketplacePaymentMethod.bkash),
-          ),
-          const SizedBox(height: 10),
-          _PaymentMethodTile(
-            icon: LucideIcons.banknote,
-            title: 'Cash on Delivery',
-            subtitle: 'Pay in cash when your order arrives',
-            selected: _paymentMethod == MarketplacePaymentMethod.cashOnDelivery,
-            onTap: _isProcessing
-                ? null
-                : () => setState(() => _paymentMethod = MarketplacePaymentMethod.cashOnDelivery),
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _selectedAddress == null || _isProcessing ? null : _placeOrder,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: _isProcessing
-                  ? const SizedBox(
-                      width: 20, height: 20,
-                      child: CupertinoActivityIndicator())
-                  : Text(
-                      _paymentMethod == MarketplacePaymentMethod.bkash
-                          ? 'Place Order — Pay with bKash'
-                          : 'Place Order — Cash on Delivery',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -192,13 +256,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ref.invalidate(ordersListProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Order placed! Pay in cash on delivery.'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Order placed! Pay in cash on delivery.'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.pop();
         return;
       }
 
-      final paymentData = await createMarketplacePayment(ref, orderResult.orderId);
+      final paymentData = await createMarketplacePayment(
+        ref,
+        orderResult.orderId,
+      );
 
       if (!mounted) return;
 
@@ -213,14 +283,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       );
 
       if (webViewResult == 'success') {
-        await executeMarketplacePayment(ref, paymentData['payment_id'] as String);
+        await executeMarketplacePayment(
+          ref,
+          paymentData['payment_id'] as String,
+        );
         if (!mounted) return;
 
         ref.read(cartProvider.notifier).clear();
         ref.invalidate(ordersListProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payment successful! Order placed.'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Payment successful! Order placed.'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.pop();
       }
@@ -254,7 +330,9 @@ class _PaymentMethodTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      color: selected ? theme.colorScheme.primary.withValues(alpha: 0.08) : theme.cardColor,
+      color: selected
+          ? theme.colorScheme.primary.withValues(alpha: 0.08)
+          : theme.cardColor,
       borderRadius: BorderRadius.circular(RadiusToken.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(RadiusToken.md),
@@ -264,26 +342,50 @@ class _PaymentMethodTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
-              color: selected ? theme.colorScheme.primary : Colors.grey.shade300,
+              color: selected
+                  ? theme.colorScheme.primary
+                  : Colors.grey.shade300,
               width: selected ? 1.5 : 1,
             ),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 22, color: selected ? theme.colorScheme.primary : Colors.grey.shade600),
+              Icon(
+                icon,
+                size: 22,
+                color: selected
+                    ? theme.colorScheme.primary
+                    : Colors.grey.shade600,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ),
               Icon(
-                selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                color: selected ? theme.colorScheme.primary : Colors.grey.shade400,
+                selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                color: selected
+                    ? theme.colorScheme.primary
+                    : Colors.grey.shade400,
                 size: 20,
               ),
             ],

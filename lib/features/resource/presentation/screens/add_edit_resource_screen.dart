@@ -417,7 +417,10 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
     final String typeName =
         widget.type[0].toUpperCase() + widget.type.substring(1);
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(
         title: Text(
           widget.resource == null ? 'Add $typeName' : 'Edit $typeName',
@@ -770,6 +773,8 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
               const SizedBox(height: 40),
             ],
           ),
+        ),
+      ),
         ),
       ),
     );

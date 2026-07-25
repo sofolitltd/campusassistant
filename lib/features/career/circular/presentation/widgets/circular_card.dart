@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../jobs/presentation/widgets/attachment_thumbnail.dart';
 import '../../data/models/career_circular.dart';
 
 class CircularCard extends StatelessWidget {
@@ -21,14 +22,12 @@ class CircularCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(Icons.business_center_outlined, color: theme.colorScheme.onPrimaryContainer),
+              AttachmentThumbnail(
+                attachmentUrls: circular.attachmentUrls,
+                size: 56,
+                fallbackIcon: Icons.business_center_outlined,
+                background: theme.colorScheme.primaryContainer,
+                foreground: theme.colorScheme.onPrimaryContainer,
               ),
               const SizedBox(width: 12),
               Expanded(

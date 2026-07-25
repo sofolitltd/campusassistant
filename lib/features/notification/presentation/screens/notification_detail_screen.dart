@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
@@ -105,7 +106,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                     children: [
                       if (notif.imageUrl != null)
                         Image.network(
-                          notif.imageUrl!,
+                          ApiEndpoints.resolveImageUrl(notif.imageUrl),
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) => _gradientBg(color),
                         )
@@ -304,7 +305,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                         SizedBox(
                           width: double.infinity,
                           height: 48,
-                          child: FilledButton.icon(
+                          child: ElevatedButton.icon(
                             onPressed: () => _navigateToSource(context, notif),
                             icon: const Icon(
                               LucideIcons.arrowUpRight,
@@ -316,7 +317,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            style: FilledButton.styleFrom(
+                            style: ElevatedButton.styleFrom(
                               backgroundColor: color,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(

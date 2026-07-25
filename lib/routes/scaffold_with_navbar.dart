@@ -5,7 +5,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../widgets/custom_drawer.dart';
 import '../core/theme/app_colors.dart';
-import 'web_side_nav.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
   const ScaffoldWithNavBar({super.key, required this.navigationShell});
@@ -17,50 +16,25 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLargeScreen = MediaQuery.of(context).size.width >= 800;
-
-    if (isLargeScreen) {
-      // --- 🖥️ Large Screen Layout: left sidebar (matches the admin dashboard) ---
-      return Scaffold(
-        body: Row(
-          children: [
-            WebSideNav(
-              currentIndex: navigationShell.currentIndex,
-              onDestinationSelected: (index) {
-                navigationShell.goBranch(
-                  index,
-                  initialLocation: index == navigationShell.currentIndex,
-                );
-              },
-            ),
-            Expanded(
-              child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 700),
-                  child: navigationShell,
-                ),
-              ),
-            ),
-          ],
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
+          key: scaffoldKey,
+          drawer: const CustomDrawer(),
+          body: navigationShell,
+          bottomNavigationBar: _BlurryBottomNavBar(
+            currentIndex: navigationShell.currentIndex,
+            onDestinationSelected: (index) {
+              navigationShell.goBranch(
+                index,
+                initialLocation: index == navigationShell.currentIndex,
+              );
+            },
+          ),
         ),
-      );
-    } else {
-      // --- 📱 Small Screen Layout: Bottom Navigation Bar ---
-      return Scaffold(
-        key: scaffoldKey,
-        drawer: const CustomDrawer(),
-        body: navigationShell,
-        bottomNavigationBar: _BlurryBottomNavBar(
-          currentIndex: navigationShell.currentIndex,
-          onDestinationSelected: (index) {
-            navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            );
-          },
-        ),
-      );
-    }
+      ),
+    );
   }
 }
 

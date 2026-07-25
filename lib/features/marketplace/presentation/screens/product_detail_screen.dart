@@ -1,9 +1,11 @@
+import 'package:campusassistant/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 import '/routes/app_route.dart';
 import '../../data/models/product.dart';
 import '../providers/cart_provider.dart';
@@ -58,7 +60,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ? 'Campus Assistant'
         : product.merchant?.businessName ?? '';
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
@@ -81,7 +86,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           itemCount: images.length,
                           onPageChanged: (i) => setState(() => _imageIndex = i),
                           itemBuilder: (context, i) => Image.network(
-                            images[i],
+                            ApiEndpoints.resolveImageUrl(images[i]),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => Container(
                               color: Colors.grey.shade300,
@@ -135,6 +140,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ),
             ),
           ),
+          SliverPadding(padding: .only(top: 8)),
           SliverToBoxAdapter(
             child: Transform.translate(
               offset: const Offset(0, -20),
@@ -167,7 +173,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           '৳${product.price}',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
+                            color: Theme.of(context).appColors.primaryColor,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -267,6 +273,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ref.read(cartProvider.notifier).addItem(product, quantity: _quantity);
           context.push(AppRoute.marketplaceCheckout.path);
         },
+      ),
+        ),
       ),
     );
   }
@@ -386,35 +394,18 @@ class _BuyBar extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 48,
-                  child: OutlinedButton.icon(
-                    onPressed: onAddToCart,
-                    icon: const Icon(LucideIcons.shoppingCart, size: 18),
-                    label: const Text('Add to Cart'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.primary,
-                      side: BorderSide(color: theme.colorScheme.primary),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(RadiusToken.md)),
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
+                child: OutlinedButton.icon(
+                  onPressed: onAddToCart,
+                  icon: const Icon(LucideIcons.shoppingCart, size: 18),
+                  label: const Text('Add to Cart'),
+                        
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: SizedBox(
-                  height: 48,
-                  child: FilledButton(
-                    onPressed: onBuyNow,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(RadiusToken.md)),
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    child: const Text('Buy Now'),
-                  ),
+                child: ElevatedButton(
+                  onPressed: onBuyNow,
+                  child: const Text('Buy Now'),
                 ),
               ),
             ],

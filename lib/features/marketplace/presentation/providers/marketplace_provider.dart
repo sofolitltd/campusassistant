@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/core/di.dart';
 import '../../data/models/address.dart';
@@ -276,3 +277,11 @@ Future<void> setDefaultAddress(WidgetRef ref,
   final apiClient = ref.read(apiClientProvider);
   await apiClient.put('/my/addresses/$addressId/default');
 }
+
+const _heroDismissedKey = 'marketplace_hero_dismissed';
+
+final marketplaceHeroDismissedProvider = FutureProvider<bool>((ref) async {
+  final storage = FlutterSecureStorage();
+  final value = await storage.read(key: _heroDismissedKey);
+  return value == 'true';
+});

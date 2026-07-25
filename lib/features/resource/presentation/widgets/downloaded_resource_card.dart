@@ -72,8 +72,7 @@ class DownloadedResourceCard extends ConsumerWidget {
           InkWell(
             borderRadius: BorderRadius.circular(RadiusToken.sm),
             onTap: () {
-              Navigator.push(
-                context,
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (_) => PdfViewerPage(
                     filePath: downloadedFile.localPath,

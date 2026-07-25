@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
 import '../../data/models/category.dart';
@@ -41,25 +43,35 @@ class ProductListScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(category?.name ?? 'Products'),
       ),
-      body: productsAsync.when(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: productsAsync.when(
         data: (products) {
           if (products.isEmpty) {
             return const Center(child: Text('No products in this category.'));
           }
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.72,
-            ),
-            itemCount: products.length,
-            itemBuilder: (context, i) => _ProductGridCard(product: products[i]),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final crossAxisCount = width >= 640 ? 4 : width >= 480 ? 3 : 2;
+              return MasonryGridView.builder(
+                padding: const EdgeInsets.all(16),
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                ),
+                itemCount: products.length,
+                itemBuilder: (context, i) => _ProductGridCard(product: products[i]),
+              );
+            },
           );
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Could not load products.')),
+      ),
+        ),
       ),
     );
   }
@@ -96,7 +108,7 @@ class _ProductGridCard extends StatelessWidget {
                   width: double.infinity,
                   child: imageUrl.isNotEmpty
                       ? Image.network(
-                          imageUrl,
+                          ApiEndpoints.resolveImageUrl(imageUrl),
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Container(
                             color: Colors.grey.shade100,

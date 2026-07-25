@@ -54,7 +54,10 @@ class _HomePageState extends ConsumerState<HomePage>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       drawer: const HomeDrawer(),
-      body: SingleChildScrollView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
@@ -196,83 +199,88 @@ class _HomePageState extends ConsumerState<HomePage>
                     SizedBox(height: Spacing.sm),
 
                     // Shortcut Cards
-                    SizedBox(
-                      height: 200,
-                      child: MouseWheelHorizontalScroll(
-                        controller: _shortcutsScrollController,
-                        child: MasonryGridView(
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                          gridDelegate:
-                              SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isLarge = constraints.maxWidth >= 500;
+                        return SizedBox(
+                          height: isLarge ? 105 : 200,
+                          child: MouseWheelHorizontalScroll(
+                            controller: _shortcutsScrollController,
+                            child: MasonryGridView(
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              gridDelegate:
+                                  SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: isLarge ? 1 : 2,
+                                  ),
+                              controller: _shortcutsScrollController,
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
                               ),
-                          controller: _shortcutsScrollController,
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
+                              children: [
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Class\nRoutine',
+                                  icon: LucideIcons.calendarDays,
+                                  route: '/routine',
+                                  color: const Color(0xFF3B82F6),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Alumni\nNetwork',
+                                  icon: LucideIcons.graduationCap,
+                                  route: '/alumni',
+                                  color: const Color(0xFF8B5CF6),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Emergency\nContacts',
+                                  icon: LucideIcons.siren,
+                                  route: '/emergency',
+                                  color: const Color(0xFFEF4444),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Transport\nServices',
+                                  icon: LucideIcons.tramFront,
+                                  route: '/transport',
+                                  color: const Color(0xFFF59E0B),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Clubs &\nOrganizations',
+                                  icon: LucideIcons.club,
+                                  route: '/club',
+                                  color: const Color(0xFFEC4899),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Student\nAssociations',
+                                  icon: LucideIcons.landmark,
+                                  route: '/association',
+                                  color: const Color(0xFF0EA5E9),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Blood\nBank',
+                                  icon: LucideIcons.heartPulse,
+                                  route: '/blood-bank',
+                                  color: const Color(0xFFDC2626),
+                                ),
+                                _buildShortcutCard(
+                                  theme: theme,
+                                  title: 'Lost &\nFound',
+                                  icon: LucideIcons.searchCheck,
+                                  route: '/lost-found',
+                                  color: const Color(0xFF14B8A6),
+                                ),
+                              ],
+                            ),
                           ),
-                          children: [
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Class\nRoutine',
-                              icon: LucideIcons.calendarDays,
-                              route: '/routine',
-                              color: const Color(0xFF3B82F6),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Alumni\nNetwork',
-                              icon: LucideIcons.graduationCap,
-                              route: '/alumni',
-                              color: const Color(0xFF8B5CF6),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Emergency\nContacts',
-                              icon: LucideIcons.siren,
-                              route: '/emergency',
-                              color: const Color(0xFFEF4444),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Transport\nServices',
-                              icon: LucideIcons.tramFront,
-                              route: '/transport',
-                              color: const Color(0xFFF59E0B),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Clubs &\nOrganizations',
-                              icon: LucideIcons.club,
-                              route: '/club',
-                              color: const Color(0xFFEC4899),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Student\nAssociations',
-                              icon: LucideIcons.landmark,
-                              route: '/association',
-                              color: const Color(0xFF0EA5E9),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Blood\nBank',
-                              icon: LucideIcons.heartPulse,
-                              route: '/blood-bank',
-                              color: const Color(0xFFDC2626),
-                            ),
-                            _buildShortcutCard(
-                              theme: theme,
-                              title: 'Lost &\nFound',
-                              icon: LucideIcons.searchCheck,
-                              route: '/lost-found',
-                              color: const Color(0xFF14B8A6),
-                            ),
-                          ],
-                        ),
-                      ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: Spacing.sm),
@@ -295,6 +303,8 @@ class _HomePageState extends ConsumerState<HomePage>
           ],
         ),
       ),
+      ),
+    ),
     );
   }
 

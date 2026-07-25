@@ -102,7 +102,10 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         leading: IconButton(
@@ -257,6 +260,8 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
                 );
               },
             ),
+        ),
+      ),
     );
   }
 }

@@ -169,7 +169,10 @@ class _SuggestAssociationPageState
   Widget build(BuildContext context) {
     final districtsAsync = ref.watch(bdDistrictsProvider);
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(title: const Text('Suggest an Association')),
       body: Form(
         key: _formKey,
@@ -383,6 +386,8 @@ class _SuggestAssociationPageState
                   : const Text('Submit for Review'),
             ),
           ],
+        ),
+      ),
         ),
       ),
     );

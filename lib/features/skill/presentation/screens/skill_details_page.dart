@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 import '/routes/app_route.dart';
 import '../../data/models/skill.dart';
 import '../../data/models/skill_video.dart';
@@ -26,7 +27,10 @@ class SkillDetailsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      body: CustomScrollView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 220,
@@ -35,7 +39,7 @@ class SkillDetailsPage extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: skill.thumbnailUrl.isNotEmpty
                   ? Image.network(
-                      skill.thumbnailUrl,
+                      ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
                           Container(color: Colors.grey.shade300),
@@ -106,6 +110,8 @@ class SkillDetailsPage extends StatelessWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
+        ),
+      ),
     );
   }
 }
@@ -164,7 +170,7 @@ class _SkillVideoRow extends StatelessWidget {
                     ),
                     child: thumb.isNotEmpty
                         ? Image.network(
-                            thumb,
+                            ApiEndpoints.resolveImageUrl(thumb),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(

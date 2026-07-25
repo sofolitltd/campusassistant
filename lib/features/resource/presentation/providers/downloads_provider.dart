@@ -12,6 +12,7 @@ import '../../domain/entities/resource.dart';
 part 'downloads_provider.g.dart';
 
 const _metadataEntityType = 'downloaded_resource_metadata';
+const _validResourceTypes = {'note', 'book', 'question', 'syllabus', 'research'};
 
 /// Caches the resource metadata after a successful download.
 Future<void> cacheDownloadedResourceMetadata({
@@ -78,7 +79,7 @@ Resource _inferResourceFromFileName(String fileName, FileStat stat) {
   final lessonNoStr = dashIndex > 0 ? codePart.substring(dashIndex + 1) : '0';
   final lessonNo = int.tryParse(lessonNoStr) ?? 0;
   // Type is the second-to-last part
-  final type = parts.length >= 2 ? parts[parts.length - 2] : 'note';
+  final type = parts.length >= 2 ? parts[parts.length - 2] : '';
   // Title is everything between courseCode-lessonNo and type
   final title = parts.length > 2
       ? parts.sublist(1, parts.length - 2).join(' ')
@@ -170,6 +171,8 @@ class DownloadedFiles extends _$DownloadedFiles {
         } else {
           resource = _inferResourceFromFileName(fileName, stat);
         }
+
+        if (!_validResourceTypes.contains(resource.type)) continue;
 
         results.add(
           DownloadedFile(

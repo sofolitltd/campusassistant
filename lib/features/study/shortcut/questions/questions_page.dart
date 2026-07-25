@@ -371,7 +371,10 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     final selectedYear = ref.watch(questionsSelectedYearProvider);
     final searchHint = 'Search questions...';
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -571,6 +574,8 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }

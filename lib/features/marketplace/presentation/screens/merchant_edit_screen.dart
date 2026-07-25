@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/di.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/merchant.dart';
@@ -65,8 +66,12 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
     _phoneController = TextEditingController(text: m.phone);
     _emailController = TextEditingController(text: m.email);
     _websiteController = TextEditingController(text: m.website ?? '');
-    _socialMediaController = TextEditingController(text: m.socialMediaLink ?? '');
-    _payoutAccountController = TextEditingController(text: m.payoutAccount ?? '');
+    _socialMediaController = TextEditingController(
+      text: m.socialMediaLink ?? '',
+    );
+    _payoutAccountController = TextEditingController(
+      text: m.payoutAccount ?? '',
+    );
     _businessType = m.businessType.isNotEmpty ? m.businessType : null;
     _payoutMethod = m.payoutMethod;
   }
@@ -84,7 +89,10 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
   }
 
   Future<void> _pickLogo() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (picked == null) return;
     setState(() => _logoFile = File(picked.path));
   }
@@ -131,8 +139,12 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
       Fluttertoast.showToast(msg: 'Business updated.');
       Navigator.of(context).pop();
     } on DioException catch (e) {
-      final message = (e.response?.data is Map) ? e.response?.data['error'] as String? : null;
-      Fluttertoast.showToast(msg: message ?? 'Could not save changes. Please try again.');
+      final message = (e.response?.data is Map)
+          ? e.response?.data['error'] as String?
+          : null;
+      Fluttertoast.showToast(
+        msg: message ?? 'Could not save changes. Please try again.',
+      );
     } catch (e) {
       Fluttertoast.showToast(msg: 'Could not save changes. Please try again.');
     } finally {
@@ -146,115 +158,155 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Business')),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(Spacing.lg),
-          children: [
-            Center(
-              child: GestureDetector(
-                onTap: _pickLogo,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      height: 96,
-                      width: 96,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colors.surfaceAltBg,
-                        border: Border.all(color: colors.primaryColor.withValues(alpha: 0.4), width: 1.5),
-                      ),
-                      child: _buildLogoPreview(colors),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: colors.primaryColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(Spacing.lg),
+              children: [
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickLogo,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          height: 96,
+                          width: 96,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colors.surfaceAltBg,
+                            border: Border.all(
+                              color: colors.primaryColor.withValues(alpha: 0.4),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: _buildLogoPreview(colors),
                         ),
-                        child: const Icon(LucideIcons.camera, size: 14, color: Colors.white),
-                      ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: colors.primaryColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              LucideIcons.camera,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: Spacing.xl),
+                TextFormField(
+                  controller: _businessNameController,
+                  decoration: const InputDecoration(labelText: 'Business Name'),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                DropdownButtonFormField<String>(
+                  initialValue: _businessType,
+                  decoration: const InputDecoration(
+                    labelText: 'Type of Business',
+                  ),
+                  items: _businessTypes
+                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                      .toList(),
+                  onChanged: (v) => setState(() => _businessType = v),
+                  validator: (v) => v == null ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _descriptionController,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                    alignLabelWithHint: true,
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Contact Phone'),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(labelText: 'Contact Email'),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _websiteController,
+                  keyboardType: TextInputType.url,
+                  decoration: const InputDecoration(
+                    labelText: 'Website (Optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _socialMediaController,
+                  keyboardType: TextInputType.url,
+                  decoration: const InputDecoration(
+                    labelText: 'Facebook / Social Media Link (Optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                DropdownButtonFormField<String>(
+                  initialValue: _payoutMethod,
+                  decoration: const InputDecoration(labelText: 'Payout Method'),
+                  items: _payoutMethods
+                      .map(
+                        (m) => DropdownMenuItem(value: m.$1, child: Text(m.$2)),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => _payoutMethod = v),
+                  validator: (v) => v == null ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _payoutAccountController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Payout Account / Wallet Number',
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.xxl),
+                ElevatedButton.icon(
+                  onPressed: _saving ? null : _save,
+                  icon: _saving
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CupertinoActivityIndicator(
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(LucideIcons.save, size: 18),
+                  label: Text(_saving ? 'Saving...' : 'Save Changes'),
+                ),
+              ],
             ),
-            const SizedBox(height: Spacing.xl),
-            TextFormField(
-              controller: _businessNameController,
-              decoration: const InputDecoration(labelText: 'Business Name'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            DropdownButtonFormField<String>(
-              initialValue: _businessType,
-              decoration: const InputDecoration(labelText: 'Type of Business'),
-              items: _businessTypes.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-              onChanged: (v) => setState(() => _businessType = v),
-              validator: (v) => v == null ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _descriptionController,
-              maxLines: 4,
-              decoration: const InputDecoration(labelText: 'Description', alignLabelWithHint: true),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Contact Phone'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Contact Email'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _websiteController,
-              keyboardType: TextInputType.url,
-              decoration: const InputDecoration(labelText: 'Website (Optional)'),
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _socialMediaController,
-              keyboardType: TextInputType.url,
-              decoration: const InputDecoration(labelText: 'Facebook / Social Media Link (Optional)'),
-            ),
-            const SizedBox(height: Spacing.md),
-            DropdownButtonFormField<String>(
-              initialValue: _payoutMethod,
-              decoration: const InputDecoration(labelText: 'Payout Method'),
-              items: _payoutMethods.map((m) => DropdownMenuItem(value: m.$1, child: Text(m.$2))).toList(),
-              onChanged: (v) => setState(() => _payoutMethod = v),
-              validator: (v) => v == null ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _payoutAccountController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Payout Account / Wallet Number'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.xxl),
-            ElevatedButton.icon(
-              onPressed: _saving ? null : _save,
-              icon: _saving
-                  ? const SizedBox(height: 16, width: 16, child: CupertinoActivityIndicator(color: Colors.white))
-                  : const Icon(LucideIcons.save, size: 18),
-              label: Text(_saving ? 'Saving...' : 'Save Changes'),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -268,12 +320,20 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
     if (widget.merchant.logoUrl.isNotEmpty) {
       return ClipOval(
         child: Image.network(
-          widget.merchant.logoUrl,
+          ApiEndpoints.resolveImageUrl(widget.merchant.logoUrl),
           fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => Icon(LucideIcons.store, size: 32, color: colors.primaryColor.withValues(alpha: 0.6)),
+          errorBuilder: (_, _, _) => Icon(
+            LucideIcons.store,
+            size: 32,
+            color: colors.primaryColor.withValues(alpha: 0.6),
+          ),
         ),
       );
     }
-    return Icon(LucideIcons.store, size: 32, color: colors.primaryColor.withValues(alpha: 0.6));
+    return Icon(
+      LucideIcons.store,
+      size: 32,
+      color: colors.primaryColor.withValues(alpha: 0.6),
+    );
   }
 }

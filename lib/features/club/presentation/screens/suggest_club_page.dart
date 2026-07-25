@@ -155,7 +155,10 @@ class _SuggestClubPageState extends ConsumerState<SuggestClubPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(title: const Text('Suggest a Club')),
       body: Form(
         key: _formKey,
@@ -322,6 +325,8 @@ class _SuggestClubPageState extends ConsumerState<SuggestClubPage> {
                   : const Text('Submit for Review'),
             ),
           ],
+        ),
+      ),
         ),
       ),
     );

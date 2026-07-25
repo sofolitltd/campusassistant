@@ -40,7 +40,7 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
   /// 3 columns on phone widths; more on tablet/desktop/web so cells don't
   /// stretch into oversized rectangles on wide viewports.
   int _crossAxisCountFor(double width) {
-    if (width >= 700) return 6;
+    if (width >= 640) return 6;
     if (width >= 480) return 4;
     return 3;
   }

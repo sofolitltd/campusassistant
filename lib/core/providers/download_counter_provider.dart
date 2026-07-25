@@ -10,9 +10,14 @@ final downloadCountProvider = FutureProvider.autoDispose<int>((ref) async {
     // Use listSync() to get all files in the directory
     final List<FileSystemEntity> allFiles = directory.listSync();
 
-    // Filter for PDF files specifically to match your file view logic
+    // Filter for PDF files that match the resource download pattern
     final pdfFiles = allFiles.where((file) {
-      return file is File && file.path.toLowerCase().endsWith('.pdf');
+      if (file is! File || !file.path.toLowerCase().endsWith('.pdf')) return false;
+      final name = file.path.split('/').last.replaceAll('.pdf', '');
+      final parts = name.split('_');
+      if (parts.length < 2) return false;
+      final type = parts[parts.length - 2];
+      return {'note', 'book', 'question', 'syllabus', 'research'}.contains(type);
     }).toList();
 
     return pdfFiles.length;

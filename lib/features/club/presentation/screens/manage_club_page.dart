@@ -51,7 +51,10 @@ class _ManageClubPageState extends ConsumerState<ManageClubPage>
   Widget build(BuildContext context) {
     final clubAsync = ref.watch(clubByIdProvider(widget.clubId));
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(
         title: Text(
           clubAsync.maybeWhen(data: (c) => c.name, orElse: () => null) ??
@@ -90,6 +93,8 @@ class _ManageClubPageState extends ConsumerState<ManageClubPage>
         ),
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
+      ),
+        ),
       ),
     );
   }

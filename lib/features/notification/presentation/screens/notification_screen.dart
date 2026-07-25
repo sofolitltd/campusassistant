@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +21,14 @@ class NotificationScreen extends ConsumerStatefulWidget {
 
 class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   bool _showUnreadOnly = false;
+  bool _loadingMore = false;
+  // Dismissible requires the widget to leave the tree the instant
+  // onDismissed fires. _handleDismiss's delete call is a network round-trip,
+  // so without this the underlying list (from notificationsProvider) hasn't
+  // changed yet by the next frame and Flutter throws "A dismissed
+  // Dismissible widget is still part of the tree". Hiding the id locally,
+  // synchronously, is what actually satisfies that contract.
+  final Set<String> _dismissedIds = {};
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +64,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       ],
       body: notificationsAsync.when(
         data: (notifications) {
+          final visible = notifications.where((n) => !_dismissedIds.contains(n.id));
           final filtered = _showUnreadOnly
-              ? notifications.where((n) => !n.isRead).toList()
-              : notifications;
+              ? visible.where((n) => !n.isRead).toList()
+              : visible.toList();
 
           if (filtered.isEmpty) {
             return _buildEmptyState(isDark);
@@ -64,15 +75,20 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
           final grouped = _groupByDate(filtered);
 
+          final notifier = ref.read(notificationsProvider.notifier);
+
           return Column(
             children: [
               _buildFilterChip(isDark),
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                  children: grouped.entries.map((entry) {
-                    return _buildDateSection(entry.key, entry.value, isDark);
-                  }).toList(),
+                  children: [
+                    ...grouped.entries.map((entry) {
+                      return _buildDateSection(entry.key, entry.value, isDark);
+                    }),
+                    if (notifier.hasMore) _buildLoadMore(isDark, notifier),
+                  ],
                 ),
               ),
             ],
@@ -142,6 +158,31 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadMore(bool isDark, NotificationsNotifier notifier) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Center(
+        child: _loadingMore
+            ? const CupertinoActivityIndicator()
+            : TextButton(
+                onPressed: () async {
+                  setState(() => _loadingMore = true);
+                  await notifier.loadMore();
+                  if (mounted) setState(() => _loadingMore = false);
+                },
+                child: Text(
+                  'Load older notifications',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.grey.shade700,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -247,7 +288,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 16, bottom: 8, left: 4),
+          padding: const EdgeInsets.only(top: 12, bottom: 10, left: 4),
           child: Text(
             label,
             style: TextStyle(
@@ -260,7 +301,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         ),
         ...notifications.map(
           (notification) => Padding(
-            padding: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.only(bottom: 10),
             child: NotificationTile(
               notification: notification,
               onTap: () => _handleNotificationTap(notification),
@@ -272,17 +313,37 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     );
   }
 
-  void _handleNotificationTap(AppNotification notification) async {
-    await ref.read(notificationRepositoryProvider).markAsRead(notification.id);
-    ref.invalidate(notificationsProvider);
+  void _handleNotificationTap(AppNotification notification) {
+    // Optimistic: flip isRead locally and navigate immediately, instead of
+    // awaiting the network call + invalidating (refetching) the whole list
+    // just to reflect one row's read state — that used to cause a visible
+    // flicker/delay on every single tap.
+    ref
+        .read(notificationsProvider.notifier)
+        .updateLocal(notification.id, (n) => n.copyWith(isRead: true));
+    unawaited(
+      ref.read(notificationRepositoryProvider).markAsRead(notification.id),
+    );
 
-    if (!mounted) return;
-
-    context.push('/notifications/${notification.id}', extra: notification);
+    context.push(
+      '/notifications/${notification.id}',
+      extra: notification.copyWith(isRead: true),
+    );
   }
 
   void _handleDismiss(String id) async {
-    await ref.read(notificationRepositoryProvider).deleteNotification(id);
-    ref.invalidate(notificationsProvider);
+    setState(() => _dismissedIds.add(id));
+    try {
+      await ref.read(notificationRepositoryProvider).deleteNotification(id);
+      ref.invalidate(notificationsProvider);
+    } catch (e) {
+      if (!mounted) return;
+      // Deletion failed — bring the tile back and let the user know, rather
+      // than leaving it permanently (and incorrectly) hidden.
+      setState(() => _dismissedIds.remove(id));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete notification: $e')),
+      );
+    }
   }
 }

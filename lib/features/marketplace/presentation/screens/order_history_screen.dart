@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-
 import '../providers/orders_provider.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
@@ -39,7 +38,10 @@ class OrderHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Orders')),
-      body: ordersAsync.when(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: ordersAsync.when(
         data: (orders) {
           if (orders.isEmpty) {
             return Center(
@@ -86,7 +88,7 @@ class OrderHistoryScreen extends ConsumerWidget {
                     ],
                   ),
                   trailing: const Icon(LucideIcons.chevronRight, size: 18),
-                  onTap: () => context.push('/marketplace/orders/${order.id}'),
+                  onTap: () => context.push('/campusmarket/orders/${order.id}'),
                 ),
               );
             },
@@ -94,6 +96,8 @@ class OrderHistoryScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Could not load orders: $e')),
+      ),
+        ),
       ),
     );
   }

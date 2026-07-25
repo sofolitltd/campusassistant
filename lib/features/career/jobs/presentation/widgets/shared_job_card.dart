@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../data/models/career_job.dart';
+import 'attachment_thumbnail.dart';
 
 /// A peer-shared Job card — visually distinct from an official CircularCard
 /// (poster name badge instead of a category chip) so it reads as
@@ -20,14 +21,12 @@ class SharedJobCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Icons.person_outline, color: theme.colorScheme.onSecondaryContainer),
+            AttachmentThumbnail(
+              attachmentUrls: job.attachmentUrls,
+              size: 44,
+              fallbackIcon: Icons.person_outline,
+              background: theme.colorScheme.secondaryContainer,
+              foreground: theme.colorScheme.onSecondaryContainer,
             ),
             const SizedBox(width: 12),
             Expanded(

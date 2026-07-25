@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '../../data/models/merchant.dart';
 import '../../data/models/product.dart';
@@ -144,7 +146,7 @@ class _AboutTab extends StatelessWidget {
               child: merchant.logoUrl.isNotEmpty
                   ? ClipOval(
                       child: Image.network(
-                        merchant.logoUrl,
+                        ApiEndpoints.resolveImageUrl(merchant.logoUrl),
                         fit: BoxFit.cover,
                         errorBuilder: (_, _, _) => Icon(LucideIcons.store, color: colors.primaryColor.withValues(alpha: 0.6)),
                       ),
@@ -295,24 +297,29 @@ class _ProductsTab extends ConsumerWidget {
             if (products.isEmpty) {
               return Center(child: Text('No products yet. Tap + to add one.', style: TextStyle(color: Colors.grey.shade500)));
             }
-            return GridView.builder(
-              padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 80),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.72,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, i) => _ProductCard(
-                product: products[i],
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => MerchantProductFormScreen(merchantId: merchantId, product: products[i]),
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final crossAxisCount = width >= 640 ? 4 : width >= 480 ? 3 : 2;
+                return MasonryGridView.builder(
+                  padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 80),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
                   ),
-                ),
-                onDelete: () => _confirmDelete(context, ref, products[i]),
-              ),
+                  itemCount: products.length,
+                  itemBuilder: (context, i) => _ProductCard(
+                    product: products[i],
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MerchantProductFormScreen(merchantId: merchantId, product: products[i]),
+                      ),
+                    ),
+                    onDelete: () => _confirmDelete(context, ref, products[i]),
+                  ),
+                );
+              },
             );
           },
           loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -365,7 +372,7 @@ class _ProductCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(RadiusToken.lg)),
                     child: imageUrl.isNotEmpty
                         ? Image.network(
-                            imageUrl,
+                            ApiEndpoints.resolveImageUrl(imageUrl),
                             fit: BoxFit.cover,
                             errorBuilder: (_, _, _) => Container(
                               color: Colors.grey.shade100,

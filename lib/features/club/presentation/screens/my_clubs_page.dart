@@ -24,7 +24,10 @@ class MyClubsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final clubsAsync = ref.watch(myClubsProvider);
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(title: const Text('My Clubs')),
       body: clubsAsync.when(
         data: (clubs) {
@@ -61,6 +64,8 @@ class MyClubsPage extends ConsumerWidget {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
+      ),
+        ),
       ),
     );
   }

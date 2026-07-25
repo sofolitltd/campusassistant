@@ -47,6 +47,20 @@ class FirebaseApi {
     importance: Importance.high,
   );
 
+  // Distinct, higher-priority channel for Type=="emergency" pushes (campus
+  // safety alerts) — kept separate from the general channel so it gets its
+  // own sound/vibration and can't be lumped in with (or muted alongside)
+  // routine notifications at the OS level. There's no emergency sender
+  // wired up server-side yet (see notification_preference.go's documented
+  // "emergency" mute-bypass), but the client is ready to render one
+  // distinctly the moment there is.
+  static const _emergencyChannel = AndroidNotificationChannel(
+    'emergency_channel',
+    'Emergency Alerts',
+    description: 'Campus safety and emergency alerts',
+    importance: Importance.max,
+  );
+
   String? _currentToken;
   bool _handlersRegistered = false;
 
@@ -159,12 +173,16 @@ class FirebaseApi {
         );
       },
     );
-    await _localNotifications
+    final androidPlugin = _localNotifications
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(_channel);
+        >();
+    await androidPlugin?.createNotificationChannel(_channel);
+    await androidPlugin?.createNotificationChannel(_emergencyChannel);
   }
+
+  bool _isEmergency(RemoteMessage message) =>
+      (message.data['type'] as String?)?.toLowerCase() == 'emergency';
 
   void _handleForegroundMessage(RemoteMessage message) async {
     final notification = message.notification;
@@ -188,15 +206,27 @@ class FirebaseApi {
       }
     }
 
+    final channel = _isEmergency(message) ? _emergencyChannel : _channel;
+
+    // Keyed off the server's stable notification_id (present in every push's
+    // data payload — see NotificationService.pushAsync) rather than
+    // RemoteNotification's own hashCode, so FCM redelivery of the same
+    // server event updates/replaces the existing tray entry instead of
+    // showing a second, duplicate one. Falls back to content hashCode only
+    // if a message somehow arrives without that field.
+    final stableId =
+        message.data['notification_id']?.hashCode ?? notification.hashCode;
+
     _localNotifications.show(
-      id: notification.hashCode,
+      id: stableId,
       title: notification.title,
       body: notification.body,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          _channel.id,
-          _channel.name,
-          channelDescription: _channel.description,
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          importance: channel.importance,
           icon: '@mipmap/ic_launcher',
           styleInformation: bigPictureStyle,
         ),
@@ -242,7 +272,15 @@ class FirebaseApi {
     if (context == null) return;
     final actionRoute = message?.data['action_route'] as String?;
     if (actionRoute != null && actionRoute.isNotEmpty) {
-      GoRouter.of(context).push(actionRoute);
+      // action_route is free text an admin can type into the compose form
+      // (see admin's notification create screen) — a typo'd or stale route
+      // must not crash navigation, just fall back to the inbox.
+      try {
+        GoRouter.of(context).push(actionRoute);
+      } catch (e) {
+        log('[FCM] failed to navigate to action_route "$actionRoute": $e');
+        GoRouter.of(context).push(AppRoute.notifications.path);
+      }
     } else if (message != null) {
       // No deep link on this notification — still take the user somewhere
       // relevant instead of leaving the tap looking like it did nothing.

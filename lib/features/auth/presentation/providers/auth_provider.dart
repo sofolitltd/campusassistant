@@ -119,8 +119,16 @@ class CurrentUser extends _$CurrentUser {
 
   Future<void> logout() async {
     state = const AsyncValue.loading();
-    await FirebaseApi().unregisterCurrentDevice();
+    // Clear the local session first and resolve immediately — the router
+    // and ProfilePage both watch this state, and gating it behind the
+    // network device-unregister call (below) used to leave the user
+    // staring at a half-loaded profile shell for as long as that request
+    // took (up to the 15s connect timeout on a bad connection). The
+    // unregister call is best-effort and already swallows its own errors
+    // (see FirebaseApi.unregisterCurrentDevice), so it's safe to fire it
+    // in the background instead of blocking logout on it.
     await _repository.logout();
     state = const AsyncValue.data(null);
+    unawaited(FirebaseApi().unregisterCurrentDevice());
   }
 }

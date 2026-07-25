@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/di.dart';
+import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/product.dart';
@@ -133,7 +134,10 @@ class _MerchantProductFormScreenState extends ConsumerState<MerchantProductFormS
 
     return Scaffold(
       appBar: AppBar(title: Text(_isEditing ? 'Edit Product' : 'Add Product')),
-      body: Form(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(Spacing.lg),
@@ -152,7 +156,7 @@ class _MerchantProductFormScreenState extends ConsumerState<MerchantProductFormS
                 child: _imageFile != null
                     ? Image.file(_imageFile!, fit: BoxFit.cover)
                     : existingImage != null
-                        ? Image.network(existingImage, fit: BoxFit.cover)
+                        ? Image.network(ApiEndpoints.resolveImageUrl(existingImage), fit: BoxFit.cover)
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -224,6 +228,8 @@ class _MerchantProductFormScreenState extends ConsumerState<MerchantProductFormS
             ),
           ],
         ),
+      ),
+      ),
       ),
     );
   }

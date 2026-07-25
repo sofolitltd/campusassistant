@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 import '/routes/app_route.dart';
 import '../../data/models/product.dart';
 import '../providers/marketplace_provider.dart';
@@ -20,7 +22,10 @@ class MerchantProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Merchant')),
-      body: merchantAsync.when(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: merchantAsync.when(
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => const Center(child: Text('Could not load this merchant.')),
         data: (merchant) => CustomScrollView(
@@ -33,7 +38,7 @@ class MerchantProfileScreen extends ConsumerWidget {
                     CircleAvatar(
                       radius: 32,
                       backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-                      backgroundImage: merchant.logoUrl.isNotEmpty ? NetworkImage(merchant.logoUrl) : null,
+                      backgroundImage: merchant.logoUrl.isNotEmpty ? NetworkImage(ApiEndpoints.resolveImageUrl(merchant.logoUrl)) : null,
                       child: merchant.logoUrl.isEmpty
                           ? Icon(LucideIcons.store, color: Theme.of(context).colorScheme.primary)
                           : null,
@@ -105,23 +110,26 @@ class MerchantProfileScreen extends ConsumerWidget {
                 }
                 return SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.72,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, i) => _MerchantProductCard(product: products[i]),
-                      childCount: products.length,
-                    ),
+                  sliver: SliverLayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.crossAxisExtent;
+                      final crossAxisCount = width >= 640 ? 4 : width >= 480 ? 3 : 2;
+                      return SliverMasonryGrid.count(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childCount: products.length,
+                        itemBuilder: (context, i) => _MerchantProductCard(product: products[i]),
+                      );
+                    },
                   ),
                 );
               },
             ),
           ],
         ),
+      ),
+      ),
       ),
     );
   }
@@ -156,9 +164,9 @@ class _MerchantProductCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(RadiusToken.lg)),
                 child: SizedBox(
                   width: double.infinity,
-                  child: imageUrl.isNotEmpty
-                      ? Image.network(
-                          imageUrl,
+child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        ApiEndpoints.resolveImageUrl(imageUrl),
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Container(
                             color: Colors.grey.shade100,

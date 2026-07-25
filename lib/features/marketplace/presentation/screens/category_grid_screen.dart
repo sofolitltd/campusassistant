@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/tokens/app_radius.dart';
+import '/core/network/api_endpoints.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/category.dart';
 import '../providers/marketplace_provider.dart';
@@ -16,27 +18,35 @@ class CategoryGridScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesListProvider);
 
-    return categoriesAsync.when(
-      data: (categories) {
-        if (categories.isEmpty) {
-          return const Center(child: Text('No categories yet.'));
-        }
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Categories')),
+      body: categoriesAsync.when(
+        data: (categories) {
+          if (categories.isEmpty) {
+            return const Center(child: Text('No categories yet.'));
+          }
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final crossAxisCount = width >= 640 ? 4 : width >= 480 ? 3 : 2;
+                return MasonryGridView.builder(
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, i) => _CategoryCard(category: categories[i]),
+                );
+              },
             ),
-            itemCount: categories.length,
-            itemBuilder: (context, i) => _CategoryCard(category: categories[i]),
-          ),
-        );
-      },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
-      error: (e, _) => Center(child: Text('Could not load categories: $e')),
+          );
+        },
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (e, _) => Center(child: Text('Could not load categories: $e')),
+      ),
     );
   }
 }
@@ -56,7 +66,7 @@ class _CategoryCard extends ConsumerWidget {
       onTap: () {
         if (user != null) {
           context.push(
-            '/marketplace/category/${category.id}',
+            '/campusmarket/category/${category.id}',
             extra: {
               'category': category,
               'universityId': user.university,
@@ -81,7 +91,7 @@ class _CategoryCard extends ConsumerWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  category.imageUrl,
+                  ApiEndpoints.resolveImageUrl(category.imageUrl),
                   width: 48,
                   height: 48,
                   fit: BoxFit.cover,

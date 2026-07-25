@@ -23,7 +23,10 @@ class LostFoundDetailScreen extends ConsumerWidget {
     final itemAsync = ref.watch(lostFoundItemDetailProvider(itemId));
     final currentUser = ref.watch(currentUserProvider).value;
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(
         title: const Text('Item Details'),
         actions: [
@@ -125,6 +128,8 @@ class LostFoundDetailScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Failed to load item: $err')),
+      ),
+        ),
       ),
     );
   }

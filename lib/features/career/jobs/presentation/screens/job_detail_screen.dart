@@ -101,7 +101,10 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
         if (job == null) {
           return const Scaffold(body: Center(child: Text('Job not found')));
         }
-        return Scaffold(
+        return Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
             title: const Text('Job Details'),
@@ -318,6 +321,8 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                   ],
                 ),
               ),
+            ),
+          ),
             ),
           ),
         );

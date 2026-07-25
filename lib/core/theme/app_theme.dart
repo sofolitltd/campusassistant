@@ -76,7 +76,7 @@ ThemeData buildLightTheme() {
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
         foregroundColor: colors.primaryColor,
-        side: BorderSide(color: colorScheme.outline),
+        side: BorderSide(color: colors.primaryColor),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,
@@ -302,7 +302,7 @@ ThemeData buildDarkTheme() {
         minimumSize: const Size(48, 48),
         visualDensity: VisualDensity.compact,
         foregroundColor: colors.primaryColor,
-        side: const BorderSide(color: Color(0xFF333333)),
+        side: BorderSide(color: colors.primaryColor),
         textStyle: TextStyle(
           fontFamily: _outfitTextTheme.labelLarge?.fontFamily,
           fontWeight: FontWeight.w500,

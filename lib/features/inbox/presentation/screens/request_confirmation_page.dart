@@ -29,7 +29,10 @@ class RequestConfirmationPage extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final messagesAsync = ref.watch(messagesProvider(conversationId));
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       backgroundColor: isDark ? const Color(0xFF111B21) : Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
@@ -213,6 +216,8 @@ class RequestConfirmationPage extends ConsumerWidget {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
+      ),
+        ),
       ),
     );
   }

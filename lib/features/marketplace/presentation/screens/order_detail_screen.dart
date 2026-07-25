@@ -15,7 +15,10 @@ class OrderDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Order Details')),
-      body: orderAsync.when(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: orderAsync.when(
         data: (order) {
           final stages = ['pending_payment', 'paid', 'processing', 'shipped', 'delivered'];
           final currentIdx = stages.indexOf(order.status);
@@ -154,6 +157,8 @@ class OrderDetailScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Could not load order: $e')),
+      ),
+        ),
       ),
     );
   }

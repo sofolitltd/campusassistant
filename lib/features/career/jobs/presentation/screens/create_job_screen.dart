@@ -214,7 +214,10 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text('Add Job Post')),
       body: Stack(
         children: [
@@ -415,6 +418,8 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
           ),
           if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
         ],
+      ),
+        ),
       ),
     );
   }

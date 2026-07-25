@@ -26,22 +26,27 @@ class _MarketplaceShellState extends ConsumerState<MarketplaceShell> {
     final cartItems = ref.watch(cartProvider);
     final cartCount = cartItems.fold(0, (int sum, CartItem item) => sum + item.quantity);
 
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          _buildTab(0, const MarketplaceHomeScreen()),
-          _buildTab(1, const CategoryGridScreen()),
-          _buildTab(2, const CartScreen()),
-          _buildTab(3, const AccountTab()),
-        ],
-      ),
-      bottomNavigationBar: _BlurryMarketplaceNavBar(
-        currentIndex: _currentIndex,
-        cartCount: cartCount,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-        },
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
+          body: IndexedStack(
+            index: _currentIndex,
+            children: [
+              _buildTab(0, const MarketplaceHomeScreen()),
+              _buildTab(1, const CategoryGridScreen()),
+              _buildTab(2, const CartScreen()),
+              _buildTab(3, const AccountTab()),
+            ],
+          ),
+          bottomNavigationBar: _BlurryMarketplaceNavBar(
+            currentIndex: _currentIndex,
+            cartCount: cartCount,
+            onDestinationSelected: (index) {
+              setState(() => _currentIndex = index);
+            },
+          ),
+        ),
       ),
     );
   }

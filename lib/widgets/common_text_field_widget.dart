@@ -17,6 +17,7 @@ class CommonTextFieldWidget extends StatefulWidget {
     this.focusNode,
     this.textInputAction,
     this.onFieldSubmitted,
+    this.autofillHints,
   });
 
   final TextEditingController controller;
@@ -31,6 +32,7 @@ class CommonTextFieldWidget extends StatefulWidget {
   final FocusNode? focusNode;
   final TextInputAction? textInputAction;
   final Function(String)? onFieldSubmitted;
+  final Iterable<String>? autofillHints;
 
   @override
   State<CommonTextFieldWidget> createState() => _CommonTextFieldWidgetState();
@@ -70,6 +72,7 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
               ? TextCapitalization.none
               : widget.textCapitalization!,
           obscureText: _obscureText!,
+          autofillHints: widget.autofillHints,
           validator: (value) => widget.validator(value),
           style: TextStyle(color: widget.enabled! ? null : cs.onSurfaceVariant),
           decoration: InputDecoration(

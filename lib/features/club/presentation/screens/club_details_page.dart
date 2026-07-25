@@ -502,7 +502,7 @@ class _MembersTab extends ConsumerWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          child: FilledButton.icon(
+          child: ElevatedButton.icon(
             onPressed: memberPending ? null : onToggleMembership,
             icon: Icon(isMember ? Icons.check_circle : Icons.group_add, size: 18),
             label: Text(isMember ? 'Joined' : 'Join Club'),

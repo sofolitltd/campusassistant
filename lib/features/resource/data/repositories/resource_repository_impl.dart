@@ -258,6 +258,53 @@ class ResourceRepositoryImpl implements ResourceRepository {
     );
   }
 
+  @override
+  Future<void> recordView(String id) async {
+    if (!connectivity.isConnected) return;
+    try {
+      await apiClient.post('/resources/$id/view');
+    } catch (e) {
+      debugPrint('[ResourceRepo] recordView failed (non-fatal): $e');
+    }
+  }
+
+  @override
+  Future<void> recordDownload(String id) async {
+    if (!connectivity.isConnected) return;
+    try {
+      await apiClient.post('/resources/$id/download');
+    } catch (e) {
+      debugPrint('[ResourceRepo] recordDownload failed (non-fatal): $e');
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResourceRatingResult>> rateResource(
+    String id,
+    int rating,
+  ) async {
+    if (!connectivity.isConnected) {
+      return const Left(NetworkFailure('Rating requires internet connection'));
+    }
+    try {
+      final response = await apiClient.post(
+        '/resources/$id/rate',
+        data: {'rating': rating},
+      );
+      final data = response.data as Map<String, dynamic>;
+      return Right(
+        ResourceRatingResult(
+          ratingAvg: (data['rating_avg'] as num).toDouble(),
+          ratingCount: data['rating_count'] as int,
+          yourRating: data['your_rating'] as int,
+        ),
+      );
+    } catch (e) {
+      debugPrint('[ResourceRepo] rateResource failed: $e');
+      return Left(ServerFailure('Failed to submit rating'));
+    }
+  }
+
   String _buildCacheKey({
     required String universityId,
     required String departmentId,

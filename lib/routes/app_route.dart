@@ -173,47 +173,51 @@ class AppRoute {
   //// marketplace ////
   static const marketplace = AppRoute(
     name: 'marketplace',
-    path: '/marketplace',
+    path: '/campusmarket',
   );
   static const marketplaceProductDetails = AppRoute(
     name: 'marketplaceProductDetails',
-    path: '/marketplace/:productId',
+    path: '/campusmarket/:productId',
   );
   static const marketplaceCategoryProducts = AppRoute(
     name: 'marketplaceCategoryProducts',
-    path: '/marketplace/category/:categoryId',
+    path: '/campusmarket/category/:categoryId',
   );
   static const marketplaceCart = AppRoute(
     name: 'marketplaceCart',
-    path: '/marketplace/cart',
+    path: '/campusmarket/cart',
   );
   static const marketplaceMerchantProfile = AppRoute(
     name: 'marketplaceMerchantProfile',
-    path: '/marketplace/merchant/:merchantId',
+    path: '/campusmarket/merchant/:merchantId',
+  );
+  static const marketplaceInfo = AppRoute(
+    name: 'marketplaceInfo',
+    path: '/campusmarket/info',
   );
   static const marketplaceCheckout = AppRoute(
     name: 'marketplaceCheckout',
-    path: '/marketplace/checkout',
+    path: '/campusmarket/checkout',
   );
   static const marketplaceOrders = AppRoute(
     name: 'marketplaceOrders',
-    path: '/marketplace/orders',
+    path: '/campusmarket/orders',
   );
   static const marketplaceOrderDetails = AppRoute(
     name: 'marketplaceOrderDetails',
-    path: '/marketplace/orders/:orderId',
+    path: '/campusmarket/orders/:orderId',
   );
   static const marketplaceAddresses = AppRoute(
     name: 'marketplaceAddresses',
-    path: '/marketplace/addresses',
+    path: '/campusmarket/addresses',
   );
   static const marketplaceAddressForm = AppRoute(
     name: 'marketplaceAddressForm',
-    path: '/marketplace/addresses/add',
+    path: '/campusmarket/addresses/add',
   );
   static const marketplaceAddressEdit = AppRoute(
     name: 'marketplaceAddressEdit',
-    path: '/marketplace/addresses/edit/:addressId',
+    path: '/campusmarket/addresses/edit/:addressId',
   );
   static const merchantApply = AppRoute(
     name: 'merchantApply',
@@ -261,6 +265,9 @@ class AppRoute {
     path: '/contributors',
   );
 
+  //onboarding
+  static const onboarding = AppRoute(name: 'onboarding', path: '/onboarding');
+
   //login
   static const login = AppRoute(name: 'login', path: '/login');
 
@@ -275,6 +282,10 @@ class AppRoute {
     path: 'change-password',
   );
   static const manageDevices = AppRoute(name: 'manageDevices', path: 'devices');
+  static const notificationSettings = AppRoute(
+    name: 'notificationSettings',
+    path: 'notification-settings',
+  );
 
   //register
   static const verification = AppRoute(

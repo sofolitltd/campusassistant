@@ -17,7 +17,10 @@ class CartScreen extends ConsumerWidget {
     final totalAmount = ref.read(cartProvider.notifier).totalAmount;
 
     if (cartItems.isEmpty) {
-      return Scaffold(
+      return Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Scaffold(
         appBar: AppBar(title: const Text('Cart')),
         body: Center(
           child: Column(
@@ -31,6 +34,8 @@ class CartScreen extends ConsumerWidget {
             ],
           ),
         ),
+          ),
+        ),
       );
     }
 
@@ -39,7 +44,10 @@ class CartScreen extends ConsumerWidget {
       groupedByMerchant.putIfAbsent(item.product.merchantId, () => []).add(item);
     }
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(title: const Text('Cart')),
       body: ListView(
         shrinkWrap: true,
@@ -90,6 +98,8 @@ class CartScreen extends ConsumerWidget {
         ),
       ),
     
+        ),
+      ),
     );
   }
 }

@@ -147,7 +147,10 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text('Edit Job Entry')),
       body: Stack(
         children: [
@@ -222,6 +225,8 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
           ),
           if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
         ],
+      ),
+        ),
       ),
     );
   }

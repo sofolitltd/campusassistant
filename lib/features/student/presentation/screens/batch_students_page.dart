@@ -22,7 +22,10 @@ class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
   Widget build(BuildContext context) {
     final studentsAsync = ref.watch(studentsByBatchProvider(widget.batch));
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(
         title: Text(widget.batch),
         titleSpacing: 0,
@@ -94,6 +97,8 @@ class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, st) => Center(child: Text('Error: $e')),
+      ),
+        ),
       ),
     );
   }

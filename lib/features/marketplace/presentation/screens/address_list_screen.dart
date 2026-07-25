@@ -24,7 +24,10 @@ class AddressListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: addressesAsync.when(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: addressesAsync.when(
         data: (addresses) {
           if (addresses.isEmpty) {
             return Center(
@@ -98,7 +101,7 @@ class AddressListScreen extends ConsumerWidget {
                           IconButton(
                             icon: Icon(LucideIcons.pencil, size: 18, color: Colors.grey.shade400),
                             onPressed: () => context.push(
-                              '/marketplace/addresses/edit/${address.id}',
+                              '/campusmarket/addresses/edit/${address.id}',
                               extra: address,
                             ).then((_) => ref.invalidate(addressesProvider)),
                           ),
@@ -133,6 +136,8 @@ class AddressListScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Could not load addresses: $e')),
+      ),
+        ),
       ),
     );
   }

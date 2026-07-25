@@ -77,15 +77,15 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       extendBodyBehindAppBar: true,
       appBar: _showAppBar
           ? AppBar(
-              titleSpacing: 0,
-              backgroundColor: Colors.white.withValues(alpha: 0.95),
-              surfaceTintColor: Colors.white,
               title: Text(
                 widget.title,
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold,
+                color: Colors.white,
+                ),
               ),
+              
               actions: [
                 IconButton(
                   icon: Icon(

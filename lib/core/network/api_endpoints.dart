@@ -97,6 +97,11 @@ class ApiEndpoints {
   static const String notificationsReadAll = '/notifications/read-all';
   static String notificationDetail(String id) => '/notifications/$id';
 
+  // Notification preferences (per-category mute)
+  static const String notificationPreferences = '/my/notification-preferences';
+  static String notificationPreferenceDetail(String category) =>
+      '/my/notification-preferences/$category';
+
   // Devices (FCM push tokens)
   static const String devices = '/devices';
   static const String devicesUnregister = '/devices/unregister';

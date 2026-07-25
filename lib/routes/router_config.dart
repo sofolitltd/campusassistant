@@ -82,6 +82,7 @@ import '/features/marketplace/presentation/screens/address_list_screen.dart';
 import '/features/marketplace/presentation/screens/address_form_screen.dart';
 import '/features/marketplace/presentation/screens/cart_screen.dart';
 import '/features/marketplace/presentation/screens/merchant_profile_screen.dart';
+import '/features/marketplace/presentation/screens/marketplace_info_screen.dart';
 import '/features/marketplace/data/models/category.dart';
 import '/features/resource/presentation/screens/add_edit_resource_screen.dart';
 import '/widgets/image_viewer.dart';
@@ -91,6 +92,7 @@ import '/features/profile/presentation/screens/change_password.dart';
 import '/features/profile/presentation/screens/downloaded_files_page.dart';
 import '/features/profile/presentation/screens/edit_profile_page.dart';
 import '/features/profile/presentation/screens/manage_devices_page.dart';
+import '/features/profile/presentation/screens/notification_settings_page.dart';
 import '/features/profile/presentation/screens/my_submissions_page.dart';
 import '/features/profile/presentation/screens/profile_page.dart';
 import '/features/developer/presentation/screens/developer_page.dart';
@@ -100,6 +102,8 @@ import '/features/notification/presentation/screens/notification_screen.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/auth/presentation/screens/new_splash_screen.dart';
+import '/features/onboarding/presentation/providers/onboarding_provider.dart';
+import '/features/onboarding/presentation/screens/onboarding_screen.dart';
 import '/features/cache/presentation/cache_management_page.dart';
 import 'app_route.dart';
 import 'scaffold_with_navbar.dart';
@@ -111,6 +115,7 @@ class RouterNotifier extends ChangeNotifier {
 
   RouterNotifier(this._ref) {
     _ref.listen(currentUserProvider, (_, _) => notifyListeners());
+    _ref.listen(onboardingSeenProvider, (_, _) => notifyListeners());
   }
 }
 
@@ -128,19 +133,39 @@ final routerProvider = Provider<GoRouter>((ref) {
       final bool isLoggedIn = userAsync.value != null;
       final bool isLoading = userAsync.isLoading || userAsync.isRefreshing;
       final bool hasError = userAsync.hasError;
+
+      final onboardingAsync = ref.read(onboardingSeenProvider);
+      final bool isOnboardingResolving =
+          onboardingAsync.isLoading || onboardingAsync.isRefreshing;
+      // Default to "seen" on error so a storage hiccup never traps a
+      // returning user on the onboarding screen forever.
+      final bool hasSeenOnboarding = onboardingAsync.value ?? true;
+
       final matchedLocation = state.matchedLocation;
 
-      // ── Splash screen: wait for auth resolution ──
+      // ── Splash screen: wait for auth + onboarding resolution ──
       if (matchedLocation == '/splash') {
-        if (isLoading || hasError) {
-          return null; // stay on splash while checking auth or on network error
+        if (isLoading || hasError || isOnboardingResolving) {
+          return null; // stay on splash while checking state or on network error
         }
+        if (!hasSeenOnboarding) return AppRoute.onboarding.path;
         if (!isLoggedIn) return AppRoute.login.path;
         return AppRoute.home.path; // logged in → go to home
       }
 
-      // ── During auth loading on any other route, just wait ──
-      if (isLoading || hasError) return null;
+      // ── During auth/onboarding loading on any other route, just wait ──
+      if (isLoading || hasError || isOnboardingResolving) return null;
+
+      // ── First launch: force onboarding before anything else ──
+      if (!hasSeenOnboarding) {
+        return matchedLocation == AppRoute.onboarding.path
+            ? null
+            : AppRoute.onboarding.path;
+      }
+      if (matchedLocation == AppRoute.onboarding.path) {
+        // Onboarding already seen — don't allow navigating back to it.
+        return isLoggedIn ? AppRoute.home.path : AppRoute.login.path;
+      }
 
       final isGuestRoute =
           matchedLocation == AppRoute.login.path ||
@@ -169,6 +194,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: NewSplashScreen()),
+      ),
+      GoRoute(
+        name: AppRoute.onboarding.name,
+        path: AppRoute.onboarding.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: OnboardingScreen()),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -319,6 +351,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: AppRoute.manageDevices.path,
                     pageBuilder: (context, state) =>
                         const NoTransitionPage(child: ManageDevicesPage()),
+                  ),
+                  GoRoute(
+                    name: AppRoute.notificationSettings.name,
+                    path: AppRoute.notificationSettings.path,
+                    pageBuilder: (context, state) => const NoTransitionPage(
+                      child: NotificationSettingsPage(),
+                    ),
                   ),
                   GoRoute(
                     name: AppRoute.mySubmissions.name,
@@ -864,7 +903,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.lostFound.name,
         path: AppRoute.lostFound.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const LostFoundPage(),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: LostFoundPage(),
+        ),
       ),
       // NOTE: static /lost-found/create must be registered before the
       // dynamic /lost-found/:itemId route below — go_router matches routes
@@ -873,15 +914,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.lostFoundCreate.name,
         path: AppRoute.lostFoundCreate.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const CreateLostFoundScreen(),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: CreateLostFoundScreen(),
+        ),
       ),
       GoRoute(
         name: AppRoute.lostFoundItemDetails.name,
         path: AppRoute.lostFoundItemDetails.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final itemId = state.pathParameters['itemId']!;
-          return LostFoundDetailScreen(itemId: itemId);
+          return NoTransitionPage(
+            child: LostFoundDetailScreen(itemId: itemId),
+          );
         },
       ),
       // NOTE: static /career/jobs/create must be registered before the
@@ -926,10 +971,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const MarketplaceShell(),
       ),
-      // NOTE: static /marketplace/* routes must be registered before the
-      // dynamic /marketplace/:productId route below — go_router matches
-      // routes in declaration order, and :productId would otherwise swallow
-      // literal paths like /marketplace/checkout.
+      // NOTE: static /campusmarket/* routes must be registered before the
+      // dynamic /campusmarket/:productId route below — go_router matches
+      // routes top-to-bottom and /campusmarket/:productId would match
+      // literal paths like /campusmarket/checkout.
       GoRoute(
         name: AppRoute.merchantApply.name,
         path: AppRoute.merchantApply.path,
@@ -955,6 +1000,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           final categoryId = state.pathParameters['categoryId'] ?? category?.id;
           return ProductListScreen(category: category, categoryId: categoryId);
         },
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceInfo.name,
+        path: AppRoute.marketplaceInfo.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const MarketplaceInfoScreen(),
       ),
       GoRoute(
         name: AppRoute.marketplaceCart.name,
@@ -1017,9 +1068,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.marketplaceProductDetails.name,
         path: AppRoute.marketplaceProductDetails.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final product = state.extra as Product?;
-          return ProductDetailScreen(product: product);
+          return NoTransitionPage(
+            child: ProductDetailScreen(product: product),
+          );
         },
       ),
       GoRoute(

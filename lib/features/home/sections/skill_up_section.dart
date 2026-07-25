@@ -9,6 +9,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/skill/data/models/skill.dart';
 import '/features/skill/presentation/providers/skill_provider.dart';
+import '/core/network/api_endpoints.dart';
 import '/routes/app_route.dart';
 
 class SkillUpSection extends ConsumerWidget {
@@ -110,7 +111,7 @@ class _SkillCard extends StatelessWidget {
                 width: double.infinity,
                 child: skill.thumbnailUrl.isNotEmpty
                     ? Image.network(
-                        skill.thumbnailUrl,
+                        ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: Colors.grey.shade100,

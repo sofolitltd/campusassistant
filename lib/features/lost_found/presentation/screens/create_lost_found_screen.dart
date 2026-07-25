@@ -83,7 +83,10 @@ class _CreateLostFoundScreenState extends ConsumerState<CreateLostFoundScreen> {
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(lostFoundCategoriesProvider);
 
-    return Scaffold(
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Scaffold(
       appBar: AppBar(title: const Text('Post a Lost/Found Item')),
       body: Form(
         key: _formKey,
@@ -186,6 +189,8 @@ class _CreateLostFoundScreenState extends ConsumerState<CreateLostFoundScreen> {
                   : const Text('Post'),
             ),
           ],
+        ),
+      ),
         ),
       ),
     );

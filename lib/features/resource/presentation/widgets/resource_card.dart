@@ -27,6 +27,7 @@ import '/core/theme/app_colors.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/features/resource/presentation/providers/downloads_provider.dart';
+import '/features/resource/presentation/providers/resource_provider.dart';
 import 'resource_info_sheet.dart';
 
 class ResourceCard extends ConsumerStatefulWidget {
@@ -627,8 +628,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     // local download step needed or possible.
     if (kIsWeb) {
       if (mounted) {
-        Navigator.push(
-          context,
+        ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
+        Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => PdfViewerPage(
               filePath: '',
@@ -644,8 +645,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     if (!_isDownloaded) await _downloadIfNeeded();
     if (_isDownloaded && _localPath.isNotEmpty) {
       if (mounted) {
-        Navigator.push(
-          context,
+        ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
+        Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => PdfViewerPage(
               filePath: _localPath,
@@ -702,6 +703,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           cacheManager: cacheManager,
           resource: widget.resource,
         );
+        ref.read(resourceRepositoryProvider).recordDownload(widget.resource.id);
       }
       return true;
     } catch (e) {

@@ -6,7 +6,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
-import '/core/theme/app_colors.dart';
 
 class AccountSection extends ConsumerWidget {
   const AccountSection({super.key});
@@ -21,12 +20,12 @@ class AccountSection extends ConsumerWidget {
         onTap: () => _showLogoutBottomSheet(context, ref),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Colors.red.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(RadiusToken.lg),
             border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
+              color: isDark ? Colors.white10 : Colors.red.shade200,
             ),
           ),
           child: Row(
@@ -35,18 +34,14 @@ class AccountSection extends ConsumerWidget {
               Text(
                 'LOGOUT',
                 style: TextStyle(
-                  color: Theme.of(context).appColors.primaryColor,
+                  color: Colors.red,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(width: 8),
-              Icon(
-                LucideIcons.logOut,
-                color: Theme.of(context).appColors.primaryColor,
-                size: 18,
-              ),
+              const SizedBox(width: 10),
+              Icon(LucideIcons.logOut, color: Colors.red, size: 16),
             ],
           ),
         ),

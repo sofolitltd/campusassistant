@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
+import '/features/resource/presentation/providers/resource_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
-class ResourceInfoSheet extends ConsumerWidget {
+class ResourceInfoSheet extends ConsumerStatefulWidget {
   final Resource resource;
   final ScrollController scrollController;
 
@@ -19,7 +21,43 @@ class ResourceInfoSheet extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ResourceInfoSheet> createState() => _ResourceInfoSheetState();
+}
+
+class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
+  late double _ratingAvg = widget.resource.ratingAvg;
+  late int _ratingCount = widget.resource.ratingCount;
+  int? _yourRating;
+  bool _submittingRating = false;
+
+  Future<void> _submitRating(int stars) async {
+    if (_submittingRating) return;
+    setState(() => _submittingRating = true);
+
+    final result = await ref
+        .read(resourceRepositoryProvider)
+        .rateResource(widget.resource.id, stars);
+
+    if (!mounted) return;
+    result.fold(
+      (failure) {
+        Fluttertoast.showToast(msg: 'Failed to submit rating');
+      },
+      (r) {
+        setState(() {
+          _ratingAvg = r.ratingAvg;
+          _ratingCount = r.ratingCount;
+          _yourRating = r.yourRating;
+        });
+      },
+    );
+    setState(() => _submittingRating = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final resource = widget.resource;
+    final scrollController = widget.scrollController;
     final batchesAsync = ref.watch(
       batchesByDepartmentProvider(resource.departmentId),
     );
@@ -54,7 +92,9 @@ class ResourceInfoSheet extends ConsumerWidget {
     // Stats
     final downloads = resource.downloadCount.toString();
     final views = resource.viewCount.toString();
-    final ratingAvg = resource.ratingAvg.toStringAsFixed(1);
+    final ratingAvg = _ratingCount > 0
+        ? '${_ratingAvg.toStringAsFixed(1)} ($_ratingCount)'
+        : 'No ratings yet';
     final pageCount = resource.pageCount.toString();
 
     String fileSizeStr = '--';
@@ -237,6 +277,25 @@ class ResourceInfoSheet extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           _buildStatCard(LucideIcons.star, 'Rating', ratingAvg),
+
+          const SizedBox(height: Spacing.lg),
+          _buildSectionTitle(context, 'Rate This Resource'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (i) {
+              final starValue = i + 1;
+              final filled = _yourRating != null && starValue <= _yourRating!;
+              return IconButton(
+                onPressed: _submittingRating
+                    ? null
+                    : () => _submitRating(starValue),
+                icon: Icon(
+                  filled ? Icons.star : Icons.star_border,
+                  color: filled ? Colors.amber : Colors.grey.shade400,
+                ),
+              );
+            }),
+          ),
 
           const SizedBox(height: 32),
         ],

@@ -57,6 +57,13 @@ class AccountTab extends ConsumerWidget {
               onTap: () => context.push(AppRoute.merchantApply.path),
             ),
           ),
+          const SizedBox(height: 8),
+          _ListTile(
+            icon: LucideIcons.store,
+            title: 'About Campus Market',
+            subtitle: 'Learn how it works, payments, and more',
+            onTap: () => context.pushNamed(AppRoute.marketplaceInfo.name),
+          ),
         ],
       ),
     );

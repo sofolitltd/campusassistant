@@ -33,6 +33,8 @@ import '/features/notice/presentation/screens/department_notices_page.dart';
 import '/features/emergency/presentation/screens/emergency_page.dart';
 import '/features/home/home_page.dart';
 import '/features/routine/presentation/screens/routine_page.dart';
+import '/features/search/presentation/screens/search_page.dart';
+import '/features/staff/presentation/screens/staff_details_screen.dart';
 import '/features/staff/presentation/screens/staff_page.dart';
 import '/features/student/presentation/screens/all_students_page.dart';
 import '/features/student/presentation/screens/batch_students_page.dart';
@@ -740,6 +742,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: StaffPage()),
+        routes: [
+          GoRoute(
+            path: 'details',
+            pageBuilder: (context, state) {
+              final id = state.uri.queryParameters['id']!;
+              return NoTransitionPage(
+                child: StaffDetailsScreen(staffId: id),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         name: AppRoute.library.name,
@@ -768,6 +781,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: ResearchPage()),
+      ),
+      GoRoute(
+        name: AppRoute.search.name,
+        path: AppRoute.search.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: SearchPage()),
       ),
       GoRoute(
         name: AppRoute.notifications.name,
@@ -896,7 +916,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final skill = state.extra as Skill?;
-          return SkillDetailsPage(skill: skill);
+          final skillId = state.pathParameters['skillId'];
+          return SkillDetailsPage(skill: skill, skillId: skillId);
         },
       ),
       GoRoute(

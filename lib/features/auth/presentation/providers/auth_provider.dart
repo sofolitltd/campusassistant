@@ -57,7 +57,11 @@ bool _isNetworkError(Failure f) => f is NetworkFailure;
 
 @Riverpod(keepAlive: true)
 class CurrentUser extends _$CurrentUser {
-  late final AuthRepository _repository;
+  // Not `late final`: a notifier's build() re-runs on the same instance when
+  // this provider is invalidated (e.g. after editing the profile), so the
+  // field is reassigned each build — `final` would throw
+  // LateInitializationError ("already initialized") on that second run.
+  late AuthRepository _repository;
 
   @override
   Future<User?> build() async {

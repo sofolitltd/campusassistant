@@ -1,9 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config/env.dart';
 
 /// Ad unit / app IDs for AdMob. Every getter here defaults to Google's
 /// official PUBLIC TEST IDs — safe to build and run with, never counted as
 /// real impressions/clicks. A real ID is only used if the matching ADMOB_*
-/// key is explicitly set in `.env`.
+/// key is explicitly set in `env.json` (see `BUILD_AND_DEPLOY.md`).
 ///
 /// Never hardcode a production ad unit ID here, and never interact with
 /// (tap/click) real ads on your own devices once production IDs are set —
@@ -18,12 +18,13 @@ class AdConfig {
       'ca-app-pub-3940256099942544/5224354917';
 
   static String get androidAppId =>
-      dotenv.env['ADMOB_ANDROID_APP_ID'] ?? _testAndroidAppId;
+      Env.admobAndroidAppId.isNotEmpty ? Env.admobAndroidAppId : _testAndroidAppId;
 
-  static String get bannerAdUnitId =>
-      dotenv.env['ADMOB_BANNER_AD_UNIT_ID_ANDROID'] ?? _testAndroidBannerUnitId;
+  static String get bannerAdUnitId => Env.admobBannerAdUnitIdAndroid.isNotEmpty
+      ? Env.admobBannerAdUnitIdAndroid
+      : _testAndroidBannerUnitId;
 
-  static String get rewardedAdUnitId =>
-      dotenv.env['ADMOB_REWARDED_AD_UNIT_ID_ANDROID'] ??
-      _testAndroidRewardedUnitId;
+  static String get rewardedAdUnitId => Env.admobRewardedAdUnitIdAndroid.isNotEmpty
+      ? Env.admobRewardedAdUnitIdAndroid
+      : _testAndroidRewardedUnitId;
 }

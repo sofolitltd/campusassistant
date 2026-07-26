@@ -15,6 +15,12 @@ class CustomHeaderLayout extends StatelessWidget {
   final Widget? searchTrailing;
   final bool showSearchBar;
   final Widget? bottomBar;
+  // Optional: when provided, an (X) clear button replaces [searchTrailing]
+  // whenever the field has text, clearing the controller and calling
+  // [onClear] (falling back to `onSearchChanged('')`). Omitted by every
+  // pre-existing caller, so behavior for them is unchanged.
+  final TextEditingController? controller;
+  final VoidCallback? onClear;
 
   const CustomHeaderLayout({
     super.key,
@@ -30,6 +36,8 @@ class CustomHeaderLayout extends StatelessWidget {
     this.searchTrailing,
     this.showSearchBar = true,
     this.bottomBar,
+    this.controller,
+    this.onClear,
   });
 
   @override
@@ -86,6 +94,7 @@ class CustomHeaderLayout extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: TextField(
+                              controller: controller,
                               onChanged: onSearchChanged,
                               style: const TextStyle(color: Colors.black87),
                               decoration: InputDecoration(
@@ -99,7 +108,32 @@ class CustomHeaderLayout extends StatelessWidget {
                                   color: Colors.grey.shade400,
                                   size: 20,
                                 ),
-                                suffixIcon: searchTrailing,
+                                suffixIcon: controller == null
+                                    ? searchTrailing
+                                    : ValueListenableBuilder<TextEditingValue>(
+                                        valueListenable: controller!,
+                                        builder: (context, value, _) {
+                                          if (value.text.isEmpty) {
+                                            return searchTrailing ??
+                                                const SizedBox.shrink();
+                                          }
+                                          return IconButton(
+                                            icon: Icon(
+                                              LucideIcons.x,
+                                              color: Colors.grey.shade400,
+                                              size: 18,
+                                            ),
+                                            onPressed: () {
+                                              controller!.clear();
+                                              if (onClear != null) {
+                                                onClear!();
+                                              } else {
+                                                onSearchChanged?.call('');
+                                              }
+                                            },
+                                          );
+                                        },
+                                      ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,

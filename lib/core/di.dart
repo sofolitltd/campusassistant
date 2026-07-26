@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'config/env.dart';
 import 'network/api_client.dart';
 import 'network/api_endpoints.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
@@ -10,6 +10,7 @@ import '../features/career/jobs/data/repositories/career_job_repository.dart';
 import '../features/career/reminders/data/repositories/career_reminder_repository.dart';
 import '../features/community/data/repositories/community_repository.dart';
 import '../features/lost_found/data/repositories/lost_found_repository.dart';
+import '../features/search/data/repositories/search_repository.dart';
 import 'cache/cache_manager.dart';
 import 'cache/connectivity_service.dart';
 import 'websocket/websocket_service.dart';
@@ -28,12 +29,11 @@ final apiClientProvider = Provider<ApiClient>((ref) {
       );
       if (refreshToken == null || refreshToken.isEmpty) return false;
       try {
-        final apiKey = dotenv.env['API_KEY'];
         final dio = Dio(
           BaseOptions(
             baseUrl: ApiEndpoints.baseUrl,
             headers: {
-              if (apiKey != null && apiKey.isNotEmpty) 'X-API-Key': apiKey,
+              if (Env.apiKey.isNotEmpty) 'X-API-Key': Env.apiKey,
               'Content-Type': 'application/json',
             },
           ),
@@ -73,6 +73,11 @@ final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
 final lostFoundRepositoryProvider = Provider<LostFoundRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return LostFoundRepository(apiClient);
+});
+
+final searchRepositoryProvider = Provider<SearchRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return SearchRepository(apiClient);
 });
 
 final circularRepositoryProvider = Provider<CircularRepository>((ref) {

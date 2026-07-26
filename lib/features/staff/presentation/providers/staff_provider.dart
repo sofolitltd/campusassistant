@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/cache/cache_manager.dart';
+import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../university/presentation/providers/university_provider.dart';
 import '../../../department/presentation/providers/department_provider.dart';
@@ -19,7 +21,13 @@ StaffRemoteDataSource staffRemoteDataSource(Ref ref) {
 @Riverpod(keepAlive: true)
 StaffRepository staffRepository(Ref ref) {
   final remoteDataSource = ref.watch(staffRemoteDataSourceProvider);
-  return StaffRepositoryImpl(remoteDataSource: remoteDataSource);
+  final cacheManager = ref.watch(cacheManagerProvider);
+  final connectivity = ref.watch(connectivityServiceProvider);
+  return StaffRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    cacheManager: cacheManager,
+    connectivity: connectivity,
+  );
 }
 
 @riverpod
@@ -32,6 +40,38 @@ Future<List<Staff>> staffList(Ref ref) async {
     universityId: university.id,
     departmentId: department.id,
   );
+  return result.fold((failure) => throw failure, (staff) => staff);
+}
+
+/// Lightweight staff total for count displays — avoids downloading the full
+/// staff list just to render a number. Kept alive so it survives navigation.
+@Riverpod(keepAlive: true)
+Future<int> staffCount(Ref ref) async {
+  final university = await ref.watch(myUniversityProvider.future);
+  final department = await ref.watch(myDepartmentProvider.future);
+
+  if (university.id.isEmpty || department.id.isEmpty) return 0;
+
+  final repository = ref.watch(staffRepositoryProvider);
+  final result = await repository.getStaffCount(
+    universityId: university.id,
+    departmentId: department.id,
+  );
+  return result.fold((failure) => throw failure, (count) => count);
+}
+
+@riverpod
+Future<Staff> singleStaff(Ref ref, String staffId) async {
+  final university = await ref.watch(myUniversityProvider.future);
+  final department = await ref.watch(myDepartmentProvider.future);
+
+  final repository = ref.watch(staffRepositoryProvider);
+  final result = await repository.getStaffById(
+    universityId: university.id,
+    departmentId: department.id,
+    staffId: staffId,
+  );
+
   return result.fold((failure) => throw failure, (staff) => staff);
 }
 

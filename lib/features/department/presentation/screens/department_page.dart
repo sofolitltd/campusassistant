@@ -20,9 +20,12 @@ class DepartmentPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final departmentAsync = ref.watch(myDepartmentProvider);
-    final teachersAsync = ref.watch(teachersListProvider(null));
-    final staffAsync = ref.watch(staffListProvider);
-    final width = MediaQuery.of(context).size.width;
+    final mediaQuery = MediaQuery.of(context);
+    final width = mediaQuery.size.width;
+    final imageHeight = width > 800 ? 350.0 : 250.0;
+    // Decode the hero at display resolution so we don't hold a full-size
+    // bitmap in the image cache for a ~250-350px slot.
+    final heroCacheHeight = (imageHeight * mediaQuery.devicePixelRatio).round();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -44,19 +47,21 @@ class DepartmentPage extends ConsumerWidget {
                               : '',
                         ),
                         width: double.infinity,
-                        height: width > 800 ? 350 : 250,
+                        height: imageHeight,
+                        memCacheHeight: heroCacheHeight,
+                        maxHeightDiskCache: heroCacheHeight,
                         fit: BoxFit.cover,
                         placeholder: (context, _) =>
                             const Center(child: CupertinoActivityIndicator()),
                         errorWidget: (_, _, _) => Container(
                           color: Colors.grey.shade200,
-                          height: width > 800 ? 350 : 250,
+                          height: imageHeight,
                           alignment: Alignment.center,
                           child: const Icon(Icons.image_not_supported),
                         ),
                       ),
                       Container(
-                        height: width > 800 ? 350 : 250,
+                        height: imageHeight,
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             colors: [Colors.black54, Colors.transparent],
@@ -133,25 +138,38 @@ class DepartmentPage extends ConsumerWidget {
                       ),
                       child: Column(
                         children: [
-                          _StatTile(
-                            label: 'Teachers',
-                            value: teachersAsync.when(
-                              data: (t) => '${t.length}',
-                              loading: () => '...',
-                              error: (_, _) => '0',
-                            ),
-                            isDark: isDark,
-                            border: true,
+                          // Each count is watched inside its own Consumer so
+                          // resolving a total only repaints its stat row, not
+                          // the hero/about tree above.
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final teachers = ref.watch(teacherCountProvider);
+                              return _StatTile(
+                                label: 'Teachers',
+                                value: teachers.when(
+                                  data: (t) => '$t',
+                                  loading: () => '...',
+                                  error: (_, _) => '0',
+                                ),
+                                isDark: isDark,
+                                border: true,
+                              );
+                            },
                           ),
-                          _StatTile(
-                            label: 'Staffs',
-                            value: staffAsync.when(
-                              data: (s) => '${s.length}',
-                              loading: () => '...',
-                              error: (_, _) => '0',
-                            ),
-                            isDark: isDark,
-                            border: false,
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final staff = ref.watch(staffCountProvider);
+                              return _StatTile(
+                                label: 'Staffs',
+                                value: staff.when(
+                                  data: (s) => '$s',
+                                  loading: () => '...',
+                                  error: (_, _) => '0',
+                                ),
+                                isDark: isDark,
+                                border: false,
+                              );
+                            },
                           ),
                         ],
                       ),

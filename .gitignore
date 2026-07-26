@@ -45,6 +45,8 @@ app.*.map.json
 /android/app/release
 
 .env
+.env.local
+.env.lan
 
 # Service account credentials
 assets/data/campusassistantbd.json

@@ -114,7 +114,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                   LucideIcons.search,
                                   color: Colors.white,
                                 ),
-                                onPressed: () {},
+                                onPressed: () =>
+                                    context.push(AppRoute.search.path),
                               ),
                               const SizedBox(width: 4),
                               NotificationBadge(

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config/env.dart';
 
 class ApiClient {
   final Dio dio;
@@ -28,10 +28,8 @@ class ApiClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Add API Key from .env
-          final apiKey = dotenv.env['API_KEY'];
-          if (apiKey != null && apiKey.isNotEmpty) {
-            options.headers['X-API-Key'] = apiKey;
+          if (Env.apiKey.isNotEmpty) {
+            options.headers['X-API-Key'] = Env.apiKey;
           }
 
           // Add JWT token if available

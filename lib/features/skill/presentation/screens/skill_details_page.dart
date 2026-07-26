@@ -1,31 +1,68 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
 import '../../data/models/skill.dart';
 import '../../data/models/skill_video.dart';
+import '../providers/skill_provider.dart';
 
-class SkillDetailsPage extends StatelessWidget {
+class SkillDetailsPage extends ConsumerWidget {
   final Skill? skill;
+  final String? skillId;
 
-  const SkillDetailsPage({super.key, required this.skill});
+  const SkillDetailsPage({super.key, required this.skill, this.skillId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // `skill` is passed via go_router `extra`, but that is dropped when the
+    // router rebuilds (e.g. returning from the video player), so fall back to
+    // resolving the skill by its id from the already-loaded skills list.
     final skill = this.skill;
-    if (skill == null) {
-      // No deep-link support yet — this page expects to be reached by
-      // tapping a card on the home page, which passes the Skill via `extra`.
-      return Scaffold(
-        appBar: AppBar(title: const Text('Skill Up')),
-        body: const Center(child: Text('Skill not found.')),
+    if (skill != null) return _buildContent(context, skill);
+
+    if (skillId == null) return _notFound(context);
+
+    final userAsync = ref.watch(userProvider);
+    final user = userAsync.value;
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CupertinoActivityIndicator()),
       );
     }
 
+    final skillsAsync = ref.watch(
+      skillsListProvider((
+        universityId: user.university,
+        departmentId: user.department,
+      )),
+    );
+
+    return skillsAsync.when(
+      data: (skills) {
+        final match = skills.where((s) => s.id == skillId).firstOrNull;
+        return match != null ? _buildContent(context, match) : _notFound(context);
+      },
+      loading: () =>
+          const Scaffold(body: Center(child: CupertinoActivityIndicator())),
+      error: (_, _) => _notFound(context),
+    );
+  }
+
+  Widget _notFound(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Skill Up')),
+      body: const Center(child: Text('Skill not found.')),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, Skill skill) {
     return Scaffold(
       body: Center(
         child: ConstrainedBox(

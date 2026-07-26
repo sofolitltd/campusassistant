@@ -75,28 +75,33 @@ cd campusassistant
 # Install dependencies
 flutter pub get
 
-# Set up environment variables
+# Set up build-time configuration
 cp .env.example .env
 # Edit .env with your configuration
 
 # Run the app
-flutter run
+flutter run --dart-define-from-file=.env
+# or just: make run  (see BUILD_AND_DEPLOY.md for VS Code/other shortcuts)
 ```
 
 ### Environment Variables
 
-Create a `.env` file in the project root (see `.env.example`):
+Configuration is compiled into the app at build time via `--dart-define-from-file`
+(see `.env.example` and `BUILD_AND_DEPLOY.md` for the full explanation of why,
+and the exact commands for every build target). `.env` uses ordinary
+`KEY=VALUE` syntax with `#` comments, same as before — the difference is it's
+now read only by the build tool, never bundled into the app as a fetchable
+asset.
 
-```env
+```
 BASE_URL=https://your-api-url/api/v1
 API_KEY=your-api-key
-
-# bKash Production Credentials
-BKASH_PROD_USERNAME=your-username
-BKASH_PROD_PASSWORD=your-password
-BKASH_PROD_APP_KEY=your-app-key
-BKASH_PROD_APP_SECRET=your-app-secret
+FCM_VAPID_KEY=
 ```
+
+Never put real third-party payment secrets (bKash, etc.) here — those must live
+only in `campusassistant-api`'s server-side environment. The app calls your own
+`/payments/bkash/*` endpoints; it never talks to bKash directly.
 
 ## Project Structure
 

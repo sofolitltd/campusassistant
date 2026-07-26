@@ -84,6 +84,38 @@ class TeacherRepositoryImpl implements TeacherRepository {
   }
 
   @override
+  Future<Either<Failure, int>> getTeacherCount({
+    required String universityId,
+    required String departmentId,
+  }) async {
+    final cacheKey = 'uni_${universityId}_dept_$departmentId';
+
+    if (connectivity.isConnected) {
+      try {
+        final count = await remoteDataSource.getTeacherCount(
+          universityId: universityId,
+          departmentId: departmentId,
+        );
+        return Right(count);
+      } catch (e) {
+        debugPrint('[TeacherRepo] Remote count failed: $e');
+      }
+    }
+
+    // Offline / failure fallback: count whatever list is cached.
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'teacher_$cacheKey',
+      );
+      return Right(cachedData.length);
+    } catch (e) {
+      debugPrint('[TeacherRepo] Cached count read failed: $e');
+    }
+
+    return Left(ServerFailure('Failed to fetch teacher count'));
+  }
+
+  @override
   Future<Either<Failure, Teacher>> getTeacherById({
     required String universityId,
     required String departmentId,

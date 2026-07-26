@@ -6,6 +6,7 @@ import '../../../../core/theme/tokens/app_spacing.dart';
 import '../../../../routes/scaffold_with_navbar.dart';
 import '../widgets/header_card.dart';
 import '../widgets/profile_card.dart';
+import '../widgets/profile_completion_card.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/core/theme/app_colors.dart';
 
@@ -63,17 +64,11 @@ class ProfilePage extends ConsumerWidget {
           if (user == null) {
             return const Center(child: Text('User not found'));
           }
+          final isProfileComplete = profileCompletionPercent(user) == 100;
           return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
-                const SizedBox(height: Spacing.xs),
-                // Header card sits on the red background, outside the rounded container
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: Spacing.lg),
-                  child: HeaderCard(user: user),
-                ),
-                const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -88,7 +83,31 @@ class ProfilePage extends ConsumerWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(24),
                     ),
-                    child: ProfileCard(user: user),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: Spacing.lg),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Spacing.lg,
+                          ),
+                          child: HeaderCard(user: user),
+                        ),
+                        // Once the profile is 100% complete, the header
+                        // badge already shows "100%" — this card's only job
+                        // was nudging the user to finish, so it has nothing
+                        // left to say.
+                        if (!isProfileComplete) ...[
+                          const SizedBox(height: 12),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Spacing.lg,
+                            ),
+                            child: ProfileCompletionCard(user: user),
+                          ),
+                        ],
+                        ProfileCard(user: user),
+                      ],
+                    ),
                   ),
                 ),
               ],

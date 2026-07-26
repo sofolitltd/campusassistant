@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/custom_header_layout.dart';
@@ -73,7 +74,11 @@ class _StaffPageState extends ConsumerState<StaffPage> {
             itemCount: filteredStaff.length,
             itemBuilder: (context, index) {
               final staff = filteredStaff[index];
-              return StaffCard(staff: staff, user: user);
+              return InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => context.push('/staff/details?id=${staff.id}'),
+                child: StaffCard(staff: staff, user: user),
+              );
             },
             separatorBuilder: (_, _) => const SizedBox(height: 15),
           );

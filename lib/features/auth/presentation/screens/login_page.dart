@@ -29,8 +29,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   );
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController(text: "asifreyad1@gmail.com");
-  final TextEditingController _passwordController = TextEditingController(text: '12345678');
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();

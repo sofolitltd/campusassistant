@@ -220,6 +220,47 @@ final class TeachersListFamily extends $Family
   String toString() => r'teachersListProvider';
 }
 
+/// Lightweight teacher total for count displays — avoids downloading the full
+/// teacher list just to render a number. Kept alive so it survives navigation.
+
+@ProviderFor(teacherCount)
+final teacherCountProvider = TeacherCountProvider._();
+
+/// Lightweight teacher total for count displays — avoids downloading the full
+/// teacher list just to render a number. Kept alive so it survives navigation.
+
+final class TeacherCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Lightweight teacher total for count displays — avoids downloading the full
+  /// teacher list just to render a number. Kept alive so it survives navigation.
+  TeacherCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'teacherCountProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$teacherCountHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return teacherCount(ref);
+  }
+}
+
+String _$teacherCountHash() => r'19bd5af4c8f1aefc8cb5b4e7785927798f74bdbf';
+
 @ProviderFor(singleTeacher)
 final singleTeacherProvider = SingleTeacherFamily._();
 

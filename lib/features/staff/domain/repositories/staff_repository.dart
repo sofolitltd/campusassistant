@@ -8,6 +8,17 @@ abstract class StaffRepository {
     required String departmentId,
   });
 
+  Future<Either<Failure, int>> getStaffCount({
+    required String universityId,
+    required String departmentId,
+  });
+
+  Future<Either<Failure, Staff>> getStaffById({
+    required String universityId,
+    required String departmentId,
+    required String staffId,
+  });
+
   Future<Either<Failure, Staff>> createStaff(Staff staff);
   Future<Either<Failure, Staff>> updateStaff(Staff staff);
   Future<Either<Failure, void>> deleteStaff(String id);

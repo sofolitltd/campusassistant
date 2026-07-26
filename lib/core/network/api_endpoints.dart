@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config/env.dart';
 
 class ApiEndpoints {
   static String get baseUrl {
-    String url = dotenv.env['BASE_URL'] ?? 'http://10.0.2.2:8080/api/v1';
+    String url = Env.baseUrl;
 
     // If we're on Android emulator and the URL uses localhost,
     // we need to use 10.0.2.2 to access the host machine.

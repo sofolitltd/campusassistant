@@ -53,7 +53,7 @@ class CourseCard extends StatelessWidget {
                   },
                 );
               },
-              child: _CourseCardContent(courseModel: course),
+              child: CourseCardContent(courseModel: course),
             );
           },
         ),
@@ -63,8 +63,12 @@ class CourseCard extends StatelessWidget {
   }
 }
 
-class _CourseCardContent extends StatelessWidget {
-  const _CourseCardContent({required this.courseModel});
+/// Public per-item course card body (thumbnail + title + code/credits/marks
+/// strip), no tap behavior baked in — wrap with your own `InkWell`/
+/// `GestureDetector` where you use it (see [CourseCard] above for the
+/// canonical wiring to the course details route).
+class CourseCardContent extends StatelessWidget {
+  const CourseCardContent({super.key, required this.courseModel});
 
   final Course courseModel;
 

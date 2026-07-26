@@ -134,6 +134,12 @@ class AppRoute {
 
   static const cr = AppRoute(name: 'cr', path: '/cr');
   static const staff = AppRoute(name: 'staff', path: '/staff');
+  static const staffDetails = AppRoute(
+    name: 'staffDetails',
+    path: '/staff/details',
+  );
+
+  static const search = AppRoute(name: 'search', path: '/search');
 
   //////  study ///////
   static const study = AppRoute(name: 'study', path: '/study');

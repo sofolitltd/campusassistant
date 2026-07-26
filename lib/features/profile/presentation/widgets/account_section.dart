@@ -20,7 +20,7 @@ class AccountSection extends ConsumerWidget {
         onTap: () => _showLogoutBottomSheet(context, ref),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: Colors.red.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(RadiusToken.lg),

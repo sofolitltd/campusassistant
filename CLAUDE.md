@@ -13,11 +13,11 @@ Flutter app (Android/iOS/Web) for the Campus Assistant platform — courses/reso
 - `dart run build_runner build --delete-conflicting-outputs` — regenerate codegen (freezed models, json_serializable, riverpod_generator, drift). Use `watch` instead of `build` while iterating on models/providers.
 - `flutter analyze` — lint (uses `package:flutter_lints/flutter.yaml`; generated `*.g.dart`/`*.freezed.dart` files are excluded)
 - No `test/` directory exists — there is currently no automated test suite to run, despite `flutter_test` being a dev dependency.
-- Env file: copy `.env.example` to `.env` (gitignored, bundled as a Flutter asset, loaded in `main.dart` via `flutter_dotenv`). Key vars: `BASE_URL`, `API_KEY`, `BKASH_PROD_*`.
+- Config: copy `.env.example` to `.env` (gitignored, plain `KEY=VALUE`), then build/run with `--dart-define-from-file=.env` (or `make run` / a VS Code launch config — see `.vscode/launch.json`). Compiled into the app at build time via `lib/core/config/env.dart` (`String.fromEnvironment`) — Flutter's build tool reads `.env` directly; it is never bundled as a Flutter asset or fetched over HTTP. Key vars: `BASE_URL`, `API_KEY`, `FCM_VAPID_KEY`. `.env.local`/`.env.lan` are alternate configs for Android emulator / real-device-on-LAN testing. See `BUILD_AND_DEPLOY.md`. Never put third-party payment secrets (bKash, etc.) here — those live only in `campusassistant-api`'s server env; the app calls your own `/payments/bkash/*` endpoints.
 
 ## Architecture
 
-**Entry point** `lib/main.dart`: inits Firebase, `FirebaseApi().initBackgroundHandler()`, loads `.env`, inits `MobileAds` (mobile only), sets `PathUrlStrategy` for web, wraps the app in `ProviderScope` (Riverpod root). `MyApp` watches `routerProvider`/`themeProvider`, wires connectivity listening and background sync, and opens a WebSocket keyed to auth state.
+**Entry point** `lib/main.dart`: inits Firebase, `FirebaseApi().initBackgroundHandler()`, inits `MobileAds` (mobile only), sets `PathUrlStrategy` for web, wraps the app in `ProviderScope` (Riverpod root). `MyApp` watches `routerProvider`/`themeProvider`, wires connectivity listening and background sync, and opens a WebSocket keyed to auth state.
 
 **Routing** — `lib/routes/router_config.dart` defines `routerProvider`, backed by a `RouterNotifier` (ChangeNotifier) that listens to `currentUserProvider` and re-evaluates auth-gated redirects (splash → login/home). Bottom-nav tabs use `StatefulShellRoute.indexedStack` + `ScaffoldWithNavBar` (`lib/routes/scaffold_with_navbar.dart`); everything else is flat `GoRoute`s with `parentNavigatorKey: rootNavigatorKey`. Route names/paths are centralized in `lib/routes/app_route.dart`. Web has its own side nav (`lib/routes/web_side_nav.dart`).
 
@@ -29,7 +29,7 @@ Other top-level dirs: `lib/services/` (`firebase_api.dart` — FCM), `lib/utils/
 
 ## Networking
 
-`lib/core/network/api_client.dart` — a Dio-based `ApiClient`. Every request gets `X-API-Key` (from `dotenv.env['API_KEY']`) and `Authorization: Bearer <token>` (via an injected `getToken()` callback backed by secure storage). A 401 interceptor calls an injected `onUnauthorized` to refresh the token (deduped via an in-flight `Completer` guard) and retries once, skipping `/auth/login` and `/auth/refresh`. Endpoints are centralized in `lib/core/network/api_endpoints.dart`.
+`lib/core/network/api_client.dart` — a Dio-based `ApiClient`. Every request gets `X-API-Key` (from `Env.apiKey`, see `lib/core/config/env.dart`) and `Authorization: Bearer <token>` (via an injected `getToken()` callback backed by secure storage). A 401 interceptor calls an injected `onUnauthorized` to refresh the token (deduped via an in-flight `Completer` guard) and retries once, skipping `/auth/login` and `/auth/refresh`. Endpoints are centralized in `lib/core/network/api_endpoints.dart`.
 
 **Models**: `freezed` + `json_serializable`, generated per `build.yaml`'s global config (`field_rename: snake`, `include_if_null: false`) — so Dart fields are camelCase, wire JSON is snake_case, and null fields are omitted on serialize. Convention: models in `features/<x>/data/models/`, entities in `features/<x>/domain/entities/`. Riverpod providers using `@riverpod` generate a matching `*.g.dart`.
 

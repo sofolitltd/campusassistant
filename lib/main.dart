@@ -1,6 +1,5 @@
 import '/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite/sqflite.dart' show databaseFactory;
@@ -28,7 +27,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseApi().initBackgroundHandler();
-  await dotenv.load(fileName: ".env");
   if (!kIsWeb) {
     await MobileAds.instance.initialize();
   }

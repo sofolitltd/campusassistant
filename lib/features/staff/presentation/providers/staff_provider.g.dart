@@ -97,7 +97,7 @@ final class StaffRepositoryProvider
   }
 }
 
-String _$staffRepositoryHash() => r'6fafde2ad036212ee7ecfc1f6d88e8a3455b3630';
+String _$staffRepositoryHash() => r'426616d1988ef931cdb3bae5c9a9dea6b3fc92f6';
 
 @ProviderFor(staffList)
 final staffListProvider = StaffListProvider._();
@@ -137,6 +137,116 @@ final class StaffListProvider
 }
 
 String _$staffListHash() => r'948b3e74cf20d051a8404cb01bc5e99ab2be0e6a';
+
+/// Lightweight staff total for count displays — avoids downloading the full
+/// staff list just to render a number. Kept alive so it survives navigation.
+
+@ProviderFor(staffCount)
+final staffCountProvider = StaffCountProvider._();
+
+/// Lightweight staff total for count displays — avoids downloading the full
+/// staff list just to render a number. Kept alive so it survives navigation.
+
+final class StaffCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Lightweight staff total for count displays — avoids downloading the full
+  /// staff list just to render a number. Kept alive so it survives navigation.
+  StaffCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'staffCountProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$staffCountHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return staffCount(ref);
+  }
+}
+
+String _$staffCountHash() => r'd34ecfcc3084e6be4f86877942fb42d98b105f06';
+
+@ProviderFor(singleStaff)
+final singleStaffProvider = SingleStaffFamily._();
+
+final class SingleStaffProvider
+    extends $FunctionalProvider<AsyncValue<Staff>, Staff, FutureOr<Staff>>
+    with $FutureModifier<Staff>, $FutureProvider<Staff> {
+  SingleStaffProvider._({
+    required SingleStaffFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'singleStaffProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$singleStaffHash();
+
+  @override
+  String toString() {
+    return r'singleStaffProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Staff> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Staff> create(Ref ref) {
+    final argument = this.argument as String;
+    return singleStaff(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SingleStaffProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$singleStaffHash() => r'3a280866921c69a893da94ee7730755c264300b9';
+
+final class SingleStaffFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Staff>, String> {
+  SingleStaffFamily._()
+    : super(
+        retry: null,
+        name: r'singleStaffProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SingleStaffProvider call(String staffId) =>
+      SingleStaffProvider._(argument: staffId, from: this);
+
+  @override
+  String toString() => r'singleStaffProvider';
+}
 
 @ProviderFor(staffsByDepartment)
 final staffsByDepartmentProvider = StaffsByDepartmentFamily._();

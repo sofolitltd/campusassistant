@@ -9,6 +9,11 @@ abstract class TeacherRepository {
     bool? isPresent,
   });
 
+  Future<Either<Failure, int>> getTeacherCount({
+    required String universityId,
+    required String departmentId,
+  });
+
   Future<Either<Failure, Teacher>> getTeacherById({
     required String universityId,
     required String departmentId,

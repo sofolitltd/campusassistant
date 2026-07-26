@@ -62,6 +62,23 @@ Future<List<Teacher>> teachersList(Ref ref, bool? isPresent) async {
   });
 }
 
+/// Lightweight teacher total for count displays — avoids downloading the full
+/// teacher list just to render a number. Kept alive so it survives navigation.
+@Riverpod(keepAlive: true)
+Future<int> teacherCount(Ref ref) async {
+  final university = await ref.watch(myUniversityProvider.future);
+  final department = await ref.watch(myDepartmentProvider.future);
+
+  if (university.id.isEmpty || department.id.isEmpty) return 0;
+
+  final repository = ref.watch(teacherRepositoryProvider);
+  final result = await repository.getTeacherCount(
+    universityId: university.id,
+    departmentId: department.id,
+  );
+  return result.fold((failure) => throw failure, (count) => count);
+}
+
 @riverpod
 Future<Teacher> singleTeacher(Ref ref, String teacherId) async {
   final university = await ref.watch(myUniversityProvider.future);

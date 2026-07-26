@@ -14,15 +14,17 @@ import '../../data/models/profile_model.dart';
 import '/features/student/domain/entities/student_address.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import '/features/university/presentation/providers/university_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/utils/constants.dart';
-
 import '/core/di.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/network/api_endpoints.dart';
 import '/widgets/district_sub_district_picker.dart';
+
+const kGenderOptions = <String>['Male', 'Female'];
 
 class EditProfilePage extends ConsumerWidget {
   final String uid;
@@ -33,6 +35,11 @@ class EditProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileByUidProvider(uid));
     final studentAsync = ref.watch(studentByUserIdProvider(uid));
+    // Gender lives on the `User` entity, not `ProfileModel`/`Student` (which
+    // this screen otherwise reads from) — this screen only ever edits the
+    // signed-in user's own profile, so `currentUserProvider` is safe to use
+    // for it here.
+    final currentUserAsync = ref.watch(currentUserProvider);
 
     return CustomHeaderLayout(
       title: 'Edit Profile',
@@ -42,6 +49,7 @@ class EditProfilePage extends ConsumerWidget {
           profile: profile,
           presentAddress: studentAsync.value?.presentAddress,
           permanentAddress: studentAsync.value?.permanentAddress,
+          initialGender: currentUserAsync.value?.gender,
         ),
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -55,11 +63,13 @@ class _EditProfileForm extends ConsumerStatefulWidget {
   final ProfileModel profile;
   final StudentAddress? presentAddress;
   final StudentAddress? permanentAddress;
+  final String? initialGender;
 
   const _EditProfileForm({
     required this.profile,
     this.presentAddress,
     this.permanentAddress,
+    this.initialGender,
   });
 
   @override
@@ -73,6 +83,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
   String? _selectedHall;
   String? _selectedBloodGroup;
+  String? _selectedGender;
   bool _isLoading = false;
 
   File? _pickedMobileImage;
@@ -99,6 +110,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     _mobileController.text = widget.profile.mobile;
     _selectedHall = widget.profile.information.hall;
     _selectedBloodGroup = _validBloodGroup(widget.profile.information.blood);
+    _selectedGender = _validGender(widget.initialGender);
 
     final present = widget.presentAddress;
     if (present != null) {
@@ -132,6 +144,11 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     return kBloodGroup.contains(blood) ? blood : null;
   }
 
+  String? _validGender(String? gender) {
+    if (gender == null || gender.isEmpty) return null;
+    return kGenderOptions.contains(gender) ? gender : null;
+  }
+
   void _onFormChanged() {
     setState(() {});
   }
@@ -152,6 +169,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
         _mobileController.text.trim() != widget.profile.mobile ||
         _selectedHall != widget.profile.information.hall ||
         _selectedBloodGroup != widget.profile.information.blood ||
+        _selectedGender != widget.initialGender ||
         _pickedMobileImage != null ||
         _addressDirty;
   }
@@ -218,6 +236,30 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             decoration: const InputDecoration(hintText: 'Name'),
                             validator: (val) =>
                                 val!.isEmpty ? 'Enter your name' : null,
+                          ),
+
+                          const SizedBox(height: Spacing.lg),
+
+                          /// ---- GENDER ----
+                          const Text('Gender'),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            initialValue: _selectedGender,
+                            decoration: const InputDecoration(
+                              hintText: 'Select gender',
+                            ),
+                            isDense: true,
+                            onChanged: (val) =>
+                                setState(() => _selectedGender = val),
+                            dropdownColor: Theme.of(context).cardColor,
+                            items: kGenderOptions
+                                .map(
+                                  (g) => DropdownMenuItem(
+                                    value: g,
+                                    child: Text(g),
+                                  ),
+                                )
+                                .toList(),
                           ),
 
                           const SizedBox(height: Spacing.lg),
@@ -625,6 +667,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
         firstName: firstName,
         lastName: lastName,
         avatarUrl: imageUrl,
+        gender: _selectedGender,
       );
 
       await updateMyStudent(
@@ -674,6 +717,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
       }
 
       ref.invalidate(userProvider);
+      ref.invalidate(currentUserProvider);
       ref.invalidate(userProfileByUidProvider(widget.profile.uid));
       ref.invalidate(studentByUserIdProvider(widget.profile.uid));
 

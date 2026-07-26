@@ -8,6 +8,11 @@ abstract class TeacherRemoteDataSource {
     bool? isPresent,
   });
 
+  Future<int> getTeacherCount({
+    required String universityId,
+    required String departmentId,
+  });
+
   Future<TeacherModel> getTeacherById({
     required String universityId,
     required String departmentId,
@@ -50,6 +55,32 @@ class TeacherRemoteDataSourceImpl implements TeacherRemoteDataSource {
         : (responseData as List<dynamic>? ?? []);
 
     return teacherList.map((json) => TeacherModel.fromJsonData(json)).toList();
+  }
+
+  @override
+  Future<int> getTeacherCount({
+    required String universityId,
+    required String departmentId,
+  }) async {
+    // Request a single row and read the paginated envelope's `count` field so
+    // we never download the full teacher list just to show a total.
+    final response = await apiClient.get(
+      '/teachers',
+      queryParameters: {
+        'university_id': universityId,
+        'department_id': departmentId,
+        'limit': '1',
+      },
+    );
+
+    final dynamic data = response.data;
+    if (data is Map) {
+      final count = data['count'];
+      if (count is num) return count.toInt();
+      return (data['data'] as List<dynamic>?)?.length ?? 0;
+    }
+    if (data is List) return data.length;
+    return 0;
   }
 
   @override

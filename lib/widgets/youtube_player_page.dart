@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import '/core/theme/app_colors.dart';
+
 class YoutubePlayerPage extends StatefulWidget {
   final String videoId;
   final String title;
@@ -84,6 +86,7 @@ class _YoutubePlayerPageState extends State<YoutubePlayerPage> {
         ],
       ),
       builder: (context, player) {
+        final primaryColor = Theme.of(context).appColors.primaryColor;
         return Scaffold(
           appBar: _controller.value.isFullScreen
               ? null
@@ -93,14 +96,14 @@ class _YoutubePlayerPageState extends State<YoutubePlayerPage> {
                     widget.title,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
                   elevation: 0,
-                  systemOverlayStyle: const SystemUiOverlayStyle(
-                    statusBarColor: Colors.white,
-                    statusBarIconBrightness: Brightness.dark,
+                  systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+                    statusBarColor: primaryColor,
                   ),
                 ),
           body: PopScope(

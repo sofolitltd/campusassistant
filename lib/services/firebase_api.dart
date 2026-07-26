@@ -5,7 +5,6 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -13,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
+import '/core/config/env.dart';
 import '/core/network/api_client.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/providers/app_refresh_provider.dart';
@@ -109,10 +109,10 @@ class FirebaseApi {
       // web session would otherwise never show up in the device list.
       String? vapidKey;
       if (kIsWeb) {
-        vapidKey = dotenv.env['FCM_VAPID_KEY'];
-        if (vapidKey == null || vapidKey.isEmpty) {
+        vapidKey = Env.fcmVapidKey.isNotEmpty ? Env.fcmVapidKey : null;
+        if (vapidKey == null) {
           log(
-            '[FCM] FCM_VAPID_KEY not set in .env — web push token cannot be fetched',
+            '[FCM] FCM_VAPID_KEY not set in env.json — web push token cannot be fetched',
           );
         }
       }

@@ -33,7 +33,7 @@ final class DownloadedFilesProvider
   DownloadedFiles create() => DownloadedFiles();
 }
 
-String _$downloadedFilesHash() => r'35b0734eb5b9aeae54e5ec2244447c22e71f9283';
+String _$downloadedFilesHash() => r'b29b259052c61bc2780f39f42dcea79aec3755e5';
 
 abstract class _$DownloadedFiles extends $AsyncNotifier<List<DownloadedFile>> {
   FutureOr<List<DownloadedFile>> build();

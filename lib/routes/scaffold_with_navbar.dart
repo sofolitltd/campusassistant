@@ -20,6 +20,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
+  
           key: scaffoldKey,
           drawer: const CustomDrawer(),
           body: navigationShell,

@@ -298,6 +298,7 @@ Future<void> updateMyUser(
   String? firstName,
   String? lastName,
   String? avatarUrl,
+  String? gender,
 }) async {
   final apiClient = ref.read(apiClientProvider);
   await apiClient.put(
@@ -306,6 +307,7 @@ Future<void> updateMyUser(
       'first_name': ?firstName,
       'last_name': ?lastName,
       'avatar_url': ?avatarUrl,
+      'gender': ?gender,
     },
   );
 }

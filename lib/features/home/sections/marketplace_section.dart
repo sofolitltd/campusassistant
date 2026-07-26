@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -41,15 +40,6 @@ class MarketplaceSection extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(LucideIcons.shoppingBag, color: primaryColor, size: 20),
-                    ),
-                    const SizedBox(width: 10),
                     Text(
                       'Campus Marketplace',
                       style: TextStyle(
@@ -61,11 +51,11 @@ class MarketplaceSection extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                _benefitRow(LucideIcons.store, 'Buy & sell with campus sellers'),
+                _benefitRow('Buy & sell with campus sellers'),
                 const SizedBox(height: 6),
-                _benefitRow(LucideIcons.mapPin, 'Fast pickup on campus'),
+                _benefitRow('Fast pickup on campus'),
                 const SizedBox(height: 6),
-                _benefitRow(LucideIcons.shield, 'Secure payment via bKash'),
+                _benefitRow('Secure payment via bKash'),
                 const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
@@ -94,10 +84,17 @@ class MarketplaceSection extends ConsumerWidget {
     );
   }
 
-  Widget _benefitRow(IconData icon, String text) {
+  Widget _benefitRow(String text) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey),
+        Container(
+          width: 5,
+          height: 5,
+          decoration: const BoxDecoration(
+            color: Colors.grey,
+            shape: BoxShape.circle,
+          ),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(

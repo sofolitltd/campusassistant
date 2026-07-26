@@ -24,12 +24,16 @@ class _MarketplaceShellState extends ConsumerState<MarketplaceShell> {
   @override
   Widget build(BuildContext context) {
     final cartItems = ref.watch(cartProvider);
-    final cartCount = cartItems.fold(0, (int sum, CartItem item) => sum + item.quantity);
+    final cartCount = cartItems.fold(
+      0,
+      (int sum, CartItem item) => sum + item.quantity,
+    );
 
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
+
           body: IndexedStack(
             index: _currentIndex,
             children: [
@@ -153,7 +157,9 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                                 Icon(
                                   tab.icon,
                                   size: 22,
-                                  color: isSelected ? primaryColor : Colors.grey,
+                                  color: isSelected
+                                      ? primaryColor
+                                      : Colors.grey,
                                 ),
                                 if (index == 2 && cartCount > 0)
                                   Positioned(
@@ -170,7 +176,9 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                                         minHeight: 16,
                                       ),
                                       child: Text(
-                                        cartCount > 99 ? '99+' : cartCount.toString(),
+                                        cartCount > 99
+                                            ? '99+'
+                                            : cartCount.toString(),
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 9,
@@ -187,7 +195,9 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                               tab.label,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
                                 color: isSelected ? primaryColor : Colors.grey,
                               ),
                             ),

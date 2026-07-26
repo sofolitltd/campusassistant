@@ -26,7 +26,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
   @override
   void initState() {
     super.initState();
-    startAutoSlide();
+    // Only auto-slide when there is more than one image; a single image
+    // sliding against itself looks unnatural.
+    if (widget.images.length > 1) {
+      startAutoSlide();
+    }
   }
 
   @override
@@ -85,8 +89,31 @@ class _ImageCarouselState extends State<ImageCarousel> {
     }
   }
 
+  Widget _buildImage(entity.Banner banner) {
+    return GestureDetector(
+      onTap: () => _handleBannerTap(banner),
+      child: CachedNetworkImage(
+        imageUrl: ApiEndpoints.resolveImageUrl(banner.imageUrl),
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(color: Colors.grey.shade200),
+        errorWidget: (context, url, error) => Container(
+          color: Colors.grey.shade100,
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: Colors.grey.shade400,
+            size: 32,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (widget.images.isEmpty) return const SizedBox.shrink();
+
+    final bool hasMultiple = widget.images.length > 1;
+
     return Container(
       constraints: const BoxConstraints(minHeight: 160),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -113,62 +140,49 @@ class _ImageCarouselState extends State<ImageCarousel> {
               child: SizedBox(
                 width: double.infinity,
                 height: 160,
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: _onPageChanged,
-                  itemCount: widget.images.length + 2,
-                  itemBuilder: (context, index) {
-                    final banner = index == 0
-                        ? widget.images[widget.images.length - 1]
-                        : index == widget.images.length + 1
-                        ? widget.images[0]
-                        : widget.images[index - 1];
+                child: hasMultiple
+                    ? PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: _onPageChanged,
+                        itemCount: widget.images.length + 2,
+                        itemBuilder: (context, index) {
+                          final banner = index == 0
+                              ? widget.images[widget.images.length - 1]
+                              : index == widget.images.length + 1
+                              ? widget.images[0]
+                              : widget.images[index - 1];
 
-                    return GestureDetector(
-                      onTap: () => _handleBannerTap(banner),
-                      child: CachedNetworkImage(
-                        imageUrl: ApiEndpoints.resolveImageUrl(banner.imageUrl),
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Container(color: Colors.grey.shade200),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey.shade100,
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            color: Colors.grey.shade400,
-                            size: 32,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                          return _buildImage(banner);
+                        },
+                      )
+                    : _buildImage(widget.images[0]),
               ),
             ),
           ),
-          Positioned(
-            right: 12,
-            bottom: 12,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(widget.images.length, (index) {
-                final isSelected = _currentPage == index + 1;
-                return GestureDetector(
-                  onTap: () => _onIndicatorTap(index),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: isSelected ? 20 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: isSelected ? Colors.white : Colors.white54,
+          if (hasMultiple)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(widget.images.length, (index) {
+                  final isSelected = _currentPage == index + 1;
+                  return GestureDetector(
+                    onTap: () => _onIndicatorTap(index),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: isSelected ? 20 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: isSelected ? Colors.white : Colors.white54,
+                      ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
-          ),
         ],
       ),
     );

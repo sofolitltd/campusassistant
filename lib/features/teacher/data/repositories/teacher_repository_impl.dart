@@ -84,6 +84,73 @@ class TeacherRepositoryImpl implements TeacherRepository {
   }
 
   @override
+  Stream<Either<Failure, List<Teacher>>> watchTeachers({
+    required String universityId,
+    required String departmentId,
+    bool? isPresent,
+  }) async* {
+    final cacheKey = 'uni_${universityId}_dept_$departmentId';
+    var emittedCache = false;
+
+    // 1. Emit cached data immediately if present
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'teacher_$cacheKey',
+      );
+
+      if (cachedData.isNotEmpty) {
+        final teachers = cachedData
+            .map((json) => TeacherModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint(
+          '[TeacherRepo] Emitting ${teachers.length} cached teachers (offline-first)',
+        );
+        yield Right(teachers);
+        emittedCache = true;
+      }
+    } catch (e) {
+      debugPrint('[TeacherRepo] Cache read failed: $e');
+    }
+
+    // 2. Refresh from network in the background and emit when done
+    if (connectivity.isConnected) {
+      try {
+        final remoteTeachers = await remoteDataSource.getTeachers(
+          universityId: universityId,
+          departmentId: departmentId,
+          isPresent: isPresent,
+        );
+        final entities = remoteTeachers.map((m) => m.toEntity()).toList();
+
+        final cacheItems = remoteTeachers.map((m) => m.toJson()).toList();
+        await cacheManager.cacheList(
+          entityType: 'teacher_$cacheKey',
+          items: cacheItems,
+          ttl: CacheTTL.teacher,
+        );
+
+        yield Right(entities);
+        return;
+      } catch (e) {
+        debugPrint('[TeacherRepo] Remote fetch failed: $e');
+      }
+    }
+
+    // 3. Nothing was ever emitted — surface a failure
+    if (!emittedCache) {
+      if (!connectivity.isConnected) {
+        yield const Left(
+          NetworkFailure(
+            'No internet connection and no cached teachers available',
+          ),
+        );
+      } else {
+        yield Left(ServerFailure('Failed to fetch teachers'));
+      }
+    }
+  }
+
+  @override
   Future<Either<Failure, int>> getTeacherCount({
     required String universityId,
     required String departmentId,

@@ -12,6 +12,8 @@ import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AssociationsPage extends ConsumerWidget {
   const AssociationsPage({super.key});
@@ -23,12 +25,12 @@ class AssociationsPage extends ConsumerWidget {
       searchHint: 'Search associations...',
       actions: [
         IconButton(
-          icon: const Icon(LucideIcons.heart, color: Colors.white),
+          icon: Icon(LucideIcons.heart, color: context.colors.onPrimary),
           tooltip: 'Joined Associations',
           onPressed: () => context.push(AppRoute.joinedAssociations.path),
         ),
         IconButton(
-          icon: const Icon(LucideIcons.plus, color: Colors.white),
+          icon: Icon(LucideIcons.plus, color: context.colors.onPrimary),
           tooltip: 'Suggest an Association',
           onPressed: () => context.push(AppRoute.suggestAssociation.path),
         ),
@@ -76,7 +78,7 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
         if (allAssociations.isEmpty) {
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 Icon(
                   LucideIcons.landmark,
@@ -89,11 +91,11 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
                 Text(
                   'No associations found',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                     color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: Spacing.sm),
                 Text(
                   'Be the first to add one!',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -112,8 +114,8 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
               SizedBox(
                 height: 36,
                 child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: .horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                   children: [
                     _CategoryChip(
                       label: 'All',
@@ -130,7 +132,7 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
                   ],
                 ),
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             Expanded(
               child: associations.isEmpty
                   ? Center(
@@ -142,9 +144,15 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
                       ),
                     )
                   : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        0,
+                        Spacing.lg,
+                        100,
+                      ),
                       itemCount: associations.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: Spacing.lg),
                       itemBuilder: (context, index) =>
                           AssociationCard(association: associations[index]),
                     ),
@@ -169,30 +177,30 @@ class _SuggestedAssociationsRow extends ConsumerWidget {
       data: (suggested) {
         if (suggested.isEmpty) return const SizedBox.shrink();
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: Spacing.md),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                 child: Text(
                   'Suggested for you',
                   style: Theme.of(
                     context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                 itemCount: suggested.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
                 itemBuilder: (context, index) =>
                     _SuggestedAssociationTile(association: suggested[index]),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
             ],
           ),
         );
@@ -210,7 +218,6 @@ class _SuggestedAssociationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).primaryColor;
     final isSubDistrictMatch = association.associationType == 'sub_district';
     final locationLabel = isSubDistrictMatch
@@ -229,58 +236,49 @@ class _SuggestedAssociationTile extends StatelessWidget {
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(Spacing.md),
         decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
+          color: context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1.0,
-          ),
+          border: Border.all(color: context.colors.border, width: 1.0),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : Colors.grey.shade100,
+                color: context.colors.surfaceAlt,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: isDark ? Colors.white10 : Colors.grey.shade200,
-                  width: 2,
-                ),
+                border: Border.all(color: context.colors.border, width: 2),
               ),
               child:
-                  association.logoUrl != null &&
-                      association.logoUrl!.isNotEmpty
+                  association.logoUrl != null && association.logoUrl!.isNotEmpty
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                       child: CachedNetworkImage(
                         imageUrl: ApiEndpoints.resolveImageUrl(
                           association.logoUrl,
                         ),
-                        fit: BoxFit.cover,
+                        fit: .cover,
                         errorWidget: (context, url, error) => Icon(
                           LucideIcons.landmark,
-                          color: Colors.grey.shade400,
+                          color: context.colors.textSubtle,
                           size: 20,
                         ),
                       ),
                     )
                   : Icon(
                       LucideIcons.landmark,
-                      color: Colors.grey.shade400,
+                      color: context.colors.textSubtle,
                       size: 20,
                     ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Spacing.md),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Row(
                     children: [
@@ -288,65 +286,63 @@ class _SuggestedAssociationTile extends StatelessWidget {
                         child: Text(
                           association.name,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: isDark ? Colors.white : Colors.black87,
+                            fontWeight: .bold,
+                            fontSize: FontSizeToken.base,
+                            color: context.colors.text,
                           ),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                         ),
                       ),
                       if (association.isVerified) ...[
-                        const SizedBox(width: 4),
+                        const SizedBox(width: Spacing.xs),
                         Icon(
                           Icons.verified,
                           size: 13,
-                          color: Colors.blue.shade400,
+                          color: context.colors.info,
                         ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Spacing.xxs),
                   Row(
                     children: [
                       Icon(
                         LucideIcons.mapPin,
                         size: 11,
-                        color: isDark ? Colors.white54 : Colors.grey.shade500,
+                        color: context.colors.textSubtle,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: Spacing.xs),
                       Expanded(
                         child: Text(
                           locationLabel,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade500,
+                            fontSize: FontSizeToken.sm,
+                            color: context.colors.textSubtle,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Spacing.xs),
                   Text(
                     matchLabel,
                     style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                      fontSize: FontSizeToken.xs,
+                      fontWeight: .w600,
                       color: primaryColor,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: Spacing.xs),
             Icon(
               LucideIcons.chevronRight,
               size: 16,
-              color: isDark ? Colors.white38 : Colors.grey.shade400,
+              color: context.colors.textSubtle,
             ),
           ],
         ),
@@ -369,35 +365,28 @@ class _CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: Spacing.sm),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
           decoration: BoxDecoration(
-            color: selected
-                ? primaryColor
-                : (isDark
-                      ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.grey.shade100),
-            borderRadius: BorderRadius.circular(18),
+            color: selected ? primaryColor : (context.colors.surfaceAlt),
+            borderRadius: BorderRadius.circular(RadiusToken.xl),
             border: Border.all(
-              color: selected
-                  ? primaryColor
-                  : (isDark ? Colors.white10 : Colors.grey.shade300),
+              color: selected ? primaryColor : (context.colors.borderStrong),
             ),
           ),
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontSize: FontSizeToken.sm,
+              fontWeight: .w600,
               color: selected
-                  ? Colors.white
-                  : (isDark ? Colors.white70 : Colors.grey.shade700),
+                  ? context.colors.onPrimary
+                  : (context.colors.textMuted),
             ),
           ),
         ),
@@ -413,7 +402,6 @@ class AssociationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).primaryColor;
     final locationLabel = association.associationType == 'sub_district'
         ? '${association.subDistrictName}, ${association.districtName}'
@@ -429,15 +417,12 @@ class AssociationCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
+          color: context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1.0,
-          ),
+          border: Border.all(color: context.colors.border, width: 1.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: context.colors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -446,16 +431,15 @@ class AssociationCard extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(RadiusToken.md),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
-              association.bannerUrl != null &&
-                      association.bannerUrl!.isNotEmpty
+              association.bannerUrl != null && association.bannerUrl!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: ApiEndpoints.resolveImageUrl(
                         association.bannerUrl,
                       ),
                       height: 120,
-                      fit: BoxFit.cover,
+                      fit: .cover,
                       errorWidget: (context, url, error) => Container(
                         height: 120,
                         color: primaryColor.withValues(alpha: 0.08),
@@ -474,21 +458,22 @@ class AssociationCard extends StatelessWidget {
                       ),
                     ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.md,
+                  Spacing.lg,
+                  Spacing.lg,
+                ),
                 child: Row(
                   children: [
                     Container(
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : Colors.grey.shade100,
+                        color: context.colors.surfaceAlt,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isDark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                          color: context.colors.border,
                           width: 2,
                         ),
                       ),
@@ -496,29 +481,31 @@ class AssociationCard extends StatelessWidget {
                           association.logoUrl != null &&
                               association.logoUrl!.isNotEmpty
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.xxxl,
+                              ),
                               child: CachedNetworkImage(
                                 imageUrl: ApiEndpoints.resolveImageUrl(
                                   association.logoUrl,
                                 ),
-                                fit: BoxFit.cover,
+                                fit: .cover,
                                 errorWidget: (context, url, error) => Icon(
                                   LucideIcons.landmark,
-                                  color: Colors.grey.shade400,
+                                  color: context.colors.textSubtle,
                                   size: 22,
                                 ),
                               ),
                             )
                           : Icon(
                               LucideIcons.landmark,
-                              color: Colors.grey.shade400,
+                              color: context.colors.textSubtle,
                               size: 22,
                             ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: Spacing.md),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Row(
                             children: [
@@ -526,57 +513,49 @@ class AssociationCard extends StatelessWidget {
                                 child: Text(
                                   association.name,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: isDark
-                                        ? Colors.white
-                                        : Colors.black87,
+                                    fontWeight: .bold,
+                                    fontSize: FontSizeToken.lg,
+                                    color: context.colors.text,
                                   ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: .ellipsis,
                                 ),
                               ),
                               if (association.isVerified) ...[
-                                const SizedBox(width: 4),
+                                const SizedBox(width: Spacing.xs),
                                 Icon(
                                   Icons.verified,
                                   size: 14,
-                                  color: Colors.blue.shade400,
+                                  color: context.colors.info,
                                 ),
                               ],
                             ],
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: Spacing.xxs),
                           Row(
                             children: [
                               Icon(
                                 LucideIcons.mapPin,
                                 size: 11,
-                                color: isDark
-                                    ? Colors.white54
-                                    : Colors.grey.shade500,
+                                color: context.colors.textSubtle,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: Spacing.xs),
                               Expanded(
                                 child: Text(
                                   locationLabel,
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: .ellipsis,
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: isDark
-                                        ? Colors.white54
-                                        : Colors.grey.shade500,
+                                    fontSize: FontSizeToken.sm,
+                                    color: context.colors.textSubtle,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: Spacing.sm),
                               Icon(
                                 LucideIcons.chevronRight,
                                 size: 14,
-                                color: isDark
-                                    ? Colors.white38
-                                    : Colors.grey.shade400,
+                                color: context.colors.textSubtle,
                               ),
                             ],
                           ),

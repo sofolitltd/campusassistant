@@ -3,10 +3,15 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+// Immersive media surface: the black backdrop and white chrome are
+// intentional and theme-independent — photos are always viewed against
+// black, in light mode as well as dark. These are the documented
+// exception to the context.colors rule (see app_colors.dart).
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 import '/core/network/api_endpoints.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ImageViewer extends StatelessWidget {
   final String title;
@@ -84,7 +89,7 @@ class ImageViewer extends StatelessWidget {
             onPressed: () => _shareRoutine(context),
             icon: const Icon(Icons.share),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: Spacing.md),
         ],
       ),
       body: Stack(
@@ -108,7 +113,7 @@ class ImageViewer extends StatelessWidget {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: imageProvider,
-                      fit: BoxFit.fitWidth,
+                      fit: .fitWidth,
                     ),
                   ),
                 ),
@@ -134,28 +139,33 @@ class ImageViewer extends StatelessWidget {
             width: double.infinity,
             // Using withOpacity is the standard way to set alpha
             color: Colors.black.withValues(alpha: .4),
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.sm,
+              Spacing.lg,
+              Spacing.xxxl,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
                 // Title
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: Spacing.sm),
 
                 // Time
                 Text(
                   time,
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Colors.white54,
-                    fontWeight: FontWeight.w100,
+                    fontWeight: .w100,
                   ),
                 ),
               ],

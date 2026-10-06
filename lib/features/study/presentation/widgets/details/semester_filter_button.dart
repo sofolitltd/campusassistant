@@ -5,6 +5,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/study/levels/domain/entities/semester.dart';
 import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/features/study/widgets/batch_tile.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class SemesterFilterButton extends ConsumerWidget {
   final SelectedSemester? selectedSemester;
@@ -21,42 +25,46 @@ class SemesterFilterButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => _showSemesterSheet(context, ref),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.sm,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
-          color: redBg ? Colors.white.withValues(alpha: 0.15) : null,
+          color: redBg ? context.colors.surface.withValues(alpha: 0.15) : null,
           border: Border.all(
             color: redBg
-                ? Colors.white.withValues(alpha: 0.4)
-                : isDark
-                ? Colors.white24
-                : Colors.grey.shade300,
+                ? context.colors.onPrimary.withValues(alpha: 0.4)
+                : context.colors.borderStrong,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Icon(
               LucideIcons.graduationCap,
               size: 14,
-              color: redBg ? Colors.white : theme.colorScheme.onSurface,
+              color: redBg
+                  ? context.colors.onPrimary
+                  : theme.colorScheme.onSurface,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: Spacing.sm),
             Text(
               selectedSemester?.name ?? 'Level',
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: redBg ? Colors.white : theme.colorScheme.onSurface,
+                fontSize: FontSizeToken.md,
+                fontWeight: .w500,
+                color: redBg
+                    ? context.colors.onPrimary
+                    : theme.colorScheme.onSurface,
               ),
             ),
             if (selectedSemester != null) ...[
-              const SizedBox(width: 4),
+              const SizedBox(width: Spacing.xs),
               GestureDetector(
                 onTap: () {
                   ref.read(selectedSemesterNotifierProvider.notifier).clear();
@@ -64,7 +72,9 @@ class SemesterFilterButton extends ConsumerWidget {
                 child: Icon(
                   LucideIcons.circleX,
                   size: 12,
-                  color: redBg ? Colors.white70 : Colors.red.shade700,
+                  color: redBg
+                      ? context.colors.textMuted
+                      : context.colors.danger,
                 ),
               ),
             ],
@@ -76,43 +86,44 @@ class SemesterFilterButton extends ConsumerWidget {
 
   void _showSemesterSheet(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       builder: (sheetContext) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.5,
-          padding: const EdgeInsets.only(top: 12),
+          padding: const EdgeInsets.only(top: Spacing.md),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Center(
                 child: Container(
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.borderStrong,
+                    borderRadius: BorderRadius.circular(RadiusToken.xs),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     Text(
                       'Select Level',
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: FontSizeToken.xl,
+                        fontWeight: .bold,
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
@@ -127,10 +138,10 @@ class SemesterFilterButton extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
                   children: [
                     BatchTile(
                       title: 'All Levels',

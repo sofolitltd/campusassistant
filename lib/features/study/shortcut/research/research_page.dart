@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import '../../presentation/providers/research_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ResearchPage extends ConsumerStatefulWidget {
   const ResearchPage({super.key});
@@ -62,10 +64,10 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.6,
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'No research data available yet.',
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: context.colors.textSubtle),
                       ),
                     ),
                   ),
@@ -76,8 +78,14 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
           return RefreshIndicator(
             onRefresh: () => notifier.refresh(),
             child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+              ),
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: Spacing.md),
               controller: _scrollController,
               itemCount: researches.length + (notifier.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
@@ -99,46 +107,51 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
                         borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                              ? context.colors.border
+                              : context.colors.border,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: context.colors.shadow,
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(Spacing.md),
                       child: Column(
                         spacing: 8,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
                             research.title,
-                            style: Theme.of(context).textTheme.bodyMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.copyWith(fontWeight: .bold),
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
+                            mainAxisAlignment: .spaceBetween,
+                            crossAxisAlignment: .baseline,
+                            textBaseline: .alphabetic,
                             children: [
                               Text(research.author),
                               Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(
+                                    RadiusToken.xs,
+                                  ),
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
+                                  horizontal: Spacing.sm,
+                                  vertical: Spacing.xxs,
                                 ),
                                 child: Text(
                                   research.type,
                                   style: Theme.of(context).textTheme.bodySmall!
-                                      .copyWith(color: Colors.white),
+                                      .copyWith(
+                                        color: context.colors.onPrimary,
+                                      ),
                                 ),
                               ),
                             ],
@@ -149,7 +162,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
                   );
                 } else {
                   return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: Spacing.lg),
                     child: Center(child: Text('Loading...')),
                   );
                 }

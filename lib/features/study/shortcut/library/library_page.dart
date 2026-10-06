@@ -1,5 +1,5 @@
 import 'dart:async';
-import '/features/study/widgets/content_card.dart';
+import '/features/resource/presentation/widgets/resource_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +9,8 @@ import '/core/widgets/section_tab_bar.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../../presentation/providers/library_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class LibraryPage extends ConsumerStatefulWidget {
   const LibraryPage({super.key});
@@ -62,7 +64,12 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: const [
@@ -82,23 +89,28 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                        horizontal: Spacing.lg,
+                        vertical: Spacing.sm,
                       ),
                       alignment: Alignment.centerRight,
                       child: Text(
                         'Showing ${state.docs.length} / ${state.totalCount}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade600,
+                          fontWeight: .bold,
+                          color: context.colors.textMuted,
                         ),
                       ),
                     ),
                     Expanded(
                       child: ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(
+                          Spacing.lg,
+                          0,
+                          Spacing.lg,
+                          Spacing.lg,
+                        ),
                         separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
+                            const SizedBox(height: Spacing.md),
                         controller: _scrollController,
                         itemCount: state.docs.length + (state.hasMore ? 1 : 0),
                         itemBuilder: (context, index) {
@@ -114,23 +126,27 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
 
                           if (index < state.docs.length) {
                             final doc = state.docs[index];
-                            return ContentCard(contentModel: doc);
+                            return ResourceCard(resource: doc);
                           } else {
                             return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
+                              padding: EdgeInsets.symmetric(
+                                vertical: Spacing.lg,
+                              ),
                               child: Center(
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: .center,
                                   children: [
                                     SizedBox(
                                       width: 14,
                                       height: 14,
                                       child: CupertinoActivityIndicator(),
                                     ),
-                                    SizedBox(width: 8),
+                                    SizedBox(width: Spacing.sm),
                                     Text(
                                       'Loading more books...',
-                                      style: TextStyle(fontSize: 12),
+                                      style: TextStyle(
+                                        fontSize: FontSizeToken.sm,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -146,16 +162,20 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
               loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, st) => Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
-                    Icon(LucideIcons.circleAlert, color: Colors.red, size: 48),
+                    Icon(
+                      LucideIcons.circleAlert,
+                      color: context.colors.danger,
+                      size: 48,
+                    ),
                     const SizedBox(height: Spacing.lg),
                     Text('Error: $e'),
                     TextButton(
                       onPressed: () => ref
                           .read(libraryPaginationProvider.notifier)
                           .refresh(),
-                      child: const Text('Try Again'),
+                      child: const Text('Try again'),
                     ),
                   ],
                 ),

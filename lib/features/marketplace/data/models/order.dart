@@ -12,6 +12,8 @@ class Order {
   // Only present on the merchant-facing "my merchant orders" endpoint, not
   // the buyer's own /my/orders (which is already scoped to that buyer).
   final String? buyerId;
+  // Status timeline, oldest first. Only sent by the single-order endpoint.
+  final List<OrderEvent> events;
 
   Order({
     required this.id,
@@ -25,6 +27,7 @@ class Order {
     required this.items,
     required this.createdAt,
     this.buyerId,
+    this.events = const [],
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -38,11 +41,42 @@ class Order {
       shippingPhone: json['shipping_phone'] as String? ?? '',
       shippingAddressLine: json['shipping_address_line'] as String? ?? '',
       shippingCity: json['shipping_city'] as String? ?? '',
-      items: itemsJson.map((e) => OrderItem.fromJson(e as Map<String, dynamic>)).toList(),
+      items: itemsJson
+          .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
       createdAt: json['created_at'] as String? ?? '',
       buyerId: json['buyer_id'] as String?,
+      events: (json['events'] as List? ?? [])
+          .map((e) => OrderEvent.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
+
+  /// When the order entered [status], or null if it never did.
+  DateTime? reachedAt(String status) {
+    for (final e in events) {
+      if (e.status == status) return e.at;
+    }
+    return null;
+  }
+
+  /// Cancellable by the buyer: unpaid, or cash on delivery before it ships.
+  bool get canCancel =>
+      status == 'pending_payment' ||
+      (paymentMethod == 'cash_on_delivery' && status == 'processing');
+}
+
+class OrderEvent {
+  final String status;
+  final DateTime at;
+  OrderEvent({required this.status, required this.at});
+
+  factory OrderEvent.fromJson(Map<String, dynamic> json) => OrderEvent(
+    status: json['status'] as String? ?? '',
+    at:
+        DateTime.tryParse(json['created_at'] as String? ?? '')?.toLocal() ??
+        DateTime.now(),
+  );
 }
 
 class OrderItem {
@@ -77,7 +111,8 @@ class OrderItem {
       merchantId: json['merchant_id'] as String? ?? '',
       quantity: json['quantity'] as int? ?? 0,
       unitPrice: json['unit_price'] as int? ?? 0,
-      commissionRateSnapshot: (json['commission_rate_snapshot'] as num?)?.toDouble() ?? 0,
+      commissionRateSnapshot:
+          (json['commission_rate_snapshot'] as num?)?.toDouble() ?? 0,
     );
   }
 }

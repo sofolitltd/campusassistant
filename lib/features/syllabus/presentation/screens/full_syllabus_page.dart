@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/syllabus_provider.dart';
 import '../../../study/shortcut/syllabus/syllabus_card.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class FullSyllabusPage extends ConsumerStatefulWidget {
   const FullSyllabusPage({super.key});
@@ -68,10 +70,10 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.6,
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'No syllabus available yet.',
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: context.colors.textSubtle),
                       ),
                     ),
                   ),
@@ -82,16 +84,21 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
           return RefreshIndicator(
             onRefresh: _onRefresh,
             child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+              ),
               controller: _scrollController,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
               itemCount: state.syllabi.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index < state.syllabi.length) {
                   return SyllabusCard(syllabus: state.syllabi[index]);
                 }
                 return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: Spacing.lg),
                   child: Center(child: Text('Loading...')),
                 );
               },

@@ -15,6 +15,7 @@ import '../providers/career_job_provider.dart';
 import '../widgets/job_detail_helpers.dart';
 import '../widgets/job_image_gallery.dart';
 import '../widgets/job_status_badge.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class JobDetailScreen extends ConsumerStatefulWidget {
   final String jobId;
@@ -76,10 +77,7 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               'Delete',
-              style: TextStyle(
-                color: cs.error,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: cs.error, fontWeight: .bold),
             ),
           ),
         ],
@@ -105,233 +103,224 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
           child: Container(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text('Job Details'),
-            elevation: 0,
-            actions: [
-              PopupMenuButton<String>(
-                icon: CircleAvatar(
-                  backgroundColor: cs.surfaceContainerHighest,
-                  child: Icon(
-                    LucideIcons.moreHorizontal,
-                    color: cs.onSurface,
-                  ),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: RadiusToken.circular(RadiusToken.sm),
-                ),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    context.pushNamed(
-                      AppRoute.careerJobEdit.name,
-                      pathParameters: {'jobId': job.id},
-                      extra: job,
-                    );
-                  } else if (value == 'reminder') {
-                    showSetReminderSheet(
-                      context,
-                      ref,
-                      jobId: job.id,
-                      suggestedTitle: job.title,
-                      suggestedTime: job.deadlineDate?.subtract(
-                        const Duration(hours: 8),
+              appBar: AppBar(
+                centerTitle: true,
+                title: const Text('Job Details'),
+                elevation: 0,
+                actions: [
+                  PopupMenuButton<String>(
+                    icon: CircleAvatar(
+                      backgroundColor: cs.surfaceContainerHighest,
+                      child: Icon(
+                        LucideIcons.moreHorizontal,
+                        color: cs.onSurface,
                       ),
-                    );
-                  } else if (value == 'delete') {
-                    _confirmDelete(job);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(
-                          LucideIcons.edit3,
-                          color: cs.onSurface,
-                          size: 18,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: RadiusToken.circular(RadiusToken.sm),
+                    ),
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        context.pushNamed(
+                          AppRoute.careerJobEdit.name,
+                          pathParameters: {'jobId': job.id},
+                          extra: job,
+                        );
+                      } else if (value == 'reminder') {
+                        showSetReminderSheet(
+                          context,
+                          ref,
+                          jobId: job.id,
+                          suggestedTitle: job.title,
+                          suggestedTime: job.deadlineDate?.subtract(
+                            const Duration(hours: 8),
+                          ),
+                        );
+                      } else if (value == 'delete') {
+                        _confirmDelete(job);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.edit3,
+                              color: cs.onSurface,
+                              size: 18,
+                            ),
+                            const SizedBox(width: Spacing.md),
+                            const Text('Edit'),
+                          ],
                         ),
-                        const SizedBox(width: Spacing.md),
-                        const Text('Edit'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'reminder',
-                    child: Row(
-                      children: [
-                        Icon(LucideIcons.bell, color: cs.primary, size: 18),
-                        const SizedBox(width: Spacing.md),
-                        const Text('Add Reminder'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(LucideIcons.trash2, color: cs.error, size: 18),
-                        const SizedBox(width: Spacing.md),
-                        Text(
-                          'Delete',
-                          style: TextStyle(color: cs.error),
+                      ),
+                      PopupMenuItem(
+                        value: 'reminder',
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.bell, color: cs.primary, size: 18),
+                            const SizedBox(width: Spacing.md),
+                            const Text('Add Reminder'),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.trash2, color: cs.error, size: 18),
+                            const SizedBox(width: Spacing.md),
+                            Text('Delete', style: TextStyle(color: cs.error)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(width: Spacing.md),
                 ],
               ),
-              const SizedBox(width: Spacing.md),
-            ],
-          ),
-          body: SafeArea(
-            child: Container(
-              color: cs.surface,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (job.attachmentUrls.isNotEmpty)
-                      JobImageGallery(
-                        attachmentUrls: job.attachmentUrls,
-                        imageIndex: _imageIndex,
-                        onPageChanged: (i) =>
-                            setState(() => _imageIndex = i),
-                        title: job.title,
-                        organization: job.organization,
-                      )
-                    else
-                      buildEmptyJobMedia(context),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        Spacing.lg,
-                        Spacing.lg,
-                        Spacing.lg,
-                        Spacing.lg,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            job.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 20,
-                                ),
-                          ).animate().fadeIn(delay: 200.ms),
-                          if (job.organization.isNotEmpty)
-                            Text(
-                              job.organization,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: cs.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ).animate().fadeIn(),
-                          const SizedBox(height: Spacing.xxl),
-                          Row(
+              body: SafeArea(
+                child: Container(
+                  color: cs.surface,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        if (job.attachmentUrls.isNotEmpty)
+                          JobImageGallery(
+                            attachmentUrls: job.attachmentUrls,
+                            imageIndex: _imageIndex,
+                            onPageChanged: (i) =>
+                                setState(() => _imageIndex = i),
+                            title: job.title,
+                            organization: job.organization,
+                          )
+                        else
+                          buildEmptyJobMedia(context),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            Spacing.lg,
+                            Spacing.lg,
+                            Spacing.lg,
+                            Spacing.lg,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: .start,
                             children: [
-                              JobStatusBadge(job: job),
-                              if (job.scope !=
-                                  CareerJobScope.private_) ...[
-                                const SizedBox(width: Spacing.sm),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: Spacing.md,
-                                    vertical: Spacing.sm,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: cs.primaryContainer,
-                                    borderRadius: RadiusToken.circular(
-                                      RadiusToken.sm,
+                              Text(
+                                job.title,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: .w900,
+                                      fontSize: FontSizeToken.xxl,
                                     ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        LucideIcons.radio,
-                                        size: 12,
+                              ).animate().fadeIn(delay: 200.ms),
+                              if (job.organization.isNotEmpty)
+                                Text(
+                                  job.organization,
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
                                         color: cs.primary,
+                                        fontWeight: .bold,
                                       ),
-                                      const SizedBox(width: Spacing.sm),
-                                      Text(
-                                        'Shared with ${_scopeLabel(job.scope)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: cs.primary,
-                                            ),
+                                ).animate().fadeIn(),
+                              const SizedBox(height: Spacing.xxl),
+                              Row(
+                                children: [
+                                  JobStatusBadge(job: job),
+                                  if (job.scope != CareerJobScope.private_) ...[
+                                    const SizedBox(width: Spacing.sm),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: Spacing.md,
+                                        vertical: Spacing.sm,
                                       ),
-                                    ],
-                                  ),
+                                      decoration: BoxDecoration(
+                                        color: cs.primaryContainer,
+                                        borderRadius: RadiusToken.circular(
+                                          RadiusToken.sm,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: .min,
+                                        children: [
+                                          Icon(
+                                            LucideIcons.radio,
+                                            size: 12,
+                                            color: cs.primary,
+                                          ),
+                                          const SizedBox(width: Spacing.sm),
+                                          Text(
+                                            'Shared with ${_scopeLabel(job.scope)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelSmall
+                                                ?.copyWith(
+                                                  fontWeight: .bold,
+                                                  color: cs.primary,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: Spacing.xl),
+                              if (job.publishDate != null)
+                                buildJobInfoCard(
+                                  context,
+                                  LucideIcons.calendar,
+                                  'Published',
+                                  job.publishDate!,
                                 ),
+                              if (job.deadlineDate != null)
+                                buildJobInfoCard(
+                                  context,
+                                  LucideIcons.clock,
+                                  'Deadline',
+                                  job.deadlineDate!,
+                                  isUrgent: true,
+                                  timeLeft: _timeLeft(job.deadlineDate!),
+                                ),
+                              if (job.notes.isNotEmpty) ...[
+                                Text(
+                                  job.notes,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: Spacing.xl),
                               ],
+                              if (job.postLink.isNotEmpty)
+                                buildJobLinkSection(
+                                  context,
+                                  'Job Posting',
+                                  job.postLink,
+                                  LucideIcons.externalLink,
+                                ),
+                              if (job.resourceLink.isNotEmpty)
+                                buildJobLinkSection(
+                                  context,
+                                  'Resources',
+                                  job.resourceLink,
+                                  LucideIcons.link,
+                                ),
                             ],
                           ),
-                          const SizedBox(height: Spacing.xl),
-                          if (job.publishDate != null)
-                            buildJobInfoCard(
-                              context,
-                              LucideIcons.calendar,
-                              'Published',
-                              job.publishDate!,
-                            ),
-                          if (job.deadlineDate != null)
-                            buildJobInfoCard(
-                              context,
-                              LucideIcons.clock,
-                              'Deadline',
-                              job.deadlineDate!,
-                              isUrgent: true,
-                              timeLeft: _timeLeft(job.deadlineDate!),
-                            ),
-                          if (job.notes.isNotEmpty) ...[
-                            Text(
-                              job.notes,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            const SizedBox(height: Spacing.xl),
-                          ],
-                          if (job.postLink.isNotEmpty)
-                            buildJobLinkSection(
-                              context,
-                              'Job Posting',
-                              job.postLink,
-                              LucideIcons.externalLink,
-                            ),
-                          if (job.resourceLink.isNotEmpty)
-                            buildJobLinkSection(
-                              context,
-                              'Resources',
-                              job.resourceLink,
-                              LucideIcons.link,
-                            ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
             ),
           ),
         );
       },
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, _) => Scaffold(
-        body: Center(child: Text('Failed to load job: $err')),
-      ),
+      error: (err, _) =>
+          Scaffold(body: Center(child: Text('Failed to load job: $err'))),
     );
   }
 

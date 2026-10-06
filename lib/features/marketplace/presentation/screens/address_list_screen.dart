@@ -6,6 +6,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/routes/app_route.dart';
 import '../providers/marketplace_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AddressListScreen extends ConsumerWidget {
   const AddressListScreen({super.key});
@@ -20,7 +24,9 @@ class AddressListScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.plus),
-            onPressed: () => context.push(AppRoute.marketplaceAddressForm.path).then((_) => ref.invalidate(addressesProvider)),
+            onPressed: () => context
+                .push(AppRoute.marketplaceAddressForm.path)
+                .then((_) => ref.invalidate(addressesProvider)),
           ),
         ],
       ),
@@ -28,115 +34,184 @@ class AddressListScreen extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
           child: addressesAsync.when(
-        data: (addresses) {
-          if (addresses.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(LucideIcons.mapPin, size: 64, color: Colors.grey.shade300),
-                  const SizedBox(height: 16),
-                  const Text('No addresses saved', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () => context.push(AppRoute.marketplaceAddressForm.path).then((_) => ref.invalidate(addressesProvider)),
-                    child: const Text('Add Address'),
-                  ),
-                ],
-              ),
-            );
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: addresses.length,
-            itemBuilder: (context, i) {
-              final address = addresses[i];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            data: (addresses) {
+              if (addresses.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: .center,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(address.label,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                                if (address.isDefault) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Text('Default',
-                                        style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.w600)),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text('${address.recipientName} — ${address.phone}',
-                                style: const TextStyle(fontSize: 13)),
-                            Text('${address.addressLine}, ${address.city}',
-                                style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          ],
+                      Icon(
+                        LucideIcons.mapPin,
+                        size: 64,
+                        color: context.colors.borderStrong,
+                      ),
+                      const SizedBox(height: Spacing.lg),
+                      const Text(
+                        'No addresses saved',
+                        style: TextStyle(
+                          fontSize: FontSizeToken.xl,
+                          fontWeight: .bold,
                         ),
                       ),
-                      Column(
-                        children: [
-                          if (!address.isDefault)
-                            IconButton(
-                              icon: Icon(LucideIcons.star, size: 20, color: Colors.grey.shade400),
-                              onPressed: () async {
-                                await setDefaultAddress(ref, addressId: address.id);
-                                ref.invalidate(addressesProvider);
-                              },
-                            ),
-                          IconButton(
-                            icon: Icon(LucideIcons.pencil, size: 18, color: Colors.grey.shade400),
-                            onPressed: () => context.push(
-                              '/campusmarket/addresses/edit/${address.id}',
-                              extra: address,
-                            ).then((_) => ref.invalidate(addressesProvider)),
-                          ),
-                          IconButton(
-                            icon: Icon(LucideIcons.trash2, size: 18, color: Colors.red.shade300),
-                            onPressed: () async {
-                              final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Delete Address'),
-                                  content: const Text('Are you sure?'),
-                                  actions: [
-                                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
-                                  ],
-                                ),
-                              );
-                              if (confirm == true) {
-                                await deleteAddress(ref, addressId: address.id);
-                                ref.invalidate(addressesProvider);
-                              }
-                            },
-                          ),
-                        ],
+                      const SizedBox(height: Spacing.sm),
+                      ElevatedButton(
+                        onPressed: () => context
+                            .push(AppRoute.marketplaceAddressForm.path)
+                            .then((_) => ref.invalidate(addressesProvider)),
+                        child: const Text('Add address'),
                       ),
                     ],
                   ),
-                ),
+                );
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(Spacing.lg),
+                itemCount: addresses.length,
+                itemBuilder: (context, i) {
+                  final address = addresses[i];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: Spacing.md),
+                    child: Padding(
+                      padding: const EdgeInsets.all(Spacing.lg),
+                      child: Row(
+                        crossAxisAlignment: .start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      address.label,
+                                      style: const TextStyle(
+                                        fontWeight: .bold,
+                                        fontSize: FontSizeToken.base,
+                                      ),
+                                    ),
+                                    if (address.isDefault) ...[
+                                      const SizedBox(width: Spacing.sm),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: Spacing.sm,
+                                          vertical: Spacing.xxs,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: context.colors.success
+                                              .withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            RadiusToken.md,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Default',
+                                          style: TextStyle(
+                                            fontSize: FontSizeToken.xxs,
+                                            color: context.colors.success,
+                                            fontWeight: .w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                const SizedBox(height: Spacing.xs),
+                                Text(
+                                  '${address.recipientName} — ${address.phone}',
+                                  style: const TextStyle(
+                                    fontSize: FontSizeToken.md,
+                                  ),
+                                ),
+                                Text(
+                                  '${address.addressLine}, ${address.city}',
+                                  style: TextStyle(
+                                    fontSize: FontSizeToken.sm,
+                                    color: context.colors.textSubtle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              if (!address.isDefault)
+                                IconButton(
+                                  icon: Icon(
+                                    LucideIcons.star,
+                                    size: 20,
+                                    color: context.colors.textSubtle,
+                                  ),
+                                  onPressed: () async {
+                                    await setDefaultAddress(
+                                      ref,
+                                      addressId: address.id,
+                                    );
+                                    ref.invalidate(addressesProvider);
+                                  },
+                                ),
+                              IconButton(
+                                icon: Icon(
+                                  LucideIcons.pencil,
+                                  size: 18,
+                                  color: context.colors.textSubtle,
+                                ),
+                                onPressed: () => context
+                                    .push(
+                                      '/campusmarket/addresses/edit/${address.id}',
+                                      extra: address,
+                                    )
+                                    .then(
+                                      (_) => ref.invalidate(addressesProvider),
+                                    ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  LucideIcons.trash2,
+                                  size: 18,
+                                  color: context.colors.danger,
+                                ),
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('Delete Address'),
+                                      content: const Text('Are you sure?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(ctx, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(ctx, true),
+                                          child: const Text('Delete'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    await deleteAddress(
+                                      ref,
+                                      addressId: address.id,
+                                    );
+                                    ref.invalidate(addressesProvider);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
-        error: (e, _) => Center(child: Text('Could not load addresses: $e')),
-      ),
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+            error: (e, _) =>
+                Center(child: Text('Could not load addresses: $e')),
+          ),
         ),
       ),
     );

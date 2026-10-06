@@ -6,6 +6,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
+import 'home_section.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class HomeDrawer extends ConsumerWidget {
   const HomeDrawer({super.key});
@@ -14,7 +17,7 @@ class HomeDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(userProvider);
     final user = userAsync.value;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final colors = context.colors;
 
     return Drawer(
       child: SafeArea(
@@ -23,39 +26,46 @@ class HomeDrawer extends ConsumerWidget {
             // Header
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-              decoration: BoxDecoration(color: primaryColor),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.xl,
+                Spacing.xxl,
+                Spacing.xl,
+                Spacing.xxl,
+              ),
+              decoration: BoxDecoration(gradient: homeHeaderGradient(context)),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundColor: colors.onPrimary.withValues(alpha: 0.2),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: Image.asset(
                         'assets/images/logo.png',
                         width: 36,
                         height: 36,
-                        fit: BoxFit.contain,
+                        fit: .contain,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Text(
-                    user?.name.toUpperCase() ?? 'User',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    user?.name ?? 'User',
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(
+                      color: colors.onPrimary,
+                      fontSize: FontSizeToken.xl,
+                      fontWeight: .bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Spacing.xs),
                   Text(
                     user?.email ?? '',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 13,
+                      color: colors.onPrimary.withValues(alpha: 0.8),
+                      fontSize: FontSizeToken.md,
                     ),
                   ),
                 ],
@@ -70,58 +80,65 @@ class HomeDrawer extends ConsumerWidget {
                   _DrawerTile(
                     icon: LucideIcons.user,
                     label: 'Profile',
-                    onTap: () => _navigate(context, AppRoute.profile.name),
+                    onTap: () => _pushNamed(context, AppRoute.profile.name),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.bookOpen,
                     label: 'Study',
-                    onTap: () => _navigate(context, AppRoute.study.name),
+                    onTap: () => _pushNamed(context, AppRoute.study.name),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.calendarDays,
                     label: 'Routine',
-                    onTap: () => _navigate(context, AppRoute.routine.path),
+                    onTap: () => _pushPath(context, AppRoute.routine.path),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.building2,
                     label: 'University',
-                    onTap: () => _navigate(context, AppRoute.university.path),
+                    onTap: () => _pushPath(context, AppRoute.university.path),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.library,
                     label: 'Library',
-                    onTap: () => _navigate(context, '/library'),
+                    onTap: () => _pushPath(context, '/library'),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.helpCircle,
                     label: 'Question Bank',
-                    onTap: () => _navigate(context, '/questions'),
+                    onTap: () => _pushPath(context, '/questions'),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.fileText,
                     label: 'Syllabus',
-                    onTap: () => _navigate(context, '/syllabus'),
+                    onTap: () => _pushPath(context, '/syllabus'),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.bookmark,
                     label: 'Bookmarks',
-                    onTap: () => _navigate(context, AppRoute.bookmarks.name),
+                    onTap: () => _pushNamed(context, AppRoute.bookmarks.name),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.folderDown,
                     label: 'Downloads',
                     onTap: () =>
-                        _navigate(context, AppRoute.downloadedFiles.name),
+                        _pushNamed(context, AppRoute.downloadedFiles.name),
                   ),
                   _DrawerTile(
                     icon: LucideIcons.users,
                     label: 'Contributors',
-                    onTap: () => _navigate(context, AppRoute.contributors.name),
+                    onTap: () =>
+                        _pushNamed(context, AppRoute.contributors.name),
                   ),
                   _DrawerTile(
-                    icon: LucideIcons.settings,
-                    label: 'Settings',
-                    onTap: () => _navigate(context, AppRoute.profile.path),
+                    icon: LucideIcons.messageSquare,
+                    label: 'Send Feedback',
+                    onTap: () => _pushPath(context, AppRoute.feedback.path),
+                  ),
+                  _DrawerTile(
+                    icon: LucideIcons.bellRing,
+                    label: 'Notification Settings',
+                    onTap: () =>
+                        _pushNamed(context, AppRoute.notificationSettings.name),
                   ),
                 ],
               ),
@@ -132,9 +149,17 @@ class HomeDrawer extends ConsumerWidget {
     );
   }
 
-  void _navigate(BuildContext context, String route) {
+  // Some routes are addressed by path, others only by name; passing a route
+  // *name* to context.push() treats it as a path and goes nowhere, so the two
+  // are kept as separate, explicit helpers.
+  void _pushPath(BuildContext context, String path) {
     Navigator.pop(context); // close drawer
-    context.push(route);
+    context.push(path);
+  }
+
+  void _pushNamed(BuildContext context, String name) {
+    Navigator.pop(context); // close drawer
+    context.pushNamed(name);
   }
 }
 
@@ -151,26 +176,28 @@ class _DrawerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final colors = context.colors;
 
     return ListTile(
-      leading: Icon(icon, color: primaryColor, size: 20),
+      leading: Icon(icon, color: colors.primary, size: 20),
       title: Text(
         label,
         style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: isDark ? Colors.white70 : Colors.grey.shade800,
+          fontSize: FontSizeToken.base,
+          fontWeight: .w500,
+          color: colors.text,
         ),
       ),
       trailing: Icon(
         LucideIcons.chevronRight,
         size: 16,
-        color: isDark ? Colors.white30 : Colors.grey.shade400,
+        color: colors.textSubtle,
       ),
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: Spacing.xl,
+        vertical: Spacing.xxs,
+      ),
     );
   }
 }

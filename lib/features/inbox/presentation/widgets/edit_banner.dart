@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class EditBanner extends StatelessWidget {
   final String oldText;
@@ -16,45 +19,50 @@ class EditBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.sm,
+        Spacing.sm,
+        Spacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1F2C33) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.white10 : Colors.grey.shade300,
-          ),
-        ),
+        color: context.colors.surface,
+        border: Border(top: BorderSide(color: context.colors.borderStrong)),
       ),
       child: Row(
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
-                const Text(
+                Text(
                   'Editing',
                   style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.teal,
+                    fontSize: FontSizeToken.xs,
+                    fontWeight: .w600,
+                    color: context.colors.primary,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: Spacing.xxs),
                 Text(
                   oldText,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                   style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.white38 : Colors.grey.shade500,
+                    fontSize: FontSizeToken.sm,
+                    color: context.colors.textSubtle,
                   ),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: Icon(LucideIcons.x, size: 16, color: Colors.grey.shade400),
+            icon: Icon(
+              LucideIcons.x,
+              size: 16,
+              color: context.colors.textSubtle,
+            ),
             onPressed: onCancel,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

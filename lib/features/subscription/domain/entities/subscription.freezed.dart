@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'subscription.dart';
@@ -9,6 +9,7 @@ part of 'subscription.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $SubscriptionCopyWith<Subscription> get copyWith => _$SubscriptionCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Subscription&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+  final _this = this as Subscription;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Subscription&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.plan, _this.plan) || other.plan == _this.plan)&&(identical(other.startDate, _this.startDate) || other.startDate == _this.startDate)&&(identical(other.endDate, _this.endDate) || other.endDate == _this.endDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,plan,startDate,endDate);
+int get hashCode {
+  final _this = this as Subscription;
+  return Object.hash(runtimeType,_this.id,_this.userId,_this.plan,_this.startDate,_this.endDate);
+}
 
 @override
 String toString() {
-  return 'Subscription(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate)';
+  final _this = this as Subscription;
+  return 'Subscription(id: ${_this.id}, userId: ${_this.userId}, plan: ${_this.plan}, startDate: ${_this.startDate}, endDate: ${_this.endDate})';
 }
 
 
@@ -63,7 +69,7 @@ class _$SubscriptionCopyWithImpl<$Res>
 /// Create a copy of Subscription
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Subscription(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
@@ -229,16 +235,18 @@ _$SubscriptionCopyWith<_Subscription> get copyWith => __$SubscriptionCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Subscription&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Subscription&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,plan,startDate,endDate);
+int get hashCode {
+    return Object.hash(runtimeType,id,userId,plan,startDate,endDate);
+}
 
 @override
 String toString() {
-  return 'Subscription(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate)';
+    return 'Subscription(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate)';
 }
 
 
@@ -294,16 +302,21 @@ $SubscriptionPlanCopyWith<SubscriptionPlan> get copyWith => _$SubscriptionPlanCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.isLifetime, isLifetime) || other.isLifetime == isLifetime)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other.targets, targets));
+  final _this = this as SubscriptionPlan;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionPlan&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.discount, _this.discount) || other.discount == _this.discount)&&(identical(other.durationDays, _this.durationDays) || other.durationDays == _this.durationDays)&&(identical(other.isLifetime, _this.isLifetime) || other.isLifetime == _this.isLifetime)&&(identical(other.index, _this.index) || other.index == _this.index)&&const DeepCollectionEquality().equals(other.targets, _this.targets));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,price,discount,durationDays,isLifetime,index,const DeepCollectionEquality().hash(targets));
+int get hashCode {
+  final _this = this as SubscriptionPlan;
+  return Object.hash(runtimeType,_this.id,_this.title,_this.price,_this.discount,_this.durationDays,_this.isLifetime,_this.index,const DeepCollectionEquality().hash(_this.targets));
+}
 
 @override
 String toString() {
-  return 'SubscriptionPlan(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, isLifetime: $isLifetime, index: $index, targets: $targets)';
+  final _this = this as SubscriptionPlan;
+  return 'SubscriptionPlan(id: ${_this.id}, title: ${_this.title}, price: ${_this.price}, discount: ${_this.discount}, durationDays: ${_this.durationDays}, isLifetime: ${_this.isLifetime}, index: ${_this.index}, targets: ${_this.targets})';
 }
 
 
@@ -332,7 +345,7 @@ class _$SubscriptionPlanCopyWithImpl<$Res>
 /// Create a copy of SubscriptionPlan
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? price = null,Object? discount = null,Object? durationDays = null,Object? isLifetime = null,Object? index = null,Object? targets = null,}) {
-  return _then(_self.copyWith(
+  return _then(SubscriptionPlan(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
@@ -482,7 +495,7 @@ return $default(_that.id,_that.title,_that.price,_that.discount,_that.durationDa
 
 
 class _SubscriptionPlan extends SubscriptionPlan {
-  const _SubscriptionPlan({required this.id, required this.title, required this.price, required this.discount, required this.durationDays, this.isLifetime = false, required this.index, required final  List<SubscriptionTarget> targets}): _targets = targets,super._();
+  const _SubscriptionPlan({required this.id, required this.title, required this.price, required this.discount, required this.durationDays, this.isLifetime = false, required this.index, required  List<SubscriptionTarget> targets}): _targets = targets,super._();
   
 
 @override final  String id;
@@ -510,16 +523,18 @@ _$SubscriptionPlanCopyWith<_SubscriptionPlan> get copyWith => __$SubscriptionPla
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.isLifetime, isLifetime) || other.isLifetime == isLifetime)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other._targets, _targets));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.durationDays, durationDays) || other.durationDays == durationDays)&&(identical(other.isLifetime, isLifetime) || other.isLifetime == isLifetime)&&(identical(other.index, index) || other.index == index)&&const DeepCollectionEquality().equals(other.targets, _targets));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,price,discount,durationDays,isLifetime,index,const DeepCollectionEquality().hash(_targets));
+int get hashCode {
+    return Object.hash(runtimeType,id,title,price,discount,durationDays,isLifetime,index,const DeepCollectionEquality().hash(_targets));
+}
 
 @override
 String toString() {
-  return 'SubscriptionPlan(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, isLifetime: $isLifetime, index: $index, targets: $targets)';
+    return 'SubscriptionPlan(id: $id, title: $title, price: $price, discount: $discount, durationDays: $durationDays, isLifetime: $isLifetime, index: $index, targets: $targets)';
 }
 
 
@@ -578,16 +593,21 @@ $SubscriptionTargetCopyWith<SubscriptionTarget> get copyWith => _$SubscriptionTa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionTarget&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+  final _this = this as SubscriptionTarget;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionTarget&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,universityId,departmentId);
+int get hashCode {
+  final _this = this as SubscriptionTarget;
+  return Object.hash(runtimeType,_this.id,_this.universityId,_this.departmentId);
+}
 
 @override
 String toString() {
-  return 'SubscriptionTarget(id: $id, universityId: $universityId, departmentId: $departmentId)';
+  final _this = this as SubscriptionTarget;
+  return 'SubscriptionTarget(id: ${_this.id}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId})';
 }
 
 
@@ -616,7 +636,7 @@ class _$SubscriptionTargetCopyWithImpl<$Res>
 /// Create a copy of SubscriptionTarget
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? universityId = null,Object? departmentId = null,}) {
-  return _then(_self.copyWith(
+  return _then(SubscriptionTarget(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
@@ -778,16 +798,18 @@ _$SubscriptionTargetCopyWith<_SubscriptionTarget> get copyWith => __$Subscriptio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionTarget&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionTarget&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,universityId,departmentId);
+int get hashCode {
+    return Object.hash(runtimeType,id,universityId,departmentId);
+}
 
 @override
 String toString() {
-  return 'SubscriptionTarget(id: $id, universityId: $universityId, departmentId: $departmentId)';
+    return 'SubscriptionTarget(id: $id, universityId: $universityId, departmentId: $departmentId)';
 }
 
 

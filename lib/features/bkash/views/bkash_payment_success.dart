@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   final String paymentID;
@@ -12,39 +14,42 @@ class PaymentSuccessPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Payment Successful")),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(Spacing.lg),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .center,
             children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 80),
-              const SizedBox(height: 20),
+              Icon(Icons.check_circle, color: context.colors.success, size: 80),
+              const SizedBox(height: Spacing.xl),
               const Text(
                 "Payment Successful!",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: FontSizeToken.display,
+                  fontWeight: .bold,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               Text(
                 "Payment ID: $paymentID",
                 style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                  fontSize: FontSizeToken.sm,
+                  fontWeight: .w500,
                 ),
               ),
               const SizedBox(height: Spacing.lg),
               const Text(
                 "Check your subscription status on Profile page",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(fontWeight: .w500),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: Spacing.xxxl),
               ElevatedButton(
                 onPressed: () {
                   GoRouter.of(context).go('/'); // Navigate to home
                 },
                 child: const Text("Go to Home"),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: Spacing.md),
             ],
           ),
         ),

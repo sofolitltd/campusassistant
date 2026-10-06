@@ -12,6 +12,9 @@ class Product {
   final List<String> imageUrls;
   final Category? category;
   final bool isPublished;
+  final double ratingAvg;
+  final int ratingCount;
+  final DateTime? featuredUntil;
 
   Product({
     required this.id,
@@ -24,7 +27,13 @@ class Product {
     required this.imageUrls,
     this.category,
     required this.isPublished,
+    this.ratingAvg = 0,
+    this.ratingCount = 0,
+    this.featuredUntil,
   });
+
+  bool get isFeatured =>
+      featuredUntil != null && featuredUntil!.isAfter(DateTime.now());
 
   factory Product.fromJson(Map<String, dynamic> json) {
     final imageUrlsJson = json['image_urls'] as List? ?? [];
@@ -34,7 +43,9 @@ class Product {
     return Product(
       id: json['id'] as String,
       merchantId: json['merchant_id'] as String? ?? '',
-      merchant: merchantJson != null && (merchantJson['id'] as String?)?.isNotEmpty == true
+      merchant:
+          merchantJson != null &&
+              (merchantJson['id'] as String?)?.isNotEmpty == true
           ? Merchant.fromJson(merchantJson)
           : null,
       title: json['title'] as String? ?? '',
@@ -42,10 +53,15 @@ class Product {
       price: json['price'] as int? ?? 0,
       stock: json['stock'] as int? ?? 0,
       imageUrls: imageUrlsJson.map((e) => e as String).toList(),
-      category: categoryJson != null && (categoryJson['id'] as String?)?.isNotEmpty == true
+      category:
+          categoryJson != null &&
+              (categoryJson['id'] as String?)?.isNotEmpty == true
           ? Category.fromJson(categoryJson)
           : null,
       isPublished: json['is_published'] as bool? ?? false,
+      ratingAvg: (json['rating_avg'] as num?)?.toDouble() ?? 0,
+      ratingCount: json['rating_count'] as int? ?? 0,
+      featuredUntil: DateTime.tryParse(json['featured_until'] as String? ?? ''),
     );
   }
 }

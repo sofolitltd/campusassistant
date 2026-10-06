@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 abstract final class RadiusToken {
   static const double xs = 4;
   static const double sm = 6;
-  static const double md = 8; // default for cards, buttons, dialogs
-  static const double lg = 12; // section cards, featured containers
+  static const double md = 8; // default for cards, list tiles
+  static const double lg = 12; // buttons, inputs, section cards, dialogs
   static const double xl = 16; // hero cards, emergency contacts
   static const double xxl = 20; // floating search bars
+  static const double xxxl = 24; // bottom sheets, large surfaces
   static const double full = 999; // circular / pills
 
   /// Convenience: `RadiusToken.circular(RadiusToken.md)`

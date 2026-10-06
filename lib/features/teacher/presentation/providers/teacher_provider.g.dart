@@ -104,47 +104,6 @@ final class TeacherRepositoryProvider
 
 String _$teacherRepositoryHash() => r'c24dcedd6b7274451279730d08f946778b101e88';
 
-@ProviderFor(getTeachers)
-final getTeachersProvider = GetTeachersProvider._();
-
-final class GetTeachersProvider
-    extends $FunctionalProvider<GetTeachers, GetTeachers, GetTeachers>
-    with $Provider<GetTeachers> {
-  GetTeachersProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'getTeachersProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$getTeachersHash();
-
-  @$internal
-  @override
-  $ProviderElement<GetTeachers> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  GetTeachers create(Ref ref) {
-    return getTeachers(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetTeachers value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<GetTeachers>(value),
-    );
-  }
-}
-
-String _$getTeachersHash() => r'45ca62e0ad23f4248d2aa4a7741c07302700bb07';
-
 @ProviderFor(teachersList)
 final teachersListProvider = TeachersListFamily._();
 
@@ -153,9 +112,9 @@ final class TeachersListProvider
         $FunctionalProvider<
           AsyncValue<List<Teacher>>,
           List<Teacher>,
-          FutureOr<List<Teacher>>
+          Stream<List<Teacher>>
         >
-    with $FutureModifier<List<Teacher>>, $FutureProvider<List<Teacher>> {
+    with $FutureModifier<List<Teacher>>, $StreamProvider<List<Teacher>> {
   TeachersListProvider._({
     required TeachersListFamily super.from,
     required bool? super.argument,
@@ -179,12 +138,12 @@ final class TeachersListProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Teacher>> $createElement(
+  $StreamProviderElement<List<Teacher>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<Teacher>> create(Ref ref) {
+  Stream<List<Teacher>> create(Ref ref) {
     final argument = this.argument as bool?;
     return teachersList(ref, argument);
   }
@@ -200,10 +159,10 @@ final class TeachersListProvider
   }
 }
 
-String _$teachersListHash() => r'c6850d56fac9dd50d84ee33fe06e23f2fa5bd525';
+String _$teachersListHash() => r'be8737124f928576ec63fe94d96a8a05cc41edef';
 
 final class TeachersListFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<Teacher>>, bool?> {
+    with $FunctionalFamilyOverride<Stream<List<Teacher>>, bool?> {
   TeachersListFamily._()
     : super(
         retry: null,

@@ -1,173 +1,153 @@
-import 'package:campusassistant/core/theme/tokens/app_spacing.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/theme/tokens/app_radius.dart';
+import '/core/error/failures.dart';
+import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/section_card.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/skill/data/models/skill.dart';
 import '/features/skill/presentation/providers/skill_provider.dart';
-import '/core/network/api_endpoints.dart';
 import '/routes/app_route.dart';
+import '../widgets/home_section.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class SkillUpSection extends ConsumerWidget {
   const SkillUpSection({super.key});
 
+  static const double _listHeight = 190;
+  static const double _cardWidth = 200;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(userProvider);
-    final user = userAsync.value;
+    final user = ref.watch(userProvider).value;
     if (user == null) return const SizedBox.shrink();
 
-    final skillsAsync = ref.watch(
-      skillsListProvider((
-        universityId: user.university,
-        departmentId: user.department,
-      )),
-    );
+    final args = (universityId: user.university, departmentId: user.department);
 
-    return skillsAsync.when(
-      data: (skills) {
-        if (skills.isEmpty) return const SizedBox.shrink();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Skill Up',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    return ref
+        .watch(skillsListProvider(args))
+        .when(
+          loading: () => const HomeSectionLoading(height: _listHeight),
+          error: (e, _) => HomeSectionError(
+            offline: e is NetworkFailure,
+            message: e is NetworkFailure
+                ? 'No internet connection'
+                : 'Unable to load skills',
+            onRetry: () => ref.invalidate(skillsListProvider(args)),
+          ),
+          data: (skills) {
+            if (skills.isEmpty) return const SizedBox.shrink();
+            return HomeSection(
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  const HomeSectionHeader('Skill Up'),
+                  const SizedBox(height: Spacing.sm),
+                  SizedBox(
+                    height: _listHeight,
+                    child: ListView.separated(
+                      scrollDirection: .horizontal,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: homeInset,
+                      ),
+                      itemCount: skills.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(width: Spacing.md),
+                      itemBuilder: (context, i) => SizedBox(
+                        width: _cardWidth,
+                        child: _SkillCard(skill: skills[i]),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: Spacing.sm),
-
-            SizedBox(
-              height: 190,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: skills.length,
-                itemBuilder: (context, i) => _SkillCard(skill: skills[i]),
-              ),
-            ),
-            SizedBox(height: Spacing.xxl),
-          ],
+            );
+          },
         );
-      },
-      loading: () => const SizedBox(
-        height: 190,
-        child: Center(child: CupertinoActivityIndicator()),
-      ),
-      error: (e, _) => const SizedBox.shrink(),
-    );
   }
 }
 
 class _SkillCard extends StatelessWidget {
-  final Skill skill;
-
   const _SkillCard({required this.skill});
+
+  final Skill skill;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.colors;
+    final placeholder = ColoredBox(
+      color: colors.surfaceAlt,
+      child: Center(
+        child: Icon(LucideIcons.sparkles, color: colors.textSubtle),
+      ),
+    );
 
-    return GestureDetector(
+    return SectionCard(
+      radius: homeCardRadius,
+      padding: EdgeInsets.zero,
       onTap: () => context.pushNamed(
         AppRoute.skillDetails.name,
         pathParameters: {'skillId': skill.id},
         extra: skill,
       ),
-      child: Container(
-        width: 200,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.lg),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          SizedBox(
+            height: 120,
+            width: double.infinity,
+            child: skill.thumbnailUrl.isEmpty
+                ? placeholder
+                : CachedNetworkImage(
+                    imageUrl: ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
+                    fit: .contain,
+                    placeholder: (_, _) => placeholder,
+                    errorWidget: (_, _, _) => placeholder,
+                  ),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(RadiusToken.lg),
-              ),
-              child: SizedBox(
-                height: 120,
-                width: double.infinity,
-                child: skill.thumbnailUrl.isNotEmpty
-                    ? Image.network(
-                        ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: Colors.grey.shade100,
-                          child: Icon(
-                            LucideIcons.sparkles,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        color: Colors.grey.shade100,
-                        child: Icon(
-                          LucideIcons.sparkles,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    skill.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                      height: 1.2,
+          Padding(
+            padding: const EdgeInsets.all(Spacing.md),
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  skill.title,
+                  maxLines: 2,
+                  overflow: .ellipsis,
+                  style: TextStyle(
+                    fontWeight: .w600,
+                    fontSize: FontSizeToken.md,
+                    height: 1.2,
+                    color: colors.text,
+                  ),
+                ),
+                const SizedBox(height: Spacing.xs),
+                Row(
+                  children: [
+                    Icon(
+                      LucideIcons.circlePlay,
+                      size: 12,
+                      color: colors.textMuted,
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        LucideIcons.playCircle,
-                        size: 12,
-                        color: isDark ? Colors.white54 : Colors.grey.shade600,
+                    const SizedBox(width: Spacing.xs),
+                    Text(
+                      '${skill.videos.length} videos',
+                      style: TextStyle(
+                        fontSize: FontSizeToken.xs,
+                        color: colors.textMuted,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${skill.videos.length} videos',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isDark ? Colors.white54 : Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

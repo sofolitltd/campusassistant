@@ -2,9 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
+import '/routes/app_route.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ForgotPassword extends ConsumerStatefulWidget {
   const ForgotPassword({super.key});
@@ -21,6 +25,36 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
   );
 
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    final email = _emailController.text.trim();
+
+    final result = await ref.read(authRepositoryProvider).forgotPassword(email);
+    // The widget can be disposed while the request is in flight — touching
+    // context or calling setState afterwards would throw.
+    if (!mounted) return;
+
+    setState(() => _isLoading = false);
+
+    result.fold((failure) => Fluttertoast.showToast(msg: failure.message), (_) {
+      // Deliberately neutral: the backend returns the same response whether or
+      // not the account exists, and this copy must not contradict that by
+      // implying an email was definitely sent to a real account.
+      Fluttertoast.showToast(
+        msg: 'If an account exists for that email, we sent a code.',
+      );
+      context.pushNamed(AppRoute.resetPassword.name, extra: email);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,40 +82,41 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                   borderRadius: BorderRadius.circular(RadiusToken.xl),
                   border: Border.all(
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white10
-                        : Colors.grey.shade200,
+                        ? context.colors.border
+                        : context.colors.border,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: context.colors.shadow,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(Spacing.lg),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: .min,
+                    crossAxisAlignment: .stretch,
                     children: [
                       Text(
-                        'Reset your password'.toUpperCase(),
-                        style: Theme.of(context).textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold),
+                        'Reset your password',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium!.copyWith(fontWeight: .bold),
                       ),
-                      const Text(
-                        'Enter your email address and we will send you instructions to reset your password.',
-                        style: TextStyle(color: Colors.grey),
+                      Text(
+                        'Enter your email address and we will send you a 6-digit code to reset your password.',
+                        style: TextStyle(color: context.colors.textSubtle),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: Spacing.sm),
                       const Divider(height: .5),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: Spacing.xxl),
                       CommonTextFieldWidget(
                         controller: _emailController,
                         heading: 'Email',
                         hintText: 'Enter your email',
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: .emailAddress,
                         validator: (val) {
                           if (val == null || val.isEmpty) {
                             return 'Enter your email';
@@ -91,62 +126,26 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: Spacing.xxl),
                       ElevatedButton(
-                        onPressed: _isLoading
-                            ? null
-                            : () async {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() => _isLoading = true);
-
-                                  try {
-                                    final authRepo = ref.read(
-                                      authRepositoryProvider,
-                                    );
-                                    final result = await authRepo
-                                        .forgotPassword(
-                                          _emailController.text.trim(),
-                                        );
-
-                                    result.fold(
-                                      (failure) {
-                                        Fluttertoast.showToast(
-                                          msg: failure.message,
-                                        );
-                                        setState(() => _isLoading = false);
-                                      },
-                                      (_) {
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              'Password reset instructions sent to your email',
-                                        );
-                                        setState(() => _isLoading = false);
-                                        Navigator.pop(context);
-                                      },
-                                    );
-                                  } catch (e) {
-                                    Fluttertoast.showToast(msg: 'Error: $e');
-                                    setState(() => _isLoading = false);
-                                  }
-                                }
-                              },
+                        onPressed: _isLoading ? null : _submit,
                         child: _isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 24,
                                 width: 24,
                                 child: CupertinoActivityIndicator(
-                                  color: Colors.white,
+                                  color: context.colors.onPrimary,
                                 ),
                               )
                             : Text(
-                                'Submit'.toUpperCase(),
+                                'Submit',
                                 style: const TextStyle(
                                   letterSpacing: 1,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: .bold,
                                 ),
                               ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: Spacing.xxxl),
                       const Text(
                         '* If you don\'t see the email in your inbox, check your spam folder.',
                       ),

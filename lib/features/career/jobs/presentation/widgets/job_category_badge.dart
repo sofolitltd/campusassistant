@@ -27,25 +27,32 @@ class JobCategoryBadge extends ConsumerWidget {
       key: _badgeKey,
       onTap: () => _showCategoryPicker(context, ref, categoriesAsync),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
           color: cs.tertiaryContainer,
           borderRadius: RadiusToken.circular(RadiusToken.sm),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Icon(LucideIcons.tag, size: 12, color: cs.onTertiaryContainer),
             const SizedBox(width: Spacing.sm),
             Text(
               job.category?.name ?? 'Uncategorized',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 color: cs.onTertiaryContainer,
               ),
             ),
             const SizedBox(width: Spacing.xxs),
-            Icon(LucideIcons.chevronDown, size: 14, color: cs.onTertiaryContainer),
+            Icon(
+              LucideIcons.chevronDown,
+              size: 14,
+              color: cs.onTertiaryContainer,
+            ),
           ],
         ),
       ),
@@ -57,9 +64,13 @@ class JobCategoryBadge extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<List<CircularCategory>> categoriesAsync,
   ) {
-    final categories = categoriesAsync.maybeWhen(data: (v) => v, orElse: () => const <CircularCategory>[]);
+    final categories = categoriesAsync.maybeWhen(
+      data: (v) => v,
+      orElse: () => const <CircularCategory>[],
+    );
     final cs = Theme.of(context).colorScheme;
-    final renderBox = _badgeKey.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox =
+        _badgeKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero);
@@ -73,12 +84,24 @@ class JobCategoryBadge extends ConsumerWidget {
         position.dx + size.width,
         position.dy + size.height + 4,
       ),
-      shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: RadiusToken.circular(RadiusToken.sm),
+      ),
       color: cs.surfaceContainerHighest,
       items: [
-        _categoryMenuItem(context, id: null, label: 'Uncategorized', isSelected: job.categoryId == null),
+        _categoryMenuItem(
+          context,
+          id: null,
+          label: 'Uncategorized',
+          isSelected: job.categoryId == null,
+        ),
         for (final category in categories)
-          _categoryMenuItem(context, id: category.id, label: category.name, isSelected: job.categoryId == category.id),
+          _categoryMenuItem(
+            context,
+            id: category.id,
+            label: category.name,
+            isSelected: job.categoryId == category.id,
+          ),
       ],
     ).then((value) async {
       if (value == job.categoryId) return;

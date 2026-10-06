@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class DateSeparator extends StatelessWidget {
   final String date;
@@ -10,20 +13,23 @@ class DateSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.md),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.md,
+            vertical: Spacing.xs,
+          ),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white10 : Colors.white,
+            color: context.colors.surface,
             borderRadius: BorderRadius.circular(RadiusToken.md),
           ),
           child: Text(
             date,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white60 : Colors.grey.shade600,
+              fontSize: FontSizeToken.sm,
+              fontWeight: .w500,
+              color: context.colors.textMuted,
             ),
           ),
         ),

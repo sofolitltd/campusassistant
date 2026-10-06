@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class MarketplaceInfoScreen extends StatelessWidget {
   const MarketplaceInfoScreen({super.key});
@@ -14,10 +17,10 @@ class MarketplaceInfoScreen extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 700),
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             children: [
               _HeroSection(),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               _SectionCard(
                 icon: LucideIcons.info,
                 title: 'What is Campus Market?',
@@ -29,7 +32,7 @@ class MarketplaceInfoScreen extends StatelessWidget {
                       'your fellow students and campus community members.',
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _SectionCard(
                 icon: LucideIcons.badgeCheck,
                 title: 'Who Can Buy?',
@@ -39,7 +42,7 @@ class MarketplaceInfoScreen extends StatelessWidget {
                   'No special approval needed — just find what you need and place your order.',
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _SectionCard(
                 icon: LucideIcons.store,
                 title: 'Who Can Sell?',
@@ -49,7 +52,7 @@ class MarketplaceInfoScreen extends StatelessWidget {
                       'our terms of service to ensure a safe and trusted marketplace for everyone.',
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _SectionCard(
                 icon: LucideIcons.userRoundPlus,
                 title: 'How to Become a Merchant?',
@@ -61,7 +64,7 @@ class MarketplaceInfoScreen extends StatelessWidget {
                   '5. Once approved, you can start listing your products for sale immediately.',
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _SectionCard(
                 icon: LucideIcons.creditCard,
                 title: 'Payment System',
@@ -72,9 +75,9 @@ class MarketplaceInfoScreen extends StatelessWidget {
                   'All transactions are tracked within the app for your reference and records.',
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               _TermsPrivacyCard(),
-              const SizedBox(height: 32),
+              const SizedBox(height: Spacing.xxxl),
             ],
           ),
         ),
@@ -90,7 +93,7 @@ class _HeroSection extends StatelessWidget {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(Spacing.xxl),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -108,23 +111,25 @@ class _HeroSection extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             decoration: BoxDecoration(
               color: primaryColor.withValues(alpha: isDark ? 0.3 : 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(LucideIcons.store, size: 40, color: primaryColor),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Text(
             'Welcome to Campus Market',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: .bold),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Text(
             'Your campus-exclusive marketplace — buy, sell, and connect within your university community.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600, height: 1.5),
+            textAlign: .center,
+            style: TextStyle(color: context.colors.textMuted, height: 1.5),
           ),
         ],
       ),
@@ -145,34 +150,42 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Spacing.xl),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
+        color: context.colors.surfaceAlt,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
               Icon(icon, size: 22, color: primaryColor),
-              const SizedBox(width: 10),
-              Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              const SizedBox(width: Spacing.md),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: FontSizeToken.xl,
+                  fontWeight: .bold,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           for (final child in children) ...[
-            Text(child, style: TextStyle(
-              fontSize: 14,
-              height: 1.6,
-              color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
-            )),
-            if (child != children.last) const SizedBox(height: 8),
+            Text(
+              child,
+              style: TextStyle(
+                fontSize: FontSizeToken.base,
+                height: 1.6,
+                color: context.colors.textMuted,
+              ),
+            ),
+            if (child != children.last) const SizedBox(height: Spacing.sm),
           ],
         ],
       ),
@@ -183,47 +196,52 @@ class _SectionCard extends StatelessWidget {
 class _TermsPrivacyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Spacing.xl),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
+        color: context.colors.surfaceAlt,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
               Icon(LucideIcons.shield, size: 22, color: primaryColor),
-              const SizedBox(width: 10),
-              const Text('Privacy & Terms', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              const SizedBox(width: Spacing.md),
+              const Text(
+                'Privacy & Terms',
+                style: TextStyle(fontSize: FontSizeToken.xl, fontWeight: .bold),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           _TermItem(
             icon: LucideIcons.lock,
             title: 'Privacy Policy',
-            description: 'Your personal information is securely stored and never shared with third parties '
+            description:
+                'Your personal information is securely stored and never shared with third parties '
                 'without your consent. We only use your data to facilitate transactions and '
                 'improve your marketplace experience.',
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           _TermItem(
             icon: LucideIcons.fileText,
             title: 'Terms & Conditions',
-            description: 'By using Campus Market, you agree to abide by university guidelines. '
+            description:
+                'By using Campus Market, you agree to abide by university guidelines. '
                 'All transactions are between buyer and seller. Campus Assistant facilitates '
                 'the connection but is not liable for disputes.',
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           _TermItem(
             icon: LucideIcons.ban,
             title: 'Prohibited Items',
-            description: 'We strictly prohibit the sale of illegal items, weapons, alcohol, drugs, '
+            description:
+                'We strictly prohibit the sale of illegal items, weapons, alcohol, drugs, '
                 'and any items that violate university policies.',
           ),
         ],
@@ -245,24 +263,31 @@ class _TermItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
-        Icon(icon, size: 18, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-        const SizedBox(width: 10),
+        Icon(icon, size: 18, color: context.colors.textMuted),
+        const SizedBox(width: Spacing.md),
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-              const SizedBox(height: 4),
-              Text(description, style: TextStyle(
-                fontSize: 13,
-                height: 1.5,
-                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-              )),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: .w600,
+                  fontSize: FontSizeToken.base,
+                ),
+              ),
+              const SizedBox(height: Spacing.xs),
+              Text(
+                description,
+                style: TextStyle(
+                  fontSize: FontSizeToken.md,
+                  height: 1.5,
+                  color: context.colors.textMuted,
+                ),
+              ),
             ],
           ),
         ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../domain/entities/semester.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class SemesterListCard extends StatelessWidget {
   final Semester semester;
@@ -15,16 +17,16 @@ class SemesterListCard extends StatelessWidget {
 
     Widget infoChip(String label, String value, {bool useShade200 = false}) {
       return Container(
-        padding: const EdgeInsets.only(left: 10),
+        padding: const EdgeInsets.only(left: Spacing.md),
         decoration: BoxDecoration(
           color: useShade200
               ? (isDark
                     ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                    : Colors.grey.shade200)
+                    : context.colors.border)
               : (isDark
                     ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                    : Colors.grey.shade100),
-          borderRadius: BorderRadius.circular(6),
+                    : context.colors.surfaceAlt),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
         ),
         child: Row(
           children: [
@@ -34,21 +36,19 @@ class SemesterListCard extends StatelessWidget {
                 color: theme.colorScheme.onSurface,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Spacing.sm),
             Container(
               constraints: const BoxConstraints(minWidth: 32),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
                 color: theme.cardColor,
                 border: Border.all(color: theme.dividerColor),
               ),
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(Spacing.xxs),
               child: Text(
                 value,
-                style: theme.textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: theme.textTheme.bodyMedium!.copyWith(fontWeight: .bold),
               ),
             ),
           ],
@@ -57,19 +57,17 @@ class SemesterListCard extends StatelessWidget {
     }
 
     return Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: .none,
       alignment: Alignment.centerRight,
       children: [
         Container(
           decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-            ),
+            border: Border.all(color: context.colors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: context.colors.shadow,
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -78,21 +76,21 @@ class SemesterListCard extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: 88,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(Spacing.md),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: .start,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 Text(
                   semester.name,
                   style: theme.textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: .horizontal,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: .start,
                     spacing: 12,
                     children: [
                       infoChip('Courses', semester.totalCourses.toString()),

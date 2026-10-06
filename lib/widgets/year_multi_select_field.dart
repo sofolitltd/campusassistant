@@ -2,6 +2,8 @@ import '/core/theme/tokens/app_radius.dart';
 import 'package:flutter/material.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class YearMultiSelectField extends StatelessWidget {
   final List<String> years;
@@ -42,14 +44,15 @@ class YearMultiSelectField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
           suffixIcon: const Icon(Icons.calendar_today, size: 20),
         ),
         child: Text(
           selectedText.isEmpty ? 'Select Academic Years' : selectedText,
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: selectedText.isEmpty ? Colors.grey : null),
+          overflow: .ellipsis,
+          style: TextStyle(
+            color: selectedText.isEmpty ? context.colors.textSubtle : null,
+          ),
         ),
       ),
     );
@@ -83,9 +86,11 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       padding: EdgeInsets.only(
         top: 8,
@@ -99,20 +104,20 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: Spacing.lg),
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
+              color: context.colors.border,
+              borderRadius: BorderRadius.circular(RadiusToken.xs),
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Text(
                 'Select Years (${_selected.length})',
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.xl,
                 ),
               ),
               IconButton(
@@ -124,7 +129,7 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
           const Divider(),
           Expanded(
             child: GridView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 childAspectRatio: 2.5,
@@ -149,14 +154,12 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Theme.of(
-                              context,
-                            ).appColors.primaryColor.withValues(alpha: 0.12)
-                          : Colors.white,
+                          ? context.colors.primarySubtle
+                          : context.colors.surface,
                       border: Border.all(
                         color: isSelected
-                            ? Theme.of(context).appColors.primaryColor
-                            : Colors.grey.shade300,
+                            ? context.colors.primary
+                            : context.colors.border,
                       ),
                       borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
@@ -164,8 +167,8 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
                       year,
                       style: TextStyle(
                         color: isSelected
-                            ? Theme.of(context).appColors.primaryColor
-                            : Colors.black,
+                            ? context.colors.primary
+                            : context.colors.text,
                         fontWeight: isSelected ? FontWeight.bold : null,
                       ),
                     ),
@@ -177,16 +180,16 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
           SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
-            height: 50,
+            height: ControlToken.height,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).appColors.primaryColor,
+                backgroundColor: context.colors.primary,
               ),
               onPressed: () {
                 widget.onSelected(_selected);
                 Navigator.pop(context);
               },
-              child: const Text('Confirm Selection'),
+              child: const Text('Confirm selection'),
             ),
           ),
         ],

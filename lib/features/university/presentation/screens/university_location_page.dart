@@ -11,6 +11,8 @@ import '/features/university/presentation/providers/university_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class UniversityLocationPage extends ConsumerStatefulWidget {
   const UniversityLocationPage({super.key});
@@ -72,12 +74,12 @@ class _UniversityLocationPageState
                               university.longitude,
                             ),
                             child: Column(
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: .min,
                               children: [
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 3,
+                                    horizontal: Spacing.md,
+                                    vertical: Spacing.xs,
                                   ),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.primary,
@@ -88,18 +90,18 @@ class _UniversityLocationPageState
                                   child: Text(
                                     university.name,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                                    overflow: .ellipsis,
+                                    style: TextStyle(
+                                      color: context.colors.onPrimary,
+                                      fontSize: FontSizeToken.sm,
+                                      fontWeight: .w500,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                const Icon(
+                                const SizedBox(height: Spacing.xxs),
+                                Icon(
                                   Icons.location_on,
-                                  color: Colors.red,
+                                  color: context.colors.danger,
                                   size: 30,
                                 ),
                               ],
@@ -114,7 +116,7 @@ class _UniversityLocationPageState
                     right: 16,
                     bottom: 16,
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: .min,
                       children: [
                         _ZoomButton(
                           icon: LucideIcons.plus,
@@ -123,7 +125,7 @@ class _UniversityLocationPageState
                             _mapController.camera.zoom + 1,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Spacing.sm),
                         _ZoomButton(
                           icon: LucideIcons.minus,
                           onTap: () => _mapController.move(
@@ -140,25 +142,25 @@ class _UniversityLocationPageState
 
             // Bottom info card
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(Spacing.xl),
               decoration: BoxDecoration(color: theme.scaffoldBackgroundColor),
               child: SafeArea(
                 top: false,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: .stretch,
+                  mainAxisSize: .min,
                   children: [
                     Text(
                       university.name,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Spacing.xs),
                     Text(
                       university.address,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.6,
@@ -174,7 +176,7 @@ class _UniversityLocationPageState
                             value: university.latitude.toString(),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: Spacing.md),
                         Expanded(
                           child: _CoordChip(
                             label: 'Longitude',
@@ -191,10 +193,6 @@ class _UniversityLocationPageState
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: theme.colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(RadiusToken.md),
-                        ),
                       ),
                     ),
                   ],
@@ -236,16 +234,16 @@ class _ZoomButton extends StatelessWidget {
     return Material(
       color: theme.cardColor,
       elevation: 4,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         child: Container(
           width: 40,
           height: 40,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
           child: Icon(icon, size: 20, color: theme.colorScheme.primary),
@@ -265,7 +263,10 @@ class _CoordChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      padding: const EdgeInsets.symmetric(
+        vertical: Spacing.md,
+        horizontal: Spacing.md,
+      ),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
@@ -279,12 +280,10 @@ class _CoordChip extends StatelessWidget {
               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: Spacing.xs),
           Text(
             value,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: .w600),
           ),
         ],
       ),

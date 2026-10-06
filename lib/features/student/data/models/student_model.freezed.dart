@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'student_model.dart';
@@ -9,6 +9,7 @@ part of 'student_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $StudentModelCopyWith<StudentModel> get copyWith => _$StudentModelCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StudentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress));
+  final _this = this as StudentModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StudentModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.studentId, _this.studentId) || other.studentId == _this.studentId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.batchId, _this.batchId) || other.batchId == _this.batchId)&&(identical(other.sessionId, _this.sessionId) || other.sessionId == _this.sessionId)&&(identical(other.hallId, _this.hallId) || other.hallId == _this.hallId)&&(identical(other.bloodGroup, _this.bloodGroup) || other.bloodGroup == _this.bloodGroup)&&(identical(other.verificationCode, _this.verificationCode) || other.verificationCode == _this.verificationCode)&&(identical(other.isClaimed, _this.isClaimed) || other.isClaimed == _this.isClaimed)&&(identical(other.studentName, _this.studentName) || other.studentName == _this.studentName)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.isRegular, _this.isRegular) || other.isRegular == _this.isRegular)&&(identical(other.isCR, _this.isCR) || other.isCR == _this.isCR)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.user, _this.user) || other.user == _this.user)&&(identical(other.hallName, _this.hallName) || other.hallName == _this.hallName)&&(identical(other.batchName, _this.batchName) || other.batchName == _this.batchName)&&(identical(other.departmentName, _this.departmentName) || other.departmentName == _this.departmentName)&&(identical(other.universityName, _this.universityName) || other.universityName == _this.universityName)&&(identical(other.sessionName, _this.sessionName) || other.sessionName == _this.sessionName)&&(identical(other.presentAddress, _this.presentAddress) || other.presentAddress == _this.presentAddress)&&(identical(other.permanentAddress, _this.permanentAddress) || other.permanentAddress == _this.permanentAddress));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName,presentAddress,permanentAddress]);
+int get hashCode {
+  final _this = this as StudentModel;
+  return Object.hashAll([runtimeType,_this.id,_this.studentId,_this.universityId,_this.departmentId,_this.batchId,_this.sessionId,_this.hallId,_this.bloodGroup,_this.verificationCode,_this.isClaimed,_this.studentName,_this.email,_this.phone,_this.isRegular,_this.isCR,_this.userId,_this.user,_this.hallName,_this.batchName,_this.departmentName,_this.universityName,_this.sessionName,_this.presentAddress,_this.permanentAddress]);
+}
 
 @override
 String toString() {
-  return 'StudentModel(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName, presentAddress: $presentAddress, permanentAddress: $permanentAddress)';
+  final _this = this as StudentModel;
+  return 'StudentModel(id: ${_this.id}, studentId: ${_this.studentId}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, batchId: ${_this.batchId}, sessionId: ${_this.sessionId}, hallId: ${_this.hallId}, bloodGroup: ${_this.bloodGroup}, verificationCode: ${_this.verificationCode}, isClaimed: ${_this.isClaimed}, studentName: ${_this.studentName}, email: ${_this.email}, phone: ${_this.phone}, isRegular: ${_this.isRegular}, isCR: ${_this.isCR}, userId: ${_this.userId}, user: ${_this.user}, hallName: ${_this.hallName}, batchName: ${_this.batchName}, departmentName: ${_this.departmentName}, universityName: ${_this.universityName}, sessionName: ${_this.sessionName}, presentAddress: ${_this.presentAddress}, permanentAddress: ${_this.permanentAddress})';
 }
 
 
@@ -66,7 +72,7 @@ class _$StudentModelCopyWithImpl<$Res>
 /// Create a copy of StudentModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? studentId = null,Object? universityId = null,Object? departmentId = null,Object? batchId = null,Object? sessionId = null,Object? hallId = freezed,Object? bloodGroup = null,Object? verificationCode = null,Object? isClaimed = null,Object? studentName = freezed,Object? email = freezed,Object? phone = freezed,Object? isRegular = null,Object? isCR = null,Object? userId = freezed,Object? user = freezed,Object? hallName = freezed,Object? batchName = freezed,Object? departmentName = freezed,Object? universityName = freezed,Object? sessionName = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(StudentModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,studentId: null == studentId ? _self.studentId : studentId // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
@@ -285,16 +291,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StudentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StudentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.hallId, hallId) || other.hallId == hallId)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed)&&(identical(other.studentName, studentName) || other.studentName == studentName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.isRegular, isRegular) || other.isRegular == isRegular)&&(identical(other.isCR, isCR) || other.isCR == isCR)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.hallName, hallName) || other.hallName == hallName)&&(identical(other.batchName, batchName) || other.batchName == batchName)&&(identical(other.departmentName, departmentName) || other.departmentName == departmentName)&&(identical(other.universityName, universityName) || other.universityName == universityName)&&(identical(other.sessionName, sessionName) || other.sessionName == sessionName)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName,presentAddress,permanentAddress]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,studentId,universityId,departmentId,batchId,sessionId,hallId,bloodGroup,verificationCode,isClaimed,studentName,email,phone,isRegular,isCR,userId,user,hallName,batchName,departmentName,universityName,sessionName,presentAddress,permanentAddress]);
+}
 
 @override
 String toString() {
-  return 'StudentModel(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName, presentAddress: $presentAddress, permanentAddress: $permanentAddress)';
+    return 'StudentModel(id: $id, studentId: $studentId, universityId: $universityId, departmentId: $departmentId, batchId: $batchId, sessionId: $sessionId, hallId: $hallId, bloodGroup: $bloodGroup, verificationCode: $verificationCode, isClaimed: $isClaimed, studentName: $studentName, email: $email, phone: $phone, isRegular: $isRegular, isCR: $isCR, userId: $userId, user: $user, hallName: $hallName, batchName: $batchName, departmentName: $departmentName, universityName: $universityName, sessionName: $sessionName, presentAddress: $presentAddress, permanentAddress: $permanentAddress)';
 }
 
 

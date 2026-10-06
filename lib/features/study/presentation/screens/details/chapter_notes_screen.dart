@@ -17,6 +17,8 @@ import '/features/resource/presentation/widgets/resource_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/study/presentation/widgets/details/chapter_filter_button.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CourseNotesScreens extends ConsumerStatefulWidget {
   const CourseNotesScreens({
@@ -177,7 +179,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
       batch: null,
       batchId: selectedBatch?.id,
       lessonNo: int.tryParse(_selectedChapterNo ?? widget.chapterNo) ?? 0,
-      uploaderUid: null,
+      createdById: null,
       status: null,
       limit: kDefaultPageSize,
     );
@@ -191,13 +193,13 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
         batch: params.batch,
         batchId: params.batchId,
         lessonNo: params.lessonNo,
-        uploaderUid: params.uploaderUid,
+        createdById: params.createdById,
         status: params.status,
         limit: params.limit,
       ),
     );
 
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -205,7 +207,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: context.colors.onPrimary),
         centerTitle: true,
         titleSpacing: 0,
         title: Text(
@@ -213,16 +215,16 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
               ? 'Chapter ${_selectedChapterNo ?? widget.chapterNo}: $chapterTitle'
               : 'Chapter ${_selectedChapterNo ?? widget.chapterNo}',
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          overflow: .ellipsis,
+          style: TextStyle(
+            color: context.colors.onPrimary,
+            fontWeight: .bold,
+            fontSize: FontSizeToken.xl,
           ),
         ),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           // ── Filter row (red area) ──────────────────────────
           Padding(
@@ -230,11 +232,11 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
 
             child: Row(
               children: [
-                const Text(
+                Text(
                   'Filter:',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                    color: context.colors.onPrimary,
+                    fontWeight: .w500,
                   ),
                 ),
                 const Spacer(),
@@ -255,20 +257,25 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
               decoration: BoxDecoration(
                 color: isDark
                     ? theme.scaffoldBackgroundColor
-                    : const Color(0xFFF8F9FA),
+                    : context.colors.surfaceAlt,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
                 child: Column(
                   children: [
                     // ── SectionTabBar (inside container) ────────
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        Spacing.lg,
+                        Spacing.lg,
+                        Spacing.sm,
+                      ),
                       child: SectionTabBar(
                         controller: _tabController,
                         tabs: const [
@@ -288,14 +295,14 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                           if (resources.isEmpty) {
                             return Center(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: .center,
                                 children: [
                                   Icon(
                                     _currentTab == 0
                                         ? Icons.description_outlined
                                         : Icons.videocam_outlined,
                                     size: 64,
-                                    color: Colors.grey.shade300,
+                                    color: context.colors.borderStrong,
                                   ),
                                   const SizedBox(height: Spacing.lg),
                                   Text(
@@ -303,18 +310,18 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                                         ? 'No notes found!'
                                         : 'No videos found!',
                                     style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 16,
+                                      color: context.colors.textMuted,
+                                      fontSize: FontSizeToken.lg,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: Spacing.sm),
                                   Text(
                                     _currentTab == 0
                                         ? 'Upload lecture notes for this chapter'
                                         : 'Add video lectures for this chapter',
                                     style: TextStyle(
-                                      color: Colors.grey.shade400,
-                                      fontSize: 13,
+                                      color: context.colors.textSubtle,
+                                      fontSize: FontSizeToken.md,
                                     ),
                                   ),
                                 ],
@@ -336,7 +343,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                           );
 
                           return ListView.separated(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(Spacing.lg),
                             itemCount: adList.itemCount,
                             separatorBuilder: (_, _) =>
                                 const SizedBox(height: Spacing.md),

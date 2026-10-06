@@ -5,6 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../widgets/custom_drawer.dart';
 import '../core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
   const ScaffoldWithNavBar({super.key, required this.navigationShell});
@@ -20,7 +23,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-  
           key: scaffoldKey,
           drawer: const CustomDrawer(),
           body: navigationShell,
@@ -90,18 +92,17 @@ class _BlurryBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(RadiusToken.xxl),
+          topRight: Radius.circular(RadiusToken.xxl),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
+            color: context.colors.shadow,
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, -4),
@@ -110,19 +111,17 @@ class _BlurryBottomNavBar extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(RadiusToken.xxl),
+          topRight: Radius.circular(RadiusToken.xxl),
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.65)
-                  : Colors.white.withValues(alpha: 0.82),
+              color: context.colors.surface.withValues(alpha: 0.82),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+                topLeft: Radius.circular(RadiusToken.xxl),
+                topRight: Radius.circular(RadiusToken.xxl),
               ),
             ),
             child: SafeArea(
@@ -138,7 +137,7 @@ class _BlurryBottomNavBar extends StatelessWidget {
                         behavior: HitTestBehavior.opaque,
                         onTap: () => onDestinationSelected(index),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: .start,
                           children: [
                             // Top indicator bar
                             AnimatedContainer(
@@ -149,26 +148,30 @@ class _BlurryBottomNavBar extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: primaryColor,
                                 borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(4),
-                                  bottomRight: Radius.circular(4),
+                                  bottomLeft: Radius.circular(RadiusToken.xs),
+                                  bottomRight: Radius.circular(RadiusToken.xs),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             Icon(
                               isSelected ? item.selectedIcon : item.icon,
                               size: 22,
-                              color: isSelected ? primaryColor : Colors.grey,
+                              color: isSelected
+                                  ? primaryColor
+                                  : context.colors.textSubtle,
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: Spacing.xxs),
                             Text(
                               item.label,
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: FontSizeToken.xs,
                                 fontWeight: isSelected
                                     ? FontWeight.w600
                                     : FontWeight.w400,
-                                color: isSelected ? primaryColor : Colors.grey,
+                                color: isSelected
+                                    ? primaryColor
+                                    : context.colors.textSubtle,
                               ),
                             ),
                           ],

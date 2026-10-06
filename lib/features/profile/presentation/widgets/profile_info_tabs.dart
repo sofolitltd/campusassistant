@@ -9,6 +9,8 @@ import '/features/student/presentation/providers/student_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_tab_bar.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ProfileInfoTabsSection extends StatefulWidget {
   final user_entity.User user;
@@ -39,7 +41,6 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.only(top: Spacing.xs),
@@ -47,20 +48,18 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(RadiusToken.lg),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-          ),
+          border: Border.all(color: context.colors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: context.colors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: .start,
+          mainAxisSize: .min,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -115,10 +114,10 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
                 return SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Expanded(
                             child: _InfoItem(
@@ -145,26 +144,26 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
               loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (err, _) => Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(Spacing.xxl),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Icon(
                         err is NetworkFailure
                             ? Icons.cloud_off
                             : Icons.error_outline,
-                        color: Colors.grey.shade400,
+                        color: context.colors.textSubtle,
                         size: 40,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: Spacing.md),
                       Text(
                         err is NetworkFailure
                             ? 'No internet connection'
                             : 'Unable to load academic info',
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
+                          color: context.colors.textMuted,
+                          fontSize: FontSizeToken.base,
                         ),
                       ),
                     ],
@@ -208,7 +207,7 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
                 return SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       _AddressItem(
                         label: 'Present Address',
@@ -226,26 +225,26 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
               loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (err, _) => Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(Spacing.xxl),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Icon(
                         err is NetworkFailure
                             ? Icons.cloud_off
                             : Icons.error_outline,
-                        color: Colors.grey.shade400,
+                        color: context.colors.textSubtle,
                         size: 40,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: Spacing.md),
                       Text(
                         err is NetworkFailure
                             ? 'No internet connection'
                             : 'Unable to load address info',
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
+                          color: context.colors.textMuted,
+                          fontSize: FontSizeToken.base,
                         ),
                       ),
                     ],
@@ -267,14 +266,14 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _InfoItem(label: 'Email', value: widget.user.email),
           const Divider(thickness: .5, indent: 0, endIndent: 0),
           _InfoItem(label: 'Phone', value: widget.user.phone ?? 'N/A'),
           const Divider(thickness: .5, indent: 0, endIndent: 0),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Expanded(
                 child: _InfoItem(label: 'Blood Group', value: bloodGroup),
@@ -303,9 +302,9 @@ class _InfoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             label,
@@ -313,11 +312,11 @@ class _InfoItem extends StatelessWidget {
               context,
             ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: Spacing.xxs),
           Text(
             value,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -346,9 +345,9 @@ class _AddressItem extends StatelessWidget {
     final hasAny = addressLine.isNotEmpty || region.isNotEmpty;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             label,
@@ -356,7 +355,7 @@ class _AddressItem extends StatelessWidget {
               context,
             ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: Spacing.sm),
           if (!hasAny)
             Text('N/A', style: Theme.of(context).textTheme.bodyMedium)
           else ...[
@@ -364,14 +363,14 @@ class _AddressItem extends StatelessWidget {
               Text(
                 addressLine,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             if (region.isNotEmpty)
               Text(
                 region,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/core/theme/app_colors.dart';
 import '../providers/notification_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class NotificationBadge extends ConsumerWidget {
   final Widget icon;
@@ -14,9 +17,15 @@ class NotificationBadge extends ConsumerWidget {
     final unreadCount = ref.watch(unreadCountProvider);
 
     return Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: .none,
       children: [
-        IconButton(onPressed: onTap, icon: icon),
+        IconButton(
+          tooltip: unreadCount > 0
+              ? 'Notifications, $unreadCount unread'
+              : 'Notifications',
+          onPressed: onTap,
+          icon: icon,
+        ),
         if (unreadCount > 0)
           Positioned(
             top: 6,
@@ -30,9 +39,9 @@ class NotificationBadge extends ConsumerWidget {
                     minWidth: 18,
                     minHeight: 18,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade600,
+                    color: context.colors.danger,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: Theme.of(context).scaffoldBackgroundColor,
@@ -42,10 +51,10 @@ class NotificationBadge extends ConsumerWidget {
                   alignment: Alignment.center,
                   child: Text(
                     count > 99 ? '99+' : count.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                    style: TextStyle(
+                      color: context.colors.onDanger,
+                      fontSize: FontSizeToken.xxs,
+                      fontWeight: .bold,
                       height: 1,
                     ),
                   ),

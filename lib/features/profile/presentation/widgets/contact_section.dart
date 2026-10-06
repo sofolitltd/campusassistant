@@ -6,6 +6,8 @@ import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/features/student/presentation/providers/student_provider.dart';
 import 'section_header.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ContactSection extends ConsumerWidget {
   final user_entity.User user;
@@ -15,7 +17,7 @@ class ContactSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.only(top: Spacing.lg),
       child: Column(
         children: [
           SectionHeader(
@@ -24,20 +26,20 @@ class ContactSection extends ConsumerWidget {
             icon: LucideIcons.contact,
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             decoration: BoxDecoration(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Theme.of(context).cardColor
-                  : Colors.white,
+                  : context.colors.surface,
               borderRadius: BorderRadius.circular(RadiusToken.md),
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white10
-                    : Colors.grey.shade200,
+                    ? context.colors.border
+                    : context.colors.border,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: context.colors.shadow,
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -72,7 +74,7 @@ class _ContactInfo extends ConsumerWidget {
 
   Column _buildContactList({required Object? student}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         _ContactItem(label: 'Email', value: user.email),
         const Divider(thickness: .5),
@@ -113,7 +115,7 @@ class _ContactItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           label,
@@ -121,7 +123,7 @@ class _ContactItem extends StatelessWidget {
             context,
           ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: Spacing.xxs),
         Text(value, style: Theme.of(context).textTheme.titleMedium),
       ],
     );

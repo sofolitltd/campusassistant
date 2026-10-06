@@ -3,14 +3,11 @@ import 'lost_found_user.dart';
 enum LostFoundClaimStatus { pending, accepted, rejected }
 
 LostFoundClaimStatus lostFoundClaimStatusFromString(String? value) {
-  switch (value) {
-    case 'accepted':
-      return LostFoundClaimStatus.accepted;
-    case 'rejected':
-      return LostFoundClaimStatus.rejected;
-    default:
-      return LostFoundClaimStatus.pending;
-  }
+  return switch (value) {
+    'accepted' => LostFoundClaimStatus.accepted,
+    'rejected' => LostFoundClaimStatus.rejected,
+    _ => LostFoundClaimStatus.pending,
+  };
 }
 
 class LostFoundClaim {
@@ -38,12 +35,15 @@ class LostFoundClaim {
       id: json['id'] as String? ?? '',
       itemId: json['item_id'] as String? ?? '',
       claimerId: json['claimer_id'] as String? ?? '',
-      claimer: claimerJson != null && (claimerJson['id'] as String?)?.isNotEmpty == true
+      claimer:
+          claimerJson != null &&
+              (claimerJson['id'] as String?)?.isNotEmpty == true
           ? LostFoundUser.fromJson(claimerJson)
           : null,
       message: json['message'] as String? ?? '',
       status: lostFoundClaimStatusFromString(json['status'] as String?),
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
     );
   }

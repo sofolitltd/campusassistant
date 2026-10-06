@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart' hide Share;
 
 import '/core/network/api_endpoints.dart';
 import '../widgets/app_pdf_viewer.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class FullPageMediaViewer extends StatefulWidget {
   final List<String> urls;
@@ -69,9 +70,9 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
     } catch (e) {
       if (!mounted) return;
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Download error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Download error: $e')));
     }
   }
 
@@ -92,21 +93,19 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
           ),
         ],
         title: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text(
               widget.title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold, height: 1),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: .bold, height: 1),
             ),
             Text(
               widget.organization,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(color: cs.onSurfaceVariant),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
         ),
@@ -116,14 +115,16 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
           children: [
             if (widget.urls.length > 1)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: List.generate(
                     widget.urls.length,
                     (i) => AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: Spacing.xs,
+                      ),
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
@@ -156,7 +157,7 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
                     child: InteractiveViewer(
                       child: CachedNetworkImage(
                         imageUrl: ApiEndpoints.resolveImageUrl(url),
-                        fit: BoxFit.contain,
+                        fit: .contain,
                         placeholder: (c, u) =>
                             const CupertinoActivityIndicator(),
                       ),

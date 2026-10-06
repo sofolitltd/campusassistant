@@ -18,6 +18,9 @@ import '/features/study/widgets/resource_shortcuts_bar.dart';
 import '../../domain/entities/semester.dart';
 import '../widgets/semester_grid_card.dart';
 import '../widgets/semester_list_card.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class StudyPage extends ConsumerStatefulWidget {
   const StudyPage({super.key});
@@ -62,7 +65,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
     );
 
     final theme = Theme.of(context);
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     final isLoading =
         batchesAsync.isLoading ||
@@ -73,19 +76,23 @@ class _StudyPageState extends ConsumerState<StudyPage>
       backgroundColor: primaryColor,
       appBar: AppBar(
         centerTitle: false,
-        title: const Text(
+        title: Text(
           'Study',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
+            fontWeight: .bold,
+            color: context.colors.onPrimary,
+            fontSize: FontSizeToken.xxl,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: Icon(LucideIcons.search, color: context.colors.onPrimary),
+            onPressed: () => context.push('/study-search'),
+          ),
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: Spacing.sm),
             child: GestureDetector(
               onTap: () =>
                   ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
@@ -93,16 +100,13 @@ class _StudyPageState extends ConsumerState<StudyPage>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: context.colors.surface.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(Spacing.xs),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                  borderRadius: BorderRadius.circular(RadiusToken.lg),
+                  child: Image.asset('assets/images/logo.png', fit: .contain),
                 ),
               ),
             ),
@@ -116,7 +120,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: RefreshIndicator(
@@ -141,7 +145,12 @@ class _StudyPageState extends ConsumerState<StudyPage>
                           // Levels header row
                           SliverToBoxAdapter(
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                              padding: const EdgeInsets.fromLTRB(
+                                Spacing.lg,
+                                Spacing.sm,
+                                Spacing.lg,
+                                Spacing.lg,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -159,7 +168,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                                     .withAlpha(100),
                                         ),
                                       ),
-                                      const SizedBox(width: 16),
+                                      const SizedBox(width: Spacing.lg),
                                       GestureDetector(
                                         onTap: () =>
                                             setState(() => isGridView = true),
@@ -174,7 +183,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                     ],
                                   ),
                                   Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisSize: .min,
                                     children: [
                                       GestureDetector(
                                         onTap: () => setState(
@@ -189,7 +198,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                           color: theme.colorScheme.onSurface,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: Spacing.sm),
                                       const BatchDropdown(),
                                     ],
                                   ),
@@ -206,7 +215,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                   vertical: 60,
                                 ),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: .center,
                                   children: [
                                     Icon(
                                       LucideIcons.frown,
@@ -214,7 +223,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                       color: theme.colorScheme.onSurface
                                           .withAlpha(100),
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: Spacing.md),
                                     Text(
                                       "No semesters found.",
                                       style: TextStyle(
@@ -228,7 +237,12 @@ class _StudyPageState extends ConsumerState<StudyPage>
                             )
                           else if (isGridView)
                             SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              padding: const EdgeInsets.fromLTRB(
+                                Spacing.lg,
+                                0,
+                                Spacing.lg,
+                                Spacing.lg,
+                              ),
                               sliver: SliverMasonryGrid.count(
                                 crossAxisCount: 2,
                                 mainAxisSpacing: 16,
@@ -245,7 +259,12 @@ class _StudyPageState extends ConsumerState<StudyPage>
                             )
                           else
                             SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              padding: const EdgeInsets.fromLTRB(
+                                Spacing.lg,
+                                0,
+                                Spacing.lg,
+                                Spacing.lg,
+                              ),
                               sliver: SliverList(
                                 delegate: SliverChildBuilderDelegate((
                                   context,
@@ -253,7 +272,9 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                 ) {
                                   final semester = displaySemesters[index];
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.only(
+                                      bottom: Spacing.lg,
+                                    ),
                                     child: GestureDetector(
                                       onTap: () => _goToSemester(semester),
                                       child: SemesterListCard(

@@ -192,7 +192,7 @@ abstract class _$EmergencySearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<String, String>;
     final element =
         ref.element
@@ -202,7 +202,7 @@ abstract class _$EmergencySearchQuery extends $Notifier<String> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -244,7 +244,7 @@ abstract class _$EmergencyScope extends $Notifier<int> {
   int build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
@@ -254,7 +254,7 @@ abstract class _$EmergencyScope extends $Notifier<int> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -334,7 +334,7 @@ abstract class _$EmergencyPagination extends $AsyncNotifier<EmergencyState> {
   FutureOr<EmergencyState> build(int scopeIndex);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<EmergencyState>, EmergencyState>;
     final element =
         ref.element
@@ -344,6 +344,6 @@ abstract class _$EmergencyPagination extends $AsyncNotifier<EmergencyState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

@@ -1,41 +1,46 @@
 import 'package:flutter/material.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AlumniEmptyState extends StatelessWidget {
   const AlumniEmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Center(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(32, 32, 32, 100),
+        padding: const EdgeInsets.fromLTRB(
+          Spacing.xxxl,
+          Spacing.xxxl,
+          Spacing.xxxl,
+          100,
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Icon(
               Icons.search_off_rounded,
               size: 64,
-              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+              color: context.colors.borderStrong,
             ),
             const SizedBox(height: Spacing.lg),
             Text(
               'No alumni match your criteria.',
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white70 : Colors.grey.shade600,
+                fontSize: FontSizeToken.lg,
+                fontWeight: .w600,
+                color: context.colors.textMuted,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: Spacing.sm),
             Text(
               'Try adjusting your search query or organization filters.',
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: TextStyle(
-                fontSize: 12,
-                color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                fontSize: FontSizeToken.sm,
+                color: context.colors.textSubtle,
               ),
             ),
           ],

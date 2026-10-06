@@ -1,10 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+
+import '/core/theme/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/features/association/data/models/bd_district.dart';
 import '/features/association/presentation/providers/bd_district_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 /// Reusable district → sub-district (upazila) cascading picker, backed by
 /// the shared [bdDistrictsProvider]. Extracted from the district/sub-district
@@ -40,10 +43,7 @@ class DistrictSubDistrictPicker extends ConsumerWidget {
           children: [
             DropdownButtonFormField<BDDistrict>(
               initialValue: selectedDistrict,
-              decoration: const InputDecoration(
-                labelText: 'District',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'District'),
               items: districts
                   .map((d) => DropdownMenuItem(value: d, child: Text(d.name)))
                   .toList(),
@@ -52,12 +52,11 @@ class DistrictSubDistrictPicker extends ConsumerWidget {
                 onSubDistrictChanged(null);
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Spacing.md),
             DropdownButtonFormField<BDSubDistrict>(
               initialValue: selectedSubDistrict,
               decoration: const InputDecoration(
                 labelText: 'Sub-district (optional)',
-                border: OutlineInputBorder(),
               ),
               items: (selectedDistrict?.subDistricts ?? [])
                   .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
@@ -68,12 +67,12 @@ class DistrictSubDistrictPicker extends ConsumerWidget {
         );
       },
       loading: () => const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: Spacing.lg),
         child: Center(child: CupertinoActivityIndicator()),
       ),
       error: (_, _) => Text(
         'Failed to load districts.',
-        style: TextStyle(color: Colors.red.shade400),
+        style: TextStyle(color: context.colors.danger),
       ),
     );
   }

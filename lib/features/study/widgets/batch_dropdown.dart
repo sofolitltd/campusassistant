@@ -7,6 +7,10 @@ import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import 'batch_tile.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class BatchDropdown extends ConsumerWidget {
   final bool redBg;
@@ -18,12 +22,14 @@ class BatchDropdown extends ConsumerWidget {
     final currentBatch = ref.watch(resolvedBatchProvider);
     final theme = Theme.of(context);
 
-    final textColor = redBg ? Colors.white : theme.colorScheme.onSurface;
+    final textColor = redBg
+        ? context.colors.onPrimary
+        : theme.colorScheme.onSurface;
     final borderColor = redBg
-        ? Colors.white.withValues(alpha: 0.4)
+        ? context.colors.onPrimary.withValues(alpha: 0.4)
         : (theme.brightness == Brightness.dark
-              ? Colors.white24
-              : Colors.grey.shade300);
+              ? context.colors.borderStrong
+              : context.colors.borderStrong);
 
     return batchesAsync.when(
       data: (batches) {
@@ -33,26 +39,31 @@ class BatchDropdown extends ConsumerWidget {
         return GestureDetector(
           onTap: () => _showBatchBottomSheet(context, ref, batches, batch),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.sm,
+              vertical: Spacing.sm,
+            ),
             decoration: BoxDecoration(
-              color: redBg ? Colors.white.withValues(alpha: 0.15) : null,
+              color: redBg
+                  ? context.colors.surface.withValues(alpha: 0.15)
+                  : null,
               border: Border.all(color: borderColor),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Icon(LucideIcons.users, size: 14, color: textColor),
-                const SizedBox(width: 6),
+                const SizedBox(width: Spacing.sm),
                 Text(
                   batch?.name ?? 'All Batches',
                   style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                    fontSize: FontSizeToken.md,
+                    fontWeight: .w500,
                     color: textColor,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 Icon(Icons.keyboard_arrow_down, size: 16, color: textColor),
               ],
             ),
@@ -63,7 +74,9 @@ class BatchDropdown extends ConsumerWidget {
         width: 100,
         height: 32,
         child: Center(
-          child: CupertinoActivityIndicator(color: redBg ? Colors.white : null),
+          child: CupertinoActivityIndicator(
+            color: redBg ? context.colors.onPrimary : null,
+          ),
         ),
       ),
       error: (_, _) => const SizedBox(),
@@ -77,7 +90,6 @@ class BatchDropdown extends ConsumerWidget {
     Batch? currentBatch,
   ) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     String searchText = '';
 
     showModalBottomSheet(
@@ -85,7 +97,9 @@ class BatchDropdown extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -102,31 +116,31 @@ class BatchDropdown extends ConsumerWidget {
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.75,
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Center(
                     child: Container(
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+                        color: context.colors.borderStrong,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Batch',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
@@ -141,49 +155,43 @@ class BatchDropdown extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withAlpha(12)
-                            : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        color: context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                        border: Border.all(color: context.colors.border),
                       ),
                       child: TextField(
                         onChanged: (v) => setState(() => searchText = v),
                         decoration: InputDecoration(
                           hintText: 'Search batch...',
                           hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                            fontSize: 14,
+                            color: context.colors.textSubtle,
+                            fontSize: FontSizeToken.base,
                           ),
                           prefixIcon: Icon(
                             LucideIcons.search,
                             size: 18,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
+                            color: context.colors.textSubtle,
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
+                            vertical: Spacing.md,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Expanded(
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.md,
+                      ),
                       children: [
                         if (searchText.isEmpty)
                           BatchTile(

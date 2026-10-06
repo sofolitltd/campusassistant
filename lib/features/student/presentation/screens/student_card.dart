@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '/features/student/domain/entities/student.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class StudentCard extends StatelessWidget {
   const StudentCard({
@@ -19,15 +22,15 @@ class StudentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.sm),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(Spacing.md),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: .start,
+          crossAxisAlignment: .start,
           children: [
             Stack(
               children: [
@@ -38,13 +41,13 @@ class StudentCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(RadiusToken.sm),
                           child: Image.asset(
                             'assets/images/pp_placeholder.png',
-                            fit: BoxFit.cover,
+                            fit: .cover,
                             height: 88,
                             width: 80,
                           ),
                         )
                       : CachedNetworkImage(
-                          fit: BoxFit.cover,
+                          fit: .cover,
                           height: 88,
                           width: 80,
                           imageUrl: ApiEndpoints.resolveImageUrl(
@@ -54,7 +57,7 @@ class StudentCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(
                               'assets/images/pp_placeholder.png',
-                              fit: BoxFit.cover,
+                              fit: .cover,
                               height: 88,
                               width: 80,
                             ),
@@ -63,7 +66,7 @@ class StudentCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(
                               'assets/images/pp_placeholder.png',
-                              fit: BoxFit.cover,
+                              fit: .cover,
                               height: 88,
                               width: 80,
                             ),
@@ -71,29 +74,29 @@ class StudentCard extends StatelessWidget {
                         ),
                 ),
                 if (studentModel.isClaimed)
-                  Icon(Icons.verified, color: Colors.green.shade700, size: 16),
+                  Icon(Icons.verified, color: context.colors.success, size: 16),
               ],
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Spacing.md),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     studentModel.name,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                     style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.base,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: Spacing.sm),
 
                   Row(
                     spacing: 16,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         spacing: 6,
                         children: [
                           Container(
@@ -102,14 +105,15 @@ class StudentCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.xs,
+                              ),
+                              color: context.colors.border,
                             ),
                             child: Text(
                               studentModel.batch,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall!.copyWith(fontSize: 10),
+                              style: Theme.of(context).textTheme.bodySmall!
+                                  .copyWith(fontSize: FontSizeToken.xxs),
                             ),
                           ),
 
@@ -119,14 +123,15 @@ class StudentCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.xs,
+                              ),
+                              color: context.colors.border,
                             ),
                             child: Text(
                               studentModel.session,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall!.copyWith(fontSize: 10),
+                              style: Theme.of(context).textTheme.bodySmall!
+                                  .copyWith(fontSize: FontSizeToken.xxs),
                             ),
                           ),
                         ],
@@ -135,31 +140,31 @@ class StudentCard extends StatelessWidget {
                       Text(
                         '|',
                         style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 12,
+                          color: context.colors.textSubtle,
+                          fontSize: FontSizeToken.sm,
                           height: 1.2,
                         ),
                       ),
                       //
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         spacing: 6,
                         children: [
                           Text(
                             'Blood:',
                             style: Theme.of(context).textTheme.bodySmall!
                                 .copyWith(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
+                                  color: context.colors.textMuted,
+                                  fontSize: FontSizeToken.sm,
                                 ),
                           ),
                           Text(
                             studentModel.bloodGroup,
                             style: Theme.of(context).textTheme.bodySmall!
                                 .copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red,
-                                  fontSize: 12,
+                                  fontWeight: .w600,
+                                  color: context.colors.danger,
+                                  fontSize: FontSizeToken.sm,
                                 ),
                           ),
                         ],
@@ -167,7 +172,7 @@ class StudentCard extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: Spacing.sm),
 
                   Row(
                     spacing: 6,
@@ -175,45 +180,45 @@ class StudentCard extends StatelessWidget {
                       Text(
                         'Student Id:',
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
+                          color: context.colors.textMuted,
+                          fontSize: FontSizeToken.sm,
                         ),
                       ),
                       Text(
                         studentModel.studentId,
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 12,
+                          fontWeight: .w600,
+                          color: context.colors.text,
+                          fontSize: FontSizeToken.sm,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: Spacing.sm),
 
                   if (studentModel.hall != 'None') ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: Spacing.xxs),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Text(
                           'Hall: ',
                           style: Theme.of(context).textTheme.bodySmall!
                               .copyWith(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
+                                color: context.colors.textMuted,
+                                fontSize: FontSizeToken.sm,
                               ),
                         ),
                         Expanded(
                           child: Text(
                             studentModel.hall,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                             maxLines: 1,
                             style: Theme.of(context).textTheme.bodySmall!
                                 .copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
-                                  fontSize: 12,
+                                  fontWeight: .w600,
+                                  color: context.colors.text,
+                                  fontSize: FontSizeToken.sm,
                                 ),
                           ),
                         ),

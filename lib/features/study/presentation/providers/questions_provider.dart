@@ -226,7 +226,8 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
       uploadDate: (r.createdAt ?? DateTime.now()).toString().split(' ')[0],
       fileUrl: r.fileUrl,
       imageUrl: r.thumbnailUrl,
-      uploader: r.uploaderName,
+      uploader: r.creator ?? '',
+      creatorId: r.creatorId,
       departmentId: r.departmentId,
       metadata: {
         ...r.metadata,

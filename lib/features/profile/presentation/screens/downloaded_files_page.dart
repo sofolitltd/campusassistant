@@ -8,6 +8,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/features/resource/presentation/providers/downloads_provider.dart';
 import '/features/resource/presentation/widgets/downloaded_resource_card.dart';
+import '/core/theme/app_colors.dart';
 
 class DownloadedFilesPage extends ConsumerWidget {
   const DownloadedFilesPage({super.key});
@@ -26,9 +27,9 @@ class DownloadedFilesPage extends ConsumerWidget {
             onRefresh: () =>
                 ref.read(downloadedFilesProvider.notifier).refresh(),
             child: ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Spacing.lg),
               itemCount: files.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
               itemBuilder: (context, index) {
                 final file = files[index];
                 return DownloadedResourceCard(
@@ -49,22 +50,21 @@ class DownloadedFilesPage extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           Icon(
             LucideIcons.folderOpen,
             size: 64,
-            color: isDark ? Colors.white24 : Colors.grey.shade300,
+            color: context.colors.borderStrong,
           ),
           const SizedBox(height: Spacing.lg),
           Text(
             'No downloaded files found',
             style: TextStyle(
-              color: isDark ? Colors.white70 : Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
+              color: context.colors.textMuted,
+              fontWeight: .w500,
             ),
           ),
         ],

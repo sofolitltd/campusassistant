@@ -10,6 +10,9 @@ import '../../data/models/address.dart';
 import '../providers/cart_provider.dart';
 import '../providers/marketplace_provider.dart';
 import '../providers/orders_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -35,13 +38,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             children: [
               const Text(
                 'Shipping Address',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(fontWeight: .bold, fontSize: FontSizeToken.lg),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               addressesAsync.when(
                 data: (addresses) {
                   final defaultAddr = addresses
@@ -55,19 +58,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           .push(AppRoute.marketplaceAddressForm.path)
                           .then((_) => ref.invalidate(addressesProvider)),
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(Spacing.lg),
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.grey.shade300,
+                            color: context.colors.borderStrong,
                             style: BorderStyle.solid,
                           ),
                           borderRadius: BorderRadius.circular(RadiusToken.md),
-                          color: Colors.grey.shade50,
+                          color: context.colors.surfaceAlt,
                         ),
                         child: const Row(
                           children: [
                             Icon(LucideIcons.plus, size: 20),
-                            SizedBox(width: 8),
+                            SizedBox(width: Spacing.sm),
                             Text('Add a shipping address'),
                           ],
                         ),
@@ -85,30 +88,32 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           });
                         }),
                     child: Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(Spacing.md),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
+                        border: Border.all(color: context.colors.borderStrong),
                         borderRadius: BorderRadius.circular(RadiusToken.md),
                       ),
                       child: Row(
                         children: [
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: .start,
                               children: [
                                 Text(
                                   '${_selectedAddress!.label} — ${_selectedAddress!.recipientName}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: const TextStyle(fontWeight: .w600),
                                 ),
                                 Text(
                                   _selectedAddress!.phone,
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(
+                                    color: context.colors.textSubtle,
+                                  ),
                                 ),
                                 Text(
                                   '${_selectedAddress!.addressLine}, ${_selectedAddress!.city}',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(
+                                    color: context.colors.textSubtle,
+                                  ),
                                 ),
                               ],
                             ),
@@ -122,28 +127,28 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 loading: () => const CupertinoActivityIndicator(),
                 error: (e, _) => Text('Error: $e'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               const Text(
                 'Order Summary',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(fontWeight: .bold, fontSize: FontSizeToken.lg),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               ...cartItems.map(
                 (item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: Spacing.sm),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
                           '${item.product.title} x${item.quantity}',
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                         ),
                       ),
                       Text(
                         '৳${item.totalPrice}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: .bold),
                       ),
                     ],
                   ),
@@ -151,27 +156,30 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               const Divider(),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   const Text(
                     'Total',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.lg,
+                    ),
                   ),
                   Text(
                     '৳$totalAmount',
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.lg,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               const Text(
                 'Payment Method',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(fontWeight: .bold, fontSize: FontSizeToken.lg),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               _PaymentMethodTile(
                 icon: LucideIcons.smartphone,
                 title: 'Pay with bKash',
@@ -183,7 +191,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         () => _paymentMethod = MarketplacePaymentMethod.bkash,
                       ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: Spacing.md),
               _PaymentMethodTile(
                 icon: LucideIcons.banknote,
                 title: 'Cash on Delivery',
@@ -197,16 +205,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             MarketplacePaymentMethod.cashOnDelivery,
                       ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: Spacing.xxxl),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _selectedAddress == null || _isProcessing
                       ? null
                       : _placeOrder,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                  style: ElevatedButton.styleFrom(),
                   child: _isProcessing
                       ? const SizedBox(
                           width: 20,
@@ -218,8 +224,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               ? 'Place Order — Pay with bKash'
                               : 'Place Order — Cash on Delivery',
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontWeight: .bold,
+                            fontSize: FontSizeToken.lg,
                           ),
                         ),
                 ),
@@ -256,9 +262,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ref.invalidate(ordersListProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Order placed! Pay in cash on delivery.'),
-            backgroundColor: Colors.green,
+            backgroundColor: context.colors.success,
           ),
         );
         context.pop();
@@ -293,9 +299,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ref.invalidate(ordersListProvider);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Payment successful! Order placed.'),
-            backgroundColor: Colors.green,
+            backgroundColor: context.colors.success,
           ),
         );
         context.pop();
@@ -303,7 +309,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: context.colors.danger,
+        ),
       );
     } finally {
       if (mounted) setState(() => _isProcessing = false);
@@ -338,13 +347,13 @@ class _PaymentMethodTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(RadiusToken.md),
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(Spacing.md),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: selected
                   ? theme.colorScheme.primary
-                  : Colors.grey.shade300,
+                  : context.colors.borderStrong,
               width: selected ? 1.5 : 1,
             ),
           ),
@@ -355,25 +364,25 @@ class _PaymentMethodTile extends StatelessWidget {
                 size: 22,
                 color: selected
                     ? theme.colorScheme.primary
-                    : Colors.grey.shade600,
+                    : context.colors.textMuted,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.md),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                        fontWeight: .w600,
+                        fontSize: FontSizeToken.base,
                       ),
                     ),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
+                        color: context.colors.textMuted,
+                        fontSize: FontSizeToken.sm,
                       ),
                     ),
                   ],
@@ -385,7 +394,7 @@ class _PaymentMethodTile extends StatelessWidget {
                     : Icons.radio_button_unchecked,
                 color: selected
                     ? theme.colorScheme.primary
-                    : Colors.grey.shade400,
+                    : context.colors.textSubtle,
                 size: 20,
               ),
             ],

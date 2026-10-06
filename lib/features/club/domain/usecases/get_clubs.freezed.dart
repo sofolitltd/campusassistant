@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'get_clubs.dart';
@@ -9,6 +9,7 @@ part of 'get_clubs.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $GetClubsParamsCopyWith<GetClubsParams> get copyWith => _$GetClubsParamsCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetClubsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.type, type) || other.type == type));
+  final _this = this as GetClubsParams;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetClubsParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.type, _this.type) || other.type == _this.type));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId,type);
+int get hashCode {
+  final _this = this as GetClubsParams;
+  return Object.hash(runtimeType,_this.universityId,_this.departmentId,_this.type);
+}
 
 @override
 String toString() {
-  return 'GetClubsParams(universityId: $universityId, departmentId: $departmentId, type: $type)';
+  final _this = this as GetClubsParams;
+  return 'GetClubsParams(universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, type: ${_this.type})';
 }
 
 
@@ -63,7 +69,7 @@ class _$GetClubsParamsCopyWithImpl<$Res>
 /// Create a copy of GetClubsParams
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? universityId = null,Object? departmentId = freezed,Object? type = null,}) {
-  return _then(_self.copyWith(
+  return _then(GetClubsParams(
 universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -225,16 +231,18 @@ _$GetClubsParamsCopyWith<_GetClubsParams> get copyWith => __$GetClubsParamsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetClubsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.type, type) || other.type == type));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetClubsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.type, type) || other.type == type));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId,type);
+int get hashCode {
+    return Object.hash(runtimeType,universityId,departmentId,type);
+}
 
 @override
 String toString() {
-  return 'GetClubsParams(universityId: $universityId, departmentId: $departmentId, type: $type)';
+    return 'GetClubsParams(universityId: $universityId, departmentId: $departmentId, type: $type)';
 }
 
 

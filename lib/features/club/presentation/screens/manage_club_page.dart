@@ -20,6 +20,9 @@ import '/features/club/presentation/providers/club_management_provider.dart';
 import '/features/club/presentation/providers/club_provider.dart';
 import '/features/club/presentation/widgets/contact_admin_banner.dart';
 import 'suggest_club_page.dart' show clubCategories;
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// Self-service club management: a club's owner/manager edits its info and
 /// posts events/updates from here, no admin panel needed. Gated server-side
@@ -55,45 +58,50 @@ class _ManageClubPageState extends ConsumerState<ManageClubPage>
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          clubAsync.maybeWhen(data: (c) => c.name, orElse: () => null) ??
-              'Manage Club',
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      body: clubAsync.when(
-        data: (club) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: SectionTabBar(
-                controller: _tabController,
-                isScrollable: true,
-                tabs: const [
-                  Tab(text: 'Info'),
-                  Tab(text: 'Events'),
-                  Tab(text: 'Posts'),
-                  Tab(text: 'Managers'),
-                ],
-              ),
+          appBar: AppBar(
+            title: Text(
+              clubAsync.maybeWhen(data: (c) => c.name, orElse: () => null) ??
+                  'Manage Club',
+              overflow: .ellipsis,
             ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _InfoTab(club: club),
-                  _EventsTab(clubId: club.id),
-                  _PostsTab(clubId: club.id),
-                  _ManagersTab(clubId: club.id),
-                ],
-              ),
+          ),
+          body: clubAsync.when(
+            data: (club) => Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.md,
+                    Spacing.lg,
+                    Spacing.sm,
+                  ),
+                  child: SectionTabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    tabs: const [
+                      Tab(text: 'Info'),
+                      Tab(text: 'Events'),
+                      Tab(text: 'Posts'),
+                      Tab(text: 'Managers'),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _InfoTab(club: club),
+                      _EventsTab(clubId: club.id),
+                      _PostsTab(clubId: club.id),
+                      _ManagersTab(clubId: club.id),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        loading: () => const Center(child: CupertinoActivityIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
-      ),
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+            error: (err, _) => Center(child: Text('Error: $err')),
+          ),
         ),
       ),
     );
@@ -225,7 +233,7 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         if (!widget.club.isActive) ...[
           const ContactAdminBanner(),
@@ -241,7 +249,7 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
                 onTap: () => _pickImage(true),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Spacing.md),
             Expanded(
               child: _ImageTile(
                 label: 'Banner',
@@ -255,10 +263,7 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: 'Club Name',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Club Name'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
@@ -266,17 +271,13 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
           maxLines: 4,
           decoration: const InputDecoration(
             labelText: 'Description',
-            border: OutlineInputBorder(),
             alignLabelWithHint: true,
           ),
         ),
         const SizedBox(height: Spacing.md),
         DropdownButtonFormField<String>(
           initialValue: _category,
-          decoration: const InputDecoration(
-            labelText: 'Category',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Category'),
           items: clubCategories
               .map((c) => DropdownMenuItem(value: c, child: Text(c)))
               .toList(),
@@ -285,83 +286,63 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _foundedYearController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Founded Year',
-            border: OutlineInputBorder(),
-          ),
+          keyboardType: .number,
+          decoration: const InputDecoration(labelText: 'Founded Year'),
         ),
         const SizedBox(height: Spacing.lg),
         Text(
           'Contact',
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         TextField(
           controller: _contactEmailController,
-          decoration: const InputDecoration(
-            labelText: 'Contact Email',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Contact Email'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _contactPhoneController,
-          decoration: const InputDecoration(
-            labelText: 'Contact Phone',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Contact Phone'),
         ),
         const SizedBox(height: Spacing.lg),
         Text(
           'Social Links',
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         TextField(
           controller: _facebookController,
-          decoration: const InputDecoration(
-            labelText: 'Facebook',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Facebook'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _instagramController,
-          decoration: const InputDecoration(
-            labelText: 'Instagram',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Instagram'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _linkedinController,
-          decoration: const InputDecoration(
-            labelText: 'LinkedIn',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'LinkedIn'),
         ),
         const SizedBox(height: Spacing.xl),
         FilledButton(
           onPressed: _saving ? null : _save,
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-          ),
+          style: FilledButton.styleFrom(),
           child: _saving
-              ? const SizedBox(
+              ? SizedBox(
                   height: 18,
                   width: 18,
                   child: CupertinoActivityIndicator(
-                    color: Colors.white,
+                    color: context.colors.onPrimary,
                   ),
                 )
-              : const Text('Save Changes'),
+              : const Text('Save changes'),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: Spacing.xxxl),
       ],
     );
   }
@@ -384,14 +365,14 @@ class _ImageTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget content;
     if (file != null) {
-      content = Image.file(file!, fit: BoxFit.cover);
+      content = Image.file(file!, fit: .cover);
     } else if (existingUrl != null && existingUrl!.isNotEmpty) {
       content = CachedNetworkImage(
         imageUrl: ApiEndpoints.resolveImageUrl(existingUrl),
-        fit: BoxFit.cover,
+        fit: .cover,
       );
     } else {
-      content = Icon(Icons.image, color: Colors.grey.shade400);
+      content = Icon(Icons.image, color: context.colors.textSubtle);
     }
 
     return GestureDetector(
@@ -400,24 +381,31 @@ class _ImageTile extends StatelessWidget {
         height: 90,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey.shade300),
-          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(color: context.colors.borderStrong),
+          color: context.colors.surfaceAlt,
         ),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ClipRRect(borderRadius: BorderRadius.circular(10), child: content),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(RadiusToken.md),
+              child: content,
+            ),
             Positioned(
               bottom: 4,
               right: 4,
               child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
+                padding: const EdgeInsets.all(Spacing.xs),
+                decoration: BoxDecoration(
+                  color: context.colors.textMuted,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.edit, size: 12, color: Colors.white),
+                child: Icon(
+                  Icons.edit,
+                  size: 12,
+                  color: context.colors.onPrimary,
+                ),
               ),
             ),
           ],
@@ -542,31 +530,22 @@ class _EventsTabState extends ConsumerState<_EventsTab> {
     final eventsAsync = ref.watch(clubEventsProvider(widget.clubId));
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         TextField(
           controller: _titleController,
-          decoration: const InputDecoration(
-            labelText: 'Title',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Title'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _descriptionController,
           maxLines: 2,
-          decoration: const InputDecoration(
-            labelText: 'Description',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Description'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
           controller: _locationController,
-          decoration: const InputDecoration(
-            labelText: 'Location',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Location'),
         ),
         const SizedBox(height: Spacing.md),
         OutlinedButton.icon(
@@ -594,32 +573,33 @@ class _EventsTabState extends ConsumerState<_EventsTab> {
                   width: 16,
                   child: CupertinoActivityIndicator(),
                 )
-              : const Text('Add Event'),
+              : const Text('Add event'),
         ),
         const Divider(height: 32),
         Text(
           'Upcoming Published Events',
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         eventsAsync.when(
           data: (events) => events.isEmpty
               ? Text(
                   'No upcoming published events yet.',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  style: TextStyle(color: context.colors.textMuted),
                 )
               : Column(
                   children: events
                       .map((e) => _EventRow(event: e))
                       .toList(growable: false),
                 ),
-          loading: () =>
-              const Center(child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CupertinoActivityIndicator(),
-              )),
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(Spacing.lg),
+              child: CupertinoActivityIndicator(),
+            ),
+          ),
           error: (_, _) => const SizedBox.shrink(),
         ),
       ],
@@ -698,19 +678,19 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
     final postsAsync = ref.watch(clubPostsProvider(widget.clubId));
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         Text(
           'Posting here notifies every follower of this club immediately.',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(
+            fontSize: FontSizeToken.sm,
+            color: context.colors.textMuted,
+          ),
         ),
         const SizedBox(height: Spacing.sm),
         TextField(
           controller: _titleController,
-          decoration: const InputDecoration(
-            labelText: 'Title',
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Title'),
         ),
         const SizedBox(height: Spacing.md),
         TextField(
@@ -718,7 +698,6 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
           maxLines: 4,
           decoration: const InputDecoration(
             labelText: 'Body',
-            border: OutlineInputBorder(),
             alignLabelWithHint: true,
           ),
         ),
@@ -731,20 +710,20 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
                   width: 16,
                   child: CupertinoActivityIndicator(),
                 )
-              : const Text('Post Update'),
+              : const Text('Post update'),
         ),
         const Divider(height: 32),
         postsAsync.when(
           data: (posts) => posts.isEmpty
               ? Text(
                   'No updates posted yet.',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  style: TextStyle(color: context.colors.textMuted),
                 )
               : Column(
                   children: posts
                       .map(
                         (p) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.only(bottom: Spacing.md),
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.campaign_outlined),
@@ -752,18 +731,19 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
                             subtitle: Text(
                               p.body,
                               maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: .ellipsis,
                             ),
                           ),
                         ),
                       )
                       .toList(growable: false),
                 ),
-          loading: () =>
-              const Center(child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CupertinoActivityIndicator(),
-              )),
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(Spacing.lg),
+              child: CupertinoActivityIndicator(),
+            ),
+          ),
           error: (_, _) => const SizedBox.shrink(),
         ),
       ],
@@ -847,17 +827,20 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
         .toList();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         Text(
           'Current Managers',
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         if (managers.isEmpty)
-          Text('No managers yet.', style: TextStyle(color: Colors.grey.shade600))
+          Text(
+            'No managers yet.',
+            style: TextStyle(color: context.colors.textMuted),
+          )
         else
           ...managers.map(
             (m) => ListTile(
@@ -885,18 +868,21 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
           'Promote a Follower',
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
         ),
         Text(
           'Only people already following this club can be promoted. '
           'Only the club owner can do this.',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(
+            fontSize: FontSizeToken.sm,
+            color: context.colors.textMuted,
+          ),
         ),
         const SizedBox(height: Spacing.sm),
         if (promotable.isEmpty)
           Text(
             'No eligible followers yet.',
-            style: TextStyle(color: Colors.grey.shade600),
+            style: TextStyle(color: context.colors.textMuted),
           )
         else
           ...promotable.map(

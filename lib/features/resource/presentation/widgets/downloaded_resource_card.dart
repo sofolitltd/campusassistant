@@ -22,6 +22,9 @@ import '../../../bookmark/domain/entities/bookmark.dart';
 import '../../../bookmark/presentation/providers/bookmark_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'resource_info_sheet.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class DownloadedResourceCard extends ConsumerWidget {
   final DownloadedFile downloadedFile;
@@ -56,12 +59,10 @@ class DownloadedResourceCard extends ConsumerWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(RadiusToken.md),
         color: theme.cardColor,
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -85,15 +86,15 @@ class DownloadedResourceCard extends ConsumerWidget {
             child: Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(Spacing.md),
                   child: Row(
                     children: [
                       GestureDetector(
                         onTap: () => _showInfoBottomSheet(context),
-                        child: _buildThumbnail(isDark, theme),
+                        child: _buildThumbnail(context, isDark, theme),
                       ),
-                      const SizedBox(width: 12),
-                      _buildDetails(isDark, theme),
+                      const SizedBox(width: Spacing.md),
+                      _buildDetails(context, isDark, theme),
                     ],
                   ),
                 ),
@@ -106,7 +107,7 @@ class DownloadedResourceCard extends ConsumerWidget {
                   bottom: -4,
                   right: 12,
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: .min,
                     children: [
                       IconButton(
                         constraints: const BoxConstraints(
@@ -121,17 +122,17 @@ class DownloadedResourceCard extends ConsumerWidget {
                               ? LucideIcons.bookmarkCheck
                               : LucideIcons.bookmark,
                           color: isBookmarked
-                              ? Colors.teal
+                              ? context.colors.primary
                               : theme.colorScheme.onSurface.withValues(
                                   alpha: 0.4,
                                 ),
                           size: 20,
                         ),
                       ),
-                      const SizedBox(width: 2),
-                      const Icon(
+                      const SizedBox(width: Spacing.xxs),
+                      Icon(
                         LucideIcons.circleCheck,
-                        color: Colors.green,
+                        color: context.colors.success,
                         size: 20,
                       ),
                     ],
@@ -145,7 +146,7 @@ class DownloadedResourceCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildThumbnail(bool isDark, ThemeData theme) {
+  Widget _buildThumbnail(BuildContext context, bool isDark, ThemeData theme) {
     final resource = downloadedFile.resource;
     return Stack(
       alignment: Alignment.topLeft,
@@ -154,20 +155,17 @@ class DownloadedResourceCard extends ConsumerWidget {
           width: 80,
           height: 90,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             color: isDark
                 ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                : Colors.blueAccent.shade100.withValues(alpha: 0.1),
-            border: Border.all(
-              color: isDark ? Colors.white24 : Colors.grey.shade300,
-              width: 1,
-            ),
+                : AccentToken.blue.withValues(alpha: 0.1),
+            border: Border.all(color: context.colors.borderStrong, width: 1),
           ),
-          clipBehavior: Clip.antiAlias,
+          clipBehavior: .antiAlias,
           child: resource.thumbnailUrl.isNotEmpty
               ? CachedNetworkImage(
                   imageUrl: ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
-                  fit: BoxFit.cover,
+                  fit: .cover,
                   placeholder: (context, _) => Icon(
                     LucideIcons.fileText,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
@@ -189,7 +187,7 @@ class DownloadedResourceCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetails(bool isDark, ThemeData theme) {
+  Widget _buildDetails(BuildContext context, bool isDark, ThemeData theme) {
     final resource = downloadedFile.resource;
     final fileSize = _getFileSizeStr(downloadedFile.fileSizeBytes);
     final dateStr =
@@ -199,45 +197,48 @@ class DownloadedResourceCard extends ConsumerWidget {
       child: SizedBox(
         height: 95,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: .start,
+          mainAxisAlignment: .start,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.xs,
+                vertical: Spacing.xxs,
+              ),
               decoration: BoxDecoration(
-                color: Colors.teal.withValues(alpha: .5),
+                color: context.colors.primary.withValues(alpha: .5),
                 borderRadius: BorderRadius.circular(2.5),
               ),
               child: Text(
                 '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
-                style: const TextStyle(
+                style: TextStyle(
                   height: 1,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  fontSize: FontSizeToken.xxs,
+                  fontWeight: .bold,
+                  color: context.colors.onPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Spacing.xs),
             Text(
               resource.title,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              overflow: .ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 height: 1.2,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Spacing.xs),
             Text(
               resource.description.isNotEmpty
                   ? resource.description
                   : resource.type,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: .ellipsis,
               style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: isDark ? Colors.white70 : Colors.grey.shade600,
+                fontWeight: .w500,
+                color: context.colors.textMuted,
                 height: 1,
               ),
             ),
@@ -245,13 +246,15 @@ class DownloadedResourceCard extends ConsumerWidget {
             Row(
               children: [
                 _buildMiniInfoTile(
+                  context,
                   theme,
                   isDark,
                   LucideIcons.hardDrive,
                   fileSize,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 _buildMiniInfoTile(
+                  context,
                   theme,
                   isDark,
                   LucideIcons.calendar,
@@ -266,37 +269,35 @@ class DownloadedResourceCard extends ConsumerWidget {
   }
 
   Widget _buildMiniInfoTile(
+    BuildContext context,
     ThemeData theme,
     bool isDark,
     IconData icon,
     String value,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.sm,
+        vertical: Spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: isDark
             ? theme.colorScheme.surface.withValues(alpha: 0.5)
-            : Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade100,
-        ),
+            : context.colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(RadiusToken.xs),
+        border: Border.all(color: context.colors.surfaceAlt),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
-          Icon(
-            icon,
-            size: 10,
-            color: isDark ? Colors.white70 : Colors.grey.shade600,
-          ),
-          const SizedBox(width: 4),
+          Icon(icon, size: 10, color: context.colors.textMuted),
+          const SizedBox(width: Spacing.xs),
           Text(
             value,
             style: TextStyle(
-              fontSize: 9,
+              fontSize: FontSizeToken.xxs,
               color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
             ),
           ),
         ],
@@ -318,7 +319,6 @@ class DownloadedResourceCard extends ConsumerWidget {
         switch (value) {
           case 'open':
             await OpenFilex.open(downloadedFile.localPath);
-            break;
           case 'share':
             await SharePlus.instance.share(
               ShareParams(
@@ -326,19 +326,14 @@ class DownloadedResourceCard extends ConsumerWidget {
                 text: downloadedFile.resource.title,
               ),
             );
-            break;
           case 'info':
             _showInfoBottomSheet(context);
-            break;
           case 'bookmark':
             await _handleBookmarkToggle(context, ref, isBookmarked);
-            break;
           case 'view_course':
             _navigateToCourse(context);
-            break;
           case 'delete':
             await _deleteFile(context, ref);
-            break;
         }
       },
       itemBuilder: (context) => [
@@ -365,7 +360,7 @@ class DownloadedResourceCard extends ConsumerWidget {
                 ? LucideIcons.bookmarkCheck
                 : LucideIcons.bookmark,
             text: isBookmarked ? 'Remove Bookmark' : 'Bookmark',
-            errorColor: isBookmarked ? theme.appColors.destructiveColor : null,
+            errorColor: isBookmarked ? theme.appColors.danger : null,
           ),
         ),
         if (downloadedFile.resource.id.isNotEmpty)
@@ -383,7 +378,7 @@ class DownloadedResourceCard extends ConsumerWidget {
           child: _PopupItem(
             icon: LucideIcons.trash2,
             text: 'Delete',
-            errorColor: theme.appColors.destructiveColor,
+            errorColor: theme.appColors.danger,
           ),
         ),
       ],
@@ -426,9 +421,7 @@ class DownloadedResourceCard extends ConsumerWidget {
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
                 'Remove',
-                style: TextStyle(
-                  color: Theme.of(context).appColors.destructiveColor,
-                ),
+                style: TextStyle(color: context.colors.danger),
               ),
             ),
           ],
@@ -472,7 +465,9 @@ class DownloadedResourceCard extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.8,
@@ -496,7 +491,7 @@ class DownloadedResourceCard extends ConsumerWidget {
   }
 
   Future<void> _deleteFile(BuildContext context, WidgetRef ref) async {
-    final destructiveColor = Theme.of(context).appColors.destructiveColor;
+    final destructiveColor = context.colors.danger;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -512,7 +507,10 @@ class DownloadedResourceCard extends ConsumerWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: destructiveColor),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: context.colors.onPrimary),
+            ),
           ),
         ],
       ),
@@ -561,8 +559,11 @@ class _PopupItem extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     children: [
       Icon(icon, size: 16, color: errorColor),
-      const SizedBox(width: 8),
-      Text(text, style: TextStyle(fontSize: 13, color: errorColor)),
+      const SizedBox(width: Spacing.sm),
+      Text(
+        text,
+        style: TextStyle(fontSize: FontSizeToken.md, color: errorColor),
+      ),
     ],
   );
 }

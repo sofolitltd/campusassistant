@@ -23,6 +23,8 @@ import '../providers/resource_provider.dart';
 import '../../../../widgets/batch_multi_select_field.dart';
 import '../../../../widgets/year_multi_select_field.dart';
 import '../../../../features/study/presentation/providers/questions_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AddEditResourceScreen extends ConsumerStatefulWidget {
   final Resource? resource;
@@ -133,15 +135,15 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
   }
 
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
+    final picked = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
 
-    if (result != null && result.files.single.path != null) {
-      final path = result.files.single.path!;
-      final name = result.files.single.name;
-      final size = result.files.single.size;
+    if (picked != null && picked.path != null) {
+      final path = picked.path!;
+      final name = picked.name;
+      final size = picked.lengthSync() ?? await picked.length() ?? 0;
 
       setState(() {
         _filePath = path;
@@ -213,10 +215,6 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
 
     try {
       final user = ref.read(userProvider).value;
-      const kAdminSentinelId = '00000000-0000-0000-0000-000000000000';
-      final uploaderUid = user?.uid ?? '';
-      final uploaderId = widget.resource?.uploaderId ?? kAdminSentinelId;
-      final uploaderName = user?.name ?? 'Admin';
 
       final isAdmin = user?.information.status?.admin ?? false;
       final isModerator = user?.information.status?.moderator ?? false;
@@ -292,9 +290,6 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
         rejectedNote: widget.resource?.rejectedNote ?? '',
         reviewedBy: widget.resource?.reviewedBy ?? '',
         reviewedAt: widget.resource?.reviewedAt,
-        uploaderId: uploaderId,
-        uploaderUid: uploaderUid,
-        uploaderName: uploaderName,
         universityId: widget.universityId,
         departmentId: widget.departmentId,
         courseCode:
@@ -421,360 +416,360 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.resource == null ? 'Add $typeName' : 'Edit $typeName',
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. File Selection Redesign
-              Text(
-                '1. File Details',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          appBar: AppBar(
+            title: Text(
+              widget.resource == null ? 'Add $typeName' : 'Edit $typeName',
+            ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(Spacing.lg),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: .stretch,
                 children: [
-                  // Left Side: Picker/Preview (2:3 Aspect Ratio)
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      height: 160,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(RadiusToken.md),
-                        border: Border.all(),
-                      ),
-                      child: _localThumbnailFile != null
-                          ? Stack(
-                              children: [
-                                ClipRRect(
+                  // 1. File Selection Redesign
+                  Text(
+                    '1. File Details',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  ),
+                  const SizedBox(height: Spacing.md),
+
+                  Row(
+                    crossAxisAlignment: .start,
+                    children: [
+                      // Left Side: Picker/Preview (2:3 Aspect Ratio)
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          height: 160,
+                          decoration: BoxDecoration(
+                            color: context.colors.surfaceAlt,
+                            borderRadius: BorderRadius.circular(RadiusToken.md),
+                            border: Border.all(),
+                          ),
+                          child: _localThumbnailFile != null
+                              ? Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        RadiusToken.md,
+                                      ),
+                                      child: Image.file(
+                                        _localThumbnailFile!,
+                                        fit: .cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: InkWell(
+                                        onTap: _clearFile,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(
+                                            Spacing.xs,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: context.colors.textMuted,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            LucideIcons.x,
+                                            size: 16,
+                                            color: context.colors.onPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : InkWell(
+                                  onTap: _pickFile,
                                   borderRadius: BorderRadius.circular(
                                     RadiusToken.md,
                                   ),
-                                  child: Image.file(
-                                    _localThumbnailFile!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
+                                  child: Column(
+                                    mainAxisAlignment: .center,
+                                    children: [
+                                      const Icon(
+                                        LucideIcons.filePlus,
+                                        size: 32,
+                                      ),
+                                      const SizedBox(height: Spacing.sm),
+                                      const Text(
+                                        'Choose\nFile',
+                                        textAlign: .center,
+                                        style: TextStyle(
+                                          fontSize: FontSizeToken.sm,
+
+                                          fontWeight: .bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Positioned(
-                                  top: 4,
-                                  right: 4,
-                                  child: InkWell(
-                                    onTap: _clearFile,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.black54,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        LucideIcons.x,
-                                        size: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : InkWell(
-                              onTap: _pickFile,
-                              borderRadius: BorderRadius.circular(
-                                RadiusToken.md,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(LucideIcons.filePlus, size: 32),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Choose\nFile',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  // Right Side: Meta Data show like size, total page
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "File Name",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
                         ),
-
-                        Text(
-                          _fileName ?? "No File Selected! ",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey,
-                          ),
-                        ),
-
-                        const SizedBox(height: Spacing.lg),
-
-                        _infoTile(
-                          icon: LucideIcons.hardDrive,
-                          label: 'File Size',
-                          value: _fileSizeBytes > 1024 * 1024
-                              ? '${(_fileSizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB'
-                              : _fileSizeBytes > 1024
-                              ? '${(_fileSizeBytes / 1024).toStringAsFixed(1)} KB'
-                              : '$_fileSizeBytes B',
-                        ),
-                        const SizedBox(height: 12),
-                        _infoTile(
-                          icon: LucideIcons.bookOpen,
-                          label: 'Page Count',
-                          value: _pageCount.toString(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // 2. Main Content
-              const SizedBox(height: 24),
-              // Course Selection Like Assign Batches
-              Text(
-                '2. Select Course',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              coursesAsync.when(
-                data: (courses) {
-                  return DropdownButtonFormField<String>(
-                    initialValue: _selectedCourseId.isNotEmpty
-                        ? _selectedCourseId
-                        : null,
-                    decoration: const InputDecoration(
-                      labelText: 'Course',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(LucideIcons.book),
-                    ),
-                    items: courses.map((c) {
-                      return DropdownMenuItem(
-                        value: c.id,
-                        child: Text(
-                          '[${c.courseCode}] ${c.courseTitle}',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      if (val != null) {
-                        setState(() => _selectedCourseId = val);
-                      }
-                    },
-                  );
-                },
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Text('Error loading courses: $e'),
-              ),
-              const SizedBox(height: 24),
-
-              Text(
-                '3. Basic Information',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  hintText: 'Chapter Name or Topic',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(LucideIcons.heading),
-                ),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter a title'
-                    : null,
-              ),
-              const SizedBox(height: Spacing.lg),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description (Optional)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(LucideIcons.fileText),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // 4. Meta Years (For Questions)
-              if (widget.type == 'question') ...[
-                Text(
-                  '4. Academic Years',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                Consumer(
-                  builder: (context, ref, _) {
-                    final years = ref.watch(questionYearsProvider);
-                    return YearMultiSelectField(
-                      years: years,
-                      selectedYears: _selectedYears,
-                      onSelected: (selected) {
-                        setState(() => _selectedYears = selected);
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-              ],
-
-              // 5. Metadata Section
-              Text(
-                widget.type == 'question'
-                    ? '5. Type-Specific Details'
-                    : '4. Type-Specific Details',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-
-              // Dynamic Metadata Fields
-              ..._buildMetadataFields(chaptersAsync),
-
-              const SizedBox(height: 24),
-
-              // 6. Access Level
-              Text(
-                widget.type == 'question'
-                    ? '6. Access Level'
-                    : '5. Access Level',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'basic',
-                    label: Text('Basic'),
-                    icon: Icon(LucideIcons.shield),
-                  ),
-                  ButtonSegment(
-                    value: 'pro',
-                    label: Text('Pro'),
-                    icon: Icon(LucideIcons.shieldCheck),
-                  ),
-                ],
-                selected: {_accessLevel},
-                onSelectionChanged: (newSelection) {
-                  setState(() {
-                    _accessLevel = newSelection.first;
-                  });
-                },
-              ),
-              const SizedBox(height: 24),
-              // 7. Batches
-              Text(
-                widget.type == 'question'
-                    ? '7. Target Batches'
-                    : '6. Target Batches',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              batchesAsync.when(
-                data: (batches) {
-                  return BatchMultiSelectField(
-                    batches: batches,
-                    selectedBatchIds: _selectedBatches,
-                    onMappingChanged: (ids) {
-                      setState(() => _selectedBatches = ids);
-                    },
-                  );
-                },
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Text('Error loading batches: $e'),
-              ),
-
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _isUploading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(RadiusToken.md),
-                  ),
-                  elevation: 2,
-                ),
-                child: _isUploading
-                    ? const CupertinoActivityIndicator(color: Colors.white)
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            widget.resource == null
-                                ? LucideIcons.plus
-                                : LucideIcons.save,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            widget.resource == null
-                                ? 'Add $typeName'
-                                : 'Update $typeName',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
                       ),
+
+                      const SizedBox(width: Spacing.lg),
+
+                      // Right Side: Meta Data show like size, total page
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              "File Name",
+                              style: TextStyle(
+                                fontSize: FontSizeToken.sm,
+                                color: context.colors.textSubtle,
+                                fontWeight: .bold,
+                              ),
+                            ),
+
+                            Text(
+                              _fileName ?? "No File Selected! ",
+                              maxLines: 2,
+                              overflow: .ellipsis,
+                              style: TextStyle(
+                                fontSize: FontSizeToken.sm,
+                                fontWeight: .w500,
+                                color: context.colors.textSubtle,
+                              ),
+                            ),
+
+                            const SizedBox(height: Spacing.lg),
+
+                            _infoTile(
+                              icon: LucideIcons.hardDrive,
+                              label: 'File Size',
+                              value: _fileSizeBytes > 1024 * 1024
+                                  ? '${(_fileSizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB'
+                                  : _fileSizeBytes > 1024
+                                  ? '${(_fileSizeBytes / 1024).toStringAsFixed(1)} KB'
+                                  : '$_fileSizeBytes B',
+                            ),
+                            const SizedBox(height: Spacing.md),
+                            _infoTile(
+                              icon: LucideIcons.bookOpen,
+                              label: 'Page Count',
+                              value: _pageCount.toString(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: Spacing.xxl),
+
+                  // 2. Main Content
+                  const SizedBox(height: Spacing.xxl),
+                  // Course Selection Like Assign Batches
+                  Text(
+                    '2. Select Course',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  coursesAsync.when(
+                    data: (courses) {
+                      return DropdownButtonFormField<String>(
+                        initialValue: _selectedCourseId.isNotEmpty
+                            ? _selectedCourseId
+                            : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Course',
+                          prefixIcon: Icon(LucideIcons.book),
+                        ),
+                        items: courses.map((c) {
+                          return DropdownMenuItem(
+                            value: c.id,
+                            child: Text(
+                              '[${c.courseCode}] ${c.courseTitle}',
+                              overflow: .ellipsis,
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() => _selectedCourseId = val);
+                          }
+                        },
+                      );
+                    },
+                    loading: () => const LinearProgressIndicator(),
+                    error: (e, _) => Text('Error loading courses: $e'),
+                  ),
+                  const SizedBox(height: Spacing.xxl),
+
+                  Text(
+                    '3. Basic Information',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                      hintText: 'Chapter Name or Topic',
+                      prefixIcon: Icon(LucideIcons.heading),
+                    ),
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Please enter a title'
+                        : null,
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description (Optional)',
+                      prefixIcon: Icon(LucideIcons.fileText),
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.xxl),
+
+                  // 4. Meta Years (For Questions)
+                  if (widget.type == 'question') ...[
+                    Text(
+                      '4. Academic Years',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                    ),
+                    const SizedBox(height: Spacing.md),
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final years = ref.watch(questionYearsProvider);
+                        return YearMultiSelectField(
+                          years: years,
+                          selectedYears: _selectedYears,
+                          onSelected: (selected) {
+                            setState(() => _selectedYears = selected);
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: Spacing.xxl),
+                  ],
+
+                  // 5. Metadata Section
+                  Text(
+                    widget.type == 'question'
+                        ? '5. Type-Specific Details'
+                        : '4. Type-Specific Details',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  ),
+                  const SizedBox(height: Spacing.md),
+
+                  // Dynamic Metadata Fields
+                  ..._buildMetadataFields(chaptersAsync),
+
+                  const SizedBox(height: Spacing.xxl),
+
+                  // 6. Access Level
+                  Text(
+                    widget.type == 'question'
+                        ? '6. Access Level'
+                        : '5. Access Level',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(
+                        value: 'basic',
+                        label: Text('Basic'),
+                        icon: Icon(LucideIcons.shield),
+                      ),
+                      ButtonSegment(
+                        value: 'pro',
+                        label: Text('Pro'),
+                        icon: Icon(LucideIcons.shieldCheck),
+                      ),
+                    ],
+                    selected: {_accessLevel},
+                    onSelectionChanged: (newSelection) {
+                      setState(() {
+                        _accessLevel = newSelection.first;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: Spacing.xxl),
+                  // 7. Batches
+                  Text(
+                    widget.type == 'question'
+                        ? '7. Target Batches'
+                        : '6. Target Batches',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  ),
+                  const SizedBox(height: Spacing.sm),
+                  batchesAsync.when(
+                    data: (batches) {
+                      return BatchMultiSelectField(
+                        batches: batches,
+                        selectedBatchIds: _selectedBatches,
+                        onMappingChanged: (ids) {
+                          setState(() => _selectedBatches = ids);
+                        },
+                      );
+                    },
+                    loading: () => const LinearProgressIndicator(),
+                    error: (e, _) => Text('Error loading batches: $e'),
+                  ),
+
+                  const SizedBox(height: Spacing.xxxl),
+                  ElevatedButton(
+                    onPressed: _isUploading ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.colors.text,
+                      foregroundColor: context.colors.onPrimary,
+                      elevation: 2,
+                    ),
+                    child: _isUploading
+                        ? CupertinoActivityIndicator(
+                            color: context.colors.onPrimary,
+                          )
+                        : Row(
+                            mainAxisAlignment: .center,
+                            children: [
+                              Icon(
+                                widget.resource == null
+                                    ? LucideIcons.plus
+                                    : LucideIcons.save,
+                              ),
+                              const SizedBox(width: Spacing.sm),
+                              Text(
+                                widget.resource == null
+                                    ? 'Add $typeName'
+                                    : 'Update $typeName',
+                                style: const TextStyle(
+                                  fontSize: FontSizeToken.lg,
+                                  fontWeight: .bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
               ),
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
-        ),
-      ),
         ),
       ),
     );
@@ -786,24 +781,27 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
     required String value,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-            fontWeight: FontWeight.bold,
+          style: TextStyle(
+            fontSize: FontSizeToken.sm,
+            color: context.colors.textSubtle,
+            fontWeight: .bold,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: Spacing.xs),
         Row(
           children: [
             Icon(icon, size: 16),
-            const SizedBox(width: 12),
+            const SizedBox(width: Spacing.md),
             Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              style: const TextStyle(
+                fontWeight: .bold,
+                fontSize: FontSizeToken.md,
+              ),
             ),
           ],
         ),
@@ -818,7 +816,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
       if (key == 'chapter' && widget.type == 'note') {
         fields.add(
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: Spacing.lg),
             child: chaptersAsync.when(
               data: (chapters) {
                 final items = chapters
@@ -838,7 +836,6 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                       : null,
                   decoration: const InputDecoration(
                     labelText: 'Chapter',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(LucideIcons.bookOpen),
                   ),
                   items: items,
@@ -865,12 +862,11 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
 
       fields.add(
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: Spacing.lg),
           child: TextFormField(
             controller: controller,
             decoration: InputDecoration(
               labelText: label,
-              border: const OutlineInputBorder(),
               prefixIcon: Icon(_getIconForMetadata(key)),
             ),
           ),
@@ -882,27 +878,16 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
   }
 
   IconData _getIconForMetadata(String key) {
-    switch (key) {
-      case 'teacher':
-      case 'creator':
-      case 'author':
-        return LucideIcons.user;
-      case 'chapter':
-        return LucideIcons.bookOpen;
-      case 'publisher':
-        return LucideIcons.building;
-      case 'edition':
-        return LucideIcons.hash;
-      case 'isbn':
-        return LucideIcons.barcode;
-      case 'exam_type':
-        return LucideIcons.graduationCap;
-      case 'marks':
-        return LucideIcons.circleCheck;
-      case 'academic_year':
-        return LucideIcons.calendar;
-      default:
-        return LucideIcons.info;
-    }
+    return switch (key) {
+      'teacher' || 'creator' || 'author' => LucideIcons.user,
+      'chapter' => LucideIcons.bookOpen,
+      'publisher' => LucideIcons.building,
+      'edition' => LucideIcons.hash,
+      'isbn' => LucideIcons.barcode,
+      'exam_type' => LucideIcons.graduationCap,
+      'marks' => LucideIcons.circleCheck,
+      'academic_year' => LucideIcons.calendar,
+      _ => LucideIcons.info,
+    };
   }
 }

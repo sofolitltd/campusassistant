@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class InAppWebViewPage extends StatefulWidget {
   final String url;
@@ -11,8 +12,24 @@ class InAppWebViewPage extends StatefulWidget {
 }
 
 class _InAppWebViewPageState extends State<InAppWebViewPage> {
-  late InAppWebViewController _controller;
+  late final WebViewController _controller;
   double progress = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (value) {
+            if (!mounted) return;
+            setState(() => progress = value / 100);
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +37,7 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
       appBar: AppBar(
         title: Text(
           Uri.parse(widget.url).host,
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: FontSizeToken.lg),
         ),
         centerTitle: true,
         actions: [
@@ -36,16 +53,7 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
               )
             : null,
       ),
-
-      body: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-        onWebViewCreated: (controller) => _controller = controller,
-        onProgressChanged: (controller, progressValue) {
-          setState(() {
-            progress = progressValue / 100;
-          });
-        },
-      ),
+      body: WebViewWidget(controller: _controller),
     );
   }
 }

@@ -9,6 +9,9 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class ContributorPage extends ConsumerWidget {
   const ContributorPage({super.key});
@@ -16,7 +19,6 @@ class ContributorPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final contributorsAsync = ref.watch(contributorsProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return CustomHeaderLayout(
       title: 'Our Contributors',
@@ -38,24 +40,20 @@ class ContributorPage extends ConsumerWidget {
                     height: MediaQuery.sizeOf(context).height * 0.7,
                     child: Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           Icon(
                             LucideIcons.users,
                             size: 64,
-                            color: isDark
-                                ? Colors.white10
-                                : Colors.grey.shade300,
+                            color: context.colors.borderStrong,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                           Text(
                             'No contributors yet',
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? Colors.white38
-                                  : Colors.grey.shade500,
+                              fontSize: FontSizeToken.xl,
+                              fontWeight: .w500,
+                              color: context.colors.textSubtle,
                             ),
                           ),
                         ],
@@ -67,7 +65,7 @@ class ContributorPage extends ConsumerWidget {
             }
 
             return ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Spacing.lg),
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
               ),
@@ -81,9 +79,7 @@ class ContributorPage extends ConsumerWidget {
           error: (err, _) => Center(
             child: Text(
               'Failed to load contributors',
-              style: TextStyle(
-                color: isDark ? Colors.white38 : Colors.grey.shade500,
-              ),
+              style: TextStyle(color: context.colors.textSubtle),
             ),
           ),
         ),
@@ -99,22 +95,18 @@ class _ContributorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: () => _showContributorDetails(context, contributor),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(14),
+        margin: const EdgeInsets.only(bottom: Spacing.md),
+        padding: const EdgeInsets.all(Spacing.lg),
         decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
+          color: context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-          ),
+          border: Border.all(color: context.colors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: context.colors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -123,22 +115,22 @@ class _ContributorCard extends StatelessWidget {
         child: Row(
           children: [
             _ContributorAvatar(contributor: contributor, radius: 24),
-            const SizedBox(width: 14),
+            const SizedBox(width: Spacing.lg),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     contributor.name,
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: isDark ? Colors.white : Colors.black87,
+                      fontWeight: .w600,
+                      fontSize: FontSizeToken.base,
+                      color: context.colors.text,
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Spacing.xs),
                   _TierBadge(tier: contributor.tier),
                 ],
               ),
@@ -146,7 +138,7 @@ class _ContributorCard extends StatelessWidget {
             Icon(
               LucideIcons.chevronRight,
               size: 16,
-              color: isDark ? Colors.white30 : Colors.grey.shade400,
+              color: context.colors.textSubtle,
             ),
           ],
         ),
@@ -166,12 +158,12 @@ class _ContributorAvatar extends StatelessWidget {
     if (contributor.imageUrl.isEmpty) {
       return CircleAvatar(
         radius: radius,
-        backgroundColor: Theme.of(context).appColors.primaryColor,
+        backgroundColor: context.colors.primary,
         child: Text(
           _getInitials(contributor.name),
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+            color: context.colors.onPrimary,
+            fontWeight: .bold,
             fontSize: radius * 0.55,
           ),
         ),
@@ -179,7 +171,7 @@ class _ContributorAvatar extends StatelessWidget {
     }
     return CircleAvatar(
       radius: radius,
-      backgroundColor: Theme.of(context).appColors.primaryColor,
+      backgroundColor: context.colors.primary,
       backgroundImage: NetworkImage(
         ApiEndpoints.resolveImageUrl(contributor.imageUrl),
       ),
@@ -205,7 +197,10 @@ class _TierBadge extends StatelessWidget {
     if (tier.isEmpty) return const SizedBox.shrink();
     final color = _tierColor(tier);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.sm,
+        vertical: Spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(RadiusToken.sm),
@@ -213,8 +208,8 @@ class _TierBadge extends StatelessWidget {
       child: Text(
         tier,
         style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
+          fontSize: FontSizeToken.xs,
+          fontWeight: .w700,
           color: color,
           letterSpacing: 0.3,
         ),
@@ -223,55 +218,48 @@ class _TierBadge extends StatelessWidget {
   }
 
   Color _tierColor(String tier) {
-    switch (tier.toLowerCase()) {
-      case 'platinum':
-        return const Color(0xFF6366F1);
-      case 'gold':
-        return const Color(0xFFF59E0B);
-      case 'silver':
-        return const Color(0xFF64748B);
-      case 'bronze':
-        return const Color(0xFFB45309);
-      default:
-        return const Color(0xFF00897B);
-    }
+    return switch (tier.toLowerCase()) {
+      'platinum' => AccentToken.indigo,
+      'gold' => AccentToken.amber,
+      'silver' => const Color(0xFF64748B),
+      'bronze' => const Color(0xFFB45309),
+      _ => const Color(0xFF00897B),
+    };
   }
 }
 
 void _showContributorDetails(BuildContext context, ContributorModel c) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-
   showDialog(
     context: context,
     builder: (context) {
       return Dialog(
-        backgroundColor: isDark ? Theme.of(context).cardColor : Colors.white,
+        backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(Spacing.xxl),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               _ContributorAvatar(contributor: c, radius: 44),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Text(
                 c.name,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? Colors.white : Colors.black87,
+                  fontSize: FontSizeToken.xl,
+                  fontWeight: .w700,
+                  color: context.colors.text,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               _TierBadge(tier: c.tier),
-              const SizedBox(height: 20),
+              const SizedBox(height: Spacing.xl),
               _DetailRow(label: 'University', value: c.universityName),
               _DetailRow(label: 'Department', value: c.departmentName),
               _DetailRow(label: 'Session', value: c.session),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -296,29 +284,28 @@ class _DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (value.isEmpty) return const SizedBox.shrink();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: Row(
         children: [
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white38 : Colors.grey.shade500,
+              fontSize: FontSizeToken.sm,
+              fontWeight: .w500,
+              color: context.colors.textSubtle,
             ),
           ),
           const Spacer(),
           Flexible(
             child: Text(
               value,
-              textAlign: TextAlign.right,
+              textAlign: .right,
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black87,
+                fontSize: FontSizeToken.md,
+                fontWeight: .w600,
+                color: context.colors.text,
               ),
             ),
           ),

@@ -10,6 +10,9 @@ import '/features/club/presentation/providers/club_provider.dart';
 import '/features/club/presentation/widgets/club_card.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ClubsPage extends ConsumerStatefulWidget {
   const ClubsPage({super.key});
@@ -44,7 +47,12 @@ class _ClubsPageState extends ConsumerState<ClubsPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: const [
@@ -107,7 +115,7 @@ class _ClubsListState extends ConsumerState<ClubsList> {
         if (allClubs.isEmpty) {
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 Icon(
                   LucideIcons.users,
@@ -120,11 +128,11 @@ class _ClubsListState extends ConsumerState<ClubsList> {
                 Text(
                   'No clubs found',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                     color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: Spacing.sm),
                 Text(
                   'Be the first to add one!',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -142,8 +150,8 @@ class _ClubsListState extends ConsumerState<ClubsList> {
               SizedBox(
                 height: 36,
                 child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: .horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                   children: [
                     _CategoryChip(
                       label: 'All',
@@ -160,7 +168,7 @@ class _ClubsListState extends ConsumerState<ClubsList> {
                   ],
                 ),
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             Expanded(
               child: clubs.isEmpty
                   ? Center(
@@ -172,9 +180,15 @@ class _ClubsListState extends ConsumerState<ClubsList> {
                       ),
                     )
                   : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        0,
+                        Spacing.lg,
+                        100,
+                      ),
                       itemCount: clubs.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: Spacing.lg),
                       itemBuilder: (context, index) =>
                           ClubCard(club: clubs[index]),
                     ),
@@ -202,33 +216,28 @@ class _CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: Spacing.sm),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
           decoration: BoxDecoration(
-            color: selected
-                ? primaryColor
-                : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100),
-            borderRadius: BorderRadius.circular(18),
+            color: selected ? primaryColor : (context.colors.surfaceAlt),
+            borderRadius: BorderRadius.circular(RadiusToken.xl),
             border: Border.all(
-              color: selected
-                  ? primaryColor
-                  : (isDark ? Colors.white10 : Colors.grey.shade300),
+              color: selected ? primaryColor : (context.colors.borderStrong),
             ),
           ),
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontSize: FontSizeToken.sm,
+              fontWeight: .w600,
               color: selected
-                  ? Colors.white
-                  : (isDark ? Colors.white70 : Colors.grey.shade700),
+                  ? context.colors.onPrimary
+                  : (context.colors.textMuted),
             ),
           ),
         ),

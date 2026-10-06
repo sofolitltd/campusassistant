@@ -9,6 +9,8 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/cr_model.dart';
 import '../providers/cr_provider.dart';
 import 'cr_card.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CrPage extends ConsumerStatefulWidget {
   const CrPage({super.key});
@@ -45,7 +47,12 @@ class _CrPageState extends ConsumerState<CrPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: const [
@@ -112,19 +119,19 @@ class _CrList extends StatelessWidget {
     if (filteredCrs.isEmpty) {
       return Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Icon(
               searchQuery.isNotEmpty ? LucideIcons.searchX : LucideIcons.userX,
               size: 48,
-              color: Colors.grey.shade300,
+              color: context.colors.borderStrong,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Spacing.md),
             Text(
               searchQuery.isNotEmpty ? 'No matches found' : emptyMessage,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.w500,
+              style: TextStyle(
+                color: context.colors.textSubtle,
+                fontWeight: .w500,
               ),
             ),
           ],
@@ -152,21 +159,21 @@ class _CrList extends StatelessWidget {
         final data = batchGroup[batch]!;
 
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Text(
               batch,
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontWeight: .bold,
+                fontSize: FontSizeToken.xl,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Spacing.md),
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: data.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
               itemBuilder: (context, index) {
                 final cr = data[index];
                 return CrCard(cr: cr);

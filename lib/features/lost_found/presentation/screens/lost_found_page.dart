@@ -11,6 +11,7 @@ import '/routes/app_route.dart';
 import '../../data/models/lost_found_item.dart';
 import '../providers/lost_found_provider.dart';
 import '../widgets/lost_found_card.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class LostFoundPage extends ConsumerStatefulWidget {
   const LostFoundPage({super.key});
@@ -50,10 +51,10 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
   }
 
   LostFoundFeedTab get _activeTab => switch (_tabController.index) {
-        1 => LostFoundFeedTab.found,
-        2 => LostFoundFeedTab.myPosts,
-        _ => LostFoundFeedTab.lost,
-      };
+    1 => LostFoundFeedTab.found,
+    2 => LostFoundFeedTab.myPosts,
+    _ => LostFoundFeedTab.lost,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,7 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.pushNamed(AppRoute.lostFoundCreate.name),
         icon: const Icon(Icons.add),
-        label: const Text('Post Item'),
+        label: const Text('Post item'),
       ),
       body: CustomHeaderLayout(
         title: 'Lost & Found',
@@ -74,7 +75,12 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.sm,
+              ),
               child: SectionTabBar(
                 controller: _tabController,
                 tabs: const [
@@ -89,8 +95,8 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
                 data: (categories) => SizedBox(
                   height: 40,
                   child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    scrollDirection: .horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                     children: [
                       _CategoryChip(
                         label: 'All',
@@ -99,11 +105,12 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
                       ),
                       for (final category in categories)
                         Padding(
-                          padding: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.only(left: Spacing.sm),
                           child: _CategoryChip(
                             label: category.name,
                             selected: _categoryId == category.id,
-                            onTap: () => setState(() => _categoryId = category.id),
+                            onTap: () =>
+                                setState(() => _categoryId = category.id),
                           ),
                         ),
                     ],
@@ -112,17 +119,23 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
                 loading: () => const SizedBox(height: 40),
                 error: (_, _) => const SizedBox.shrink(),
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             Expanded(
               child: Consumer(
                 builder: (context, ref, _) {
-                  final feedAsync = ref.watch(lostFoundFeedProvider(
-                    (tab: _activeTab, categoryId: _categoryId, search: _search),
-                  ));
+                  final feedAsync = ref.watch(
+                    lostFoundFeedProvider((
+                      tab: _activeTab,
+                      categoryId: _categoryId,
+                      search: _search,
+                    )),
+                  );
                   return feedAsync.when(
                     data: (items) => _ItemsGrid(items: items),
-                    loading: () => const Center(child: CupertinoActivityIndicator()),
-                    error: (err, _) => Center(child: Text('Failed to load items: $err')),
+                    loading: () =>
+                        const Center(child: CupertinoActivityIndicator()),
+                    error: (err, _) =>
+                        Center(child: Text('Failed to load items: $err')),
                   );
                 },
               ),
@@ -139,7 +152,11 @@ class _CategoryChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _CategoryChip({required this.label, required this.selected, required this.onTap});
+  const _CategoryChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -160,12 +177,16 @@ class _ItemsGrid extends StatelessWidget {
     if (items.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(Spacing.xxl),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
-              Icon(Icons.inventory_2_outlined, size: 48, color: Theme.of(context).colorScheme.outline),
-              const SizedBox(height: 12),
+              Icon(
+                Icons.inventory_2_outlined,
+                size: 48,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+              const SizedBox(height: Spacing.md),
               const Text('Nothing here yet'),
             ],
           ),
@@ -173,7 +194,7 @@ class _ItemsGrid extends StatelessWidget {
       );
     }
     return GridView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(Spacing.md),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 12,

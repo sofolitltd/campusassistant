@@ -14,6 +14,9 @@ import '/features/association/domain/entities/association.dart';
 import '/features/association/presentation/providers/association_provider.dart';
 import '/features/association/presentation/providers/bd_district_provider.dart';
 import '/features/university/presentation/providers/university_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 const associationCategories = [
   'Regional Welfare',
@@ -173,221 +176,212 @@ class _SuggestAssociationPageState
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(title: const Text('Suggest an Association')),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              'Know a district or sub-district association that isn\'t '
-              'listed yet? Suggest it here with as much detail as you can — '
-              'an admin will review it before it goes live.',
-              style: TextStyle(color: Colors.grey.shade600, height: 1.4),
-            ),
-            const SizedBox(height: Spacing.lg),
-            Row(
+          appBar: AppBar(title: const Text('Suggest an Association')),
+          body: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(Spacing.lg),
               children: [
-                Expanded(
-                  child: _ImagePickerBox(
-                    label: 'Logo',
-                    file: _logoFile,
-                    onTap: () => _pickImage(true),
-                    onClear: () => setState(() => _logoFile = null),
+                Text(
+                  'Know a district or sub-district association that isn\'t '
+                  'listed yet? Suggest it here with as much detail as you can — '
+                  'an admin will review it before it goes live.',
+                  style: TextStyle(
+                    color: context.colors.textMuted,
+                    height: 1.4,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _ImagePickerBox(
-                    label: 'Banner',
-                    file: _bannerFile,
-                    onTap: () => _pickImage(false),
-                    onClear: () => setState(() => _bannerFile = null),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Association Name',
-                border: OutlineInputBorder(),
-              ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _descriptionController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: Spacing.md),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'district', label: Text('District')),
-                ButtonSegment(
-                  value: 'sub_district',
-                  label: Text('Sub-district'),
-                ),
-              ],
-              selected: {_associationType},
-              onSelectionChanged: (s) =>
-                  setState(() => _associationType = s.first),
-            ),
-            const SizedBox(height: Spacing.md),
-            districtsAsync.when(
-              data: (districts) => Column(
-                children: [
-                  DropdownButtonFormField<BDDistrict>(
-                    initialValue: _district,
-                    decoration: const InputDecoration(
-                      labelText: 'District',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: districts
-                        .map(
-                          (d) => DropdownMenuItem(value: d, child: Text(d.name)),
-                        )
-                        .toList(),
-                    onChanged: (v) => setState(() {
-                      _district = v;
-                      _subDistrictId = null;
-                    }),
-                  ),
-                  if (_associationType == 'sub_district') ...[
-                    const SizedBox(height: Spacing.md),
-                    DropdownButtonFormField<String>(
-                      initialValue: _subDistrictId,
-                      decoration: const InputDecoration(
-                        labelText: 'Sub-district',
-                        border: OutlineInputBorder(),
+                const SizedBox(height: Spacing.lg),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _ImagePickerBox(
+                        label: 'Logo',
+                        file: _logoFile,
+                        onTap: () => _pickImage(true),
+                        onClear: () => setState(() => _logoFile = null),
                       ),
-                      items: (_district?.subDistricts ?? [])
-                          .map(
-                            (s) => DropdownMenuItem(
-                              value: s.id,
-                              child: Text(s.name),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) => setState(() => _subDistrictId = v),
+                    ),
+                    const SizedBox(width: Spacing.md),
+                    Expanded(
+                      child: _ImagePickerBox(
+                        label: 'Banner',
+                        file: _bannerFile,
+                        onTap: () => _pickImage(false),
+                        onClear: () => setState(() => _bannerFile = null),
+                      ),
                     ),
                   ],
-                ],
-              ),
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CupertinoActivityIndicator()),
-              ),
-              error: (_, _) => Text(
-                'Failed to load districts.',
-                style: TextStyle(color: Colors.red.shade400),
-              ),
-            ),
-            const SizedBox(height: Spacing.md),
-            DropdownButtonFormField<String>(
-              initialValue: _category,
-              decoration: const InputDecoration(
-                labelText: 'Category',
-                border: OutlineInputBorder(),
-              ),
-              items: associationCategories
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                  .toList(),
-              onChanged: (v) => setState(() => _category = v),
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _foundedYearController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Founded Year (optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: Spacing.lg),
-            Text(
-              'Contact',
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: Spacing.sm),
-            TextFormField(
-              controller: _contactEmailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Contact Email (optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _contactPhoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Contact Phone (optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: Spacing.lg),
-            Text(
-              'Social Links',
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: Spacing.sm),
-            TextFormField(
-              controller: _facebookController,
-              decoration: const InputDecoration(
-                labelText: 'Facebook (optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _instagramController,
-              decoration: const InputDecoration(
-                labelText: 'Instagram (optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: Spacing.md),
-            TextFormField(
-              controller: _linkedinController,
-              decoration: const InputDecoration(
-                labelText: 'LinkedIn (optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: Spacing.xl),
-            FilledButton(
-              onPressed: _submitting ? null : _submit,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              child: _submitting
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CupertinoActivityIndicator(
-                        color: Colors.white,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Association Name',
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _descriptionController,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                    alignLabelWithHint: true,
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: Spacing.md),
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'district', label: Text('District')),
+                    ButtonSegment(
+                      value: 'sub_district',
+                      label: Text('Sub-district'),
+                    ),
+                  ],
+                  selected: {_associationType},
+                  onSelectionChanged: (s) =>
+                      setState(() => _associationType = s.first),
+                ),
+                const SizedBox(height: Spacing.md),
+                districtsAsync.when(
+                  data: (districts) => Column(
+                    children: [
+                      DropdownButtonFormField<BDDistrict>(
+                        initialValue: _district,
+                        decoration: const InputDecoration(
+                          labelText: 'District',
+                        ),
+                        items: districts
+                            .map(
+                              (d) => DropdownMenuItem(
+                                value: d,
+                                child: Text(d.name),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) => setState(() {
+                          _district = v;
+                          _subDistrictId = null;
+                        }),
                       ),
-                    )
-                  : const Text('Submit for Review'),
+                      if (_associationType == 'sub_district') ...[
+                        const SizedBox(height: Spacing.md),
+                        DropdownButtonFormField<String>(
+                          initialValue: _subDistrictId,
+                          decoration: const InputDecoration(
+                            labelText: 'Sub-district',
+                          ),
+                          items: (_district?.subDistricts ?? [])
+                              .map(
+                                (s) => DropdownMenuItem(
+                                  value: s.id,
+                                  child: Text(s.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (v) => setState(() => _subDistrictId = v),
+                        ),
+                      ],
+                    ],
+                  ),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: Spacing.lg),
+                    child: Center(child: CupertinoActivityIndicator()),
+                  ),
+                  error: (_, _) => Text(
+                    'Failed to load districts.',
+                    style: TextStyle(color: context.colors.danger),
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                DropdownButtonFormField<String>(
+                  initialValue: _category,
+                  decoration: const InputDecoration(labelText: 'Category'),
+                  items: associationCategories
+                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                      .toList(),
+                  onChanged: (v) => setState(() => _category = v),
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _foundedYearController,
+                  keyboardType: .number,
+                  decoration: const InputDecoration(
+                    labelText: 'Founded Year (optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.lg),
+                Text(
+                  'Contact',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                ),
+                const SizedBox(height: Spacing.sm),
+                TextFormField(
+                  controller: _contactEmailController,
+                  keyboardType: .emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Contact Email (optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _contactPhoneController,
+                  keyboardType: .phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Contact Phone (optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.lg),
+                Text(
+                  'Social Links',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                ),
+                const SizedBox(height: Spacing.sm),
+                TextFormField(
+                  controller: _facebookController,
+                  decoration: const InputDecoration(
+                    labelText: 'Facebook (optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _instagramController,
+                  decoration: const InputDecoration(
+                    labelText: 'Instagram (optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                TextFormField(
+                  controller: _linkedinController,
+                  decoration: const InputDecoration(
+                    labelText: 'LinkedIn (optional)',
+                  ),
+                ),
+                const SizedBox(height: Spacing.xl),
+                FilledButton(
+                  onPressed: _submitting ? null : _submit,
+                  style: FilledButton.styleFrom(),
+                  child: _submitting
+                      ? SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CupertinoActivityIndicator(
+                            color: context.colors.onPrimary,
+                          ),
+                        )
+                      : const Text('Submit for Review'),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
         ),
       ),
     );
@@ -414,17 +408,17 @@ class _ImagePickerBox extends StatelessWidget {
       child: Container(
         height: 90,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey.shade300),
-          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(color: context.colors.borderStrong),
+          color: context.colors.surfaceAlt,
         ),
         child: file != null
             ? Stack(
                 fit: StackFit.expand,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(file!, fit: BoxFit.cover),
+                    borderRadius: BorderRadius.circular(RadiusToken.md),
+                    child: Image.file(file!, fit: .cover),
                   ),
                   Positioned(
                     top: 2,
@@ -432,15 +426,15 @@ class _ImagePickerBox extends StatelessWidget {
                     child: GestureDetector(
                       onTap: onClear,
                       child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
+                        padding: const EdgeInsets.all(Spacing.xxs),
+                        decoration: BoxDecoration(
+                          color: context.colors.textMuted,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close,
                           size: 14,
-                          color: Colors.white,
+                          color: context.colors.onPrimary,
                         ),
                       ),
                     ),
@@ -448,16 +442,19 @@ class _ImagePickerBox extends StatelessWidget {
                 ],
               )
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Icon(
                     Icons.add_photo_alternate_outlined,
-                    color: Colors.grey.shade400,
+                    color: context.colors.textSubtle,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Spacing.xs),
                   Text(
                     label,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                    style: TextStyle(
+                      fontSize: FontSizeToken.sm,
+                      color: context.colors.textSubtle,
+                    ),
                   ),
                 ],
               ),

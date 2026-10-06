@@ -27,7 +27,7 @@ class JoinedAssociationsPage extends ConsumerWidget {
           if (associations.isEmpty) {
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Icon(
                     LucideIcons.landmark,
@@ -39,13 +39,13 @@ class JoinedAssociationsPage extends ConsumerWidget {
                   const SizedBox(height: Spacing.lg),
                   Text(
                     'You haven\'t joined any associations yet',
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                       color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   Text(
                     'Browse Associations and tap Join on one you like.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -60,9 +60,14 @@ class JoinedAssociationsPage extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(myJoinedAssociationsProvider.future),
             child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+                100,
+              ),
               itemCount: associations.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 14),
+              separatorBuilder: (_, _) => const SizedBox(height: Spacing.lg),
               itemBuilder: (context, index) =>
                   AssociationCard(association: associations[index]),
             ),

@@ -34,7 +34,7 @@ can't go in here" below.
 ## How config works now
 
 - `lib/core/config/env.dart` defines `Env` — a class of `String.fromEnvironment(...)`
-  constants (`Env.baseUrl`, `Env.apiKey`, `Env.fcmVapidKey`, `Env.admobAndroidAppId`, etc).
+  constants (`Env.baseUrl`, `Env.fcmVapidKey`, `Env.admobAndroidAppId`, etc).
 - Values are injected at **build/run time** via `--dart-define-from-file=<path>`.
   Flutter's build tool reads the file directly and the Dart compiler inlines
   the values as real constants — nothing is fetched at runtime, and no such
@@ -142,10 +142,12 @@ flutter build ios --release --dart-define-from-file=.env
 publishable key or a Google Maps API key; restricted by server-side checks,
 not by being hidden):
 - `BASE_URL`
-- `API_KEY` — sent as `X-API-Key`; the backend should treat this as a coarse
-  "is this our app" filter (rate limiting, origin checks), never as the
-  actual authorization boundary. Real authorization is the per-user
-  `Authorization: Bearer <JWT>` obtained at login.
+- ~~`API_KEY`~~ — **removed from the app.** A string compiled into a client is
+  extractable, so it never protected anything. Authorization is the per-user
+  `Authorization: Bearer <JWT>` obtained at login, enforced per route by the
+  API, plus server-side rate limiting. Rollout order: deploy the API, set
+  `ACCESS_ENFORCE=true` and `API_KEY_REQUIRED=false` there, *then* ship app
+  builds without the key (older builds that still send it keep working).
 - `FCM_VAPID_KEY` — a public key by design (Firebase Web Push).
 - `ADMOB_*` ad unit / app IDs.
 

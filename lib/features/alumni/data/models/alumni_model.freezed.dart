@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'alumni_model.dart';
@@ -9,6 +9,7 @@ part of 'alumni_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $AlumniModelCopyWith<AlumniModel> get copyWith => _$AlumniModelCopyWithImpl<Alum
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlumniModel&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.passingYear, passingYear) || other.passingYear == passingYear)&&(identical(other.currentStatus, currentStatus) || other.currentStatus == currentStatus)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.designation, designation) || other.designation == designation)&&(identical(other.location, location) || other.location == location)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&const DeepCollectionEquality().equals(other.socialLinks, socialLinks)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.organizationId, organizationId) || other.organizationId == organizationId)&&(identical(other.organizationRef, organizationRef) || other.organizationRef == organizationRef));
+  final _this = this as AlumniModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlumniModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.studentId, _this.studentId) || other.studentId == _this.studentId)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.passingYear, _this.passingYear) || other.passingYear == _this.passingYear)&&(identical(other.currentStatus, _this.currentStatus) || other.currentStatus == _this.currentStatus)&&(identical(other.organization, _this.organization) || other.organization == _this.organization)&&(identical(other.designation, _this.designation) || other.designation == _this.designation)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.bio, _this.bio) || other.bio == _this.bio)&&(identical(other.profileImage, _this.profileImage) || other.profileImage == _this.profileImage)&&const DeepCollectionEquality().equals(other.socialLinks, _this.socialLinks)&&(identical(other.createdBy, _this.createdBy) || other.createdBy == _this.createdBy)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.organizationId, _this.organizationId) || other.organizationId == _this.organizationId)&&(identical(other.organizationRef, _this.organizationRef) || other.organizationRef == _this.organizationRef));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,fullName,studentId,email,phone,batch,passingYear,currentStatus,organization,designation,location,bio,profileImage,const DeepCollectionEquality().hash(socialLinks),createdBy,universityId,departmentId,organizationId,organizationRef]);
+int get hashCode {
+  final _this = this as AlumniModel;
+  return Object.hashAll([runtimeType,_this.id,_this.fullName,_this.studentId,_this.email,_this.phone,_this.batch,_this.passingYear,_this.currentStatus,_this.organization,_this.designation,_this.location,_this.bio,_this.profileImage,const DeepCollectionEquality().hash(_this.socialLinks),_this.createdBy,_this.universityId,_this.departmentId,_this.organizationId,_this.organizationRef]);
+}
 
 @override
 String toString() {
-  return 'AlumniModel(id: $id, fullName: $fullName, studentId: $studentId, email: $email, phone: $phone, batch: $batch, passingYear: $passingYear, currentStatus: $currentStatus, organization: $organization, designation: $designation, location: $location, bio: $bio, profileImage: $profileImage, socialLinks: $socialLinks, createdBy: $createdBy, universityId: $universityId, departmentId: $departmentId, organizationId: $organizationId, organizationRef: $organizationRef)';
+  final _this = this as AlumniModel;
+  return 'AlumniModel(id: ${_this.id}, fullName: ${_this.fullName}, studentId: ${_this.studentId}, email: ${_this.email}, phone: ${_this.phone}, batch: ${_this.batch}, passingYear: ${_this.passingYear}, currentStatus: ${_this.currentStatus}, organization: ${_this.organization}, designation: ${_this.designation}, location: ${_this.location}, bio: ${_this.bio}, profileImage: ${_this.profileImage}, socialLinks: ${_this.socialLinks}, createdBy: ${_this.createdBy}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, organizationId: ${_this.organizationId}, organizationRef: ${_this.organizationRef})';
 }
 
 
@@ -66,7 +72,7 @@ class _$AlumniModelCopyWithImpl<$Res>
 /// Create a copy of AlumniModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? studentId = null,Object? email = null,Object? phone = null,Object? batch = null,Object? passingYear = null,Object? currentStatus = null,Object? organization = null,Object? designation = null,Object? location = null,Object? bio = null,Object? profileImage = null,Object? socialLinks = freezed,Object? createdBy = null,Object? universityId = null,Object? departmentId = null,Object? organizationId = freezed,Object? organizationRef = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(AlumniModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,studentId: null == studentId ? _self.studentId : studentId // ignore: cast_nullable_to_non_nullable
@@ -239,7 +245,7 @@ return $default(_that.id,_that.fullName,_that.studentId,_that.email,_that.phone,
 @JsonSerializable()
 
 class _AlumniModel extends AlumniModel {
-  const _AlumniModel({required this.id, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(name: 'student_id') required this.studentId, required this.email, required this.phone, required this.batch, @JsonKey(name: 'passing_year') required this.passingYear, @JsonKey(name: 'current_status') required this.currentStatus, this.organization = '', this.designation = '', this.location = '', this.bio = '', @JsonKey(name: 'profile_image') this.profileImage = '', @JsonKey(name: 'social_links') final  Map<String, dynamic>? socialLinks, @JsonKey(name: 'created_by') this.createdBy = '', @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, @JsonKey(name: 'organization_id') this.organizationId, @JsonKey(name: 'organization_ref') this.organizationRef}): _socialLinks = socialLinks,super._();
+  const _AlumniModel({required this.id, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(name: 'student_id') required this.studentId, required this.email, required this.phone, required this.batch, @JsonKey(name: 'passing_year') required this.passingYear, @JsonKey(name: 'current_status') required this.currentStatus, this.organization = '', this.designation = '', this.location = '', this.bio = '', @JsonKey(name: 'profile_image') this.profileImage = '', @JsonKey(name: 'social_links')  Map<String, dynamic>? socialLinks, @JsonKey(name: 'created_by') this.createdBy = '', @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, @JsonKey(name: 'organization_id') this.organizationId, @JsonKey(name: 'organization_ref') this.organizationRef}): _socialLinks = socialLinks,super._();
   factory _AlumniModel.fromJson(Map<String, dynamic> json) => _$AlumniModelFromJson(json);
 
 @override final  String id;
@@ -283,16 +289,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlumniModel&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.passingYear, passingYear) || other.passingYear == passingYear)&&(identical(other.currentStatus, currentStatus) || other.currentStatus == currentStatus)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.designation, designation) || other.designation == designation)&&(identical(other.location, location) || other.location == location)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&const DeepCollectionEquality().equals(other._socialLinks, _socialLinks)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.organizationId, organizationId) || other.organizationId == organizationId)&&(identical(other.organizationRef, organizationRef) || other.organizationRef == organizationRef));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlumniModel&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.passingYear, passingYear) || other.passingYear == passingYear)&&(identical(other.currentStatus, currentStatus) || other.currentStatus == currentStatus)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.designation, designation) || other.designation == designation)&&(identical(other.location, location) || other.location == location)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&const DeepCollectionEquality().equals(other.socialLinks, _socialLinks)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.organizationId, organizationId) || other.organizationId == organizationId)&&(identical(other.organizationRef, organizationRef) || other.organizationRef == organizationRef));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,fullName,studentId,email,phone,batch,passingYear,currentStatus,organization,designation,location,bio,profileImage,const DeepCollectionEquality().hash(_socialLinks),createdBy,universityId,departmentId,organizationId,organizationRef]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,fullName,studentId,email,phone,batch,passingYear,currentStatus,organization,designation,location,bio,profileImage,const DeepCollectionEquality().hash(_socialLinks),createdBy,universityId,departmentId,organizationId,organizationRef]);
+}
 
 @override
 String toString() {
-  return 'AlumniModel(id: $id, fullName: $fullName, studentId: $studentId, email: $email, phone: $phone, batch: $batch, passingYear: $passingYear, currentStatus: $currentStatus, organization: $organization, designation: $designation, location: $location, bio: $bio, profileImage: $profileImage, socialLinks: $socialLinks, createdBy: $createdBy, universityId: $universityId, departmentId: $departmentId, organizationId: $organizationId, organizationRef: $organizationRef)';
+    return 'AlumniModel(id: $id, fullName: $fullName, studentId: $studentId, email: $email, phone: $phone, batch: $batch, passingYear: $passingYear, currentStatus: $currentStatus, organization: $organization, designation: $designation, location: $location, bio: $bio, profileImage: $profileImage, socialLinks: $socialLinks, createdBy: $createdBy, universityId: $universityId, departmentId: $departmentId, organizationId: $organizationId, organizationRef: $organizationRef)';
 }
 
 

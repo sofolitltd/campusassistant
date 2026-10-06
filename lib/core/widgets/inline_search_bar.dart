@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+
 /// An inline search text field with a search icon and clear button.
 ///
 /// Designed for use inside scrollable content (not floating).
@@ -72,32 +75,24 @@ class _InlineSearchBarState extends State<InlineSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.colors;
 
     return TextField(
       controller: _controller,
       onChanged: _onSearchChanged,
-      style: TextStyle(
-        fontSize: widget.dense ? 13 : 14,
-        color: isDark ? Colors.white : Colors.black87,
-      ),
+      style: TextStyle(fontSize: widget.dense ? 13 : 14, color: colors.text),
       decoration: InputDecoration(
-        isDense: widget.dense,
-        visualDensity: widget.dense
-            ? VisualDensity.compact
-            : VisualDensity.standard,
         hintText: widget.hintText,
         hintStyle: TextStyle(
-          color: Colors.grey.shade500,
+          color: colors.textSubtle,
           fontSize: widget.dense ? 12 : 13,
         ),
         prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 12, right: 8),
+          padding: const EdgeInsets.only(left: Spacing.md, right: Spacing.sm),
           child: Icon(
             LucideIcons.search,
             size: widget.dense ? 14 : 16,
-            color: cs.onSurfaceVariant,
+            color: colors.textMuted,
           ),
         ),
         prefixIconConstraints: widget.dense
@@ -107,25 +102,15 @@ class _InlineSearchBarState extends State<InlineSearchBar> {
             ? GestureDetector(
                 onTap: _onClear,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
                   child: Icon(
                     widget.dense ? Icons.clear : LucideIcons.circleX,
                     size: widget.dense ? 14 : 16,
-                    color: Colors.grey.shade400,
+                    color: colors.textSubtle,
                   ),
                 ),
               )
             : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.dense ? 6 : 8),
-          borderSide: BorderSide(color: cs.outlineVariant),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.dense ? 6 : 8),
-          borderSide: BorderSide(
-            color: cs.outlineVariant.withValues(alpha: 0.6),
-          ),
-        ),
       ),
     );
   }

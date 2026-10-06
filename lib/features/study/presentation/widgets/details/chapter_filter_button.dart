@@ -5,6 +5,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/chapter/domain/entities/chapter.dart';
 import 'chapter_tile.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ChapterFilterButton extends ConsumerWidget {
   final AsyncValue<List<Chapter>> chaptersAsync;
@@ -23,7 +27,6 @@ class ChapterFilterButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return chaptersAsync.when(
       data: (chapters) {
@@ -37,63 +40,76 @@ class ChapterFilterButton extends ConsumerWidget {
         return GestureDetector(
           onTap: () => _showChapterSheet(context, chapters),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.md,
+              vertical: Spacing.sm,
+            ),
             decoration: BoxDecoration(
-              color: redBg ? Colors.white.withValues(alpha: 0.15) : null,
+              color: redBg
+                  ? context.colors.surface.withValues(alpha: 0.15)
+                  : null,
               border: Border.all(
                 color: redBg
-                    ? Colors.white.withValues(alpha: 0.4)
-                    : isDark
-                    ? Colors.white24
-                    : Colors.grey.shade300,
+                    ? context.colors.onPrimary.withValues(alpha: 0.4)
+                    : context.colors.borderStrong,
               ),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Icon(
                   LucideIcons.bookOpen,
                   size: 14,
-                  color: redBg ? Colors.white : theme.colorScheme.onSurface,
+                  color: redBg
+                      ? context.colors.onPrimary
+                      : theme.colorScheme.onSurface,
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: Spacing.sm),
                 Text(
                   'Chapter',
                   style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: redBg ? Colors.white : theme.colorScheme.onSurface,
+                    fontSize: FontSizeToken.md,
+                    fontWeight: .w500,
+                    color: redBg
+                        ? context.colors.onPrimary
+                        : theme.colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: Spacing.xs),
                 Flexible(
                   child: Text(
                     '${selectedChapter.chapterNo}',
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: redBg ? Colors.white : theme.colorScheme.onSurface,
+                      fontSize: FontSizeToken.md,
+                      fontWeight: .bold,
+                      color: redBg
+                          ? context.colors.onPrimary
+                          : theme.colorScheme.onSurface,
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: Spacing.xs),
                 Icon(
                   Icons.keyboard_arrow_down,
                   size: 16,
-                  color: redBg ? Colors.white : theme.colorScheme.onSurface,
+                  color: redBg
+                      ? context.colors.onPrimary
+                      : theme.colorScheme.onSurface,
                 ),
               ],
             ),
           ),
         );
       },
-      loading: () => const SizedBox(
+      loading: () => SizedBox(
         width: 100,
         height: 32,
-        child: Center(child: CupertinoActivityIndicator(color: Colors.white)),
+        child: Center(
+          child: CupertinoActivityIndicator(color: context.colors.onPrimary),
+        ),
       ),
       error: (_, _) => const SizedBox(),
     );
@@ -101,7 +117,6 @@ class ChapterFilterButton extends ConsumerWidget {
 
   void _showChapterSheet(BuildContext context, List<Chapter> chapters) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     String searchText = '';
 
     showModalBottomSheet(
@@ -109,7 +124,9 @@ class ChapterFilterButton extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -128,31 +145,31 @@ class ChapterFilterButton extends ConsumerWidget {
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.7,
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Center(
                     child: Container(
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+                        color: context.colors.borderStrong,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Chapter',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
@@ -167,49 +184,43 @@ class ChapterFilterButton extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withAlpha(12)
-                            : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        color: context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                        border: Border.all(color: context.colors.border),
                       ),
                       child: TextField(
                         onChanged: (v) => setState(() => searchText = v),
                         decoration: InputDecoration(
                           hintText: 'Search chapter...',
                           hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                            fontSize: 14,
+                            color: context.colors.textSubtle,
+                            fontSize: FontSizeToken.base,
                           ),
                           prefixIcon: Icon(
                             LucideIcons.search,
                             size: 18,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
+                            color: context.colors.textSubtle,
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
+                            vertical: Spacing.md,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.md,
+                      ),
                       itemCount: filteredChapters.length,
                       itemBuilder: (context, index) {
                         final chapter = filteredChapters[index];

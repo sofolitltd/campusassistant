@@ -93,7 +93,7 @@ abstract class _$AlumniSearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<String, String>;
     final element =
         ref.element
@@ -103,7 +103,7 @@ abstract class _$AlumniSearchQuery extends $Notifier<String> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -144,7 +144,7 @@ abstract class _$AlumniScope extends $Notifier<int> {
   int build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
@@ -154,7 +154,7 @@ abstract class _$AlumniScope extends $Notifier<int> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -199,7 +199,7 @@ abstract class _$AlumniSelectedOrganization
   AlumniOrganization? build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AlumniOrganization?, AlumniOrganization?>;
     final element =
         ref.element
@@ -209,7 +209,7 @@ abstract class _$AlumniSelectedOrganization
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -243,7 +243,7 @@ abstract class _$AlumniPagination extends $AsyncNotifier<AlumniState> {
   FutureOr<AlumniState> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<AlumniState>, AlumniState>;
     final element =
         ref.element
@@ -253,7 +253,7 @@ abstract class _$AlumniPagination extends $AsyncNotifier<AlumniState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 

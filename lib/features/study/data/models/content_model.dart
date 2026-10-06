@@ -12,6 +12,7 @@ class ContentModel {
   final String fileUrl;
   final String imageUrl;
   final String uploader;
+  final String? creatorId;
   final String departmentId;
   final Map<String, dynamic>? metadata;
 
@@ -29,6 +30,7 @@ class ContentModel {
     required this.fileUrl,
     required this.imageUrl,
     required this.uploader,
+    this.creatorId,
     required this.departmentId,
     this.metadata,
   });
@@ -49,6 +51,7 @@ class ContentModel {
         fileUrl: json['fileUrl']! as String,
         imageUrl: json['imageUrl']! as String,
         uploader: json['uploader']! as String,
+        creatorId: json['creatorId'] as String?,
         departmentId: json['departmentId'] ?? '',
         metadata: json['metadata'] as Map<String, dynamic>?,
       );
@@ -69,6 +72,7 @@ class ContentModel {
       'fileUrl': fileUrl,
       'imageUrl': imageUrl,
       'uploader': uploader,
+      if (creatorId != null) 'creatorId': creatorId,
       'departmentId': departmentId,
       if (metadata != null) 'metadata': metadata,
     };

@@ -4,6 +4,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/course/domain/entities/course.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CourseFilterButton extends StatelessWidget {
   final List<Course> courses;
@@ -20,7 +23,6 @@ class CourseFilterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     final selectedCourse = courses.firstWhere(
       (c) => c.courseCode == selectedCourseCode,
@@ -30,40 +32,47 @@ class CourseFilterButton extends StatelessWidget {
     return GestureDetector(
       onTap: () => _showCourseSheet(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.sm,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
-          color: redBg ? Colors.white.withValues(alpha: 0.15) : null,
+          color: redBg ? context.colors.surface.withValues(alpha: 0.15) : null,
           border: Border.all(
             color: redBg
-                ? Colors.white.withValues(alpha: 0.4)
-                : isDark
-                ? Colors.white24
-                : Colors.grey.shade300,
+                ? context.colors.onPrimary.withValues(alpha: 0.4)
+                : context.colors.borderStrong,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Icon(
               LucideIcons.bookOpen,
               size: 14,
-              color: redBg ? Colors.white : theme.colorScheme.onSurface,
+              color: redBg
+                  ? context.colors.onPrimary
+                  : theme.colorScheme.onSurface,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: Spacing.sm),
             Text(
               selectedCourse.courseCode.toUpperCase(),
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: redBg ? Colors.white : theme.colorScheme.onSurface,
+                fontSize: FontSizeToken.md,
+                fontWeight: .bold,
+                color: redBg
+                    ? context.colors.onPrimary
+                    : theme.colorScheme.onSurface,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: Spacing.xs),
             Icon(
               Icons.keyboard_arrow_down,
               size: 16,
-              color: redBg ? Colors.white : theme.colorScheme.onSurface,
+              color: redBg
+                  ? context.colors.onPrimary
+                  : theme.colorScheme.onSurface,
             ),
           ],
         ),
@@ -73,8 +82,7 @@ class CourseFilterButton extends StatelessWidget {
 
   void _showCourseSheet(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final primary = theme.appColors.primaryColor;
+    final primary = theme.appColors.primary;
     String searchText = '';
 
     showModalBottomSheet(
@@ -82,7 +90,9 @@ class CourseFilterButton extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -103,31 +113,31 @@ class CourseFilterButton extends StatelessWidget {
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.7,
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Center(
                     child: Container(
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+                        color: context.colors.borderStrong,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Course',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
@@ -142,49 +152,43 @@ class CourseFilterButton extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withAlpha(12)
-                            : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        color: context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                        border: Border.all(color: context.colors.border),
                       ),
                       child: TextField(
                         onChanged: (v) => setState(() => searchText = v),
                         decoration: InputDecoration(
                           hintText: 'Search course...',
                           hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                            fontSize: 14,
+                            color: context.colors.textSubtle,
+                            fontSize: FontSizeToken.base,
                           ),
                           prefixIcon: Icon(
                             LucideIcons.search,
                             size: 18,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
+                            color: context.colors.textSubtle,
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
+                            vertical: Spacing.md,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.md,
+                      ),
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final course = filtered[index];
@@ -208,23 +212,23 @@ class CourseFilterButton extends StatelessWidget {
                           },
                           child: Container(
                             margin: const EdgeInsets.symmetric(
-                              vertical: 2,
-                              horizontal: 8,
+                              vertical: Spacing.xxs,
+                              horizontal: Spacing.sm,
                             ),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                              horizontal: Spacing.lg,
+                              vertical: Spacing.md,
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? primary.withValues(
-                                      alpha: isDark ? 0.22 : 0.12,
-                                    )
+                                  ? context.colors.primarySubtle
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: .spaceBetween,
                               children: [
                                 Expanded(
                                   child: Column(
@@ -234,31 +238,27 @@ class CourseFilterButton extends StatelessWidget {
                                       Text(
                                         course.courseCode.toUpperCase(),
                                         style: TextStyle(
-                                          fontSize: 12,
+                                          fontSize: FontSizeToken.sm,
                                           color: isSelected
                                               ? primary
-                                              : (isDark
-                                                    ? Colors.white54
-                                                    : Colors.grey.shade600),
-                                          fontWeight: FontWeight.w500,
+                                              : (context.colors.textMuted),
+                                          fontWeight: .w500,
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
+                                      const SizedBox(height: Spacing.xxs),
                                       Text(
                                         course.courseTitle,
                                         style: TextStyle(
-                                          fontSize: 15,
+                                          fontSize: FontSizeToken.lg,
                                           color: isSelected
                                               ? primary
-                                              : (isDark
-                                                    ? Colors.white
-                                                    : Colors.black87),
+                                              : (context.colors.text),
                                           fontWeight: isSelected
                                               ? FontWeight.w600
                                               : FontWeight.normal,
                                         ),
                                         maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        overflow: .ellipsis,
                                       ),
                                     ],
                                   ),
@@ -266,9 +266,7 @@ class CourseFilterButton extends StatelessWidget {
                                 if (isSelected)
                                   Icon(
                                     LucideIcons.check,
-                                    color: Theme.of(
-                                      context,
-                                    ).appColors.primaryColor,
+                                    color: Theme.of(context).appColors.primary,
                                     size: 20,
                                   ),
                               ],

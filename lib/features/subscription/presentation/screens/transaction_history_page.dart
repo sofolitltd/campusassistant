@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/widgets/section_card.dart';
 import '../../data/models/bkash_transaction.dart';
 import '../providers/transaction_history_provider.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class TransactionHistoryPage extends ConsumerWidget {
   const TransactionHistoryPage({super.key});
@@ -26,10 +29,15 @@ class TransactionHistoryPage extends ConsumerWidget {
           child: transactions.isEmpty
               ? _buildEmptyState(context)
               : ListView.separated(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.lg + MediaQuery.paddingOf(context).bottom,
+                  ),
                   itemCount: transactions.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
+                      const SizedBox(height: Spacing.sm + 2),
                   itemBuilder: (context, index) =>
                       _TransactionTile(transaction: transactions[index]),
                 ),
@@ -48,25 +56,28 @@ class TransactionHistoryPage extends ConsumerWidget {
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 Icon(
                   LucideIcons.receiptText,
                   size: 56,
-                  color: Colors.grey.shade300,
+                  color: context.colors.textSubtle,
                 ),
                 const SizedBox(height: Spacing.md),
                 Text(
                   'No transactions yet',
                   style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
+                    color: context.colors.textMuted,
+                    fontWeight: .w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: Spacing.xs),
                 Text(
                   'Your bKash payments will show up here',
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                  style: TextStyle(
+                    color: context.colors.textSubtle,
+                    fontSize: FontSizeToken.md,
+                  ),
                 ),
               ],
             ),
@@ -82,81 +93,72 @@ class _TransactionTile extends StatelessWidget {
 
   const _TransactionTile({required this.transaction});
 
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'completed':
-        return Colors.green;
-      case 'failed':
-        return Colors.red;
-      case 'cancelled':
-        return Colors.grey;
-      default:
-        return Colors.orange;
-    }
+  /// (foreground, tinted background) from the status roles.
+  (Color, Color) _statusColors(AppColors c, String status) {
+    return switch (status) {
+      'completed' => (c.success, c.successSubtle),
+      'failed' => (c.danger, c.dangerSubtle),
+      'cancelled' => (c.textMuted, c.surfaceAlt),
+      _ => (c.warning, c.warningSubtle),
+    };
   }
 
   String _statusLabel(String status) {
-    switch (status) {
-      case 'completed':
-        return 'Completed';
-      case 'failed':
-        return 'Failed';
-      case 'cancelled':
-        return 'Cancelled';
-      default:
-        return 'Pending';
-    }
+    return switch (status) {
+      'completed' => 'Completed',
+      'failed' => 'Failed',
+      'cancelled' => 'Cancelled',
+      _ => 'Pending',
+    };
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final statusColor = _statusColor(transaction.status);
+    final colors = context.colors;
+    final (statusColor, statusBg) = _statusColors(colors, transaction.status);
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
-      ),
+    return SectionCard(
+      radius: RadiusToken.lg,
+      shadow: false,
+      padding: const EdgeInsets.all(Spacing.md + 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Container(
             height: 40,
             width: 40,
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(RadiusToken.sm),
+              color: statusBg,
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
             child: Icon(LucideIcons.receiptText, color: statusColor, size: 20),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: Spacing.md),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   transaction.planTitle,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(fontWeight: .w600, color: colors.text),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: Spacing.xxs),
                 Text(
                   DateFormat(
                     'MMM dd, yyyy · hh:mm a',
                   ).format(transaction.createdAt),
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.sm,
+                    color: colors.textMuted,
+                  ),
                 ),
                 if (transaction.trxId.isNotEmpty) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Spacing.xxs),
                   Text(
                     'Trx ID: ${transaction.trxId}',
                     style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade400,
+                      fontSize: FontSizeToken.xs,
+                      color: colors.textSubtle,
                     ),
                   ),
                 ],
@@ -164,30 +166,31 @@ class _TransactionTile extends StatelessWidget {
             ),
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: .end,
             children: [
               Text(
                 '৳${transaction.amount}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
+                style: TextStyle(
+                  fontWeight: .w800,
+                  fontSize: FontSizeToken.lg,
+                  color: colors.text,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: Spacing.xs),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
+                  horizontal: Spacing.sm,
+                  vertical: Spacing.xs,
                 ),
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
+                  color: statusBg,
+                  borderRadius: BorderRadius.circular(RadiusToken.full),
                 ),
                 child: Text(
                   _statusLabel(transaction.status),
                   style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                    fontSize: FontSizeToken.xs,
+                    fontWeight: .w600,
                     color: statusColor,
                   ),
                 ),

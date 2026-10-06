@@ -23,6 +23,10 @@ import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import 'resource_info_sheet.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class ContentCard extends ConsumerStatefulWidget {
   final ContentModel contentModel;
@@ -119,12 +123,10 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(RadiusToken.md),
         color: theme.cardColor,
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -134,8 +136,8 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         children: [
           InkWell(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
+              topLeft: Radius.circular(RadiusToken.md),
+              topRight: Radius.circular(RadiusToken.md),
             ),
             onTap: () async {
               if (isProContent && !isProUser) {
@@ -147,7 +149,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
             child: Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(Spacing.md),
                   child: Row(
                     children: [
                       Stack(
@@ -155,7 +157,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                         children: [
                           //
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Container(
                               width: 80,
                               height: 90,
@@ -163,19 +165,17 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                   ? theme.colorScheme.surface.withValues(
                                       alpha: 0.5,
                                     )
-                                  : Colors.blueAccent.shade100.withValues(
-                                      alpha: 0.1,
-                                    ),
+                                  : AccentToken.blue.withValues(alpha: 0.1),
                               child: widget.contentModel.imageUrl == ''
                                   ? Image.asset(
                                       'assets/images/placeholder.png',
-                                      fit: BoxFit.fitHeight,
+                                      fit: .fitHeight,
                                     )
                                   : Image.network(
                                       ApiEndpoints.resolveImageUrl(
                                         widget.contentModel.imageUrl,
                                       ),
-                                      fit: BoxFit.contain,
+                                      fit: .contain,
                                     ),
                             ),
                           ),
@@ -190,11 +190,13 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                 decoration: BoxDecoration(
                                   shape: .rectangle,
                                   borderRadius: .circular(4),
-                                  color: Colors.orange.withValues(alpha: .8),
+                                  color: context.colors.warning.withValues(
+                                    alpha: .8,
+                                  ),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   LucideIcons.crown,
-                                  color: Colors.white,
+                                  color: context.colors.onPrimary,
                                   size: 15,
                                 ),
                               ),
@@ -205,9 +207,16 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                             bottom: 4,
                             left: 4,
                             child: Container(
-                              padding: const EdgeInsets.fromLTRB(4, 3, 5, 3.5),
+                              padding: const EdgeInsets.fromLTRB(
+                                Spacing.xs,
+                                Spacing.xs,
+                                Spacing.xs,
+                                3.5,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.teal.withValues(alpha: .5),
+                                color: context.colors.primary.withValues(
+                                  alpha: .5,
+                                ),
                                 borderRadius: BorderRadius.circular(2.5),
                               ),
                               child: Text(
@@ -218,44 +227,42 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                           .toUpperCase(),
                                 style: theme.textTheme.bodySmall!.copyWith(
                                   height: 1,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  fontSize: FontSizeToken.xxs,
+                                  fontWeight: .bold,
+                                  color: context.colors.onPrimary,
                                 ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: Spacing.md),
 
                       //
                       Expanded(
                         child: SizedBox(
                           height: 95,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: .start,
+                            mainAxisAlignment: .start,
                             children: [
                               Text(
                                 widget.contentModel.contentTitle,
                                 maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: .bold,
                                   height: 1.2,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: Spacing.xs),
                               Text(
                                 widget.contentModel.contentSubtitle,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                                 style: theme.textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: isDark
-                                      ? Colors.white70
-                                      : Colors.grey.shade600,
+                                  fontWeight: .w500,
+                                  color: context.colors.textMuted,
                                   height: 1,
                                 ),
                               ),
@@ -271,7 +278,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                                           .metadata?['fileSizeBytes'],
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: Spacing.sm),
                                   _buildMiniInfoTile(
                                     context,
                                     LucideIcons.layers,
@@ -326,28 +333,20 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         switch (value) {
           case 'download':
             await _handleOpenContent();
-            break;
           case 'cancel':
             _handleCancelDownload();
-            break;
           case 'save_to_downloads':
             await _saveToPublicDownloads();
-            break;
           case 'share':
             await _handleShare();
-            break;
           case 'open_with':
             await _handleOpenWith();
-            break;
           case 'delete':
             await _handleDelete();
-            break;
           case 'admin_edit':
             widget.onEdit?.call();
-            break;
           case 'admin_delete':
             widget.onDelete?.call();
-            break;
         }
       },
       itemBuilder: (context) => [
@@ -355,30 +354,37 @@ class _ContentCardState extends ConsumerState<ContentCard> {
           PopupMenuItem(
             value: 'download',
             height: 32,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
                 Icon(kIsWeb ? LucideIcons.eye : LucideIcons.download, size: 16),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 Text(
                   kIsWeb ? 'View' : 'Download',
-                  style: const TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: FontSizeToken.md),
                 ),
               ],
             ),
           ),
         if (_isLoading || _isPaused)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'cancel',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
-                Icon(LucideIcons.circleX, size: 16, color: Colors.red),
-                SizedBox(width: 8),
+                Icon(
+                  LucideIcons.circleX,
+                  size: 16,
+                  color: context.colors.danger,
+                ),
+                SizedBox(width: Spacing.sm),
                 Text(
                   'Cancel Download',
-                  style: TextStyle(fontSize: 13, color: Colors.red),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.md,
+                    color: context.colors.danger,
+                  ),
                 ),
               ],
             ),
@@ -387,24 +393,27 @@ class _ContentCardState extends ConsumerState<ContentCard> {
           const PopupMenuItem(
             value: 'save_to_downloads',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
                 Icon(LucideIcons.cloudDownload, size: 16),
-                SizedBox(width: 8),
-                Text('Save to Downloads', style: TextStyle(fontSize: 13)),
+                SizedBox(width: Spacing.sm),
+                Text(
+                  'Save to Downloads',
+                  style: TextStyle(fontSize: FontSizeToken.md),
+                ),
               ],
             ),
           ),
         const PopupMenuItem(
           value: 'share',
           height: 32,
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: Spacing.md),
           child: Row(
             children: [
               Icon(LucideIcons.share2, size: 16),
-              SizedBox(width: 8),
-              Text('Share', style: TextStyle(fontSize: 13)),
+              SizedBox(width: Spacing.sm),
+              Text('Share', style: TextStyle(fontSize: FontSizeToken.md)),
             ],
           ),
         ),
@@ -412,27 +421,34 @@ class _ContentCardState extends ConsumerState<ContentCard> {
           const PopupMenuItem(
             value: 'open_with',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
                 Icon(LucideIcons.externalLink, size: 16),
-                SizedBox(width: 8),
-                Text('Open with', style: TextStyle(fontSize: 13)),
+                SizedBox(width: Spacing.sm),
+                Text('Open with', style: TextStyle(fontSize: FontSizeToken.md)),
               ],
             ),
           ),
         if (_isDownloaded)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'delete',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
-                Icon(LucideIcons.trash2, size: 16, color: Colors.red),
-                SizedBox(width: 8),
+                Icon(
+                  LucideIcons.trash2,
+                  size: 16,
+                  color: context.colors.danger,
+                ),
+                SizedBox(width: Spacing.sm),
                 Text(
                   'Delete Locally',
-                  style: TextStyle(fontSize: 13, color: Colors.red),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.md,
+                    color: context.colors.danger,
+                  ),
                 ),
               ],
             ),
@@ -441,27 +457,37 @@ class _ContentCardState extends ConsumerState<ContentCard> {
           const PopupMenuItem(
             value: 'admin_edit',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
                 Icon(LucideIcons.pencil, size: 16),
-                SizedBox(width: 8),
-                Text('Edit Resource', style: TextStyle(fontSize: 13)),
+                SizedBox(width: Spacing.sm),
+                Text(
+                  'Edit Resource',
+                  style: TextStyle(fontSize: FontSizeToken.md),
+                ),
               ],
             ),
           ),
         if (widget.onDelete != null)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'admin_delete',
             height: 32,
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Row(
               children: [
-                Icon(LucideIcons.trash2, size: 16, color: Colors.red),
-                SizedBox(width: 8),
+                Icon(
+                  LucideIcons.trash2,
+                  size: 16,
+                  color: context.colors.danger,
+                ),
+                SizedBox(width: Spacing.sm),
                 Text(
                   'Delete Resource',
-                  style: TextStyle(fontSize: 13, color: Colors.red),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.md,
+                    color: context.colors.danger,
+                  ),
                 ),
               ],
             ),
@@ -472,25 +498,17 @@ class _ContentCardState extends ConsumerState<ContentCard> {
 
   Widget _buildDownloadStatusAction() {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     if (_isLoading || _isPaused) {
       return Container(
         padding: .only(right: 10),
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(RadiusToken.sm),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-            ),
-          ],
+          border: Border.all(color: context.colors.surfaceAlt),
+          boxShadow: [BoxShadow(color: context.colors.shadow, blurRadius: 8)],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             IconButton(
               onPressed: _handleCancelDownload,
@@ -499,10 +517,10 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                 padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
               ),
-              icon: const Icon(
+              icon: Icon(
                 LucideIcons.circleX,
                 size: 18,
-                color: Colors.red,
+                color: context.colors.danger,
               ),
             ),
             IconButton(
@@ -521,7 +539,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
               icon: Icon(
                 _isPaused ? LucideIcons.play : LucideIcons.pause,
                 size: 18,
-                color: Colors.teal,
+                color: context.colors.primary,
               ),
             ),
             Stack(
@@ -540,10 +558,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                 ),
                 Text(
                   '${(_downloadProgress * 100).toInt()}%',
-                  style: const TextStyle(
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontSize: 8, fontWeight: .bold),
                 ),
               ],
             ),
@@ -553,7 +568,11 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     }
 
     if (_isDownloaded) {
-      return Icon(LucideIcons.circleCheck, color: Colors.green, size: 20);
+      return Icon(
+        LucideIcons.circleCheck,
+        color: context.colors.success,
+        size: 20,
+      );
     }
 
     return GestureDetector(
@@ -577,7 +596,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       icon: Icon(
         _isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
         color: _isBookmarked
-            ? Colors.teal
+            ? context.colors.primary
             : theme.colorScheme.onSurface.withValues(alpha: 0.4),
         size: 18,
       ),
@@ -604,31 +623,28 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.sm,
+        vertical: Spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: isDark
             ? theme.colorScheme.surface.withValues(alpha: 0.5)
-            : Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade100,
-        ),
+            : context.colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(RadiusToken.xs),
+        border: Border.all(color: context.colors.surfaceAlt),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
-          Icon(
-            icon,
-            size: 10,
-            color: isDark ? Colors.white70 : Colors.grey.shade600,
-          ),
-          const SizedBox(width: 4),
+          Icon(icon, size: 10, color: context.colors.textMuted),
+          const SizedBox(width: Spacing.xs),
           Text(
             value,
             style: theme.textTheme.labelSmall?.copyWith(
-              fontSize: 9,
+              fontSize: FontSizeToken.xxs,
               color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
             ),
           ),
         ],
@@ -655,7 +671,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (context) {
         return DraggableScrollableSheet(
@@ -979,7 +997,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         ),
         title: const Text(
           "Pro Content 🔒",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: .bold),
         ),
         content: const Text("This file is available only for Pro members."),
         actions: [

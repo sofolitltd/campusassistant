@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '/core/widgets/mouse_wheel_horizontal_scroll.dart';
 import '/features/study/data/models/study_shortcut.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ResourceShortcutsBar extends StatefulWidget {
   final int bookmarkCount;
@@ -31,7 +34,6 @@ class _ResourceShortcutsBarState extends State<ResourceShortcutsBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final bookmarkCount = widget.bookmarkCount;
     final downloadCount = widget.downloadCount;
 
@@ -41,8 +43,13 @@ class _ResourceShortcutsBarState extends State<ResourceShortcutsBar> {
         controller: _scrollController,
         child: ListView.builder(
           controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          scrollDirection: .horizontal,
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.lg,
+            Spacing.lg,
+            Spacing.lg,
+            Spacing.sm,
+          ),
           itemCount: allShortcuts.length,
           itemBuilder: (context, index) {
             final shortcut = allShortcuts[index];
@@ -62,42 +69,45 @@ class _ResourceShortcutsBarState extends State<ResourceShortcutsBar> {
               },
               child: Container(
                 width: 100,
-                margin: const EdgeInsets.only(right: 12),
+                margin: const EdgeInsets.only(right: Spacing.md),
                 decoration: BoxDecoration(
                   color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isDark ? Colors.white10 : Colors.grey.shade200,
-                  ),
+                  borderRadius: BorderRadius.circular(RadiusToken.xl),
+                  border: Border.all(color: context.colors.border),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha(8),
+                      color: context.colors.shadow.withAlpha(8),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.md,
+                  Spacing.md,
+                  Spacing.md,
+                  Spacing.md,
+                ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     Stack(
-                      clipBehavior: Clip.none,
+                      clipBehavior: .none,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(Spacing.md),
                           decoration: BoxDecoration(
                             // color: shortcut.color,
                             color: Theme.of(
                               context,
-                            ).appColors.primaryColor.withValues(alpha: .1),
+                            ).appColors.primary.withValues(alpha: .1),
 
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             shortcut.icon,
                             // color: Colors.white,
-                            color: Theme.of(context).appColors.primaryColor,
+                            color: context.colors.primary,
 
                             size: 22,
                           ),
@@ -107,9 +117,9 @@ class _ResourceShortcutsBarState extends State<ResourceShortcutsBar> {
                             right: -4,
                             top: -4,
                             child: Container(
-                              padding: const EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(Spacing.xs),
                               decoration: BoxDecoration(
-                                color: Colors.red,
+                                color: context.colors.danger,
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: theme.cardColor,
@@ -122,29 +132,29 @@ class _ResourceShortcutsBarState extends State<ResourceShortcutsBar> {
                               ),
                               child: Text(
                                 count.toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
+                                style: TextStyle(
+                                  color: context.colors.onPrimary,
+                                  fontSize: FontSizeToken.xxs,
+                                  fontWeight: .bold,
                                 ),
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                               ),
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
                     Text(
                       shortcut.name,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
+                      overflow: .ellipsis,
+                      textAlign: .center,
 
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
+                        fontWeight: .bold,
+                        fontSize: FontSizeToken.xxs,
                         height: 1.3,
-                        color: isDark ? Colors.white : Colors.black87,
+                        color: context.colors.text,
                       ),
                     ),
                   ],

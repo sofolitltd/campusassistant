@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'session_model.dart';
@@ -9,6 +9,7 @@ part of 'session_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $SessionModelCopyWith<SessionModel> get copyWith => _$SessionModelCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isActive, isActive) || other.isActive == isActive));
+  final _this = this as SessionModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.isActive, _this.isActive) || other.isActive == _this.isActive));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,universityId,departmentId,isActive);
+int get hashCode {
+  final _this = this as SessionModel;
+  return Object.hash(runtimeType,_this.id,_this.name,_this.slug,_this.universityId,_this.departmentId,_this.isActive);
+}
 
 @override
 String toString() {
-  return 'SessionModel(id: $id, name: $name, slug: $slug, universityId: $universityId, departmentId: $departmentId, isActive: $isActive)';
+  final _this = this as SessionModel;
+  return 'SessionModel(id: ${_this.id}, name: ${_this.name}, slug: ${_this.slug}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, isActive: ${_this.isActive})';
 }
 
 
@@ -66,7 +72,7 @@ class _$SessionModelCopyWithImpl<$Res>
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? universityId = null,Object? departmentId = freezed,Object? isActive = null,}) {
-  return _then(_self.copyWith(
+  return _then(SessionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,slug: null == slug ? _self.slug : slug // ignore: cast_nullable_to_non_nullable
@@ -237,16 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isActive, isActive) || other.isActive == isActive));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isActive, isActive) || other.isActive == isActive));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,universityId,departmentId,isActive);
+int get hashCode {
+    return Object.hash(runtimeType,id,name,slug,universityId,departmentId,isActive);
+}
 
 @override
 String toString() {
-  return 'SessionModel(id: $id, name: $name, slug: $slug, universityId: $universityId, departmentId: $departmentId, isActive: $isActive)';
+    return 'SessionModel(id: $id, name: $name, slug: $slug, universityId: $universityId, departmentId: $departmentId, isActive: $isActive)';
 }
 
 

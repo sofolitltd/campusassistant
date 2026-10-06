@@ -119,7 +119,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             'Skip',
                             style: TextStyle(
                               color: theme.colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: .w600,
                             ),
                           ),
                         ),
@@ -141,55 +141,57 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           horizontal: Spacing.xxxl,
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: [
                             Container(
-                              width: 168,
-                              height: 168,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    colors.primaryColor.withValues(alpha: 0.16),
-                                    colors.primaryColor.withValues(alpha: 0.0),
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  width: 104,
-                                  height: 104,
+                                  width: 168,
+                                  height: 168,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: colors.primaryColor,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: colors.primaryColor.withValues(
-                                          alpha: 0.35,
-                                        ),
-                                        blurRadius: 24,
-                                        offset: const Offset(0, 10),
+                                    gradient: RadialGradient(
+                                      colors: [
+                                        colors.primary.withValues(alpha: 0.16),
+                                        colors.primary.withValues(alpha: 0.0),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 104,
+                                      height: 104,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: colors.primary,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: colors.primary.withValues(
+                                              alpha: 0.35,
+                                            ),
+                                            blurRadius: 24,
+                                            offset: const Offset(0, 10),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                      child: Icon(
+                                        slide.icon,
+                                        size: 44,
+                                        color: context.colors.onPrimary,
+                                      ),
+                                    ),
                                   ),
-                                  child: Icon(
-                                    slide.icon,
-                                    size: 44,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ).animate(key: ValueKey('icon-$index')).fadeIn(
-                              duration: 350.ms,
-                            ).scale(begin: const Offset(0.85, 0.85)),
+                                )
+                                .animate(key: ValueKey('icon-$index'))
+                                .fadeIn(duration: 350.ms)
+                                .scale(begin: const Offset(0.85, 0.85)),
                             const SizedBox(height: Spacing.xxxl),
                             Text(
                                   slide.title,
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    height: 1.25,
-                                  ),
+                                  textAlign: .center,
+                                  style: theme.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: .bold,
+                                        height: 1.25,
+                                      ),
                                 )
                                 .animate(key: ValueKey('title-$index'))
                                 .fadeIn(delay: 80.ms, duration: 350.ms)
@@ -197,7 +199,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             const SizedBox(height: Spacing.md),
                             Text(
                                   slide.description,
-                                  textAlign: TextAlign.center,
+                                  textAlign: .center,
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                     height: 1.5,
@@ -224,7 +226,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: List.generate(_slides.length, (i) {
                           final active = i == _page;
                           return AnimatedContainer(
@@ -237,9 +239,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             height: 8,
                             decoration: BoxDecoration(
                               color: active
-                                  ? colors.primaryColor
-                                  : colors.primaryColor.withValues(alpha: 0.2),
-                              borderRadius: RadiusToken.circular(RadiusToken.full),
+                                  ? colors.primary
+                                  : colors.primary.withValues(alpha: 0.2),
+                              borderRadius: RadiusToken.circular(
+                                RadiusToken.full,
+                              ),
                             ),
                           );
                         }),

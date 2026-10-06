@@ -58,16 +58,12 @@ class SyncManager {
           switch (sync.method.toUpperCase()) {
             case 'POST':
               await _apiClient.post(sync.endpoint, data: payload);
-              break;
             case 'PUT':
               await _apiClient.put(sync.endpoint, data: payload);
-              break;
             case 'DELETE':
               await _apiClient.delete(sync.endpoint);
-              break;
             case 'PATCH':
               await _apiClient.put(sync.endpoint, data: payload);
-              break;
           }
 
           await db.completeSync(sync.id);

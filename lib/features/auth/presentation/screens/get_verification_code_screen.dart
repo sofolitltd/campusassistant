@@ -14,6 +14,8 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/widgets/open_app.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class GetVerificationCodeScreen extends StatelessWidget {
   const GetVerificationCodeScreen({super.key});
@@ -34,103 +36,103 @@ class GetVerificationCodeScreen extends StatelessWidget {
                 : 16,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Spacing.lg),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(RadiusToken.xl),
                   border: Border.all(
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white10
-                        : Colors.grey.shade200,
+                        ? context.colors.border
+                        : context.colors.border,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: context.colors.shadow,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     Text(
-                      'Get verification code from CR'.toUpperCase(),
+                      'Get verification code from CR',
                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black54,
+                        fontWeight: .w600,
+                        color: context.colors.textMuted,
                       ),
                     ),
                     const Text(
                       "Connect with your class representative",
-                      style: TextStyle(fontWeight: FontWeight.w100),
+                      style: TextStyle(fontWeight: .w100),
                     ),
                     const SizedBox(height: Spacing.lg),
                     OutlinedButton.icon(
                       onPressed: () {
                         context.push(AppRoute.contactWithCR.path);
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.play_circle_fill_outlined,
-                        color: Colors.green,
+                        color: context.colors.success,
                       ),
                       label: Text(
-                        'Contact with CR/Moderator'.toUpperCase(),
+                        'Contact with CR/Moderator',
                         style: const TextStyle(
                           letterSpacing: .5,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Spacing.lg),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(RadiusToken.xl),
                   border: Border.all(
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white10
-                        : Colors.grey.shade200,
+                        ? context.colors.border
+                        : context.colors.border,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: context.colors.shadow,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     Text(
-                      'Register with facebook'.toUpperCase(),
+                      'Register with Facebook',
                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black54,
+                        fontWeight: .w600,
+                        color: context.colors.textMuted,
                       ),
                     ),
                     const Text(
                       "Like the page and send a message with",
-                      style: TextStyle(fontWeight: FontWeight.w100),
+                      style: TextStyle(fontWeight: .w100),
                     ),
                     const SizedBox(height: Spacing.lg),
                     Text(
-                      "Requirements:".toUpperCase(),
+                      "Requirements:",
                       style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: Colors.deepOrange,
+                        color: context.colors.warning,
                         letterSpacing: .4,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Spacing.xs),
                     const Text(
                       "1. Full Name (as per certificate)."
                       "\n2. University, Department & Student ID."
@@ -141,54 +143,51 @@ class GetVerificationCodeScreen extends StatelessWidget {
                     const Text(
                       "We will register your email as soon as possible.",
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
                     OutlinedButton.icon(
                       onPressed: () {
                         OpenApp.withUrl(kFbGroup);
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.facebook_outlined,
-                        color: Colors.blue,
+                        color: context.colors.info,
                       ),
                       label: Text(
-                        'Go to facebook page'.toUpperCase(),
+                        'Go to Facebook page',
                         style: const TextStyle(
                           letterSpacing: .5,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  "Contact with Developer".toUpperCase(),
-                  textAlign: TextAlign.center,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
+                child: Text("Contact with developer", textAlign: .center),
               ),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Theme.of(context).dividerColor),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(Spacing.sm),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: .center,
+                  mainAxisSize: .max,
                   children: [
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
                     Container(
                       height: 100,
                       width: 100,
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(Spacing.sm),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.pink.shade100,
                         image: const DecorationImage(
-                          fit: BoxFit.cover,
+                          fit: .cover,
                           image: AssetImage('assets/images/reyad.jpg'),
                         ),
                       ),
@@ -197,69 +196,69 @@ class GetVerificationCodeScreen extends StatelessWidget {
                     const Text(
                       kDeveloperName,
                       style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                        fontSize: FontSizeToken.xxl,
+                        fontWeight: .w600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Spacing.xs),
                     const Text('UI/UX Designer, App Developer'),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: Spacing.md,
+                            vertical: Spacing.sm,
                           ),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Colors.orange[100],
+                            borderRadius: BorderRadius.circular(RadiusToken.xs),
+                            color: context.colors.warning,
                           ),
-                          child: const Text(
+                          child: Text(
                             kDeveloperBatch,
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              fontWeight: .w500,
+                              color: context.colors.text,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Spacing.sm),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: Spacing.md,
+                            vertical: Spacing.sm,
                           ),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Colors.greenAccent[100],
+                            borderRadius: BorderRadius.circular(RadiusToken.xs),
+                            color: context.colors.success,
                           ),
-                          child: const Text(
+                          child: Text(
                             kDeveloperSession,
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              fontWeight: .w500,
+                              color: context.colors.text,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
                     Text(
                       'Department of Psychology',
                       style: Theme.of(context).textTheme.bodyLarge!,
                     ),
                     Text(
                       'University of Chittagong',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium!.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.lg),
                     Container(
                       color: Colors.transparent,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           MaterialButton(
                             onPressed: () {
@@ -267,36 +266,42 @@ class GetVerificationCodeScreen extends StatelessWidget {
                             },
                             minWidth: 32,
                             elevation: 4,
-                            color: Colors.green,
+                            color: context.colors.success,
                             shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(10),
-                            child: const Icon(Icons.call, color: Colors.white),
+                            padding: const EdgeInsets.all(Spacing.md),
+                            child: Icon(
+                              Icons.call,
+                              color: context.colors.onPrimary,
+                            ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: Spacing.sm),
                           MaterialButton(
                             onPressed: () {
                               OpenApp.withEmail(kAppEmail);
                             },
                             minWidth: 32,
                             elevation: 4,
-                            color: Colors.red,
+                            color: context.colors.danger,
                             shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(10),
-                            child: const Icon(Icons.mail, color: Colors.white),
+                            padding: const EdgeInsets.all(Spacing.md),
+                            child: Icon(
+                              Icons.mail,
+                              color: context.colors.onPrimary,
+                            ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: Spacing.sm),
                           MaterialButton(
                             onPressed: () {
                               OpenApp.withUrl(kDeveloperFb);
                             },
                             minWidth: 32,
                             elevation: 4,
-                            color: Colors.blue,
+                            color: context.colors.info,
                             shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(10),
-                            child: const Icon(
+                            padding: const EdgeInsets.all(Spacing.md),
+                            child: Icon(
                               Icons.facebook,
-                              color: Colors.white,
+                              color: context.colors.onPrimary,
                             ),
                           ),
                         ],
@@ -344,22 +349,19 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
             vertical: 16,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               universitiesAsync.when(
                 data: (universities) => DropdownButtonFormField<String>(
                   isExpanded: true,
                   hint: const Text('Select your university'),
                   initialValue: _selectedUniversityId,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'University',
-                  ),
+                  decoration: const InputDecoration(labelText: 'University'),
                   items: universities
                       .map(
                         (u) => DropdownMenuItem<String>(
                           value: u.id,
-                          child: Text(u.name, overflow: TextOverflow.ellipsis),
+                          child: Text(u.name, overflow: .ellipsis),
                         ),
                       )
                       .toList(),
@@ -386,17 +388,13 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                         hint: const Text('Select your department'),
                         initialValue: _selectedDepartmentId,
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
                           labelText: 'Department',
                         ),
                         items: departments
                             .map(
                               (d) => DropdownMenuItem<String>(
                                 value: d.id,
-                                child: Text(
-                                  d.name,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                child: Text(d.name, overflow: .ellipsis),
                               ),
                             )
                             .toList(),
@@ -423,18 +421,12 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                         isExpanded: true,
                         hint: const Text('Select your batch'),
                         initialValue: _selectedBatchId,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Batch',
-                        ),
+                        decoration: const InputDecoration(labelText: 'Batch'),
                         items: batches
                             .map(
                               (b) => DropdownMenuItem<String>(
                                 value: b.id,
-                                child: Text(
-                                  b.name,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                child: Text(b.name, overflow: .ellipsis),
                               ),
                             )
                             .toList(),
@@ -447,12 +439,12 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                       loading: () => const LinearProgressIndicator(),
                       error: (e, _) => Text('Error: $e'),
                     ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xxl),
               Text(
                 'CR/Moderator List',
                 style: Theme.of(
                   context,
-                ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+                ).textTheme.titleMedium!.copyWith(fontWeight: .bold),
               ),
               const Divider(),
               if (_selectedBatchId != null)
@@ -480,7 +472,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                                   OpenApp.withNumber(s.phone!);
                                 }
                               },
-                              tileColor: Colors.white,
+                              tileColor: context.colors.onPrimary,
                               leading: CircleAvatar(
                                 backgroundImage: s.imageUrl.isNotEmpty
                                     ? NetworkImage(
@@ -498,9 +490,9 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                                 '${s.studentId} ${s.phone != null ? "• ${s.phone}" : ""}',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
-                              trailing: const Icon(
+                              trailing: Icon(
                                 Icons.call_outlined,
-                                color: Colors.green,
+                                color: context.colors.success,
                               ),
                             );
                           },

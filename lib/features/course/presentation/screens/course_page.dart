@@ -16,6 +16,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import 'course_card.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 // ---------------------------------------------------------------------------
 // CoursesPage
@@ -113,7 +115,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
 
     final currentSemesterName = selectedSemester?.name ?? '';
     final currentSemesterId = selectedSemester?.id;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     return userAsync.when(
       data: (user) {
@@ -123,17 +125,17 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             scrolledUnderElevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
             centerTitle: true,
             titleSpacing: 0,
             title: Text(
               currentSemesterName.isNotEmpty
                   ? 'Courses ($currentSemesterName)'
                   : 'Courses',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: .bold,
+                fontSize: FontSizeToken.xl,
               ),
             ),
           ),
@@ -145,11 +147,11 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                 padding: const .fromLTRB(16, 0, 16, 16),
                 child: Row(
                   children: [
-                    const Text(
+                    Text(
                       'Filter:',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
+                        color: context.colors.onPrimary,
+                        fontWeight: .w500,
                       ),
                     ),
                     const Spacer(),
@@ -162,38 +164,38 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                           selectedBatch: selectedBatch,
                         );
                       },
-                      loading: () => const SizedBox(
+                      loading: () => SizedBox(
                         width: 100,
                         height: 32,
                         child: Center(
                           child: CupertinoActivityIndicator(
-                            color: Colors.white,
+                            color: context.colors.onPrimary,
                           ),
                         ),
                       ),
-                      error: (_, _) => const SizedBox(
+                      error: (_, _) => SizedBox(
                         width: 100,
                         height: 32,
                         child: Center(
                           child: Text(
                             'Failed',
                             style: TextStyle(
-                              color: Colors.white54,
-                              fontSize: 12,
+                              color: context.colors.textSubtle,
+                              fontSize: FontSizeToken.sm,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: Spacing.md),
                     // Semester/Year filter (second)
                     if (semestersProviderState.isLoading)
-                      const SizedBox(
+                      SizedBox(
                         width: 100,
                         height: 32,
                         child: Center(
                           child: CupertinoActivityIndicator(
-                            color: Colors.white,
+                            color: context.colors.onPrimary,
                           ),
                         ),
                       )
@@ -213,12 +215,12 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
+                      top: Radius.circular(RadiusToken.xxxl),
                     ),
                   ),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
+                      top: Radius.circular(RadiusToken.xxxl),
                     ),
                     child: (() {
                       final uid = user.information.universityId;
@@ -229,16 +231,16 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                           did.isEmpty) {
                         return Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: .center,
                             children: [
                               Icon(
                                 LucideIcons.userX,
                                 size: 48,
-                                color: Colors.grey,
+                                color: context.colors.textSubtle,
                               ),
                               const SizedBox(height: Spacing.lg),
                               const Text('User profile incomplete'),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: Spacing.sm),
                               TextButton(
                                 onPressed: () => ref.invalidate(userProvider),
                                 child: const Text('Retry'),
@@ -264,20 +266,17 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                             ),
                             error: (e, _) => Center(
                               child: Padding(
-                                padding: const EdgeInsets.all(24),
+                                padding: const EdgeInsets.all(Spacing.xxl),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: .center,
                                   children: [
                                     Icon(
                                       Icons.error_outline,
                                       size: 48,
-                                      color: Colors.red[300],
+                                      color: context.colors.danger,
                                     ),
                                     const SizedBox(height: Spacing.lg),
-                                    Text(
-                                      'Error: $e',
-                                      textAlign: TextAlign.center,
-                                    ),
+                                    Text('Error: $e', textAlign: .center),
                                     const SizedBox(height: Spacing.lg),
                                     ElevatedButton.icon(
                                       onPressed: () => ref.invalidate(
@@ -338,7 +337,8 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                               Icon(
                                                 LucideIcons.bookOpen,
                                                 size: 48,
-                                                color: Colors.grey,
+                                                color:
+                                                    context.colors.textSubtle,
                                               ),
                                               const SizedBox(
                                                 height: Spacing.lg,
@@ -376,10 +376,10 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   padding: const EdgeInsets.fromLTRB(
-                                    8,
-                                    8,
-                                    8,
-                                    16,
+                                    Spacing.sm,
+                                    Spacing.sm,
+                                    Spacing.sm,
+                                    Spacing.lg,
                                   ),
                                   children: [
                                     ...categories.map(
@@ -414,11 +414,11 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
       error: (e, _) => Scaffold(
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
-              Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+              Icon(Icons.error_outline, size: 48, color: context.colors.danger),
               const SizedBox(height: Spacing.lg),
-              Text('Error: $e', textAlign: TextAlign.center),
+              Text('Error: $e', textAlign: .center),
               const SizedBox(height: Spacing.lg),
               ElevatedButton.icon(
                 onPressed: () => ref.invalidate(userProvider),
@@ -448,34 +448,39 @@ class _SemesterButton extends ConsumerWidget {
     return GestureDetector(
       onTap: () => _showSemesterSheet(context, ref),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-          borderRadius: BorderRadius.circular(8),
+          color: context.colors.surface.withValues(alpha: 0.15),
+          border: Border.all(
+            color: context.colors.onPrimary.withValues(alpha: 0.4),
+          ),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
-            const Icon(
+            Icon(
               LucideIcons.graduationCap,
               size: 14,
-              color: Colors.white,
+              color: context.colors.onPrimary,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: Spacing.sm),
             Text(
               selectedSemester?.name ?? 'All',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
+              style: TextStyle(
+                fontSize: FontSizeToken.md,
+                fontWeight: .w500,
+                color: context.colors.onPrimary,
               ),
             ),
-            const SizedBox(width: 8),
-            const Icon(
+            const SizedBox(width: Spacing.sm),
+            Icon(
               Icons.keyboard_arrow_down,
               size: 16,
-              color: Colors.white,
+              color: context.colors.onPrimary,
             ),
           ],
         ),
@@ -485,7 +490,6 @@ class _SemesterButton extends ConsumerWidget {
 
   void _showSemesterSheet(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final notifier = ref.read(selectedSemesterNotifierProvider.notifier);
     String searchText = '';
 
@@ -494,7 +498,9 @@ class _SemesterButton extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -511,31 +517,31 @@ class _SemesterButton extends ConsumerWidget {
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.65,
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Center(
                     child: Container(
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+                        color: context.colors.borderStrong,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Level',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
@@ -550,49 +556,43 @@ class _SemesterButton extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withAlpha(12)
-                            : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        color: context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                        border: Border.all(color: context.colors.border),
                       ),
                       child: TextField(
                         onChanged: (v) => setState(() => searchText = v),
                         decoration: InputDecoration(
                           hintText: 'Search level...',
                           hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                            fontSize: 14,
+                            color: context.colors.textSubtle,
+                            fontSize: FontSizeToken.base,
                           ),
                           prefixIcon: Icon(
                             LucideIcons.search,
                             size: 18,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
+                            color: context.colors.textSubtle,
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
+                            vertical: Spacing.md,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Expanded(
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.md,
+                      ),
                       children: [
                         if (searchText.isEmpty)
                           _FilterTile(
@@ -638,30 +638,35 @@ class _BatchButton extends ConsumerWidget {
     return GestureDetector(
       onTap: () => _showBatchSheet(context, ref),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-          borderRadius: BorderRadius.circular(8),
+          color: context.colors.surface.withValues(alpha: 0.15),
+          border: Border.all(
+            color: context.colors.onPrimary.withValues(alpha: 0.4),
+          ),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
-            const Icon(LucideIcons.users, size: 14, color: Colors.white),
-            const SizedBox(width: 6),
+            Icon(LucideIcons.users, size: 14, color: context.colors.onPrimary),
+            const SizedBox(width: Spacing.sm),
             Text(
               selectedBatch?.name ?? 'All Batches',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
+              style: TextStyle(
+                fontSize: FontSizeToken.md,
+                fontWeight: .w500,
+                color: context.colors.onPrimary,
               ),
             ),
-            const SizedBox(width: 8),
-            const Icon(
+            const SizedBox(width: Spacing.sm),
+            Icon(
               Icons.keyboard_arrow_down,
               size: 16,
-              color: Colors.white,
+              color: context.colors.onPrimary,
             ),
           ],
         ),
@@ -671,7 +676,6 @@ class _BatchButton extends ConsumerWidget {
 
   void _showBatchSheet(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     String searchText = '';
 
     showModalBottomSheet(
@@ -679,7 +683,9 @@ class _BatchButton extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -696,31 +702,31 @@ class _BatchButton extends ConsumerWidget {
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.75,
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Center(
                     child: Container(
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+                        color: context.colors.borderStrong,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Batch',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
@@ -735,49 +741,43 @@ class _BatchButton extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withAlpha(12)
-                            : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        color: context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                        border: Border.all(color: context.colors.border),
                       ),
                       child: TextField(
                         onChanged: (v) => setState(() => searchText = v),
                         decoration: InputDecoration(
                           hintText: 'Search batch...',
                           hintStyle: TextStyle(
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
-                            fontSize: 14,
+                            color: context.colors.textSubtle,
+                            fontSize: FontSizeToken.base,
                           ),
                           prefixIcon: Icon(
                             LucideIcons.search,
                             size: 18,
-                            color: isDark
-                                ? Colors.white54
-                                : Colors.grey.shade400,
+                            color: context.colors.textSubtle,
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 12,
+                            vertical: Spacing.md,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Expanded(
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.md,
+                      ),
                       children: [
                         if (searchText.isEmpty)
                           _FilterTile(
@@ -829,29 +829,32 @@ class _FilterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).appColors.primaryColor;
-    final selectedBg = primary.withValues(alpha: isDark ? 0.22 : 0.12);
+    final primary = context.colors.primary;
+    final selectedBg = context.colors.primarySubtle;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.symmetric(
+          vertical: Spacing.xxs,
+          horizontal: Spacing.sm,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.lg,
+          vertical: Spacing.md,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? selectedBg : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: 15,
-                color: isSelected
-                    ? primary
-                    : (isDark ? Colors.white : Colors.black87),
+                fontSize: FontSizeToken.lg,
+                color: isSelected ? primary : (context.colors.text),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),

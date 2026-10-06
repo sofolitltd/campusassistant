@@ -12,6 +12,9 @@ import '/routes/app_route.dart';
 import '../../data/models/skill.dart';
 import '../../data/models/skill_video.dart';
 import '../providers/skill_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class SkillDetailsPage extends ConsumerWidget {
   final Skill? skill;
@@ -32,9 +35,7 @@ class SkillDetailsPage extends ConsumerWidget {
     final userAsync = ref.watch(userProvider);
     final user = userAsync.value;
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: CupertinoActivityIndicator()),
-      );
+      return const Scaffold(body: Center(child: CupertinoActivityIndicator()));
     }
 
     final skillsAsync = ref.watch(
@@ -47,7 +48,9 @@ class SkillDetailsPage extends ConsumerWidget {
     return skillsAsync.when(
       data: (skills) {
         final match = skills.where((s) => s.id == skillId).firstOrNull;
-        return match != null ? _buildContent(context, match) : _notFound(context);
+        return match != null
+            ? _buildContent(context, match)
+            : _notFound(context);
       },
       loading: () =>
           const Scaffold(body: Center(child: CupertinoActivityIndicator())),
@@ -68,85 +71,92 @@ class SkillDetailsPage extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
           child: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 220,
-            pinned: true,
-            iconTheme: const IconThemeData(color: Colors.white),
-            flexibleSpace: FlexibleSpaceBar(
-              background: skill.thumbnailUrl.isNotEmpty
-                  ? Image.network(
-                      ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Container(color: Colors.grey.shade300),
-                    )
-                  : Container(color: Colors.grey.shade300),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    skill.title,
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  if (skill.description.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      skill.description,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey.shade600,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 8),
-                  Row(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 220,
+                pinned: true,
+                // White on purpose: sits over the skill's cover image in both themes.
+                iconTheme: const IconThemeData(color: Colors.white),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: skill.thumbnailUrl.isNotEmpty
+                      ? Image.network(
+                          ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
+                          fit: .cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(color: context.colors.borderStrong),
+                        )
+                      : Container(color: context.colors.borderStrong),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.lg),
+                  child: Column(
+                    crossAxisAlignment: .start,
                     children: [
-                      Icon(
-                        LucideIcons.playCircle,
-                        size: 14,
-                        color: Colors.grey.shade500,
-                      ),
-                      const SizedBox(width: 4),
                       Text(
-                        '${skill.videos.length} videos',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                          fontWeight: FontWeight.w600,
+                        skill.title,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineSmall?.copyWith(fontWeight: .bold),
+                      ),
+                      if (skill.description.isNotEmpty) ...[
+                        const SizedBox(height: Spacing.sm),
+                        Text(
+                          skill.description,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: context.colors.textMuted,
+                                height: 1.4,
+                              ),
                         ),
+                      ],
+                      const SizedBox(height: Spacing.sm),
+                      Row(
+                        children: [
+                          Icon(
+                            LucideIcons.playCircle,
+                            size: 14,
+                            color: context.colors.textSubtle,
+                          ),
+                          const SizedBox(width: Spacing.xs),
+                          Text(
+                            '${skill.videos.length} videos',
+                            style: TextStyle(
+                              fontSize: FontSizeToken.sm,
+                              color: context.colors.textSubtle,
+                              fontWeight: .w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+              if (skill.videos.isEmpty)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: Spacing.xxxxl),
+                    child: Center(child: Text('No videos in this skill yet.')),
+                  ),
+                )
+              else
+                SliverList.separated(
+                  itemCount: skill.videos.length,
+                  separatorBuilder: (context, i) =>
+                      const SizedBox(height: Spacing.md),
+                  itemBuilder: (context, i) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                    child: _SkillVideoRow(
+                      video: skill.videos[i],
+                      number: i + 1,
+                    ),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: Spacing.xxl)),
+            ],
           ),
-          if (skill.videos.isEmpty)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 48),
-                child: Center(child: Text('No videos in this skill yet.')),
-              ),
-            )
-          else
-            SliverList.separated(
-              itemCount: skill.videos.length,
-              separatorBuilder: (context, i) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _SkillVideoRow(video: skill.videos[i], number: i + 1),
-              ),
-            ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        ],
-      ),
         ),
       ),
     );
@@ -161,22 +171,22 @@ class _SkillVideoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final videoId = YoutubePlayer.convertUrlToId(video.youtubeUrl) ?? '';
+    final videoId =
+        YoutubePlayerController.convertUrlToId(video.youtubeUrl) ?? '';
     final thumb = video.thumbnailUrl.isNotEmpty
         ? video.thumbnailUrl
-        : (videoId.isNotEmpty ? YoutubePlayer.getThumbnail(videoId: videoId) : '');
+        : (videoId.isNotEmpty
+              ? YoutubePlayerController.getThumbnail(videoId: videoId)
+              : '');
 
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
-        ),
+        border: Border.all(color: context.colors.surfaceAlt),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -202,40 +212,40 @@ class _SkillVideoRow extends StatelessWidget {
                   width: 110,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      bottomLeft: Radius.circular(8),
+                      topLeft: Radius.circular(RadiusToken.md),
+                      bottomLeft: Radius.circular(RadiusToken.md),
                     ),
                     child: thumb.isNotEmpty
                         ? Image.network(
                             ApiEndpoints.resolveImageUrl(thumb),
-                            fit: BoxFit.cover,
+                            fit: .cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
-                                  color: Colors.grey.shade100,
+                                  color: context.colors.surfaceAlt,
                                   child: Icon(
                                     LucideIcons.video,
-                                    color: Colors.grey.shade400,
+                                    color: context.colors.textSubtle,
                                   ),
                                 ),
                           )
                         : Container(
-                            color: Colors.grey.shade100,
+                            color: context.colors.surfaceAlt,
                             child: Icon(
                               LucideIcons.video,
-                              color: Colors.grey.shade400,
+                              color: context.colors.textSubtle,
                             ),
                           ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.black54,
+                  padding: const EdgeInsets.all(Spacing.xs),
+                  decoration: BoxDecoration(
+                    color: context.colors.textMuted,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     LucideIcons.play,
-                    color: Colors.white,
+                    color: context.colors.onPrimary,
                     size: 16,
                   ),
                 ),
@@ -244,29 +254,26 @@ class _SkillVideoRow extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: Spacing.md,
+                  vertical: Spacing.sm,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
                   children: [
                     Text(
                       '$number. ${video.title}',
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                      ),
+                      overflow: .ellipsis,
+                      style: const TextStyle(fontWeight: .bold, height: 1.2),
                     ),
                     if (video.duration.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Spacing.xs),
                       Text(
                         video.duration,
                         style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? Colors.white70 : Colors.grey,
+                          fontSize: FontSizeToken.sm,
+                          color: context.colors.textSubtle,
                         ),
                       ),
                     ],

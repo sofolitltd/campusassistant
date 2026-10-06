@@ -10,6 +10,9 @@ import '/widgets/common_dropdown_widget.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class NewStudentSignUpScreen extends ConsumerStatefulWidget {
   const NewStudentSignUpScreen({super.key, required this.studentId});
@@ -81,7 +84,7 @@ class _NewStudentSignUpScreenState
                   vertical: 16,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Container(
                       decoration: BoxDecoration(
@@ -89,59 +92,64 @@ class _NewStudentSignUpScreenState
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                              ? context.colors.border
+                              : context.colors.border,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: context.colors.shadow,
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(
+                          Spacing.lg,
+                          Spacing.lg,
+                          Spacing.lg,
+                          Spacing.lg,
+                        ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: .stretch,
                           children: [
                             Text(
-                              'Hello'.toUpperCase(),
+                              'Hello',
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: .bold,
                                     letterSpacing: 1,
                                   ),
                             ),
                             Text(
                               'Fill your user information',
                               style: Theme.of(context).textTheme.labelLarge!
-                                  .copyWith(fontWeight: FontWeight.w100),
+                                  .copyWith(fontWeight: .w100),
                             ),
                             const Divider(height: 24),
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(Spacing.md),
                               decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
+                                color: context.colors.info,
                                 borderRadius: BorderRadius.circular(
                                   RadiusToken.sm,
                                 ),
-                                border: Border.all(color: Colors.blue.shade100),
+                                border: Border.all(color: context.colors.info),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     Icons.verified,
-                                    color: Colors.blue.shade700,
+                                    color: context.colors.info,
                                     size: 20,
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: Spacing.sm),
                                   Text(
                                     'Pre-verified Student Record',
                                     style: TextStyle(
-                                      color: Colors.blue.shade900,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                      color: context.colors.info,
+                                      fontWeight: .bold,
+                                      fontSize: FontSizeToken.sm,
                                     ),
                                   ),
                                 ],
@@ -153,37 +161,37 @@ class _NewStudentSignUpScreenState
                               'University',
                               universityName,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             _buildOfficialInfoRow(
                               context,
                               'Department',
                               departmentName,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             _buildOfficialInfoRow(
                               context,
                               'Student ID',
                               s.studentId,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             _buildOfficialInfoRow(context, 'Batch', s.batchId),
                             const Divider(height: 32),
                             Text(
-                              'Personal Information'.toUpperCase(),
+                              'Personal information',
                               style: Theme.of(context).textTheme.labelLarge!
                                   .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade700,
+                                    fontWeight: .bold,
+                                    color: context.colors.textMuted,
                                     letterSpacing: 1,
                                   ),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: Spacing.md),
                             CommonTextFieldWidget(
                               controller: _nameController,
                               heading: 'Full Name',
                               hintText: 'Enter your name as per certificate',
-                              keyboardType: TextInputType.name,
-                              textCapitalization: TextCapitalization.words,
+                              keyboardType: .name,
+                              textCapitalization: .words,
                               validator: (val) {
                                 if (val!.isEmpty) {
                                   return 'Enter your name';
@@ -191,7 +199,7 @@ class _NewStudentSignUpScreenState
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: Spacing.md),
                             Row(
                               children: [
                                 Expanded(
@@ -200,7 +208,7 @@ class _NewStudentSignUpScreenState
                                     controller: _mobileController,
                                     heading: 'Mobile',
                                     hintText: 'Enter mobile number',
-                                    keyboardType: TextInputType.phone,
+                                    keyboardType: .phone,
                                     validator: (val) {
                                       if (val!.isEmpty) {
                                         return 'Enter mobile number';
@@ -212,7 +220,7 @@ class _NewStudentSignUpScreenState
                                     },
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: Spacing.md),
                                 Expanded(
                                   flex: 2,
                                   child: CommonDropDownWidget(
@@ -227,7 +235,7 @@ class _NewStudentSignUpScreenState
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: Spacing.md),
                             hallsAsync.when(
                               data: (halls) {
                                 final hallNames = halls
@@ -254,22 +262,25 @@ class _NewStudentSignUpScreenState
                               },
                               loading: () => const Center(
                                 child: Padding(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(Spacing.sm),
                                   child: CupertinoActivityIndicator(),
                                 ),
                               ),
                               error: (err, stack) => Text(
                                 'Error loading halls: $err',
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
+                                style: TextStyle(
+                                  color: context.colors.danger,
+                                  fontSize: FontSizeToken.sm,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: Spacing.xxl),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 48),
+                                minimumSize: const Size(
+                                  double.infinity,
+                                  ControlToken.height,
+                                ),
                               ),
                               onPressed: () {
                                 if (_globalKey.currentState!.validate()) {
@@ -321,14 +332,14 @@ class _NewStudentSignUpScreenState
                                 }
                               },
                               child: Text(
-                                'Next'.toUpperCase(),
+                                'Next',
                                 style: const TextStyle(
                                   letterSpacing: 1,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: .bold,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                           ],
                         ),
                       ),
@@ -346,7 +357,7 @@ class _NewStudentSignUpScreenState
         appBar: AppBar(title: const Text('Error')),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               Text('Error loading student info: $error'),
               const SizedBox(height: Spacing.lg),
@@ -368,23 +379,23 @@ class _NewStudentSignUpScreenState
     String value,
   ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           label,
           style: TextStyle(
-            color: Colors.grey.shade500,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
+            color: context.colors.textSubtle,
+            fontSize: FontSizeToken.xxs,
+            fontWeight: .bold,
             letterSpacing: .5,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: Spacing.xxs),
         Text(
           value,
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            fontWeight: .w600,
+            color: context.colors.text,
           ),
         ),
       ],

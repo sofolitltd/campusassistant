@@ -7,6 +7,9 @@ import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/features/teacher/presentation/widgets/teacher_card.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class TeacherPage extends ConsumerStatefulWidget {
   const TeacherPage({super.key});
@@ -41,7 +44,12 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: const [
@@ -83,11 +91,14 @@ class TeacherListView extends ConsumerWidget {
       loading: () => const Center(child: CupertinoActivityIndicator()),
       error: (error, stack) => Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(Spacing.xl),
           child: Text(
             error.toString(),
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+            textAlign: .center,
+            style: TextStyle(
+              color: context.colors.danger,
+              fontSize: FontSizeToken.md,
+            ),
           ),
         ),
       ),
@@ -100,11 +111,16 @@ class TeacherListView extends ConsumerWidget {
         }).toList();
 
         if (filteredTeachers.isEmpty) {
-          return _buildEmpty(isPresent, searchQuery.isNotEmpty);
+          return _buildEmpty(context, isPresent, searchQuery.isNotEmpty);
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.lg,
+            Spacing.sm,
+            Spacing.lg,
+            Spacing.lg,
+          ),
           physics: const BouncingScrollPhysics(),
           itemCount: filteredTeachers.length,
           itemBuilder: (context, index) {
@@ -116,24 +132,24 @@ class TeacherListView extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(bool isPresent, bool isSearching) {
+  Widget _buildEmpty(BuildContext context, bool isPresent, bool isSearching) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           Icon(
             isSearching ? LucideIcons.searchX : LucideIcons.userX,
             size: 48,
-            color: Colors.grey.shade300,
+            color: context.colors.borderStrong,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           Text(
             isSearching
                 ? 'No matches found'
                 : 'No ${isPresent ? "present" : "on leave"} faculties',
-            style: const TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
+            style: TextStyle(
+              color: context.colors.textSubtle,
+              fontWeight: .w500,
             ),
           ),
         ],

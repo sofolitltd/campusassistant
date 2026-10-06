@@ -23,6 +23,8 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/network/api_endpoints.dart';
 import '/widgets/district_sub_district_picker.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 const kGenderOptions = <String>['Male', 'Female'];
 
@@ -181,7 +183,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Spacing.lg),
         child: Align(
           alignment: Alignment.topCenter,
           child: Form(
@@ -194,45 +196,45 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                   ButtonTheme(
                     alignedDropdown: true,
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(Spacing.lg),
                       decoration: BoxDecoration(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Theme.of(context).cardColor
-                            : Colors.white,
+                            : context.colors.surface,
                         borderRadius: BorderRadius.circular(RadiusToken.md),
                         border: Border.all(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                              ? context.colors.border
+                              : context.colors.border,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: context.colors.shadow,
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: .stretch,
                         children: [
                           /// ---- PROFILE IMAGE ----
                           Row(
                             children: [
                               _buildProfileImage(context),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: Spacing.lg),
                               Expanded(child: _buildPhotoInstruction(context)),
                             ],
                           ),
 
-                          const SizedBox(height: 24),
+                          const SizedBox(height: Spacing.xxl),
 
                           /// ---- NAME ----
                           const Text('Name'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: Spacing.sm),
                           TextFormField(
                             controller: _nameController,
-                            textCapitalization: TextCapitalization.words,
+                            textCapitalization: .words,
                             decoration: const InputDecoration(hintText: 'Name'),
                             validator: (val) =>
                                 val!.isEmpty ? 'Enter your name' : null,
@@ -242,7 +244,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
                           /// ---- GENDER ----
                           const Text('Gender'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: Spacing.sm),
                           DropdownButtonFormField<String>(
                             initialValue: _selectedGender,
                             decoration: const InputDecoration(
@@ -266,18 +268,18 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
                           /// ---- MOBILE + BLOOD ----
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Expanded(
                                 flex: 3,
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: .start,
                                   children: [
                                     const Text('Mobile Number'),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: Spacing.sm),
                                     TextFormField(
                                       controller: _mobileController,
-                                      keyboardType: TextInputType.phone,
+                                      keyboardType: .phone,
                                       validator: (val) {
                                         if (val!.isEmpty) {
                                           return 'Enter mobile no';
@@ -294,14 +296,14 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: Spacing.lg),
                               Expanded(
                                 flex: 2,
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: .start,
                                   children: [
                                     const Text('Blood Group'),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: Spacing.sm),
                                     DropdownButtonFormField<String>(
                                       initialValue: _selectedBloodGroup,
                                       decoration: const InputDecoration(
@@ -336,7 +338,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
                           /// ---- HALL ----
                           const Text('Hall Name'),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: Spacing.sm),
 
                           hallsAsync.when(
                             data: (hallList) {
@@ -359,17 +361,14 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                     .map(
                                       (hall) => DropdownMenuItem(
                                         value: hall,
-                                        child: Text(
-                                          hall,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                        child: Text(hall, overflow: .ellipsis),
                                       ),
                                     )
                                     .toList(),
                               );
                             },
                             loading: () => const Padding(
-                              padding: EdgeInsets.all(8),
+                              padding: EdgeInsets.all(Spacing.sm),
                               child: CupertinoActivityIndicator(),
                             ),
                             error: (e, _) => Text('Error loading halls: $e'),
@@ -380,9 +379,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                           /// ---- PRESENT ADDRESS ----
                           const Text(
                             'Present Address',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: .bold),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: Spacing.sm),
                           DistrictSubDistrictPicker(
                             districtId: _presentDistrictId,
                             subDistrictId: _presentSubDistrictId,
@@ -405,7 +404,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               }
                             }),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: Spacing.sm),
                           TextFormField(
                             controller: _presentAddressLineController,
                             decoration: const InputDecoration(
@@ -415,8 +414,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               _addressDirty = true;
                               if (_permanentSameAsPresent) {
                                 setState(
-                                  () => _permanentAddressLineController.text =
-                                      v,
+                                  () =>
+                                      _permanentAddressLineController.text = v,
                                 );
                               }
                             },
@@ -430,15 +429,17 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               const Expanded(
                                 child: Text(
                                   'Permanent Address',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontWeight: .bold),
                                 ),
                               ),
                               Row(
-                                mainAxisSize: MainAxisSize.min,
+                                mainAxisSize: .min,
                                 children: [
                                   const Text(
                                     'Same as present',
-                                    style: TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                      fontSize: FontSizeToken.sm,
+                                    ),
                                   ),
                                   Checkbox(
                                     value: _permanentSameAsPresent,
@@ -456,8 +457,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                         _permanentSubDistrictName =
                                             _presentSubDistrictName;
                                         _permanentAddressLineController.text =
-                                            _presentAddressLineController
-                                                .text;
+                                            _presentAddressLineController.text;
                                       }
                                     }),
                                   ),
@@ -466,7 +466,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             ],
                           ),
                           if (!_permanentSameAsPresent) ...[
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             DistrictSubDistrictPicker(
                               districtId: _permanentDistrictId,
                               subDistrictId: _permanentSubDistrictId,
@@ -481,7 +481,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                 _addressDirty = true;
                               }),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             TextFormField(
                               controller: _permanentAddressLineController,
                               decoration: const InputDecoration(
@@ -491,7 +491,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             ),
                           ],
 
-                          const SizedBox(height: 24),
+                          const SizedBox(height: Spacing.xxl),
 
                           /// ---- SAVE BUTTON ----
                           ElevatedButton(
@@ -537,26 +537,26 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
             ? Theme.of(context).cardColor
-            : Colors.white,
+            : context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
         border: Border.all(
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white10
-              : Colors.grey.shade200,
+              ? context.colors.border
+              : context.colors.border,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: .antiAlias,
       child: imageProvider != null
           ? Image(
               image: imageProvider,
-              fit: BoxFit.cover,
+              fit: .cover,
               errorBuilder: (_, _, _) => _buildPlaceholder(cs),
             )
           : _buildPlaceholder(cs),
@@ -577,8 +577,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
     return SizedBox(
       height: 100,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: .start,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             '* Try to use a formal photo.\n'
@@ -612,7 +612,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Image Customization',
-          toolbarWidgetColor: Colors.deepOrange,
+          toolbarWidgetColor: context.colors.warning,
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: false,
         ),
@@ -728,9 +728,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update profile: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

@@ -8,12 +8,32 @@ import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
 
 Failure _classifyError(Object e) {
-  if (e is DioException &&
-      (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.connectionError ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.sendTimeout)) {
-    return NetworkFailure('No internet connection');
+  if (e is DioException) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout) {
+      return NetworkFailure('No internet connection');
+    }
+
+    // Prefer the API's own message. The backend replies {"error": "..."} on
+    // failure; without this the user is shown the raw
+    // "DioException [bad response]: ..." dump.
+    final data = e.response?.data;
+    if (data is Map) {
+      final message = (data['error'] ?? data['message'])?.toString();
+      if (message != null && message.isNotEmpty) {
+        // verify-reset-code reports how many guesses are left; surface it so
+        // the user knows when to request a fresh code.
+        final left = data['attempts_remaining'];
+        if (left is int) {
+          return ServerFailure(
+            '$message ($left ${left == 1 ? 'attempt' : 'attempts'} left)',
+          );
+        }
+        return ServerFailure(message);
+      }
+    }
   }
   return ServerFailure(e.toString());
 }
@@ -120,6 +140,55 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await remoteDataSource.forgotPassword(email);
       return const Right(null);
+    } catch (e) {
+      return Left(_classifyError(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> verifyResetCode(
+    String email,
+    String code,
+  ) async {
+    try {
+      final token = await remoteDataSource.verifyResetCode(email, code);
+      return Right(token);
+    } catch (e) {
+      return Left(_classifyError(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetPassword(
+    String email,
+    String resetToken,
+    String newPassword,
+  ) async {
+    try {
+      await remoteDataSource.resetPassword(email, resetToken, newPassword);
+      return const Right(null);
+    } catch (e) {
+      return Left(_classifyError(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    bool logoutOtherDevices = true,
+  }) async {
+    try {
+      final result = await remoteDataSource.changePassword(
+        oldPassword,
+        newPassword,
+        logoutOtherDevices: logoutOtherDevices,
+      );
+      final newToken = result['access_token']?.toString();
+      if (newToken == null || newToken.isEmpty) {
+        return const Left(ServerFailure('No access token returned'));
+      }
+      return Right(newToken);
     } catch (e) {
       return Left(_classifyError(e));
     }

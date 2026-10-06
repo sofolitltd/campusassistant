@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../data/models/career_reminder.dart';
 import '../providers/career_reminder_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class RemindersListTab extends ConsumerWidget {
   const RemindersListTab({super.key});
@@ -15,16 +16,24 @@ class RemindersListTab extends ConsumerWidget {
 
     return remindersAsync.when(
       data: (reminders) {
-        final upcoming = reminders.where((r) => r.status == CareerReminderStatus.pending).toList();
-        final past = reminders.where((r) => r.status != CareerReminderStatus.pending).toList();
+        final upcoming = reminders
+            .where((r) => r.status == CareerReminderStatus.pending)
+            .toList();
+        final past = reminders
+            .where((r) => r.status != CareerReminderStatus.pending)
+            .toList();
 
         if (reminders.isEmpty) {
           return Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
-                Icon(LucideIcons.bell, size: 48, color: Theme.of(context).colorScheme.outline),
-                const SizedBox(height: 12),
+                Icon(
+                  LucideIcons.bell,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+                const SizedBox(height: Spacing.md),
                 const Text('No reminders yet'),
               ],
             ),
@@ -32,15 +41,17 @@ class RemindersListTab extends ConsumerWidget {
         }
 
         return ListView(
-          padding: const EdgeInsets.only(top: 8, bottom: 80),
+          padding: const EdgeInsets.only(top: Spacing.sm, bottom: 80),
           children: [
             if (upcoming.isNotEmpty) ...[
               const _SectionHeader('Upcoming'),
-              for (final reminder in upcoming) _ReminderTile(reminder: reminder, ref: ref),
+              for (final reminder in upcoming)
+                _ReminderTile(reminder: reminder, ref: ref),
             ],
             if (past.isNotEmpty) ...[
               const _SectionHeader('Past'),
-              for (final reminder in past) _ReminderTile(reminder: reminder, ref: ref),
+              for (final reminder in past)
+                _ReminderTile(reminder: reminder, ref: ref),
             ],
           ],
         );
@@ -58,8 +69,18 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(label, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.md,
+        Spacing.lg,
+        Spacing.xs,
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
     );
   }
 }
@@ -79,17 +100,23 @@ class _ReminderTile extends StatelessWidget {
       background: Container(
         color: Theme.of(context).colorScheme.errorContainer,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: Spacing.xl),
         child: const Icon(Icons.cancel_outlined),
       ),
-      onDismissed: (_) => ref.read(careerReminderActionsProvider).cancelReminder(reminder.id),
+      onDismissed: (_) =>
+          ref.read(careerReminderActionsProvider).cancelReminder(reminder.id),
       child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        margin: const EdgeInsets.symmetric(
+          horizontal: Spacing.lg,
+          vertical: Spacing.xs,
+        ),
         child: ListTile(
           leading: Icon(
-            reminder.status == CareerReminderStatus.sent ? Icons.notifications_active : Icons.notifications_outlined,
+            reminder.status == CareerReminderStatus.sent
+                ? Icons.notifications_active
+                : Icons.notifications_outlined,
           ),
-          title: Text(reminder.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+          title: Text(reminder.title, maxLines: 1, overflow: .ellipsis),
           subtitle: Text(_formatDateTime(reminder.remindAt)),
           trailing: reminder.status != CareerReminderStatus.pending
               ? Chip(label: Text(reminder.status.name.toUpperCase()))

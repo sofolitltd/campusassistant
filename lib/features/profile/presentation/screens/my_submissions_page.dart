@@ -8,6 +8,8 @@ import '/features/study/widgets/content_card.dart';
 import '/features/study/data/models/content_model.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/utils/constants.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class MySubmissionsPage extends ConsumerWidget {
   const MySubmissionsPage({super.key});
@@ -36,7 +38,7 @@ class MySubmissionsPage extends ConsumerWidget {
       batch: null,
       batchId: null,
       lessonNo: null,
-      uploaderUid: user.uid,
+      createdById: user.uid,
       status: null,
       limit: kDefaultPageSize,
       offset: null,
@@ -51,7 +53,7 @@ class MySubmissionsPage extends ConsumerWidget {
         batch: params.batch,
         batchId: params.batchId,
         lessonNo: params.lessonNo,
-        uploaderUid: params.uploaderUid,
+        createdById: params.createdById,
         status: params.status,
         limit: params.limit,
         offset: params.offset,
@@ -65,22 +67,28 @@ class MySubmissionsPage extends ConsumerWidget {
           if (resources.isEmpty) {
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Icon(
                     LucideIcons.cloudUpload,
                     size: 64,
-                    color: Colors.grey.shade300,
+                    color: context.colors.borderStrong,
                   ),
                   const SizedBox(height: Spacing.lg),
                   Text(
                     'No submissions yet',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                    style: TextStyle(
+                      color: context.colors.textMuted,
+                      fontSize: FontSizeToken.lg,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   Text(
                     'Resources you upload will appear here',
-                    style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                    style: TextStyle(
+                      color: context.colors.textSubtle,
+                      fontSize: FontSizeToken.md,
+                    ),
                   ),
                 ],
               ),
@@ -88,7 +96,7 @@ class MySubmissionsPage extends ConsumerWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             itemCount: resources.length,
             separatorBuilder: (context, index) =>
                 const SizedBox(height: Spacing.lg),
@@ -111,7 +119,8 @@ class MySubmissionsPage extends ConsumerWidget {
                     .split(' ')[0],
                 fileUrl: resource.fileUrl,
                 imageUrl: resource.thumbnailUrl,
-                uploader: resource.uploaderName,
+                uploader: resource.creator ?? '',
+                creatorId: resource.creatorId,
                 departmentId: resource.departmentId,
                 metadata: {
                   ...resource.metadata,

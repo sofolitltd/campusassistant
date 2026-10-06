@@ -31,5 +31,24 @@ abstract class AuthRepository {
 
   Future<Either<Failure, void>> forgotPassword(String email);
 
+  /// Exchanges the emailed 6-digit code for a single-use reset token.
+  Future<Either<Failure, String>> verifyResetCode(String email, String code);
+
+  /// Consumes the reset token and sets the new password.
+  Future<Either<Failure, void>> resetPassword(
+    String email,
+    String resetToken,
+    String newPassword,
+  );
+
   Future<Either<Failure, String>> refreshAccessToken();
+
+  /// Changes the password for the currently authenticated user.
+  /// Optionally invalidates all other sessions via [logoutOtherDevices].
+  /// Returns an updated access token on success.
+  Future<Either<Failure, String>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    bool logoutOtherDevices = true,
+  });
 }

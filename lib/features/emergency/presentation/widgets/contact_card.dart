@@ -4,6 +4,10 @@ import 'package:share_plus/share_plus.dart';
 
 import '/features/emergency/domain/entities/emergency_contact.dart';
 import '/widgets/open_app.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ContactCard extends StatelessWidget {
   final EmergencyContact contact;
@@ -12,17 +16,12 @@ class ContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-          width: 1,
-        ),
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
+        border: Border.all(color: context.colors.border, width: 1),
       ),
       child: Row(
         crossAxisAlignment: .end,
@@ -30,8 +29,8 @@ class ContactCard extends StatelessWidget {
           // Contact Info
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
                 Row(
                   children: [
@@ -39,17 +38,21 @@ class ContactCard extends StatelessWidget {
                       child: Text(
                         contact.title,
                         style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontWeight: .bold,
+                          fontSize: FontSizeToken.lg,
                           letterSpacing: -0.2,
                         ),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                       ),
                     ),
                     if (contact.isVerified) ...[
-                      const SizedBox(width: 4),
-                      const Icon(Icons.verified, color: Colors.blue, size: 14),
+                      const SizedBox(width: Spacing.xs),
+                      Icon(
+                        Icons.verified,
+                        color: context.colors.info,
+                        size: 14,
+                      ),
                     ],
                   ],
                 ),
@@ -57,20 +60,20 @@ class ContactCard extends StatelessWidget {
                   Text(
                     contact.designation!,
                     style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      color: context.colors.textSubtle,
+                      fontSize: FontSizeToken.sm,
+                      fontWeight: .w500,
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
-                const SizedBox(height: 2),
+                const SizedBox(height: Spacing.xxs),
                 Text(
                   contact.phone,
                   style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                    color: context.colors.success,
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: .bold,
                   ),
                 ),
               ],
@@ -79,7 +82,7 @@ class ContactCard extends StatelessWidget {
 
           // Actions
           Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               _ActionButton(
                 icon: LucideIcons.share2,
@@ -91,13 +94,13 @@ class ContactCard extends StatelessWidget {
                     ),
                   );
                 },
-                color: Colors.grey.shade400,
+                color: context.colors.textSubtle,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               _ActionButton(
                 icon: LucideIcons.phone,
                 onPressed: () => OpenApp.withNumber(contact.phone),
-                color: Colors.green,
+                color: context.colors.success,
                 isPrimary: true,
               ),
             ],
@@ -125,20 +128,20 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(Spacing.md),
         decoration: BoxDecoration(
           color: isPrimary ? color.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: isPrimary
               ? null
-              : Border.all(color: Colors.grey.shade200, width: 1),
+              : Border.all(color: context.colors.border, width: 1),
         ),
         child: Icon(
           icon,
           size: 18,
-          color: isPrimary ? color : Colors.grey.shade600,
+          color: isPrimary ? color : context.colors.textMuted,
         ),
       ),
     );

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'transport_model.dart';
@@ -9,6 +9,7 @@ part of 'transport_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $TransportModelCopyWith<TransportModel> get copyWith => _$TransportModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.image, image) || other.image == image)&&(identical(other.time, time) || other.time == time));
+  final _this = this as TransportModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransportModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.image, _this.image) || other.image == _this.image)&&(identical(other.time, _this.time) || other.time == _this.time));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,image,time);
+int get hashCode {
+  final _this = this as TransportModel;
+  return Object.hash(runtimeType,_this.id,_this.title,_this.image,_this.time);
+}
 
 @override
 String toString() {
-  return 'TransportModel(id: $id, title: $title, image: $image, time: $time)';
+  final _this = this as TransportModel;
+  return 'TransportModel(id: ${_this.id}, title: ${_this.title}, image: ${_this.image}, time: ${_this.time})';
 }
 
 
@@ -66,7 +72,7 @@ class _$TransportModelCopyWithImpl<$Res>
 /// Create a copy of TransportModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? image = null,Object? time = null,}) {
-  return _then(_self.copyWith(
+  return _then(TransportModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
@@ -233,16 +239,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.image, image) || other.image == image)&&(identical(other.time, time) || other.time == time));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.image, image) || other.image == image)&&(identical(other.time, time) || other.time == time));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,image,time);
+int get hashCode {
+    return Object.hash(runtimeType,id,title,image,time);
+}
 
 @override
 String toString() {
-  return 'TransportModel(id: $id, title: $title, image: $image, time: $time)';
+    return 'TransportModel(id: $id, title: $title, image: $image, time: $time)';
 }
 
 

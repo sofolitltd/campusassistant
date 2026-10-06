@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
 class CommonTextFieldWidget extends StatefulWidget {
@@ -18,6 +18,7 @@ class CommonTextFieldWidget extends StatefulWidget {
     this.textInputAction,
     this.onFieldSubmitted,
     this.autofillHints,
+    this.inputFormatters,
   });
 
   final TextEditingController controller;
@@ -33,6 +34,7 @@ class CommonTextFieldWidget extends StatefulWidget {
   final TextInputAction? textInputAction;
   final Function(String)? onFieldSubmitted;
   final Iterable<String>? autofillHints;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   State<CommonTextFieldWidget> createState() => _CommonTextFieldWidgetState();
@@ -52,12 +54,12 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
     final cs = Theme.of(context).colorScheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         Text(
           widget.heading,
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
             color: cs.onSurfaceVariant,
           ),
         ),
@@ -68,6 +70,7 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
           textInputAction: widget.textInputAction ?? TextInputAction.next,
           onFieldSubmitted: widget.onFieldSubmitted,
           keyboardType: widget.keyboardType,
+          inputFormatters: widget.inputFormatters,
           textCapitalization: widget.textCapitalization == null
               ? TextCapitalization.none
               : widget.textCapitalization!,
@@ -76,26 +79,8 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
           validator: (value) => widget.validator(value),
           style: TextStyle(color: widget.enabled! ? null : cs.onSurfaceVariant),
           decoration: InputDecoration(
-            isDense: true,
             filled: widget.enabled! ? false : true,
-            visualDensity: VisualDensity.compact,
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 14,
-              horizontal: Spacing.sm,
-            ),
             hintText: widget.hintText,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(RadiusToken.sm),
-              borderSide: BorderSide(color: cs.outline, width: 0.5),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(RadiusToken.sm),
-              borderSide: BorderSide(color: cs.primary, width: 1),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(RadiusToken.sm),
-              borderSide: BorderSide(color: cs.outlineVariant, width: 0.5),
-            ),
             suffixIcon: widget.obscureText!
                 ? IconButton(
                     style: IconButton.styleFrom(

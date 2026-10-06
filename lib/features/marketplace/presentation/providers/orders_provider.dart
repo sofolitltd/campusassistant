@@ -19,17 +19,29 @@ final ordersListProvider = FutureProvider<List<Order>>((ref) async {
   return data.map((e) => Order.fromJson(e as Map<String, dynamic>)).toList();
 });
 
-final orderDetailsProvider =
-    FutureProvider.family<Order, String>((ref, orderId) async {
+final orderDetailsProvider = FutureProvider.family<Order, String>((
+  ref,
+  orderId,
+) async {
   final apiClient = ref.watch(apiClientProvider);
   final response = await apiClient.get('/my/orders/$orderId');
   return Order.fromJson(response.data as Map<String, dynamic>);
 });
 
+/// Buyer self-cancel (unpaid, or cash on delivery before it ships).
+Future<void> cancelOrder(WidgetRef ref, String orderId) async {
+  final apiClient = ref.read(apiClientProvider);
+  await apiClient.post('/my/orders/$orderId/cancel');
+  ref.invalidate(orderDetailsProvider(orderId));
+  ref.invalidate(ordersListProvider);
+}
+
 /// Orders containing at least one item sold by the given merchant — the
 /// seller-facing view, distinct from `ordersListProvider` (the buyer view).
-final merchantOrdersProvider =
-    FutureProvider.family<List<Order>, String>((ref, merchantId) async {
+final merchantOrdersProvider = FutureProvider.family<List<Order>, String>((
+  ref,
+  merchantId,
+) async {
   final apiClient = ref.watch(apiClientProvider);
   final response = await apiClient.get('/my/merchants/$merchantId/orders');
   final rawData = response.data;
@@ -100,7 +112,9 @@ Future<CheckoutResult> checkout(
 }
 
 Future<Map<String, dynamic>> createMarketplacePayment(
-    WidgetRef ref, String orderId) async {
+  WidgetRef ref,
+  String orderId,
+) async {
   final apiClient = ref.read(apiClientProvider);
   final response = await apiClient.post(
     '/payments/marketplace/create',
@@ -116,8 +130,7 @@ Future<Map<String, dynamic>> createMarketplacePayment(
   return response.data as Map<String, dynamic>;
 }
 
-Future<void> executeMarketplacePayment(
-    WidgetRef ref, String paymentId) async {
+Future<void> executeMarketplacePayment(WidgetRef ref, String paymentId) async {
   final apiClient = ref.read(apiClientProvider);
   await apiClient.post(
     '/payments/marketplace/execute',

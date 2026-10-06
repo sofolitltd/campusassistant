@@ -13,6 +13,9 @@ import '/features/staff/domain/entities/staff.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class StaffCard extends StatelessWidget {
   final Staff staff;
@@ -24,11 +27,11 @@ class StaffCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.05),
+            color: context.colors.textSubtle.withValues(alpha: 0.05),
             spreadRadius: 4,
             blurRadius: 8,
             offset: const Offset(0, 4),
@@ -36,17 +39,17 @@ class StaffCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(Spacing.md),
         child: Stack(
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 _StaffImage(imageUrl: staff.imageUrl),
-                const SizedBox(width: 14),
+                const SizedBox(width: Spacing.lg),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Row(
                         children: [
@@ -54,38 +57,35 @@ class StaffCard extends StatelessWidget {
                             Text(
                               '${staff.serial}. ',
                               style: Theme.of(context).textTheme.titleMedium!
-                                  .copyWith(fontWeight: FontWeight.bold),
+                                  .copyWith(fontWeight: .bold),
                             ),
                           Expanded(
                             child: Text(
                               staff.name,
                               style: Theme.of(context).textTheme.titleMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    height: 1.2,
-                                  ),
+                                  .copyWith(fontWeight: .bold, height: 1.2),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: .ellipsis,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Spacing.xs),
                       Text(
                         staff.post,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade600,
+                          fontWeight: .w600,
+                          color: context.colors.textMuted,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: Spacing.md),
                       if (staff.phone.isNotEmpty)
                         Text(
                           staff.phone,
                           style: Theme.of(context).textTheme.titleMedium!
                               .copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontWeight: .bold,
+                                fontSize: FontSizeToken.base,
                               ),
                         ),
                     ],
@@ -139,9 +139,9 @@ class StaffCard extends StatelessWidget {
                         debugPrint('Error sharing profile: $e');
                       }
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       LucideIcons.share2,
-                      color: Colors.black,
+                      color: context.colors.text,
                       size: 16,
                     ),
                   ),
@@ -153,9 +153,9 @@ class StaffCard extends StatelessWidget {
                     onPressed: () async {
                       OpenApp.withNumber(staff.phone);
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       LucideIcons.phone,
-                      color: Colors.white,
+                      color: context.colors.onPrimary,
                       size: 16,
                     ),
                   ),
@@ -180,11 +180,11 @@ class _StaffImage extends StatelessWidget {
         height: 95,
         width: 85,
         decoration: BoxDecoration(
-          color: Colors.teal.shade50,
+          color: context.colors.primary,
           borderRadius: BorderRadius.circular(RadiusToken.sm),
           image: const DecorationImage(
             image: AssetImage('assets/images/pp_placeholder.png'),
-            fit: BoxFit.cover,
+            fit: .cover,
           ),
         ),
       );
@@ -193,7 +193,7 @@ class _StaffImage extends StatelessWidget {
       height: 95,
       width: 85,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: context.colors.surfaceAlt),
         borderRadius: BorderRadius.circular(RadiusToken.sm),
       ),
       child: CachedNetworkImage(
@@ -202,18 +202,18 @@ class _StaffImage extends StatelessWidget {
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(RadiusToken.sm),
-            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+            image: DecorationImage(image: imageProvider, fit: .cover),
           ),
         ),
         progressIndicatorBuilder: (_, _, _) =>
             const CupertinoActivityIndicator(),
         errorWidget: (_, _, _) => Container(
           decoration: BoxDecoration(
-            color: Colors.teal.shade50,
+            color: context.colors.primary,
             borderRadius: BorderRadius.circular(RadiusToken.sm),
             image: const DecorationImage(
               image: AssetImage('assets/images/pp_placeholder.png'),
-              fit: BoxFit.cover,
+              fit: .cover,
             ),
           ),
         ),

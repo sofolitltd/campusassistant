@@ -14,10 +14,9 @@ Widget buildSectionTitle(BuildContext context, String title) {
     padding: const EdgeInsets.only(bottom: Spacing.md),
     child: Text(
       title,
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            letterSpacing: 1,
-            fontWeight: FontWeight.w900,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleSmall?.copyWith(letterSpacing: 1, fontWeight: .w900),
     ),
   );
 }
@@ -33,7 +32,7 @@ Widget buildCustomField(
   return Padding(
     padding: const EdgeInsets.only(bottom: Spacing.md),
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(label, style: Theme.of(context).textTheme.labelMedium),
         const SizedBox(height: Spacing.xs),
@@ -42,18 +41,6 @@ Widget buildCustomField(
           validator: validator,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, size: 18),
-            border: OutlineInputBorder(
-              borderRadius: RadiusToken.circular(RadiusToken.sm),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: RadiusToken.circular(RadiusToken.sm),
-              borderSide: BorderSide(color: cs.outlineVariant),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: RadiusToken.circular(RadiusToken.sm),
-              borderSide: BorderSide(color: cs.primary, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.md),
             filled: true,
             fillColor: cs.surface,
           ),
@@ -90,15 +77,17 @@ Widget buildModernDateTile(
             const SizedBox(width: Spacing.md),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(label, style: Theme.of(context).textTheme.labelSmall),
                   Text(
-                    date == null ? 'Not Set' : DateFormat('MMM dd, yyyy - HH:mm').format(date),
+                    date == null
+                        ? 'Not Set'
+                        : DateFormat('MMM dd, yyyy - HH:mm').format(date),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: date == null ? cs.outline : cs.onSurface,
-                        ),
+                      fontWeight: .bold,
+                      color: date == null ? cs.outline : cs.onSurface,
+                    ),
                   ),
                 ],
               ),
@@ -128,7 +117,9 @@ Widget buildEmptyAttachmentPlaceholder(BuildContext context) {
         Text(
           'No files attached',
           textAlign: .center,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(fontWeight: .bold),
         ),
       ],
     ),
@@ -143,11 +134,13 @@ Widget buildLoadingOverlay(BuildContext context, double progress) {
       child: Padding(
         padding: const EdgeInsets.all(Spacing.xxxl),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text(
               'Processing Job Entry...',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: .w900),
             ),
             const SizedBox(height: Spacing.xs),
             LinearProgressIndicator(
@@ -160,7 +153,9 @@ Widget buildLoadingOverlay(BuildContext context, double progress) {
             const SizedBox(height: Spacing.xs),
             Text(
               '${(progress * 100).toInt()}%',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(fontWeight: .bold),
             ),
           ],
         ),

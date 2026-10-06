@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import '/core/theme/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/features/banner/domain/entities/banner.dart' as entity show Banner;
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class ImageCarousel extends StatefulWidget {
   final List<entity.Banner> images;
@@ -94,13 +97,14 @@ class _ImageCarouselState extends State<ImageCarousel> {
       onTap: () => _handleBannerTap(banner),
       child: CachedNetworkImage(
         imageUrl: ApiEndpoints.resolveImageUrl(banner.imageUrl),
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(color: Colors.grey.shade200),
+        fit: .cover,
+        placeholder: (context, url) =>
+            Container(color: context.colors.surfaceAlt),
         errorWidget: (context, url, error) => Container(
-          color: Colors.grey.shade100,
+          color: context.colors.surfaceAlt,
           child: Icon(
             Icons.broken_image_outlined,
-            color: Colors.grey.shade400,
+            color: context.colors.textSubtle,
             size: 32,
           ),
         ),
@@ -116,27 +120,24 @@ class _ImageCarouselState extends State<ImageCarousel> {
 
     return Container(
       constraints: const BoxConstraints(minHeight: 160),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      // Vertical spacing belongs to the page; only the side inset is local.
+      margin: const EdgeInsets.symmetric(horizontal: Spacing.lg),
       child: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(RadiusToken.md),
-              border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white10
-                    : Colors.grey.shade200,
-              ),
+              borderRadius: BorderRadius.circular(RadiusToken.lg),
+              border: Border.all(color: context.colors.border),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: context.colors.shadow,
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(RadiusToken.md),
+              borderRadius: BorderRadius.circular(RadiusToken.lg),
               child: SizedBox(
                 width: double.infinity,
                 height: 160,
@@ -164,18 +165,20 @@ class _ImageCarouselState extends State<ImageCarousel> {
               right: 12,
               bottom: 12,
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: List.generate(widget.images.length, (index) {
                   final isSelected = _currentPage == index + 1;
                   return GestureDetector(
                     onTap: () => _onIndicatorTap(index),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: Spacing.xs,
+                      ),
                       width: isSelected ? 20 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                         color: isSelected ? Colors.white : Colors.white54,
                       ),
                     ),

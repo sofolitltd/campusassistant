@@ -18,6 +18,9 @@ import '/core/widgets/custom_header_layout.dart';
 import '/routes/app_route.dart';
 import '../../data/models/merchant.dart';
 import '../providers/marketplace_provider.dart';
+import '../providers/seller_provider.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 /// Lets a student apply to become a marketplace merchant. Submits with
 /// status "pending" server-side; an admin reviews and approves/rejects it
@@ -28,7 +31,8 @@ class MerchantApplyScreen extends ConsumerStatefulWidget {
   const MerchantApplyScreen({super.key});
 
   @override
-  ConsumerState<MerchantApplyScreen> createState() => _MerchantApplyScreenState();
+  ConsumerState<MerchantApplyScreen> createState() =>
+      _MerchantApplyScreenState();
 }
 
 const _businessTypes = [
@@ -78,7 +82,10 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
   }
 
   Future<File?> _pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     return picked == null ? null : File(picked.path);
   }
 
@@ -113,15 +120,23 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_studentIdFile == null || _nidFile == null) {
-      Fluttertoast.showToast(msg: 'Please upload both your Student ID and NID for verification.');
+      Fluttertoast.showToast(
+        msg: 'Please upload both your Student ID and NID for verification.',
+      );
       return;
     }
 
     setState(() => _submitting = true);
     try {
       final logoUrl = await _uploadIfPicked(_logoFile, 'merchants');
-      final studentIdUrl = await _uploadPrivateIfPicked(_studentIdFile, 'merchant-verification');
-      final nidUrl = await _uploadPrivateIfPicked(_nidFile, 'merchant-verification');
+      final studentIdUrl = await _uploadPrivateIfPicked(
+        _studentIdFile,
+        'merchant-verification',
+      );
+      final nidUrl = await _uploadPrivateIfPicked(
+        _nidFile,
+        'merchant-verification',
+      );
       await applyForMerchant(
         ref,
         businessName: _businessNameController.text.trim(),
@@ -143,8 +158,12 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
       Fluttertoast.showToast(msg: 'Application submitted. Thanks!');
       setState(() => _addingNew = false);
     } on DioException catch (e) {
-      final message = (e.response?.data is Map) ? e.response?.data['error'] as String? : null;
-      Fluttertoast.showToast(msg: message ?? 'Could not submit. Please try again.');
+      final message = (e.response?.data is Map)
+          ? e.response?.data['error'] as String?
+          : null;
+      Fluttertoast.showToast(
+        msg: message ?? 'Could not submit. Please try again.',
+      );
     } catch (e) {
       Fluttertoast.showToast(msg: 'Could not submit. Please try again.');
     } finally {
@@ -174,7 +193,10 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
     return ListView(
       padding: const EdgeInsets.all(Spacing.lg),
       children: [
-        const Text('Your Businesses', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const Text(
+          'Your Businesses',
+          style: TextStyle(fontWeight: .bold, fontSize: FontSizeToken.lg),
+        ),
         const SizedBox(height: Spacing.md),
         ...merchants.map(
           (m) => Padding(
@@ -193,12 +215,11 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
         OutlinedButton.icon(
           onPressed: () => setState(() => _addingNew = true),
           icon: const Icon(LucideIcons.plus, size: 18),
-          label: const Text('Add Another Business'),
+          label: const Text('Add another business'),
           style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-            side: BorderSide(color: colors.primaryColor),
-            foregroundColor: colors.primaryColor,
-            shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.md)),
+            minimumSize: const Size(double.infinity, ControlToken.height),
+            side: BorderSide(color: colors.primary),
+            foregroundColor: colors.primary,
           ),
         ),
       ],
@@ -213,6 +234,7 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
       child: ListView(
         padding: const EdgeInsets.all(Spacing.lg),
         children: [
+          const _PromoBanner(),
           if (showBackButton) ...[
             InkWell(
               onTap: () => setState(() => _addingNew = false),
@@ -220,11 +242,22 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
-                    Icon(LucideIcons.arrowLeft, size: 16, color: colors.primaryColor),
+                    Icon(
+                      LucideIcons.arrowLeft,
+                      size: 16,
+                      color: colors.primary,
+                    ),
                     const SizedBox(width: Spacing.xs),
-                    Text('Back to My Businesses', style: TextStyle(color: colors.primaryColor, fontWeight: FontWeight.w600, fontSize: 13)),
+                    Text(
+                      'Back to My Businesses',
+                      style: TextStyle(
+                        color: colors.primary,
+                        fontWeight: .w600,
+                        fontSize: FontSizeToken.md,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -251,13 +284,18 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
               TextFormField(
                 controller: _businessNameController,
                 decoration: const InputDecoration(labelText: 'Business Name'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: Spacing.md),
               DropdownButtonFormField<String>(
                 initialValue: _businessType,
-                decoration: const InputDecoration(labelText: 'Type of Business'),
-                items: _businessTypes.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Type of Business',
+                ),
+                items: _businessTypes
+                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                    .toList(),
                 onChanged: (v) => setState(() => _businessType = v),
                 validator: (v) => v == null ? 'Required' : null,
               ),
@@ -269,7 +307,8 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
                   labelText: 'Description',
                   alignLabelWithHint: true,
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
               ),
             ],
           ),
@@ -280,33 +319,39 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
             children: [
               TextFormField(
                 controller: _phoneController,
-                keyboardType: TextInputType.phone,
+                keyboardType: .phone,
                 decoration: const InputDecoration(labelText: 'Contact Phone'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: Spacing.md),
               TextFormField(
                 controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: .emailAddress,
                 decoration: const InputDecoration(labelText: 'Contact Email'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: Spacing.md),
               Container(
                 padding: const EdgeInsets.all(Spacing.sm),
                 decoration: BoxDecoration(
-                  color: colors.infoColor.withValues(alpha: 0.08),
+                  color: colors.info.withValues(alpha: 0.08),
                   borderRadius: RadiusToken.circular(RadiusToken.sm),
                 ),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
-                    Icon(LucideIcons.shield, size: 14, color: colors.infoColor),
+                    Icon(LucideIcons.shield, size: 14, color: colors.info),
                     const SizedBox(width: Spacing.xs),
                     Expanded(
                       child: Text(
                         'Only visible to admins — never shown on your public storefront.',
-                        style: TextStyle(fontSize: 11.5, color: colors.infoColor, height: 1.3),
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: colors.info,
+                          height: 1.3,
+                        ),
                       ),
                     ),
                   ],
@@ -322,33 +367,44 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _payoutMethod,
                 decoration: const InputDecoration(labelText: 'Payout Method'),
-                items: _payoutMethods.map((m) => DropdownMenuItem(value: m.$1, child: Text(m.$2))).toList(),
+                items: _payoutMethods
+                    .map(
+                      (m) => DropdownMenuItem(value: m.$1, child: Text(m.$2)),
+                    )
+                    .toList(),
                 onChanged: (v) => setState(() => _payoutMethod = v),
                 validator: (v) => v == null ? 'Required' : null,
               ),
               const SizedBox(height: Spacing.md),
               TextFormField(
                 controller: _payoutAccountController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Account / Wallet Number'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                keyboardType: .phone,
+                decoration: const InputDecoration(
+                  labelText: 'Account / Wallet Number',
+                ),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: Spacing.md),
               Container(
                 padding: const EdgeInsets.all(Spacing.sm),
                 decoration: BoxDecoration(
-                  color: colors.infoColor.withValues(alpha: 0.08),
+                  color: colors.info.withValues(alpha: 0.08),
                   borderRadius: RadiusToken.circular(RadiusToken.sm),
                 ),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
-                    Icon(LucideIcons.shield, size: 14, color: colors.infoColor),
+                    Icon(LucideIcons.shield, size: 14, color: colors.info),
                     const SizedBox(width: Spacing.xs),
                     Expanded(
                       child: Text(
                         'Where your commission-adjusted earnings are sent. Only visible to admins.',
-                        style: TextStyle(fontSize: 11.5, color: colors.infoColor, height: 1.3),
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: colors.info,
+                          height: 1.3,
+                        ),
                       ),
                     ),
                   ],
@@ -363,14 +419,16 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
             children: [
               TextFormField(
                 controller: _websiteController,
-                keyboardType: TextInputType.url,
+                keyboardType: .url,
                 decoration: const InputDecoration(labelText: 'Website'),
               ),
               const SizedBox(height: Spacing.md),
               TextFormField(
                 controller: _socialMediaController,
-                keyboardType: TextInputType.url,
-                decoration: const InputDecoration(labelText: 'Facebook / Social Media Link'),
+                keyboardType: .url,
+                decoration: const InputDecoration(
+                  labelText: 'Facebook / Social Media Link',
+                ),
               ),
             ],
           ),
@@ -383,18 +441,26 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
                 padding: const EdgeInsets.all(Spacing.sm),
                 margin: const EdgeInsets.only(bottom: Spacing.md),
                 decoration: BoxDecoration(
-                  color: colors.warningColor.withValues(alpha: 0.1),
+                  color: colors.warning.withValues(alpha: 0.1),
                   borderRadius: RadiusToken.circular(RadiusToken.sm),
                 ),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
-                    Icon(LucideIcons.triangleAlert, size: 14, color: colors.warningColor),
+                    Icon(
+                      LucideIcons.triangleAlert,
+                      size: 14,
+                      color: colors.warning,
+                    ),
                     const SizedBox(width: Spacing.xs),
                     Expanded(
                       child: Text(
                         'Required so an admin can confirm you\'re a genuine student before approving.',
-                        style: TextStyle(fontSize: 11.5, color: Colors.grey.shade700, height: 1.3),
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: context.colors.textMuted,
+                          height: 1.3,
+                        ),
                       ),
                     ),
                   ],
@@ -425,10 +491,12 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
           ElevatedButton.icon(
             onPressed: _submitting ? null : _submit,
             icon: _submitting
-                ? const SizedBox(
+                ? SizedBox(
                     height: 16,
                     width: 16,
-                    child: CupertinoActivityIndicator(color: Colors.white),
+                    child: CupertinoActivityIndicator(
+                      color: context.colors.onPrimary,
+                    ),
                   )
                 : const Icon(LucideIcons.send, size: 18),
             label: Text(_submitting ? 'Submitting...' : 'Submit Application'),
@@ -448,16 +516,15 @@ class _MerchantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = Theme.of(context).appColors;
     final (icon, color, label) = switch (merchant.status) {
-      'approved' => (LucideIcons.circleCheck, colors.successColor, 'Approved'),
-      'rejected' => (LucideIcons.circleX, colors.destructiveColor, 'Rejected'),
-      _ => (LucideIcons.clock, colors.warningColor, 'Pending'),
+      'approved' => (LucideIcons.circleCheck, colors.success, 'Approved'),
+      'rejected' => (LucideIcons.circleX, colors.danger, 'Rejected'),
+      _ => (LucideIcons.clock, colors.warning, 'Pending'),
     };
 
     return Material(
-      color: isDark ? Theme.of(context).cardColor : Colors.white,
+      color: context.colors.surface,
       borderRadius: RadiusToken.circular(RadiusToken.lg),
       child: InkWell(
         onTap: onTap,
@@ -466,7 +533,7 @@ class _MerchantCard extends StatelessWidget {
           padding: const EdgeInsets.all(Spacing.md),
           decoration: BoxDecoration(
             borderRadius: RadiusToken.circular(RadiusToken.lg),
-            border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+            border: Border.all(color: context.colors.border),
           ),
           child: Row(
             children: [
@@ -477,7 +544,7 @@ class _MerchantCard extends StatelessWidget {
                         ApiEndpoints.resolveImageUrl(merchant.logoUrl),
                         width: 52,
                         height: 52,
-                        fit: BoxFit.cover,
+                        fit: .cover,
                         errorBuilder: (_, _, _) => _fallbackLogo(colors),
                       )
                     : _fallbackLogo(colors),
@@ -485,27 +552,41 @@ class _MerchantCard extends StatelessWidget {
               const SizedBox(width: Spacing.md),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       merchant.businessName,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: .bold,
+                        fontSize: FontSizeToken.base,
+                      ),
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Spacing.xs),
                     Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: .min,
                       children: [
                         Icon(icon, size: 12, color: color),
-                        const SizedBox(width: 4),
-                        Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+                        const SizedBox(width: Spacing.xs),
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: FontSizeToken.xs,
+                            fontWeight: .w600,
+                            color: color,
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              Icon(LucideIcons.chevronRight, size: 18, color: Colors.grey.shade400),
+              Icon(
+                LucideIcons.chevronRight,
+                size: 18,
+                color: context.colors.textSubtle,
+              ),
             ],
           ),
         ),
@@ -514,11 +595,15 @@ class _MerchantCard extends StatelessWidget {
   }
 
   Widget _fallbackLogo(AppColors colors) => Container(
-        width: 52,
-        height: 52,
-        color: colors.surfaceAltBg,
-        child: Icon(LucideIcons.store, size: 22, color: colors.primaryColor.withValues(alpha: 0.6)),
-      );
+    width: 52,
+    height: 52,
+    color: colors.surfaceAltBg,
+    child: Icon(
+      LucideIcons.store,
+      size: 22,
+      color: colors.primary.withValues(alpha: 0.6),
+    ),
+  );
 }
 
 class _IntroBanner extends StatelessWidget {
@@ -531,26 +616,30 @@ class _IntroBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(Spacing.lg),
       decoration: BoxDecoration(
-        color: colors.primaryColor.withValues(alpha: 0.08),
+        color: colors.primary.withValues(alpha: 0.08),
         borderRadius: RadiusToken.circular(RadiusToken.lg),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Container(
             padding: const EdgeInsets.all(Spacing.sm),
             decoration: BoxDecoration(
-              color: colors.primaryColor.withValues(alpha: 0.15),
+              color: colors.primary.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(LucideIcons.rocket, size: 20, color: colors.primaryColor),
+            child: Icon(LucideIcons.rocket, size: 20, color: colors.primary),
           ),
           const SizedBox(width: Spacing.md),
           Expanded(
             child: Text(
               'Sell your own products in the Campus Marketplace. An admin will '
               'review your application before you can start listing products.',
-              style: TextStyle(color: Colors.grey.shade700, height: 1.4, fontSize: 13),
+              style: TextStyle(
+                color: context.colors.textMuted,
+                height: 1.4,
+                fontSize: FontSizeToken.md,
+              ),
             ),
           ),
         ],
@@ -564,37 +653,43 @@ class _SectionCard extends StatelessWidget {
   final IconData icon;
   final List<Widget> children;
 
-  const _SectionCard({required this.title, required this.icon, required this.children});
+  const _SectionCard({
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = Theme.of(context).appColors;
 
     return Container(
       padding: const EdgeInsets.all(Spacing.lg),
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: RadiusToken.circular(RadiusToken.lg),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: colors.primaryColor),
+              Icon(icon, size: 16, color: colors.primary),
               const SizedBox(width: Spacing.xs),
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: const TextStyle(
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.base,
+                ),
               ),
             ],
           ),
@@ -611,7 +706,11 @@ class _LogoPicker extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onClear;
 
-  const _LogoPicker({required this.file, required this.onTap, required this.onClear});
+  const _LogoPicker({
+    required this.file,
+    required this.onTap,
+    required this.onClear,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -620,7 +719,7 @@ class _LogoPicker extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: .none,
         children: [
           Container(
             height: 96,
@@ -628,11 +727,18 @@ class _LogoPicker extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: colors.surfaceAltBg,
-              border: Border.all(color: colors.primaryColor.withValues(alpha: 0.4), width: 1.5),
+              border: Border.all(
+                color: colors.primary.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
             ),
             child: file != null
-                ? ClipOval(child: Image.file(file!, fit: BoxFit.cover))
-                : Icon(LucideIcons.store, size: 32, color: colors.primaryColor.withValues(alpha: 0.6)),
+                ? ClipOval(child: Image.file(file!, fit: .cover))
+                : Icon(
+                    LucideIcons.store,
+                    size: 32,
+                    color: colors.primary.withValues(alpha: 0.6),
+                  ),
           ),
           Positioned(
             bottom: 0,
@@ -640,16 +746,16 @@ class _LogoPicker extends StatelessWidget {
             child: GestureDetector(
               onTap: file != null ? onClear : onTap,
               child: Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(Spacing.sm),
                 decoration: BoxDecoration(
-                  color: colors.primaryColor,
+                  color: colors.primary,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: context.colors.onPrimary, width: 2),
                 ),
                 child: Icon(
                   file != null ? LucideIcons.x : LucideIcons.camera,
                   size: 14,
-                  color: Colors.white,
+                  color: context.colors.onPrimary,
                 ),
               ),
             ),
@@ -666,7 +772,12 @@ class _DocumentPicker extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onClear;
 
-  const _DocumentPicker({required this.label, required this.file, required this.onTap, required this.onClear});
+  const _DocumentPicker({
+    required this.label,
+    required this.file,
+    required this.onTap,
+    required this.onClear,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -677,41 +788,105 @@ class _DocumentPicker extends StatelessWidget {
       child: Container(
         height: 130,
         width: double.infinity,
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: .antiAlias,
         decoration: BoxDecoration(
           borderRadius: RadiusToken.circular(RadiusToken.md),
           color: colors.surfaceAltBg,
-          border: Border.all(color: file != null ? colors.primaryColor.withValues(alpha: 0.5) : Colors.grey.shade300),
+          border: Border.all(
+            color: file != null
+                ? colors.primary.withValues(alpha: 0.5)
+                : context.colors.borderStrong,
+          ),
         ),
         child: file != null
             ? Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.file(file!, fit: BoxFit.cover),
+                  Image.file(file!, fit: .cover),
                   Positioned(
                     top: 6,
                     right: 6,
                     child: GestureDetector(
                       onTap: onClear,
                       child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-                        child: const Icon(LucideIcons.x, size: 14, color: Colors.white),
+                        padding: const EdgeInsets.all(Spacing.xs),
+                        decoration: BoxDecoration(
+                          color: context.colors.textMuted,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          LucideIcons.x,
+                          size: 14,
+                          color: context.colors.onPrimary,
+                        ),
                       ),
                     ),
                   ),
                 ],
               )
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
-                  Icon(LucideIcons.upload, color: colors.primaryColor.withValues(alpha: 0.6)),
+                  Icon(
+                    LucideIcons.upload,
+                    color: colors.primary.withValues(alpha: 0.6),
+                  ),
                   const SizedBox(height: Spacing.xs),
-                  Text(label, style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 2),
-                  Text('Tap to upload', style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400)),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: context.colors.textMuted,
+                      fontWeight: .w600,
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.xxs),
+                  Text(
+                    'Tap to upload',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      color: context.colors.textSubtle,
+                    ),
+                  ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+/// Invites applicants with the running new-seller promotion, if there is one.
+class _PromoBanner extends ConsumerWidget {
+  const _PromoBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final promo = ref.watch(sellerPromoProvider).value;
+    if (promo == null || !promo.active) return const SizedBox.shrink();
+    final c = context.colors;
+    return Container(
+      margin: const EdgeInsets.only(bottom: Spacing.lg),
+      padding: const EdgeInsets.all(Spacing.md),
+      decoration: BoxDecoration(
+        color: c.successSubtle,
+        borderRadius: RadiusToken.circular(RadiusToken.lg),
+      ),
+      child: Row(
+        children: [
+          Icon(LucideIcons.sparkles, size: 20, color: c.success),
+          const SizedBox(width: Spacing.sm),
+          Expanded(
+            child: Text(
+              'New seller offer: pay only ${formatPercent(promo.rate)} commission for your first ${promo.days} days after approval.',
+              style: TextStyle(
+                fontSize: 13,
+                color: c.text,
+                height: 1.35,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

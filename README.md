@@ -95,7 +95,6 @@ asset.
 
 ```
 BASE_URL=https://your-api-url/api/v1
-API_KEY=your-api-key
 FCM_VAPID_KEY=
 ```
 

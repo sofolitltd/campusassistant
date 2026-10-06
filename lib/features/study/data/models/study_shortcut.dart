@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/routes/app_route.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class ShortcutData {
   final String name;
@@ -27,7 +28,7 @@ final List<ShortcutData> allShortcuts = [
     route: AppRoute.bookmarks.name,
     isNamedRoute: true,
     icon: LucideIcons.bookmark,
-    color: Colors.redAccent,
+    color: AccentToken.red,
     imageUrl: 'bookmark',
   ),
   ShortcutData(
@@ -35,31 +36,31 @@ final List<ShortcutData> allShortcuts = [
     route: AppRoute.downloadedFiles.name,
     isNamedRoute: true,
     icon: LucideIcons.folderDown,
-    color: Colors.orangeAccent,
+    color: AccentToken.orange,
     imageUrl: 'download',
   ),
   ShortcutData(
     name: 'Academic\nLibrary',
     route: '/library',
     icon: LucideIcons.library,
-    color: Colors.blueAccent,
+    color: AccentToken.blue,
   ),
   ShortcutData(
     name: 'Question\nBank',
     route: '/questions',
     icon: LucideIcons.helpCircle,
-    color: Colors.purpleAccent,
+    color: AccentToken.violet,
   ),
   ShortcutData(
     name: 'Full\nSyllabus',
     route: '/syllabus',
     icon: LucideIcons.fileText,
-    color: Colors.pinkAccent,
+    color: AccentToken.pink,
   ),
   ShortcutData(
     name: 'Research\nArchive',
     route: '/research',
     icon: LucideIcons.search,
-    color: Colors.red.shade400,
+    color: AccentToken.red,
   ),
 ];

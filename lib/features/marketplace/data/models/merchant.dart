@@ -24,6 +24,10 @@ class Merchant {
   // only visibility.
   final String? payoutMethod; // "bkash" | "nagad" | "bank"
   final String? payoutAccount;
+  final double ratingAvg;
+  final int ratingCount;
+  final double avgShipHours;
+  final int shippedCount;
 
   Merchant({
     required this.id,
@@ -43,7 +47,15 @@ class Merchant {
     this.nidProofUrl,
     this.payoutMethod,
     this.payoutAccount,
+    this.ratingAvg = 0,
+    this.ratingCount = 0,
+    this.avgShipHours = 0,
+    this.shippedCount = 0,
   });
+
+  /// Reliable shipper: at least 5 shipped orders averaging a day or less.
+  bool get isFastShipper =>
+      shippedCount >= 5 && avgShipHours > 0 && avgShipHours <= 24;
 
   factory Merchant.fromJson(Map<String, dynamic> json) {
     return Merchant(
@@ -64,6 +76,10 @@ class Merchant {
       nidProofUrl: json['nid_proof_url'] as String?,
       payoutMethod: json['payout_method'] as String?,
       payoutAccount: json['payout_account'] as String?,
+      ratingAvg: (json['rating_avg'] as num?)?.toDouble() ?? 0,
+      ratingCount: json['rating_count'] as int? ?? 0,
+      avgShipHours: (json['avg_ship_hours'] as num?)?.toDouble() ?? 0,
+      shippedCount: json['shipped_count'] as int? ?? 0,
     );
   }
 }

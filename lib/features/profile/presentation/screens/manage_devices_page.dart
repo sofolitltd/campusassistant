@@ -12,6 +12,8 @@ import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
 import '/services/device_repository.dart';
 import '../providers/manage_devices_provider.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class ManageDevicesPage extends ConsumerWidget {
   const ManageDevicesPage({super.key});
@@ -27,12 +29,15 @@ class ManageDevicesPage extends ConsumerWidget {
         data: (devices) => RefreshIndicator(
           onRefresh: () => ref.read(manageDevicesProvider.notifier).refresh(),
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             children: [
               Text(
                 'Devices logged into your account. Remove one you don\'t '
                 'recognize, or sign out everywhere at once.',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                style: TextStyle(
+                  color: context.colors.textMuted,
+                  fontSize: FontSizeToken.md,
+                ),
               ),
               const SizedBox(height: Spacing.lg),
               if (devices.isEmpty)
@@ -40,7 +45,7 @@ class ManageDevicesPage extends ConsumerWidget {
               else
                 ...devices.map(
                   (d) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: Spacing.md),
                     child: _DeviceTile(device: d),
                   ),
                 ),
@@ -52,21 +57,21 @@ class ManageDevicesPage extends ConsumerWidget {
                 icon: const Icon(LucideIcons.logOut, size: 18),
                 label: const Text('Log Out of Other Devices'),
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: const Size.fromHeight(ControlToken.height),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(RadiusToken.lg),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               ElevatedButton.icon(
                 onPressed: () => _confirmLogoutAll(context, ref),
                 icon: const Icon(LucideIcons.shieldAlert, size: 18),
                 label: const Text('Log Out of All Devices'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade600,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(52),
+                  backgroundColor: context.colors.danger,
+                  foregroundColor: context.colors.onPrimary,
+                  minimumSize: const Size.fromHeight(ControlToken.height),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(RadiusToken.lg),
@@ -84,16 +89,20 @@ class ManageDevicesPage extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 48),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.xxxxl),
       child: Column(
         children: [
-          Icon(LucideIcons.smartphone, size: 56, color: Colors.grey.shade300),
+          Icon(
+            LucideIcons.smartphone,
+            size: 56,
+            color: context.colors.borderStrong,
+          ),
           const SizedBox(height: Spacing.md),
           Text(
             'No devices registered',
             style: TextStyle(
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
+              color: context.colors.textMuted,
+              fontWeight: .w500,
             ),
           ),
         ],
@@ -117,7 +126,7 @@ class ManageDevicesPage extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Log Out Others'),
+            child: const Text('Log out others'),
           ),
         ],
       ),
@@ -145,13 +154,20 @@ class ManageDevicesPage extends ConsumerWidget {
       context: context,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxxl),
+        ),
       ),
       builder: (ctx) => SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 32, 24, 36),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.xxl,
+            Spacing.xxxl,
+            Spacing.xxl,
+            36,
+          ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Container(
                 width: 64,
@@ -160,38 +176,41 @@ class ManageDevicesPage extends ConsumerWidget {
                   color: Color(0xFFE53935),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   LucideIcons.shieldAlert,
-                  color: Colors.white,
+                  color: context.colors.onPrimary,
                   size: 32,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: Spacing.xl),
               const Text(
                 'Log out of all devices?',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: .center,
+                style: TextStyle(
+                  fontSize: FontSizeToken.xxl,
+                  fontWeight: .bold,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               Text(
                 'This signs you out everywhere, including this device. '
                 'You\'ll need to log in again.',
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
+                  fontSize: FontSizeToken.base,
+                  color: context.colors.textMuted,
                   height: 1.4,
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: Spacing.xxxl),
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: ControlToken.height,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(ctx, true),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade600,
-                    foregroundColor: Colors.white,
+                    backgroundColor: context.colors.danger,
+                    foregroundColor: context.colors.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(RadiusToken.lg),
                     ),
@@ -199,18 +218,21 @@ class ManageDevicesPage extends ConsumerWidget {
                   ),
                   child: const Text(
                     'Yes, Log Out Everywhere',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: FontSizeToken.lg,
+                      fontWeight: .w600,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: ControlToken.height,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(ctx, false),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.grey.shade300),
+                    side: BorderSide(color: context.colors.borderStrong),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(RadiusToken.lg),
                     ),
@@ -218,9 +240,9 @@ class ManageDevicesPage extends ConsumerWidget {
                   child: Text(
                     'Cancel',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade700,
+                      fontSize: FontSizeToken.lg,
+                      fontWeight: .w500,
+                      color: context.colors.textMuted,
                     ),
                   ),
                 ),
@@ -254,28 +276,20 @@ class _DeviceTile extends ConsumerWidget {
   const _DeviceTile({required this.device});
 
   IconData get _platformIcon {
-    switch (device.platform) {
-      case 'ios':
-      case 'android':
-        return LucideIcons.smartphone;
-      case 'web':
-        return LucideIcons.monitor;
-      default:
-        return LucideIcons.smartphone;
-    }
+    return switch (device.platform) {
+      'ios' || 'android' => LucideIcons.smartphone,
+      'web' => LucideIcons.monitor,
+      _ => LucideIcons.smartphone,
+    };
   }
 
   String get _platformLabel {
-    switch (device.platform) {
-      case 'ios':
-        return 'iOS';
-      case 'android':
-        return 'Android';
-      case 'web':
-        return 'Web';
-      default:
-        return device.platform;
-    }
+    return switch (device.platform) {
+      'ios' => 'iOS',
+      'android' => 'Android',
+      'web' => 'Web',
+      _ => device.platform,
+    };
   }
 
   String _lastSeenLabel() {
@@ -288,66 +302,63 @@ class _DeviceTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(Spacing.lg),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         border: Border.all(
           color: device.isCurrent
-              ? Theme.of(context).appColors.primaryColor.withValues(alpha: 0.5)
-              : (isDark ? Colors.white10 : Colors.grey.shade200),
+              ? context.colors.primary.withValues(alpha: 0.5)
+              : (context.colors.border),
         ),
       ),
       child: Row(
         children: [
-          Icon(
-            _platformIcon,
-            size: 22,
-            color: Theme.of(context).appColors.primaryColor,
-          ),
-          const SizedBox(width: 14),
+          Icon(_platformIcon, size: 22, color: context.colors.primary),
+          const SizedBox(width: Spacing.lg),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Row(
                   children: [
                     Text(
                       _platformLabel,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: .w600),
                     ),
                     if (device.isCurrent) ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: Spacing.sm),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
+                          horizontal: Spacing.sm,
+                          vertical: Spacing.xxs,
                         ),
                         decoration: BoxDecoration(
                           color: Theme.of(
                             context,
-                          ).appColors.primaryColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(20),
+                          ).appColors.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(RadiusToken.xxl),
                         ),
                         child: Text(
                           'This device',
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).appColors.primaryColor,
+                            fontSize: FontSizeToken.xs,
+                            fontWeight: .w600,
+                            color: context.colors.primary,
                           ),
                         ),
                       ),
                     ],
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: Spacing.xxs),
                 Text(
                   _lastSeenLabel(),
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.sm,
+                    color: context.colors.textSubtle,
+                  ),
                 ),
               ],
             ),
@@ -355,7 +366,7 @@ class _DeviceTile extends ConsumerWidget {
           if (!device.isCurrent)
             IconButton(
               icon: const Icon(LucideIcons.trash2, size: 18),
-              color: Colors.red.shade400,
+              color: context.colors.danger,
               onPressed: () => _confirmRemove(context, ref),
             ),
         ],

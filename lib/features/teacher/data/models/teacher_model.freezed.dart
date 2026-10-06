@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'teacher_model.dart';
@@ -9,6 +9,7 @@ part of 'teacher_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $TeacherModelCopyWith<TeacherModel> get copyWith => _$TeacherModelCopyWithImpl<T
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TeacherModel&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.present, present) || other.present == present)&&(identical(other.chairman, chairman) || other.chairman == chairman)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.post, post) || other.post == post)&&(identical(other.phd, phd) || other.phd == phd)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.email, email) || other.email == email)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.interests, interests) || other.interests == interests)&&(identical(other.publications, publications) || other.publications == publications)&&(identical(other.token, token) || other.token == token));
+  final _this = this as TeacherModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TeacherModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.present, _this.present) || other.present == _this.present)&&(identical(other.chairman, _this.chairman) || other.chairman == _this.chairman)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.post, _this.post) || other.post == _this.post)&&(identical(other.phd, _this.phd) || other.phd == _this.phd)&&(identical(other.mobile, _this.mobile) || other.mobile == _this.mobile)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.interests, _this.interests) || other.interests == _this.interests)&&(identical(other.publications, _this.publications) || other.publications == _this.publications)&&(identical(other.token, _this.token) || other.token == _this.token));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,universityId,departmentId,present,chairman,serial,name,post,phd,mobile,email,imageUrl,interests,publications,token);
+int get hashCode {
+  final _this = this as TeacherModel;
+  return Object.hash(runtimeType,_this.id,_this.universityId,_this.departmentId,_this.present,_this.chairman,_this.serial,_this.name,_this.post,_this.phd,_this.mobile,_this.email,_this.imageUrl,_this.interests,_this.publications,_this.token);
+}
 
 @override
 String toString() {
-  return 'TeacherModel(id: $id, universityId: $universityId, departmentId: $departmentId, present: $present, chairman: $chairman, serial: $serial, name: $name, post: $post, phd: $phd, mobile: $mobile, email: $email, imageUrl: $imageUrl, interests: $interests, publications: $publications, token: $token)';
+  final _this = this as TeacherModel;
+  return 'TeacherModel(id: ${_this.id}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, present: ${_this.present}, chairman: ${_this.chairman}, serial: ${_this.serial}, name: ${_this.name}, post: ${_this.post}, phd: ${_this.phd}, mobile: ${_this.mobile}, email: ${_this.email}, imageUrl: ${_this.imageUrl}, interests: ${_this.interests}, publications: ${_this.publications}, token: ${_this.token})';
 }
 
 
@@ -66,7 +72,7 @@ class _$TeacherModelCopyWithImpl<$Res>
 /// Create a copy of TeacherModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? universityId = null,Object? departmentId = null,Object? present = null,Object? chairman = null,Object? serial = null,Object? name = null,Object? post = null,Object? phd = null,Object? mobile = null,Object? email = null,Object? imageUrl = null,Object? interests = null,Object? publications = null,Object? token = null,}) {
-  return _then(_self.copyWith(
+  return _then(TeacherModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
@@ -255,16 +261,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TeacherModel&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.present, present) || other.present == present)&&(identical(other.chairman, chairman) || other.chairman == chairman)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.post, post) || other.post == post)&&(identical(other.phd, phd) || other.phd == phd)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.email, email) || other.email == email)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.interests, interests) || other.interests == interests)&&(identical(other.publications, publications) || other.publications == publications)&&(identical(other.token, token) || other.token == token));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TeacherModel&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.present, present) || other.present == present)&&(identical(other.chairman, chairman) || other.chairman == chairman)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.post, post) || other.post == post)&&(identical(other.phd, phd) || other.phd == phd)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.email, email) || other.email == email)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.interests, interests) || other.interests == interests)&&(identical(other.publications, publications) || other.publications == publications)&&(identical(other.token, token) || other.token == token));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,universityId,departmentId,present,chairman,serial,name,post,phd,mobile,email,imageUrl,interests,publications,token);
+int get hashCode {
+    return Object.hash(runtimeType,id,universityId,departmentId,present,chairman,serial,name,post,phd,mobile,email,imageUrl,interests,publications,token);
+}
 
 @override
 String toString() {
-  return 'TeacherModel(id: $id, universityId: $universityId, departmentId: $departmentId, present: $present, chairman: $chairman, serial: $serial, name: $name, post: $post, phd: $phd, mobile: $mobile, email: $email, imageUrl: $imageUrl, interests: $interests, publications: $publications, token: $token)';
+    return 'TeacherModel(id: $id, universityId: $universityId, departmentId: $departmentId, present: $present, chairman: $chairman, serial: $serial, name: $name, post: $post, phd: $phd, mobile: $mobile, email: $email, imageUrl: $imageUrl, interests: $interests, publications: $publications, token: $token)';
 }
 
 

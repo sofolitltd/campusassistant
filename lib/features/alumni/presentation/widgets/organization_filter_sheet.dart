@@ -5,13 +5,16 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../providers/alumni_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 Future<void> showOrganizationFilterSheet(BuildContext context, WidgetRef ref) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: 0.5),
+    barrierColor: context.colors.surfaceInverse.withValues(alpha: 0.5),
     builder: (context) {
       return DraggableScrollableSheet(
         initialChildSize: 0.65,
@@ -41,7 +44,6 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).primaryColor;
     final orgsAsync = ref.watch(
       alumniOrganizationsProvider(search: _searchQuery),
@@ -50,36 +52,38 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxxl),
+        ),
       ),
       child: Column(
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           Container(
             width: 40,
             height: 5,
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(10),
+              color: context.colors.borderStrong,
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
           ),
           const SizedBox(height: Spacing.lg),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 Text(
                   'Select Organization',
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.grey.shade900,
+                    fontSize: FontSizeToken.xl,
+                    fontWeight: .bold,
+                    color: context.colors.text,
                   ),
                 ),
                 Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     if (selectedOrg != null)
                       TextButton(
@@ -89,11 +93,11 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                               .update(null);
                           Navigator.pop(context);
                         },
-                        child: const Text(
+                        child: Text(
                           'Clear Filter',
                           style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.redAccent,
+                            fontWeight: .w600,
+                            color: context.colors.danger,
                           ),
                         ),
                       ),
@@ -101,9 +105,7 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.close_rounded,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade600,
+                        color: context.colors.textMuted,
                       ),
                       onPressed: () => Navigator.pop(context),
                     ),
@@ -112,16 +114,14 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
+                color: context.colors.surfaceAlt,
+                borderRadius: BorderRadius.circular(RadiusToken.lg),
               ),
               child: TextField(
                 onChanged: (val) {
@@ -129,22 +129,22 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                     _searchQuery = val;
                   });
                 },
-                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                style: TextStyle(color: context.colors.text),
                 decoration: InputDecoration(
                   hintText: 'Search organizations...',
                   hintStyle: TextStyle(
-                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade400,
-                    fontSize: 15,
+                    color: context.colors.textSubtle,
+                    fontSize: FontSizeToken.lg,
                   ),
                   prefixIcon: Icon(
                     LucideIcons.search,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade400,
+                    color: context.colors.textSubtle,
                     size: 20,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                    horizontal: Spacing.lg,
+                    vertical: Spacing.lg,
                   ),
                 ),
               ),
@@ -157,26 +157,22 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                 if (orgs.isEmpty) {
                   return Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(Spacing.xxxl),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           Icon(
                             Icons.business_rounded,
                             size: 48,
-                            color: isDark
-                                ? Colors.grey.shade700
-                                : Colors.grey.shade300,
+                            color: context.colors.borderStrong,
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: Spacing.md),
                           Text(
                             'No organizations found',
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? Colors.grey.shade400
-                                  : Colors.grey.shade600,
+                              fontSize: FontSizeToken.base,
+                              fontWeight: .w600,
+                              color: context.colors.textMuted,
                             ),
                           ),
                         ],
@@ -187,7 +183,7 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
 
                 return ListView.builder(
                   controller: widget.scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
                   itemCount: orgs.length,
                   itemBuilder: (context, index) {
                     final org = orgs[index];
@@ -216,8 +212,8 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                                 : 'O',
                             style: TextStyle(
                               color: orgColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontWeight: .bold,
+                              fontSize: FontSizeToken.lg,
                             ),
                           ),
                         ),
@@ -225,25 +221,21 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
                       title: Text(
                         org.name,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: FontSizeToken.lg,
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.w500,
                           color: isSelected
                               ? primaryColor
-                              : (isDark
-                                    ? Colors.white70
-                                    : Colors.grey.shade800),
+                              : (context.colors.text),
                         ),
                       ),
                       subtitle: org.website.isNotEmpty
                           ? Text(
                               org.website,
                               style: TextStyle(
-                                fontSize: 12,
-                                color: isDark
-                                    ? Colors.grey.shade500
-                                    : Colors.grey.shade500,
+                                fontSize: FontSizeToken.sm,
+                                color: context.colors.textSubtle,
                               ),
                             )
                           : null,
@@ -267,7 +259,7 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
               error: (err, _) => Center(
                 child: Text(
                   'Error: $err',
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: context.colors.danger),
                 ),
               ),
             ),

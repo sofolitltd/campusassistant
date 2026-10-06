@@ -96,7 +96,7 @@ abstract class _$SyllabusSearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<String, String>;
     final element =
         ref.element
@@ -106,7 +106,7 @@ abstract class _$SyllabusSearchQuery extends $Notifier<String> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -141,7 +141,7 @@ abstract class _$SyllabusPagination extends $AsyncNotifier<SyllabusState> {
   FutureOr<SyllabusState> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<SyllabusState>, SyllabusState>;
     final element =
         ref.element
@@ -151,6 +151,6 @@ abstract class _$SyllabusPagination extends $AsyncNotifier<SyllabusState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

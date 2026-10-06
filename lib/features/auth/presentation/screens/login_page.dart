@@ -10,10 +10,13 @@ import 'package:go_router/go_router.dart';
 import '/routes/app_route.dart';
 import '/widgets/app_logo.dart';
 import '/widgets/common_text_field_widget.dart';
+import '/widgets/open_app.dart';
+import '/utils/constants.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -92,13 +95,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           Positioned(
             top: -90,
             right: -70,
-            child: _Blob(color: colors.primaryColor.withValues(alpha: 0.14)),
+            child: _Blob(color: colors.primary.withValues(alpha: 0.14)),
           ),
           Positioned(
             bottom: -110,
             left: -90,
             child: _Blob(
-              color: colors.primaryColor.withValues(alpha: 0.10),
+              color: colors.primary.withValues(alpha: 0.10),
               size: 260,
             ),
           ),
@@ -136,7 +139,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 ],
                               ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                crossAxisAlignment: .stretch,
                                 children: [
                                   // ── Brand mark ──
                                   Center(
@@ -153,7 +156,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                                   Text(
                                         'Login to your account',
-                                        textAlign: TextAlign.center,
+                                        textAlign: .center,
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(
                                               color: theme
@@ -192,7 +195,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             }
                                             return null;
                                           },
-                                          textInputAction: TextInputAction.next,
+                                          textInputAction: .next,
                                           onFieldSubmitted: (_) {
                                             FocusScope.of(
                                               context,
@@ -221,7 +224,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             }
                                             return null;
                                           },
-                                          textInputAction: TextInputAction.done,
+                                          textInputAction: .done,
                                           onFieldSubmitted: (_) =>
                                               _handleLogin(),
                                         ),
@@ -237,8 +240,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             child: Text(
                                               'Forgot password?',
                                               style: TextStyle(
-                                                color: colors.primaryColor,
-                                                fontWeight: FontWeight.w600,
+                                                color: colors.primary,
+                                                fontWeight: .w600,
                                               ),
                                             ),
                                           ),
@@ -255,8 +258,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         vertical: Spacing.sm,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: colors.destructiveColor
-                                            .withValues(alpha: 0.1),
+                                        color: colors.danger.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(
                                           RadiusToken.md,
                                         ),
@@ -266,7 +270,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           Icon(
                                             Icons.error_outline,
                                             size: 18,
-                                            color: colors.destructiveColor,
+                                            color: colors.danger,
                                           ),
                                           const SizedBox(width: Spacing.sm),
                                           Expanded(
@@ -274,8 +278,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               loginError,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                    color:
-                                                        colors.destructiveColor,
+                                                    color: colors.danger,
                                                   ),
                                             ),
                                           ),
@@ -289,11 +292,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ElevatedButton(
                                     onPressed: isLoading ? null : _handleLogin,
                                     child: isLoading
-                                        ? const SizedBox(
+                                        ? SizedBox(
                                             height: 24,
                                             width: 24,
                                             child: CupertinoActivityIndicator(
-                                              color: Colors.white,
+                                              color: context.colors.onPrimary,
                                             ),
                                           )
                                         : const Text('Login'),
@@ -345,7 +348,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     icon: const Icon(
                                       Icons.person_add_alt_1_rounded,
                                     ),
-                                    label: const Text('Create New Account'),
+                                    label: const Text('Create new account'),
+                                  ),
+
+                                  const SizedBox(height: Spacing.xl),
+
+                                  Center(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _showContactSheet(context);
+                                      },
+                                      child: Text(
+                                        'Having trouble? Contact us',
+                                        style: TextStyle(
+                                          fontSize: FontSizeToken.md,
+                                          color: theme.colorScheme.primary,
+                                          fontWeight: .w500,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -393,4 +414,62 @@ class _Blob extends StatelessWidget {
       ),
     );
   }
+}
+
+
+// Feedback needs a signed-in user, so people locked out of login get direct
+// contact channels instead.
+void _showContactSheet(BuildContext context) {
+  showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    builder: (sheetContext) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: Spacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(Spacing.xl, 0, Spacing.xl, Spacing.sm),
+              child: Text(
+                'Having trouble signing in? Reach out and we will help.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.mail_outline_rounded),
+              title: const Text('Email'),
+              subtitle: const Text(kAppEmail),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                OpenApp.withEmailNew(
+                  kAppEmail,
+                  subject: 'Login problem - Campus Assistant',
+                  message: '',
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.phone_outlined),
+              title: const Text('Phone'),
+              subtitle: const Text(kDeveloperMobile),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                OpenApp.withNumber(kDeveloperMobile);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language_rounded),
+              title: const Text('Website'),
+              subtitle: const Text(kDevWebsite),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                OpenApp.withUrl(kDevWebsite);
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

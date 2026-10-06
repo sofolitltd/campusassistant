@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'get_transports.dart';
@@ -9,6 +9,7 @@ part of 'get_transports.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $GetTransportsParamsCopyWith<GetTransportsParams> get copyWith => _$GetTransport
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetTransportsParams&&(identical(other.universityId, universityId) || other.universityId == universityId));
+  final _this = this as GetTransportsParams;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetTransportsParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId);
+int get hashCode {
+  final _this = this as GetTransportsParams;
+  return Object.hash(runtimeType,_this.universityId);
+}
 
 @override
 String toString() {
-  return 'GetTransportsParams(universityId: $universityId)';
+  final _this = this as GetTransportsParams;
+  return 'GetTransportsParams(universityId: ${_this.universityId})';
 }
 
 
@@ -63,7 +69,7 @@ class _$GetTransportsParamsCopyWithImpl<$Res>
 /// Create a copy of GetTransportsParams
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? universityId = null,}) {
-  return _then(_self.copyWith(
+  return _then(GetTransportsParams(
 universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -221,16 +227,18 @@ _$GetTransportsParamsCopyWith<_GetTransportsParams> get copyWith => __$GetTransp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetTransportsParams&&(identical(other.universityId, universityId) || other.universityId == universityId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetTransportsParams&&(identical(other.universityId, universityId) || other.universityId == universityId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId);
+int get hashCode {
+    return Object.hash(runtimeType,universityId);
+}
 
 @override
 String toString() {
-  return 'GetTransportsParams(universityId: $universityId)';
+    return 'GetTransportsParams(universityId: $universityId)';
 }
 
 

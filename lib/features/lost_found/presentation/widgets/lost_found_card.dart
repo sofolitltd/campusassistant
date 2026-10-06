@@ -4,6 +4,10 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '/core/network/api_endpoints.dart';
 import '../../data/models/lost_found_item.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class LostFoundCard extends StatelessWidget {
   final LostFoundItem item;
@@ -14,13 +18,13 @@ class LostFoundCard extends StatelessWidget {
   Color _statusColor(BuildContext context) {
     switch (item.status) {
       case LostFoundStatus.open:
-        return Colors.blue;
+        return context.colors.info;
       case LostFoundStatus.claimed:
-        return Colors.amber.shade700;
+        return context.colors.warning;
       case LostFoundStatus.resolved:
-        return Colors.green;
+        return context.colors.success;
       case LostFoundStatus.removed:
-        return Colors.red;
+        return context.colors.danger;
     }
   }
 
@@ -28,18 +32,20 @@ class LostFoundCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: .antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             AspectRatio(
               aspectRatio: 4 / 3,
               child: item.imageUrls.isNotEmpty
                   ? CachedNetworkImage(
-                      imageUrl: ApiEndpoints.resolveImageUrl(item.imageUrls.first),
-                      fit: BoxFit.cover,
+                      imageUrl: ApiEndpoints.resolveImageUrl(
+                        item.imageUrls.first,
+                      ),
+                      fit: .cover,
                       errorWidget: (context, url, error) => Container(
                         color: theme.colorScheme.surfaceContainerHighest,
                         child: const Icon(Icons.image_not_supported_outlined),
@@ -57,26 +63,29 @@ class LostFoundCard extends StatelessWidget {
                     ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.sm,
+                          vertical: Spacing.xxs,
+                        ),
                         decoration: BoxDecoration(
                           color: item.type == LostFoundType.lost
-                              ? Colors.orange
-                              : Colors.teal,
-                          borderRadius: BorderRadius.circular(4),
+                              ? context.colors.warning
+                              : context.colors.primary,
+                          borderRadius: BorderRadius.circular(RadiusToken.xs),
                         ),
                         child: Text(
                           item.type == LostFoundType.lost ? 'LOST' : 'FOUND',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
+                          style: TextStyle(
+                            color: context.colors.onPrimary,
+                            fontSize: FontSizeToken.xxs,
+                            fontWeight: .bold,
                           ),
                         ),
                       ),
@@ -91,36 +100,42 @@ class LostFoundCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: Spacing.sm),
                   Text(
                     item.title,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                    overflow: .ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: .bold,
+                    ),
                   ),
                   if (item.location.isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: Spacing.xxs),
                     Row(
                       children: [
-                        Icon(Icons.location_on_outlined, size: 12, color: theme.colorScheme.onSurfaceVariant),
-                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: Spacing.xxs),
                         Expanded(
                           child: Text(
                             item.location,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                             style: theme.textTheme.bodySmall,
                           ),
                         ),
                       ],
                     ),
                   ],
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Spacing.xxs),
                   Text(
                     timeago.format(item.createdAt),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: 10,
+                      fontSize: FontSizeToken.xxs,
                     ),
                   ),
                 ],

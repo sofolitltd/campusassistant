@@ -8,6 +8,9 @@ import 'package:share_plus/share_plus.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CrCard extends StatelessWidget {
   const CrCard({super.key, required this.cr});
@@ -22,7 +25,7 @@ class CrCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(RadiusToken.md),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.05),
+            color: context.colors.textSubtle.withValues(alpha: 0.05),
             spreadRadius: 4,
             blurRadius: 8,
             offset: const Offset(0, 4),
@@ -30,11 +33,14 @@ class CrCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        padding: const EdgeInsets.symmetric(
+          vertical: Spacing.md,
+          horizontal: Spacing.md,
+        ),
         child: Stack(
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               spacing: 14,
               children: [
                 // Image
@@ -42,7 +48,7 @@ class CrCard extends StatelessWidget {
                   height: 95,
                   width: 85,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade100),
+                    border: Border.all(color: context.colors.surfaceAlt),
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: CachedNetworkImage(
@@ -52,7 +58,7 @@ class CrCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(RadiusToken.sm),
                         image: DecorationImage(
-                          fit: BoxFit.cover,
+                          fit: .cover,
                           image: imageProvider,
                         ),
                       ),
@@ -64,16 +70,16 @@ class CrCard extends StatelessWidget {
                 // Left Column
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       // name
                       Text(
                         cr.name,
                         style: Theme.of(context).textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold, height: 1.2),
+                            .copyWith(fontWeight: .bold, height: 1.2),
                       ),
 
-                      const SizedBox(height: 8),
+                      const SizedBox(height: Spacing.sm),
 
                       // phone + share
                       Row(
@@ -82,14 +88,14 @@ class CrCard extends StatelessWidget {
                           _tag(
                             cr.isCurrent ? 'Current' : 'Former',
                             cr.isCurrent
-                                ? Colors.teal.shade50
-                                : Colors.red.shade50,
+                                ? context.colors.primary
+                                : context.colors.danger,
                           ),
-                          _tag(cr.batch, Colors.grey.shade100),
+                          _tag(cr.batch, context.colors.surfaceAlt),
                         ],
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: Spacing.md),
                       //
                       Row(
                         spacing: 4,
@@ -107,9 +113,9 @@ class CrCard extends StatelessWidget {
                                 ShareParams(title: cr.name, text: text),
                               );
                             },
-                            icon: const Icon(
+                            icon: Icon(
                               LucideIcons.share2,
-                              color: Colors.black,
+                              color: context.colors.text,
                               size: 16,
                             ),
                           ),
@@ -118,16 +124,16 @@ class CrCard extends StatelessWidget {
                           if (cr.email.isNotEmpty)
                             IconButton.filled(
                               style: IconButton.styleFrom(
-                                backgroundColor: Colors.red,
+                                backgroundColor: context.colors.danger,
                                 shape: const CircleBorder(),
                               ),
                               visualDensity: VisualDensity.compact,
                               onPressed: () async {
                                 OpenApp.withEmail(cr.email);
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 LucideIcons.mail,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                                 size: 16,
                               ),
                             ),
@@ -136,16 +142,16 @@ class CrCard extends StatelessWidget {
                           if (cr.fb.isNotEmpty)
                             IconButton.filled(
                               style: IconButton.styleFrom(
-                                backgroundColor: Colors.blue,
+                                backgroundColor: context.colors.info,
                                 shape: const CircleBorder(),
                               ),
                               visualDensity: VisualDensity.compact,
                               onPressed: () async {
                                 OpenApp.withUrl(cr.fb);
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 LucideIcons.link,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                                 size: 16,
                               ),
                             ),
@@ -160,9 +166,9 @@ class CrCard extends StatelessWidget {
                               onPressed: () async {
                                 OpenApp.withNumber(cr.phone);
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 LucideIcons.phone,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                                 size: 16,
                               ),
                             ),
@@ -180,11 +186,16 @@ class CrCard extends StatelessWidget {
   }
 
   Widget _tag(String text, Color? color) => Container(
-    padding: const EdgeInsets.fromLTRB(8, 2, 8, 3),
+    padding: const EdgeInsets.fromLTRB(
+      Spacing.sm,
+      Spacing.xxs,
+      Spacing.sm,
+      Spacing.xs,
+    ),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(RadiusToken.xs),
       color: color,
     ),
-    child: Text(text, style: const TextStyle(fontSize: 11)),
+    child: Text(text, style: const TextStyle(fontSize: FontSizeToken.xs)),
   );
 }

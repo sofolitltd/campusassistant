@@ -24,6 +24,9 @@ import '/routes/app_route.dart';
 import '../../data/models/search_result.dart';
 import '../providers/search_provider.dart';
 import '../widgets/search_category_chips.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 const _typeLabels = <String, String>{
   'resource': 'Resources',
@@ -101,9 +104,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       },
       body: Column(
         children: [
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           const SearchCategoryChips(),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Expanded(child: _buildBody()),
         ],
       ),
@@ -126,11 +129,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       loading: () => const Center(child: CupertinoActivityIndicator()),
       error: (error, _) => Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(Spacing.xl),
           child: Text(
             'Something went wrong: $error',
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+            textAlign: .center,
+            style: TextStyle(
+              color: context.colors.danger,
+              fontSize: FontSizeToken.md,
+            ),
           ),
         ),
       ),
@@ -268,7 +274,7 @@ Widget _buildCategoryBody(
     return GridView.builder(
       shrinkWrap: shrinkWrap,
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 12,
@@ -282,11 +288,11 @@ Widget _buildCategoryBody(
 
   if (shrinkWrap) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
       child: Column(
         children: [
           for (var i = 0; i < items.length; i++) ...[
-            if (i > 0) const SizedBox(height: 12),
+            if (i > 0) const SizedBox(height: Spacing.md),
             items[i],
           ],
         ],
@@ -295,9 +301,9 @@ Widget _buildCategoryBody(
   }
 
   return ListView.separated(
-    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+    padding: const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.lg),
     itemCount: items.length,
-    separatorBuilder: (_, _) => const SizedBox(height: 12),
+    separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
     itemBuilder: (context, index) => items[index],
   );
 }
@@ -312,27 +318,33 @@ class _GroupedResultsList extends ConsumerWidget {
     // _itemWidgetsForType per section here (instead of once to filter, then
     // again per itemBuilder call) avoids constructing every card twice.
     final sectionItems = {
-      for (final type in _typeOrder) type: _itemWidgetsForType(context, type, results),
+      for (final type in _typeOrder)
+        type: _itemWidgetsForType(context, type, results),
     }..removeWhere((_, items) => items.isEmpty);
     final sections = sectionItems.keys.toList();
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       itemCount: sections.length,
       itemBuilder: (context, index) {
         final type = sections[index];
         final items = sectionItems[type]!;
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.md,
+                Spacing.lg,
+                Spacing.sm,
+              ),
               child: Text(
                 _typeLabels[type] ?? type,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade600,
+                  fontSize: FontSizeToken.sm,
+                  fontWeight: .bold,
+                  color: context.colors.textMuted,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -360,7 +372,7 @@ class _FlatResultsList extends ConsumerWidget {
       );
     }
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: Spacing.sm),
       child: _buildCategoryBody(context, type, items),
     );
   }
@@ -375,16 +387,19 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Spacing.xxl),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
-            Icon(icon, size: 48, color: Colors.grey.shade300),
-            const SizedBox(height: 12),
+            Icon(icon, size: 48, color: context.colors.borderStrong),
+            const SizedBox(height: Spacing.md),
             Text(
               message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+              textAlign: .center,
+              style: TextStyle(
+                color: context.colors.textSubtle,
+                fontWeight: .w500,
+              ),
             ),
           ],
         ),

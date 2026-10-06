@@ -5,6 +5,10 @@ import '../../domain/entities/app_notification.dart';
 import '../../domain/enums/notification_type.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class NotificationTile extends StatelessWidget {
   final AppNotification notification;
@@ -21,27 +25,27 @@ class NotificationTile extends StatelessWidget {
   (IconData, Color) _iconForType(NotificationType type) {
     switch (type) {
       case NotificationType.routineUpdate:
-        return (LucideIcons.calendarClock, const Color(0xFF6C7BFF));
+        return (LucideIcons.calendarClock, AccentToken.periwinkle);
       case NotificationType.studyMaterial:
-        return (LucideIcons.bookOpenText, const Color(0xFF22C55E));
+        return (LucideIcons.bookOpenText, AccentToken.green);
       case NotificationType.communityPost:
-        return (LucideIcons.messageSquare, const Color(0xFF3B82F6));
+        return (LucideIcons.messageSquare, AccentToken.blue);
       case NotificationType.communityReply:
-        return (LucideIcons.reply, const Color(0xFF8B5CF6));
+        return (LucideIcons.reply, AccentToken.violet);
       case NotificationType.subscription:
-        return (LucideIcons.crown, const Color(0xFFF59E0B));
+        return (LucideIcons.crown, AccentToken.amber);
       case NotificationType.emergency:
-        return (LucideIcons.alertTriangle, const Color(0xFFEF4444));
+        return (LucideIcons.alertTriangle, AccentToken.red);
       case NotificationType.bloodRequest:
-        return (LucideIcons.droplets, const Color(0xFFE11D48));
+        return (LucideIcons.droplets, AccentToken.rose);
       case NotificationType.alumni:
-        return (LucideIcons.graduationCap, const Color(0xFF14B8A6));
+        return (LucideIcons.graduationCap, AccentToken.teal);
       case NotificationType.notice:
-        return (LucideIcons.megaphone, const Color(0xFFF97316));
+        return (LucideIcons.megaphone, AccentToken.orange);
       case NotificationType.achievement:
-        return (LucideIcons.trophy, const Color(0xFFFACC15));
+        return (LucideIcons.trophy, AccentToken.yellow);
       case NotificationType.club:
-        return (LucideIcons.users, const Color(0xFFEC4899));
+        return (LucideIcons.users, AccentToken.pink);
     }
   }
 
@@ -65,12 +69,12 @@ class NotificationTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
+        padding: const EdgeInsets.only(right: Spacing.xxl),
         decoration: BoxDecoration(
-          color: Colors.red.withValues(alpha: 0.12),
+          color: context.colors.danger.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
-        child: const Icon(LucideIcons.trash2, color: Colors.red, size: 22),
+        child: Icon(LucideIcons.trash2, color: context.colors.danger, size: 22),
       ),
       onDismissed: (_) => onDismiss?.call(),
       child: GestureDetector(
@@ -90,24 +94,31 @@ class NotificationTile extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.lg,
+              vertical: Spacing.md,
+            ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 notification.imageUrl != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         child: Image.network(
                           ApiEndpoints.resolveImageUrl(notification.imageUrl),
                           width: 40,
                           height: 40,
-                          fit: BoxFit.cover,
+                          fit: .cover,
                           errorBuilder: (_, _, _) => Container(
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: color.withValues(alpha: isDark ? 0.15 : 0.1),
-                              borderRadius: BorderRadius.circular(10),
+                              color: color.withValues(
+                                alpha: isDark ? 0.15 : 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
                             ),
                             child: Icon(icon, color: color, size: 20),
                           ),
@@ -118,69 +129,68 @@ class NotificationTile extends StatelessWidget {
                         height: 40,
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: isDark ? 0.15 : 0.1),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                         child: Icon(icon, color: color, size: 20),
                       ),
-                const SizedBox(width: 12),
+                const SizedBox(width: Spacing.md),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Expanded(
                             child: Text(
                               notification.title,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: FontSizeToken.base,
                                 fontWeight: notification.isRead
                                     ? FontWeight.w500
                                     : FontWeight.bold,
                                 color: isDark
                                     ? (notification.isRead
-                                          ? Colors.white70
-                                          : Colors.white)
+                                          ? context.colors.textMuted
+                                          : context.colors.onPrimary)
                                     : (notification.isRead
-                                          ? Colors.grey.shade700
-                                          : Colors.grey.shade900),
+                                          ? context.colors.textMuted
+                                          : context.colors.text),
                               ),
                               maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: .ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: Spacing.sm),
                           Text(
                             timeAgo,
                             style: TextStyle(
-                              fontSize: 11,
-                              color: isDark
-                                  ? Colors.grey.shade500
-                                  : Colors.grey.shade400,
+                              fontSize: FontSizeToken.xs,
+                              color: context.colors.textSubtle,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Spacing.xs),
                       Text(
                         notification.body,
                         style: TextStyle(
-                          fontSize: 12,
-                          color: isDark
-                              ? Colors.grey.shade400
-                              : Colors.grey.shade600,
+                          fontSize: FontSizeToken.sm,
+                          color: context.colors.textMuted,
                           height: 1.4,
                         ),
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                       ),
                     ],
                   ),
                 ),
                 if (!notification.isRead)
                   Padding(
-                    padding: const EdgeInsets.only(left: 8, top: 2),
+                    padding: const EdgeInsets.only(
+                      left: Spacing.sm,
+                      top: Spacing.xxs,
+                    ),
                     child: Container(
                       width: 8,
                       height: 8,

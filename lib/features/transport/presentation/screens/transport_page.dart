@@ -9,6 +9,9 @@ import '/features/transport/presentation/providers/transport_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class TransportPage extends ConsumerWidget {
   const TransportPage({super.key});
@@ -24,7 +27,7 @@ class TransportPage extends ConsumerWidget {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               Icon(
                 Icons.error_outline_rounded,
@@ -35,15 +38,15 @@ class TransportPage extends ConsumerWidget {
               Text(
                 'Something went wrong',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   color: Theme.of(context).colorScheme.error,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               Text(
                 e.toString(),
                 style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ],
           ),
@@ -52,7 +55,7 @@ class TransportPage extends ConsumerWidget {
           if (transports.isEmpty) {
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Icon(
                     LucideIcons.bus,
@@ -65,11 +68,11 @@ class TransportPage extends ConsumerWidget {
                   Text(
                     'No Transports Found',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                       color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   Text(
                     'Check back later for updates.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -90,7 +93,8 @@ class TransportPage extends ConsumerWidget {
                   : 16,
             ),
             itemCount: transports.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 20),
+            separatorBuilder: (context, index) =>
+                const SizedBox(height: Spacing.xl),
             itemBuilder: (context, index) {
               final transport = transports[index];
               final resolvedUrl = ApiEndpoints.resolveImageUrl(transport.image);
@@ -109,7 +113,7 @@ class TransportPage extends ConsumerWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(RadiusToken.xl),
                     border: Border.all(
                       color: Theme.of(
                         context,
@@ -117,7 +121,7 @@ class TransportPage extends ConsumerWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
+                        color: context.colors.shadow,
                         spreadRadius: 0,
                         blurRadius: 16,
                         offset: const Offset(0, 8),
@@ -125,9 +129,9 @@ class TransportPage extends ConsumerWidget {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(RadiusToken.xl),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         // Image Section
                         Hero(
@@ -147,7 +151,7 @@ class TransportPage extends ConsumerWidget {
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: imageProvider,
-                                        fit: BoxFit.cover,
+                                        fit: .cover,
                                       ),
                                     ),
                                   ),
@@ -160,7 +164,7 @@ class TransportPage extends ConsumerWidget {
                                     .errorContainer
                                     .withValues(alpha: 0.1),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: .center,
                                   children: [
                                     Icon(
                                       LucideIcons.image,
@@ -169,7 +173,7 @@ class TransportPage extends ConsumerWidget {
                                       ).colorScheme.error,
                                       size: 36,
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: Spacing.sm),
                                     Text(
                                       'Could not load transport image',
                                       style: Theme.of(context)
@@ -190,22 +194,22 @@ class TransportPage extends ConsumerWidget {
 
                         // Text Info Section
                         Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(Spacing.lg),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Text(
                                 transport.title,
                                 style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                                      fontWeight: .bold,
+                                      fontSize: FontSizeToken.xl,
                                       height: 1.2,
                                     ),
                                 maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: Spacing.sm),
 
                               // Time section with icon
                               Row(
@@ -219,7 +223,7 @@ class TransportPage extends ConsumerWidget {
                                         ?.color
                                         ?.withValues(alpha: 0.7),
                                   ),
-                                  const SizedBox(width: 6),
+                                  const SizedBox(width: Spacing.sm),
                                   Expanded(
                                     child: Text(
                                       transport.time,
@@ -227,11 +231,11 @@ class TransportPage extends ConsumerWidget {
                                           .textTheme
                                           .bodySmall
                                           ?.copyWith(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
+                                            fontSize: FontSizeToken.md,
+                                            fontWeight: .w500,
                                           ),
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: .ellipsis,
                                     ),
                                   ),
                                 ],

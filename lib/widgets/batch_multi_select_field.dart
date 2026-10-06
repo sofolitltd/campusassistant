@@ -3,6 +3,7 @@ import '/features/batch/domain/entities/batch.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class BatchMultiSelectField extends StatelessWidget {
   final List<Batch> batches;
@@ -46,15 +47,16 @@ class BatchMultiSelectField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
           // prefixIcon: const Icon(Icons.groups),
           suffixIcon: const Icon(Icons.arrow_drop_down),
         ),
         child: Text(
           selectedNames.isEmpty ? 'Select Batches' : selectedNames,
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: selectedNames.isEmpty ? Colors.grey : null),
+          overflow: .ellipsis,
+          style: TextStyle(
+            color: selectedNames.isEmpty ? context.colors.textSubtle : null,
+          ),
         ),
       ),
     );
@@ -100,9 +102,11 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
         .toList();
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       padding: EdgeInsets.only(
         top: 8,
@@ -116,20 +120,20 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: Spacing.lg),
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
+              color: context.colors.border,
+              borderRadius: BorderRadius.circular(RadiusToken.xs),
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Text(
                 'Select Batches (${_selectedIds.length})',
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.xl,
                 ),
               ),
               IconButton(
@@ -138,7 +142,7 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
@@ -152,12 +156,8 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                 minWidth: 36, // Further reduced from 40
                 minHeight: 48,
               ),
-              fillColor: Colors.grey.shade100,
+              fillColor: context.colors.surfaceAlt,
               filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(RadiusToken.sm),
-                borderSide: BorderSide.none,
-              ),
               suffixIcon: _searchQuery.isNotEmpty
                   ? GestureDetector(
                       onTap: () {
@@ -167,11 +167,10 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                       child: const Icon(Icons.clear),
                     )
                   : null,
-              contentPadding: .only(left: 16),
             ),
             onChanged: (val) => setState(() => _searchQuery = val),
           ),
-          // const SizedBox(height: 8),
+          // const SizedBox(height: Spacing.sm),
           // Selection Controls Row
           Row(
             children: [
@@ -191,15 +190,15 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
               if (_selectedIds.isNotEmpty)
                 TextButton(
                   onPressed: () => setState(() => _selectedIds.clear()),
-                  child: const Text(
+                  child: Text(
                     'Clear all',
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: context.colors.danger),
                   ),
                 ),
             ],
           ),
           const Divider(height: 1),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -223,17 +222,15 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.sm),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Theme.of(
-                              context,
-                            ).appColors.primaryColor.withValues(alpha: 0.12)
-                          : Colors.white,
+                          ? context.colors.primarySubtle
+                          : context.colors.surface,
                       border: Border.all(
                         color: isSelected
-                            ? Theme.of(context).appColors.primaryColor
-                            : Colors.grey.shade300,
+                            ? context.colors.primary
+                            : context.colors.border,
                       ),
                       borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
@@ -254,16 +251,16 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: Spacing.xs),
                         Expanded(
                           child: Text(
                             batch.name,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: FontSizeToken.md,
                               fontWeight: isSelected ? FontWeight.bold : null,
                             ),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                           ),
                         ),
                       ],
@@ -279,8 +276,8 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: _selectedIds.isEmpty
-                    ? Colors.grey
-                    : Colors.black,
+                    ? context.colors.textSubtle
+                    : context.colors.text,
               ),
               onPressed: _selectedIds.isEmpty
                   ? null
@@ -289,8 +286,8 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                       Navigator.pop(context);
                     },
               child: _selectedIds.isEmpty
-                  ? const Text('Add Batches')
-                  : Text('Update Batches'),
+                  ? const Text('Add batches')
+                  : Text('Update batches'),
             ),
           ),
         ],

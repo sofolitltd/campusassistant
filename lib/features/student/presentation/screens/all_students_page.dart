@@ -10,6 +10,10 @@ import '/core/widgets/section_tab_bar.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/student/presentation/screens/student_card.dart';
 import '/features/student/presentation/providers/student_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AllStudentsPage extends ConsumerStatefulWidget {
   const AllStudentsPage({super.key});
@@ -90,7 +94,12 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           body: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.lg,
+                  Spacing.lg,
+                  Spacing.sm,
+                ),
                 child: SectionTabBar(
                   controller: _tabController!,
                   isScrollable: true,
@@ -274,19 +283,19 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
   Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           Icon(
             _searchQuery.isNotEmpty ? LucideIcons.searchX : LucideIcons.users,
             size: 48,
-            color: Colors.grey.shade300,
+            color: context.colors.borderStrong,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           Text(
             _searchQuery.isNotEmpty ? 'No matches found' : 'No students found!',
-            style: const TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
+            style: TextStyle(
+              color: context.colors.textSubtle,
+              fontWeight: .w500,
             ),
           ),
         ],
@@ -306,28 +315,33 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
     required ValueChanged<int> onPageChanged,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         if (_searchQuery.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.md,
+              Spacing.lg,
+              0,
+            ),
             child: Row(
               children: [
                 Container(
                   width: 3,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.blue.shade400 : Colors.blue.shade700,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.info,
+                    borderRadius: BorderRadius.circular(RadiusToken.xs),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 Text(
                   'Found ${students.length} Students',
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade300 : Colors.grey.shade800,
+                    fontWeight: .w700,
+                    fontSize: FontSizeToken.sm,
+                    color: context.colors.text,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -342,7 +356,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
               if (index == students.length - 1 && totalPages > 1) {
                 return const SizedBox(height: 0);
               }
-              return const SizedBox(height: 12);
+              return const SizedBox(height: Spacing.md);
             },
             itemBuilder: (_, index) {
               if (totalPages > 1 && index == students.length) {
@@ -417,27 +431,26 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.sm,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
-          ),
-        ),
+        color: context.colors.surfaceAlt,
+        border: Border(top: BorderSide(color: context.colors.border)),
       ),
       child: Column(
         children: [
           Text(
             'Showing $startIndex-$endIndex of $totalItems',
             style: TextStyle(
-              fontSize: 12,
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              fontSize: FontSizeToken.sm,
+              color: context.colors.textMuted,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               _buildPageButton(
                 icon: Icons.chevron_left,
@@ -445,10 +458,10 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                 isDark: isDark,
                 onTap: () => onPageChanged(currentPage - 1),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: Spacing.xs),
               ...pageNumbers.map(
                 (page) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.xxs),
                   child: _buildPageNumberButton(
                     page: page,
                     isSelected: page == currentPage,
@@ -457,7 +470,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: Spacing.xs),
               _buildPageButton(
                 icon: Icons.chevron_right,
                 isEnabled: currentPage < totalPages,
@@ -479,23 +492,19 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
   }) {
     return InkWell(
       onTap: isEnabled ? onTap : null,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: Container(
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-          ),
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(color: context.colors.borderStrong),
         ),
         child: Icon(
           icon,
           size: 20,
-          color: isEnabled
-              ? (isDark ? Colors.white : Colors.black87)
-              : Colors.grey.shade400,
+          color: isEnabled ? (context.colors.text) : context.colors.textSubtle,
         ),
       ),
     );
@@ -509,30 +518,30 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: Container(
         width: 36,
         height: 36,
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? Colors.blue.shade700 : Colors.blue.shade600)
-              : (isDark ? Colors.grey.shade800 : Colors.white),
-          borderRadius: BorderRadius.circular(8),
+              ? (context.colors.info)
+              : (context.colors.onPrimary),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: isSelected
-                ? Colors.blue.shade600
-                : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                ? context.colors.info
+                : (context.colors.borderStrong),
           ),
         ),
         child: Center(
           child: Text(
             '$page',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: FontSizeToken.md,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               color: isSelected
-                  ? Colors.white
-                  : (isDark ? Colors.white70 : Colors.black87),
+                  ? context.colors.onPrimary
+                  : (context.colors.text),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '/core/network/api_endpoints.dart';
 import 'job_image_gallery.dart' show PdfThumbnailWidget;
+import '/core/theme/tokens/app_radius.dart';
 
 /// A card-sized leading thumbnail for a job/circular: the first attachment
 /// (image, or a PDF's first page via [PdfThumbnailWidget]) if one exists,
@@ -30,7 +31,7 @@ class AttachmentThumbnail extends StatelessWidget {
       height: 80,
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
       ),
       child: Icon(fallbackIcon, color: foreground),
     );
@@ -45,7 +46,7 @@ class AttachmentThumbnail extends StatelessWidget {
     final resolvedUrl = ApiEndpoints.resolveImageUrl(url);
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: SizedBox(
         width: size,
         height: size,
@@ -53,7 +54,7 @@ class AttachmentThumbnail extends StatelessWidget {
             ? PdfThumbnailWidget(url: resolvedUrl)
             : CachedNetworkImage(
                 imageUrl: resolvedUrl,
-                fit: BoxFit.cover,
+                fit: .cover,
                 placeholder: (context, url) => Container(color: background),
                 errorWidget: (context, url, error) => _fallback(),
               ),

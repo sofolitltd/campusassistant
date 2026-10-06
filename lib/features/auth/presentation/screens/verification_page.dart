@@ -7,6 +7,8 @@ import '/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class VerificationPage extends ConsumerStatefulWidget {
   const VerificationPage({super.key});
@@ -45,7 +47,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                   vertical: 16,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Container(
                       decoration: BoxDecoration(
@@ -53,12 +55,12 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                              ? context.colors.border
+                              : context.colors.border,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: context.colors.shadow,
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -66,29 +68,31 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 16,
+                          vertical: Spacing.xl,
+                          horizontal: Spacing.lg,
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Text(
-                              'Have a verification code?'.toUpperCase(),
+                              'Have a verification code?',
                               style: Theme.of(context).textTheme.titleSmall!
-                                  .copyWith(fontWeight: FontWeight.w600),
+                                  .copyWith(fontWeight: .w600),
                             ),
-                            const Text(
+                            Text(
                               'Enter your 6-digit verification code to create a new account.',
-                              style: TextStyle(color: Colors.grey),
+                              style: TextStyle(
+                                color: context.colors.textSubtle,
+                              ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             const Divider(height: .5),
                             const SizedBox(height: Spacing.lg),
                             CommonTextFieldWidget(
                               controller: _verificationCodeController,
                               heading: 'Verification Code',
                               hintText: 'Enter 6-digit code',
-                              keyboardType: TextInputType.number,
+                              keyboardType: .number,
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return 'Enter your verification code';
@@ -99,10 +103,13 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: Spacing.xxl),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 48),
+                                minimumSize: const Size(
+                                  double.infinity,
+                                  ControlToken.height,
+                                ),
                               ),
                               onPressed: _isLoading
                                   ? null
@@ -143,18 +150,18 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                       }
                                     },
                               child: _isLoading
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       height: 24,
                                       width: 24,
                                       child: CupertinoActivityIndicator(
-                                        color: Colors.white,
+                                        color: context.colors.onPrimary,
                                       ),
                                     )
                                   : Text(
-                                      'Verify now'.toUpperCase(),
+                                      'Verify now',
                                       style: const TextStyle(
                                         letterSpacing: 1,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: .bold,
                                       ),
                                     ),
                             ),
@@ -162,19 +169,19 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: Spacing.xxxl),
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey.shade200,
+                              ? context.colors.border
+                              : context.colors.border,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: context.colors.shadow,
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -182,18 +189,18 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 16,
+                          vertical: Spacing.lg,
+                          horizontal: Spacing.lg,
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: .stretch,
                           children: [
                             Text(
-                              'Don\'t have a verification code?'.toUpperCase(),
+                              'Don\'t have a verification code?',
                               style: Theme.of(context).textTheme.titleSmall!
                                   .copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey,
+                                    fontWeight: .w600,
+                                    color: context.colors.textSubtle,
                                   ),
                             ),
                             const SizedBox(height: Spacing.lg),
@@ -202,10 +209,10 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                 context.push(AppRoute.getVerificationCode.path);
                               },
                               child: Text(
-                                'get your verification code!'.toUpperCase(),
+                                'Get your verification code!',
                                 style: const TextStyle(
                                   letterSpacing: .2,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: .bold,
                                 ),
                               ),
                             ),
@@ -213,16 +220,16 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: Spacing.xxl),
                     Center(
                       child: TextButton(
                         onPressed: () => context.goNamed(AppRoute.login.name),
                         child: Text(
-                          'Cancel and Login'.toUpperCase(),
+                          'Cancel and login',
                           style: TextStyle(
-                            color: Colors.grey.shade600,
+                            color: context.colors.textMuted,
                             letterSpacing: 1,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: .bold,
                           ),
                         ),
                       ),

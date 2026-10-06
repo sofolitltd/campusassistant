@@ -8,6 +8,10 @@ import '/core/di.dart';
 import '/features/community/data/models/community_comment.dart';
 import '/features/community/data/models/community_post.dart';
 import '/features/community/presentation/widgets/comment_item.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CommentsSheet extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -66,32 +70,32 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
       child: Column(
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           Container(
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
+              color: context.colors.borderStrong,
+              borderRadius: BorderRadius.circular(RadiusToken.xs),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             child: Text(
               'Comments',
               style: GoogleFonts.outfit(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontWeight: .bold,
+                fontSize: FontSizeToken.lg,
               ),
             ),
           ),
@@ -114,12 +118,14 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                   return Center(
                     child: Text(
                       'No comments yet. Be the first to reply!',
-                      style: GoogleFonts.outfit(color: Colors.grey),
+                      style: GoogleFonts.outfit(
+                        color: context.colors.textSubtle,
+                      ),
                     ),
                   );
                 }
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(Spacing.lg),
                   itemCount: comments.length,
                   itemBuilder: (context, index) {
                     return CommentItem(
@@ -135,14 +141,17 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
           ),
           if (_replyingToName != null)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.lg,
+                vertical: Spacing.sm,
+              ),
               color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
               child: Row(
                 children: [
                   Text(
                     'Replying to $_replyingToName',
                     style: GoogleFonts.outfit(
-                      fontSize: 12,
+                      fontSize: FontSizeToken.sm,
                       color: Theme.of(context).primaryColor,
                     ),
                   ),
@@ -169,38 +178,36 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               16,
               8 + MediaQuery.of(context).viewInsets.bottom,
             ),
-            color: isDark ? Theme.of(context).cardColor : Colors.white,
+            color: context.colors.surface,
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.05)
-                          : Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(24),
+                      color: context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.xxxl),
                     ),
                     child: TextField(
                       controller: _controller,
-                      style: GoogleFonts.outfit(fontSize: 14),
+                      style: GoogleFonts.outfit(fontSize: FontSizeToken.base),
                       decoration: InputDecoration(
                         hintText: 'Write a comment...',
                         hintStyle: GoogleFonts.outfit(
-                          color: Colors.grey,
-                          fontSize: 14,
+                          color: context.colors.textSubtle,
+                          fontSize: FontSizeToken.base,
                         ),
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,
+                          vertical: Spacing.md,
                         ),
                       ),
                       onSubmitted: (_) => _submitComment(),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 IconButton(
                   icon: Icon(
                     LucideIcons.send,

@@ -16,6 +16,12 @@ import '../providers/marketplace_provider.dart';
 import '../providers/orders_provider.dart';
 import 'merchant_edit_screen.dart';
 import 'merchant_product_form_screen.dart';
+import 'seller/earnings_tab.dart';
+import 'seller/insights_tab.dart';
+import 'seller/seller_reviews_tab.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
+import '/core/theme/tokens/app_control.dart';
 
 /// The owner's self-service view of a single business they run: profile
 /// (with edit/delete), the products they sell, and order/delivery/revenue
@@ -25,17 +31,19 @@ class MerchantManageScreen extends ConsumerStatefulWidget {
   const MerchantManageScreen({super.key, required this.merchant});
 
   @override
-  ConsumerState<MerchantManageScreen> createState() => _MerchantManageScreenState();
+  ConsumerState<MerchantManageScreen> createState() =>
+      _MerchantManageScreenState();
 }
 
-class _MerchantManageScreenState extends ConsumerState<MerchantManageScreen> with SingleTickerProviderStateMixin {
+class _MerchantManageScreenState extends ConsumerState<MerchantManageScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   bool _deleting = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
   }
 
   @override
@@ -49,12 +57,20 @@ class _MerchantManageScreenState extends ConsumerState<MerchantManageScreen> wit
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete this business?'),
-        content: Text('This permanently removes "${merchant.businessName}" and cannot be undone.'),
+        content: Text(
+          'This permanently removes "${merchant.businessName}" and cannot be undone.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: context.colors.danger),
+            ),
           ),
         ],
       ),
@@ -82,7 +98,10 @@ class _MerchantManageScreenState extends ConsumerState<MerchantManageScreen> wit
     // edit), falling back to whatever was passed in on first build.
     final merchantsAsync = ref.watch(myMerchantsProvider);
     final merchant = merchantsAsync.maybeWhen(
-      data: (list) => list.firstWhere((m) => m.id == widget.merchant.id, orElse: () => widget.merchant),
+      data: (list) => list.firstWhere(
+        (m) => m.id == widget.merchant.id,
+        orElse: () => widget.merchant,
+      ),
       orElse: () => widget.merchant,
     );
 
@@ -90,22 +109,34 @@ class _MerchantManageScreenState extends ConsumerState<MerchantManageScreen> wit
       title: merchant.businessName,
       showSearchBar: false,
       tabController: _tabController,
-      tabs: const ['About', 'Products', 'Orders', 'Delivery', 'Transactions'],
+      tabs: const [
+        'Insights',
+        'Orders',
+        'Products',
+        'Delivery',
+        'Earnings',
+        'Reviews',
+        'About',
+      ],
       body: TabBarView(
         controller: _tabController,
         children: [
+          InsightsTab(merchantId: merchant.id),
+          _OrdersTab(merchantId: merchant.id, deliveryOnly: false),
+          _ProductsTab(merchantId: merchant.id),
+          _OrdersTab(merchantId: merchant.id, deliveryOnly: true),
+          EarningsTab(merchantId: merchant.id),
+          SellerReviewsTab(merchantId: merchant.id),
           _AboutTab(
             merchant: merchant,
             deleting: _deleting,
             onEdit: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => MerchantEditScreen(merchant: merchant)),
+              MaterialPageRoute(
+                builder: (_) => MerchantEditScreen(merchant: merchant),
+              ),
             ),
             onDelete: () => _confirmDelete(merchant),
           ),
-          _ProductsTab(merchantId: merchant.id),
-          _OrdersTab(merchantId: merchant.id, deliveryOnly: false),
-          _OrdersTab(merchantId: merchant.id, deliveryOnly: true),
-          _TransactionsTab(merchantId: merchant.id),
         ],
       ),
     );
@@ -118,22 +149,27 @@ class _AboutTab extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _AboutTab({required this.merchant, required this.deleting, required this.onEdit, required this.onDelete});
+  const _AboutTab({
+    required this.merchant,
+    required this.deleting,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).appColors;
     final (icon, color, label) = switch (merchant.status) {
-      'approved' => (LucideIcons.circleCheck, colors.successColor, 'Approved'),
-      'rejected' => (LucideIcons.circleX, colors.destructiveColor, 'Rejected'),
-      _ => (LucideIcons.clock, colors.warningColor, 'Pending Review'),
+      'approved' => (LucideIcons.circleCheck, colors.success, 'Approved'),
+      'rejected' => (LucideIcons.circleX, colors.danger, 'Rejected'),
+      _ => (LucideIcons.clock, colors.warning, 'Pending Review'),
     };
 
     return ListView(
       padding: const EdgeInsets.all(Spacing.lg),
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Container(
               height: 64,
@@ -141,34 +177,62 @@ class _AboutTab extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: colors.surfaceAltBg,
-                border: Border.all(color: color.withValues(alpha: 0.4), width: 2),
+                border: Border.all(
+                  color: color.withValues(alpha: 0.4),
+                  width: 2,
+                ),
               ),
               child: merchant.logoUrl.isNotEmpty
                   ? ClipOval(
                       child: Image.network(
                         ApiEndpoints.resolveImageUrl(merchant.logoUrl),
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Icon(LucideIcons.store, color: colors.primaryColor.withValues(alpha: 0.6)),
+                        fit: .cover,
+                        errorBuilder: (_, _, _) => Icon(
+                          LucideIcons.store,
+                          color: colors.primary.withValues(alpha: 0.6),
+                        ),
                       ),
                     )
-                  : Icon(LucideIcons.store, color: colors.primaryColor.withValues(alpha: 0.6)),
+                  : Icon(
+                      LucideIcons.store,
+                      color: colors.primary.withValues(alpha: 0.6),
+                    ),
             ),
             const SizedBox(width: Spacing.md),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
-                  Text(merchant.businessName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                  Text(
+                    merchant.businessName,
+                    style: const TextStyle(
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.xl,
+                    ),
+                  ),
                   const SizedBox(height: Spacing.xs),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: 2),
-                    decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: RadiusToken.circular(RadiusToken.full)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.sm,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: RadiusToken.circular(RadiusToken.full),
+                    ),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: .min,
                       children: [
                         Icon(icon, size: 11, color: color),
-                        const SizedBox(width: 4),
-                        Text(label.toUpperCase(), style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 10)),
+                        const SizedBox(width: Spacing.xs),
+                        Text(
+                          label.toUpperCase(),
+                          style: TextStyle(
+                            color: color,
+                            fontWeight: .bold,
+                            fontSize: FontSizeToken.xxs,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -177,46 +241,85 @@ class _AboutTab extends StatelessWidget {
             ),
           ],
         ),
-        if (merchant.status == 'rejected' && (merchant.rejectionReason ?? '').isNotEmpty) ...[
+        if (merchant.status == 'rejected' &&
+            (merchant.rejectionReason ?? '').isNotEmpty) ...[
           const SizedBox(height: Spacing.md),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(Spacing.md),
-            decoration: BoxDecoration(color: colors.destructiveColor.withValues(alpha: 0.08), borderRadius: RadiusToken.circular(RadiusToken.md)),
-            child: Text('Reason: ${merchant.rejectionReason}', style: TextStyle(color: Colors.grey.shade700, height: 1.4)),
+            decoration: BoxDecoration(
+              color: colors.danger.withValues(alpha: 0.08),
+              borderRadius: RadiusToken.circular(RadiusToken.md),
+            ),
+            child: Text(
+              'Reason: ${merchant.rejectionReason}',
+              style: TextStyle(color: context.colors.textMuted, height: 1.4),
+            ),
           ),
         ],
         const SizedBox(height: Spacing.lg),
         if (merchant.description.isNotEmpty) ...[
-          Text(merchant.description, style: TextStyle(color: Colors.grey.shade700, height: 1.5, fontSize: 13.5)),
+          Text(
+            merchant.description,
+            style: TextStyle(
+              color: context.colors.textMuted,
+              height: 1.5,
+              fontSize: 13.5,
+            ),
+          ),
           const SizedBox(height: Spacing.lg),
         ],
-        _InfoRow(icon: LucideIcons.tag, label: 'Business Type', value: merchant.businessType),
-        _InfoRow(icon: LucideIcons.phone, label: 'Phone', value: merchant.phone),
+        _InfoRow(
+          icon: LucideIcons.tag,
+          label: 'Business Type',
+          value: merchant.businessType,
+        ),
+        _InfoRow(
+          icon: LucideIcons.phone,
+          label: 'Phone',
+          value: merchant.phone,
+        ),
         _InfoRow(icon: LucideIcons.mail, label: 'Email', value: merchant.email),
-        _InfoRow(icon: LucideIcons.globe, label: 'Website', value: merchant.website ?? ''),
-        _InfoRow(icon: LucideIcons.link, label: 'Social Media', value: merchant.socialMediaLink ?? ''),
+        _InfoRow(
+          icon: LucideIcons.globe,
+          label: 'Website',
+          value: merchant.website ?? '',
+        ),
+        _InfoRow(
+          icon: LucideIcons.link,
+          label: 'Social Media',
+          value: merchant.socialMediaLink ?? '',
+        ),
         const SizedBox(height: Spacing.xl),
         OutlinedButton.icon(
           onPressed: onEdit,
           icon: const Icon(LucideIcons.pencil, size: 16),
-          label: const Text('Edit Business'),
+          label: const Text('Edit business'),
           style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 46),
-            shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.md)),
+            minimumSize: const Size(double.infinity, ControlToken.height),
           ),
         ),
         const SizedBox(height: Spacing.sm),
         OutlinedButton.icon(
           onPressed: deleting ? null : onDelete,
           icon: deleting
-              ? const SizedBox(height: 14, width: 14, child: CupertinoActivityIndicator())
-              : const Icon(LucideIcons.trash2, size: 16, color: Colors.red),
-          label: Text(deleting ? 'Deleting...' : 'Delete Business', style: const TextStyle(color: Colors.red)),
+              ? const SizedBox(
+                  height: 14,
+                  width: 14,
+                  child: CupertinoActivityIndicator(),
+                )
+              : Icon(
+                  LucideIcons.trash2,
+                  size: 16,
+                  color: context.colors.danger,
+                ),
+          label: Text(
+            deleting ? 'Deleting...' : 'Delete Business',
+            style: TextStyle(color: context.colors.danger),
+          ),
           style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 46),
-            side: const BorderSide(color: Colors.red),
-            shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.md)),
+            minimumSize: const Size(double.infinity, ControlToken.height),
+            side: BorderSide(color: context.colors.danger),
           ),
         ),
         const SizedBox(height: Spacing.xl),
@@ -229,7 +332,11 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -237,15 +344,22 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: Spacing.md),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
-          Icon(icon, size: 16, color: Colors.grey.shade500),
+          Icon(icon, size: 16, color: context.colors.textSubtle),
           const SizedBox(width: Spacing.sm),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
-                Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: FontSizeToken.xs,
+                    color: context.colors.textSubtle,
+                    fontWeight: .w600,
+                  ),
+                ),
                 Text(value, style: const TextStyle(fontSize: 13.5)),
               ],
             ),
@@ -260,17 +374,29 @@ class _ProductsTab extends ConsumerWidget {
   final String merchantId;
   const _ProductsTab({required this.merchantId});
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, Product product) async {
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    Product product,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete this product?'),
-        content: Text('"${product.title}" will be removed from your storefront.'),
+        content: Text(
+          '"${product.title}" will be removed from your storefront.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: context.colors.danger),
+            ),
           ),
         ],
       ),
@@ -282,7 +408,9 @@ class _ProductsTab extends ConsumerWidget {
       ref.invalidate(merchantProductsProvider(merchantId));
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not delete product.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not delete product.')),
+        );
       }
     }
   }
@@ -295,14 +423,28 @@ class _ProductsTab extends ConsumerWidget {
         productsAsync.when(
           data: (products) {
             if (products.isEmpty) {
-              return Center(child: Text('No products yet. Tap + to add one.', style: TextStyle(color: Colors.grey.shade500)));
+              return Center(
+                child: Text(
+                  'No products yet. Tap + to add one.',
+                  style: TextStyle(color: context.colors.textSubtle),
+                ),
+              );
             }
             return LayoutBuilder(
               builder: (context, constraints) {
                 final width = constraints.maxWidth;
-                final crossAxisCount = width >= 640 ? 4 : width >= 480 ? 3 : 2;
+                final crossAxisCount = width >= 640
+                    ? 4
+                    : width >= 480
+                    ? 3
+                    : 2;
                 return MasonryGridView.builder(
-                  padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 80),
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.lg,
+                    80,
+                  ),
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                   gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
@@ -313,7 +455,10 @@ class _ProductsTab extends ConsumerWidget {
                     product: products[i],
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => MerchantProductFormScreen(merchantId: merchantId, product: products[i]),
+                        builder: (_) => MerchantProductFormScreen(
+                          merchantId: merchantId,
+                          product: products[i],
+                        ),
                       ),
                     ),
                     onDelete: () => _confirmDelete(context, ref, products[i]),
@@ -323,7 +468,12 @@ class _ProductsTab extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (e, _) => Center(child: Text('Could not load products.', style: TextStyle(color: Colors.grey.shade500))),
+          error: (e, _) => Center(
+            child: Text(
+              'Could not load products.',
+              style: TextStyle(color: context.colors.textSubtle),
+            ),
+          ),
         ),
         Positioned(
           right: Spacing.lg,
@@ -331,10 +481,13 @@ class _ProductsTab extends ConsumerWidget {
           child: FloatingActionButton.extended(
             heroTag: 'add-product-$merchantId',
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => MerchantProductFormScreen(merchantId: merchantId)),
+              MaterialPageRoute(
+                builder: (_) =>
+                    MerchantProductFormScreen(merchantId: merchantId),
+              ),
             ),
             icon: const Icon(LucideIcons.plus),
-            label: const Text('Add Product'),
+            label: const Text('Add product'),
           ),
         ),
       ],
@@ -346,12 +499,17 @@ class _ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
   final VoidCallback onDelete;
-  const _ProductCard({required this.product, required this.onTap, required this.onDelete});
+  const _ProductCard({
+    required this.product,
+    required this.onTap,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final imageUrl = product.imageUrls.isNotEmpty ? product.imageUrls.first : '';
+    final imageUrl = product.imageUrls.isNotEmpty
+        ? product.imageUrls.first
+        : '';
 
     return GestureDetector(
       onTap: onTap,
@@ -359,29 +517,37 @@ class _ProductCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: RadiusToken.circular(RadiusToken.lg),
-          border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+          border: Border.all(color: context.colors.border),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Expanded(
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(RadiusToken.lg)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.lg),
+                    ),
                     child: imageUrl.isNotEmpty
                         ? Image.network(
                             ApiEndpoints.resolveImageUrl(imageUrl),
-                            fit: BoxFit.cover,
+                            fit: .cover,
                             errorBuilder: (_, _, _) => Container(
-                              color: Colors.grey.shade100,
-                              child: Icon(LucideIcons.shoppingBag, color: Colors.grey.shade400),
+                              color: context.colors.surfaceAlt,
+                              child: Icon(
+                                LucideIcons.shoppingBag,
+                                color: context.colors.textSubtle,
+                              ),
                             ),
                           )
                         : Container(
-                            color: Colors.grey.shade100,
-                            child: Icon(LucideIcons.shoppingBag, color: Colors.grey.shade400),
+                            color: context.colors.surfaceAlt,
+                            child: Icon(
+                              LucideIcons.shoppingBag,
+                              color: context.colors.textSubtle,
+                            ),
                           ),
                   ),
                   if (!product.isPublished)
@@ -389,9 +555,22 @@ class _ProductCard extends StatelessWidget {
                       top: 6,
                       left: 6,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(6)),
-                        child: const Text('DRAFT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.sm,
+                          vertical: Spacing.xxs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.colors.textMuted,
+                          borderRadius: BorderRadius.circular(RadiusToken.sm),
+                        ),
+                        child: Text(
+                          'DRAFT',
+                          style: TextStyle(
+                            fontSize: FontSizeToken.xxs,
+                            fontWeight: .bold,
+                            color: context.colors.onPrimary,
+                          ),
+                        ),
                       ),
                     ),
                   Positioned(
@@ -400,9 +579,16 @@ class _ProductCard extends StatelessWidget {
                     child: GestureDetector(
                       onTap: onDelete,
                       child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: const BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
-                        child: const Icon(LucideIcons.trash2, size: 14, color: Colors.white),
+                        padding: const EdgeInsets.all(Spacing.xs),
+                        decoration: BoxDecoration(
+                          color: context.colors.textSubtle,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          LucideIcons.trash2,
+                          size: 14,
+                          color: context.colors.onPrimary,
+                        ),
                       ),
                     ),
                   ),
@@ -410,18 +596,28 @@ class _ProductCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(Spacing.md),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     product.title,
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, height: 1.2),
+                    overflow: .ellipsis,
+                    style: const TextStyle(
+                      fontWeight: .w600,
+                      fontSize: FontSizeToken.md,
+                      height: 1.2,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text('৳${product.price}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  const SizedBox(height: Spacing.xs),
+                  Text(
+                    '৳${product.price}',
+                    style: const TextStyle(
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.md,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -432,42 +628,28 @@ class _ProductCard extends StatelessWidget {
   }
 }
 
-Color _orderStatusColor(String status) {
-  switch (status) {
-    case 'pending_payment':
-      return Colors.amber;
-    case 'paid':
-      return Colors.blue;
-    case 'processing':
-      return Colors.indigo;
-    case 'shipped':
-      return Colors.purple;
-    case 'delivered':
-      return Colors.green;
-    case 'cancelled':
-      return Colors.red;
-    default:
-      return Colors.grey;
-  }
+Color _orderStatusColor(BuildContext context, String status) {
+  return switch (status) {
+    'pending_payment' => context.colors.warning,
+    'paid' => context.colors.info,
+    'processing' => context.colors.info,
+    'shipped' => AccentToken.violet,
+    'delivered' => context.colors.success,
+    'cancelled' => context.colors.danger,
+    _ => context.colors.textSubtle,
+  };
 }
 
 String _orderStatusLabel(String status) {
-  switch (status) {
-    case 'pending_payment':
-      return 'Pending Payment';
-    case 'paid':
-      return 'Paid';
-    case 'processing':
-      return 'Processing';
-    case 'shipped':
-      return 'Shipped';
-    case 'delivered':
-      return 'Delivered';
-    case 'cancelled':
-      return 'Cancelled';
-    default:
-      return status;
-  }
+  return switch (status) {
+    'pending_payment' => 'Pending Payment',
+    'paid' => 'Paid',
+    'processing' => 'Processing',
+    'shipped' => 'Shipped',
+    'delivered' => 'Delivered',
+    'cancelled' => 'Cancelled',
+    _ => status,
+  };
 }
 
 const _deliveryStatuses = {'paid', 'processing', 'shipped'};
@@ -476,18 +658,15 @@ const _deliveryStatuses = {'paid', 'processing', 'shipped'};
 // current status — null means no self-service action applies (e.g. already
 // delivered, or still awaiting payment).
 String? _nextFulfillmentStatus(String status) {
-  switch (status) {
-    case 'paid':
-    case 'processing':
-      return 'shipped';
-    case 'shipped':
-      return 'delivered';
-    default:
-      return null;
-  }
+  return switch (status) {
+    'paid' || 'processing' => 'shipped',
+    'shipped' => 'delivered',
+    _ => null,
+  };
 }
 
-String _fulfillmentActionLabel(String nextStatus) => nextStatus == 'shipped' ? 'Mark Shipped' : 'Mark Delivered';
+String _fulfillmentActionLabel(String nextStatus) =>
+    nextStatus == 'shipped' ? 'Mark Shipped' : 'Mark Delivered';
 
 class _OrdersTab extends ConsumerStatefulWidget {
   final String merchantId;
@@ -513,7 +692,9 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
       ref.invalidate(merchantOrdersProvider(widget.merchantId));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not update order status.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not update order status.')),
+        );
       }
     } finally {
       if (mounted) setState(() => _updatingOrderId = null);
@@ -525,12 +706,16 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
     final ordersAsync = ref.watch(merchantOrdersProvider(widget.merchantId));
     return ordersAsync.when(
       data: (orders) {
-        final filtered = widget.deliveryOnly ? orders.where((o) => _deliveryStatuses.contains(o.status)).toList() : orders;
+        final filtered = widget.deliveryOnly
+            ? orders.where((o) => _deliveryStatuses.contains(o.status)).toList()
+            : orders;
         if (filtered.isEmpty) {
           return Center(
             child: Text(
-              widget.deliveryOnly ? 'No orders awaiting delivery.' : 'No orders yet.',
-              style: TextStyle(color: Colors.grey.shade500),
+              widget.deliveryOnly
+                  ? 'No orders awaiting delivery.'
+                  : 'No orders yet.',
+              style: TextStyle(color: context.colors.textSubtle),
             ),
           );
         }
@@ -539,38 +724,62 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
           itemCount: filtered.length,
           itemBuilder: (context, i) {
             final order = filtered[i];
-            final myTotal = order.items.fold<int>(0, (sum, item) => sum + item.totalPrice);
+            final myTotal = order.items.fold<int>(
+              0,
+              (sum, item) => sum + item.totalPrice,
+            );
             final nextStatus = _nextFulfillmentStatus(order.status);
             final isUpdating = _updatingOrderId == order.id;
             return Card(
               margin: const EdgeInsets.only(bottom: Spacing.md),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     ListTile(
                       title: Text(
                         'Order #${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontWeight: .w600),
                       ),
                       isThreeLine: true,
                       subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
-                          Text('${order.shippingRecipientName} · ${order.shippingCity}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                          const SizedBox(height: 4),
-                          Text('৳$myTotal', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
+                          Text(
+                            '${order.shippingRecipientName} · ${order.shippingCity}',
+                            style: TextStyle(
+                              fontSize: FontSizeToken.sm,
+                              color: context.colors.textMuted,
+                            ),
+                          ),
+                          const SizedBox(height: Spacing.xs),
+                          Text(
+                            '৳$myTotal',
+                            style: const TextStyle(fontWeight: .bold),
+                          ),
+                          const SizedBox(height: Spacing.xs),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Spacing.sm,
+                              vertical: Spacing.xxs,
+                            ),
                             decoration: BoxDecoration(
-                              color: _orderStatusColor(order.status).withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
+                              color: _orderStatusColor(
+                                context,
+                                order.status,
+                              ).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.lg,
+                              ),
                             ),
                             child: Text(
                               _orderStatusLabel(order.status),
-                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _orderStatusColor(order.status)),
+                              style: TextStyle(
+                                fontSize: FontSizeToken.xs,
+                                fontWeight: .w600,
+                                color: _orderStatusColor(context, order.status),
+                              ),
                             ),
                           ),
                         ],
@@ -578,13 +787,24 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
                     ),
                     if (nextStatus != null)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                        padding: const EdgeInsets.fromLTRB(
+                          Spacing.lg,
+                          0,
+                          Spacing.lg,
+                          Spacing.md,
+                        ),
                         child: SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
-                            onPressed: isUpdating ? null : () => _markAs(order.id, nextStatus),
+                            onPressed: isUpdating
+                                ? null
+                                : () => _markAs(order.id, nextStatus),
                             icon: isUpdating
-                                ? const SizedBox(height: 14, width: 14, child: CupertinoActivityIndicator())
+                                ? const SizedBox(
+                                    height: 14,
+                                    width: 14,
+                                    child: CupertinoActivityIndicator(),
+                                  )
                                 : const Icon(LucideIcons.truck, size: 16),
                             label: Text(_fulfillmentActionLabel(nextStatus)),
                           ),
@@ -598,81 +818,12 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
         );
       },
       loading: () => const Center(child: CupertinoActivityIndicator()),
-      error: (e, _) => Center(child: Text('Could not load orders.', style: TextStyle(color: Colors.grey.shade500))),
-    );
-  }
-}
-
-class _TransactionsTab extends ConsumerWidget {
-  final String merchantId;
-  const _TransactionsTab({required this.merchantId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = Theme.of(context).appColors;
-    final ordersAsync = ref.watch(merchantOrdersProvider(merchantId));
-
-    return ordersAsync.when(
-      data: (orders) {
-        final completed = orders.where((o) => o.status == 'delivered').toList();
-        final grossTotal = completed.fold<int>(0, (sum, o) => sum + o.items.fold<int>(0, (s, i) => s + i.totalPrice));
-        final netTotal = completed.fold<double>(0, (sum, o) => sum + o.items.fold<double>(0, (s, i) => s + i.netPayout));
-
-        return ListView(
-          padding: const EdgeInsets.all(Spacing.lg),
-          children: [
-            Container(
-              padding: const EdgeInsets.all(Spacing.lg),
-              decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.08), borderRadius: RadiusToken.circular(RadiusToken.lg)),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Gross Revenue', style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 2),
-                        Text('৳$grossTotal', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Net Payout', style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 2),
-                        Text('৳${netTotal.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: colors.primaryColor)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: Spacing.lg),
-            if (completed.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: Spacing.xxl),
-                child: Center(child: Text('No completed transactions yet.', style: TextStyle(color: Colors.grey.shade500))),
-              )
-            else
-              ...completed.map((order) {
-                final orderGross = order.items.fold<int>(0, (s, i) => s + i.totalPrice);
-                final orderNet = order.items.fold<double>(0, (s, i) => s + i.netPayout);
-                return Card(
-                  margin: const EdgeInsets.only(bottom: Spacing.sm),
-                  child: ListTile(
-                    title: Text('Order #${order.id.length > 8 ? order.id.substring(0, 8) : order.id}'),
-                    subtitle: Text('${order.items.length} item${order.items.length == 1 ? '' : 's'} · Gross ৳$orderGross'),
-                    trailing: Text('৳${orderNet.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, color: colors.primaryColor)),
-                  ),
-                );
-              }),
-          ],
-        );
-      },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
-      error: (e, _) => Center(child: Text('Could not load transactions.', style: TextStyle(color: Colors.grey.shade500))),
+      error: (e, _) => Center(
+        child: Text(
+          'Could not load orders.',
+          style: TextStyle(color: context.colors.textSubtle),
+        ),
+      ),
     );
   }
 }

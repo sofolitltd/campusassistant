@@ -5,14 +5,14 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class QuickActionsSection extends StatelessWidget {
   const QuickActionsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final items = [
       _ActionItem(
         icon: LucideIcons.megaphone,
@@ -32,7 +32,7 @@ class QuickActionsSection extends StatelessWidget {
     ];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.lg),
       child: Row(
         children: items
             .map(
@@ -42,12 +42,10 @@ class QuickActionsSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(RadiusToken.lg),
-                    border: Border.all(
-                      color: isDark ? Colors.white10 : Colors.grey.shade200,
-                    ),
+                    border: Border.all(color: context.colors.border),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
+                        color: context.colors.shadow,
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -60,24 +58,24 @@ class QuickActionsSection extends StatelessWidget {
                       onTap: item.onTap,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 12,
+                          vertical: Spacing.xl,
+                          horizontal: Spacing.md,
                         ),
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: .min,
                           children: [
                             Icon(
                               item.icon,
                               size: 24,
-                              color: Theme.of(context).appColors.primaryColor,
+                              color: context.colors.primary,
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: Spacing.md),
                             Text(
                               item.label,
                               style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? Colors.white : Colors.black87,
+                                fontSize: FontSizeToken.md,
+                                fontWeight: .w500,
+                                color: context.colors.text,
                               ),
                             ),
                           ],

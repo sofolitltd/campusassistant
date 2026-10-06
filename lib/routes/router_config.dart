@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '/features/auth/presentation/screens/forgot_password_page.dart';
+import '/features/auth/presentation/screens/new_password_page.dart';
+import '/features/auth/presentation/screens/reset_password_page.dart';
 import '/features/auth/presentation/screens/login_page.dart';
 import '/features/auth/presentation/screens/new_student_create_account_screen.dart';
 import '/features/auth/presentation/screens/new_student_sign_up_screen.dart';
@@ -34,6 +36,7 @@ import '/features/emergency/presentation/screens/emergency_page.dart';
 import '/features/home/home_page.dart';
 import '/features/routine/presentation/screens/routine_page.dart';
 import '/features/search/presentation/screens/search_page.dart';
+import '/features/study/levels/presentation/screens/study_search_page.dart';
 import '/features/staff/presentation/screens/staff_details_screen.dart';
 import '/features/staff/presentation/screens/staff_page.dart';
 import '/features/student/presentation/screens/all_students_page.dart';
@@ -76,6 +79,11 @@ import '/features/marketplace/presentation/screens/product_detail_screen.dart';
 import '/features/marketplace/data/models/merchant.dart';
 import '/features/marketplace/presentation/screens/merchant_apply_screen.dart';
 import '/features/marketplace/presentation/screens/merchant_manage_screen.dart';
+import '/features/marketplace/presentation/screens/merchant_manage_loader.dart';
+import '/features/marketplace/presentation/screens/market_search_screen.dart';
+import '/features/marketplace/presentation/screens/wishlist_screen.dart';
+import '/features/marketplace/presentation/screens/invoices_screen.dart';
+import '/features/marketplace/presentation/screens/product_detail_loader.dart';
 import '/features/marketplace/presentation/screens/product_list_screen.dart';
 import '/features/marketplace/presentation/screens/checkout_screen.dart';
 import '/features/marketplace/presentation/screens/order_history_screen.dart';
@@ -107,6 +115,9 @@ import '/features/auth/presentation/screens/new_splash_screen.dart';
 import '/features/onboarding/presentation/providers/onboarding_provider.dart';
 import '/features/onboarding/presentation/screens/onboarding_screen.dart';
 import '/features/cache/presentation/cache_management_page.dart';
+import '/features/reward/presentation/screens/reward_page.dart';
+import '/features/feedback/presentation/screens/feedback_page.dart';
+import '/features/feedback/presentation/screens/create_feedback_page.dart';
 import 'app_route.dart';
 import 'scaffold_with_navbar.dart';
 
@@ -172,6 +183,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isGuestRoute =
           matchedLocation == AppRoute.login.path ||
           matchedLocation == AppRoute.forgotPassword.path ||
+          matchedLocation == AppRoute.resetPassword.path ||
+          matchedLocation == AppRoute.newPassword.path ||
           matchedLocation == AppRoute.verification.path ||
           matchedLocation.startsWith('/register') ||
           matchedLocation.startsWith('/create-account');
@@ -249,6 +262,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: ':courseCode',
                         name: AppRoute.courseDetails.name,
+                        // Reachable from SearchPage, StudySearchPage, and
+                        // CoursesPage's own course list — all three must
+                        // resolve to the same navigator stack, otherwise
+                        // navigating to a course already open elsewhere
+                        // pushes a page with a colliding key onto the
+                        // Study branch's nested navigator.
+                        parentNavigatorKey: rootNavigatorKey,
                         pageBuilder: (context, state) {
                           final courseCode =
                               state.pathParameters['courseCode']!;
@@ -269,6 +289,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                           GoRoute(
                             path: ':chapterNo',
                             name: AppRoute.courseNotes.name,
+                            parentNavigatorKey: rootNavigatorKey,
                             pageBuilder: (context, state) {
                               final courseCode =
                                   state.pathParameters['courseCode']!;
@@ -588,10 +609,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               'Plan';
           final amount =
               args?['amount'] ?? state.uri.queryParameters['amount'] ?? '0';
+          final couponCode = state.uri.queryParameters['coupon_code'];
           return PaymentPage(
             planId: planId,
             planTitle: planTitle,
             amount: amount,
+            couponCode: couponCode,
           );
         },
       ),
@@ -747,9 +770,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'details',
             pageBuilder: (context, state) {
               final id = state.uri.queryParameters['id']!;
-              return NoTransitionPage(
-                child: StaffDetailsScreen(staffId: id),
-              );
+              return NoTransitionPage(child: StaffDetailsScreen(staffId: id));
             },
           ),
         ],
@@ -788,6 +809,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: SearchPage()),
+      ),
+      GoRoute(
+        name: AppRoute.studySearch.name,
+        path: AppRoute.studySearch.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: StudySearchPage()),
       ),
       GoRoute(
         name: AppRoute.notifications.name,
@@ -829,6 +857,42 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: ForgotPassword()),
+      ),
+      GoRoute(
+        name: AppRoute.resetPassword.name,
+        path: AppRoute.resetPassword.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) {
+          // Reached only via the forgot-password screen, which passes the
+          // email as `extra`. A direct hit (deep link, web refresh) has no
+          // email to reset, so send the user back to the start of the flow.
+          final email = state.extra is String ? state.extra as String : null;
+          if (email == null || email.isEmpty) {
+            return const NoTransitionPage(child: ForgotPassword());
+          }
+          return NoTransitionPage(child: ResetPasswordPage(email: email));
+        },
+      ),
+      GoRoute(
+        name: AppRoute.newPassword.name,
+        path: AppRoute.newPassword.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) {
+          // The reset token only exists in memory, passed from the code
+          // screen. A refresh or deep link loses it, so restart the flow.
+          final extra = state.extra;
+          if (extra is Map &&
+              extra['email'] is String &&
+              extra['resetToken'] is String) {
+            return NoTransitionPage(
+              child: NewPasswordPage(
+                email: extra['email'] as String,
+                resetToken: extra['resetToken'] as String,
+              ),
+            );
+          }
+          return const NoTransitionPage(child: ForgotPassword());
+        },
       ),
       GoRoute(
         name: AppRoute.verification.name,
@@ -924,9 +988,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.lostFound.name,
         path: AppRoute.lostFound.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: LostFoundPage(),
-        ),
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: LostFoundPage()),
       ),
       // NOTE: static /lost-found/create must be registered before the
       // dynamic /lost-found/:itemId route below — go_router matches routes
@@ -935,9 +998,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.lostFoundCreate.name,
         path: AppRoute.lostFoundCreate.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: CreateLostFoundScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: CreateLostFoundScreen()),
       ),
       GoRoute(
         name: AppRoute.lostFoundItemDetails.name,
@@ -945,9 +1007,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) {
           final itemId = state.pathParameters['itemId']!;
-          return NoTransitionPage(
-            child: LostFoundDetailScreen(itemId: itemId),
-          );
+          return NoTransitionPage(child: LostFoundDetailScreen(itemId: itemId));
         },
       ),
       // NOTE: static /career/jobs/create must be registered before the
@@ -1007,8 +1067,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.merchantManage.path,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
-          final merchant = state.extra as Merchant;
-          return MerchantManageScreen(merchant: merchant);
+          final extra = state.extra;
+          if (extra is Merchant) return MerchantManageScreen(merchant: extra);
+          // Opened from a push notification: only the id is known.
+          return MerchantManageLoader(
+            merchantId: state.pathParameters['merchantId'] ?? '',
+          );
         },
       ),
       GoRoute(
@@ -1085,14 +1149,39 @@ final routerProvider = Provider<GoRouter>((ref) {
           return AddressFormScreen(addressId: addressId);
         },
       ),
+      // Static /campusmarket/<word> routes must come before the :productId one.
+      GoRoute(
+        name: AppRoute.marketplaceSearch.name,
+        path: AppRoute.marketplaceSearch.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const MarketSearchScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceWishlist.name,
+        path: AppRoute.marketplaceWishlist.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const WishlistScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.marketplaceInvoices.name,
+        path: AppRoute.marketplaceInvoices.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const InvoicesScreen(),
+      ),
       GoRoute(
         name: AppRoute.marketplaceProductDetails.name,
         path: AppRoute.marketplaceProductDetails.path,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) {
-          final product = state.extra as Product?;
+          final extra = state.extra;
+          if (extra is Product) {
+            return NoTransitionPage(child: ProductDetailScreen(product: extra));
+          }
+          // Opened from a push notification: only the id is known.
           return NoTransitionPage(
-            child: ProductDetailScreen(product: product),
+            child: ProductDetailLoader(
+              productId: state.pathParameters['productId'] ?? '',
+            ),
           );
         },
       ),
@@ -1165,6 +1254,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: CacheManagementPage()),
+      ),
+      GoRoute(
+        name: AppRoute.reward.name,
+        path: AppRoute.reward.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: RewardPage()),
+      ),
+      GoRoute(
+        name: AppRoute.feedback.name,
+        path: AppRoute.feedback.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: FeedbackPage()),
+      ),
+      GoRoute(
+        name: AppRoute.createFeedback.name,
+        path: AppRoute.createFeedback.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: CreateFeedbackPage()),
       ),
     ],
   );

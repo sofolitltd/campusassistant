@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import '../config/env.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiClient {
   final Dio dio;
@@ -24,14 +24,16 @@ class ApiClient {
            },
          ),
        ) {
-    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    // Debug builds only: bodies include login passwords, access/refresh tokens
+    // and personal data, which must never reach a release build's logs.
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(requestBody: true, responseBody: true),
+      );
+    }
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          if (Env.apiKey.isNotEmpty) {
-            options.headers['X-API-Key'] = Env.apiKey;
-          }
-
           // Add JWT token if available
           final token = await getToken();
           if (token != null && token.isNotEmpty) {

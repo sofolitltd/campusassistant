@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 
 // Ported from personalassistant's JobDetailsScreen widgets/info_card.dart,
 // restyled with this app's Spacing/RadiusToken tokens.
@@ -35,7 +36,7 @@ Future<bool> confirmJobFieldChange(
           onPressed: () => Navigator.pop(context, true),
           child: Text(
             'Confirm',
-            style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold),
+            style: TextStyle(color: cs.primary, fontWeight: .bold),
           ),
         ),
       ],
@@ -59,86 +60,81 @@ Widget buildJobInfoCard(
       borderRadius: BorderRadius.circular(RadiusToken.lg),
       border: Border.all(
         color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white10
-            : Colors.grey.shade200,
+            ? context.colors.border
+            : context.colors.border,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.03),
+          color: context.colors.shadow,
           blurRadius: 10,
           offset: const Offset(0, 4),
         ),
       ],
     ),
-      margin: const EdgeInsets.only(bottom: 12),
-    padding: .only(left: 12, top:10, bottom: 10, right: 12),
+    margin: const EdgeInsets.only(bottom: Spacing.md),
+    padding: .only(left: 12, top: 10, bottom: 10, right: 12),
     child: Row(
       children: [
         Container(
           padding: const EdgeInsets.all(Spacing.sm),
           decoration: BoxDecoration(
-              color: isUrgent ? cs.errorContainer : cs.primaryContainer,
-              borderRadius: RadiusToken.circular(RadiusToken.md),
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: isUrgent ? cs.error : cs.primary,
-            ),
+            color: isUrgent ? cs.errorContainer : cs.primaryContainer,
+            borderRadius: RadiusToken.circular(RadiusToken.md),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
-                ),
-                const SizedBox(height: Spacing.xxs),
-                Text(
-                  DateFormat('MMM dd, yyyy').format(date),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: cs.onSurface,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (timeLeft != null) ...[
-            const SizedBox(width: Spacing.xl),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Spacing.sm,
-                vertical: Spacing.xxs,
+          child: Icon(icon, size: 18, color: isUrgent ? cs.error : cs.primary),
+        ),
+        const SizedBox(width: Spacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
               ),
-              decoration: BoxDecoration(
+              const SizedBox(height: Spacing.xxs),
+              Text(
+                DateFormat('MMM dd, yyyy').format(date),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: .bold,
+                  color: cs.onSurface,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (timeLeft != null) ...[
+          const SizedBox(width: Spacing.xl),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.sm,
+              vertical: Spacing.xxs,
+            ),
+            decoration: BoxDecoration(
+              color: timeLeft == 'Expired'
+                  ? cs.surfaceContainerHighest
+                  : isUrgent
+                  ? cs.errorContainer
+                  : cs.tertiaryContainer,
+              borderRadius: RadiusToken.circular(RadiusToken.xs),
+            ),
+            child: Text(
+              timeLeft,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: .bold,
                 color: timeLeft == 'Expired'
-                    ? cs.surfaceContainerHighest
+                    ? cs.onSurfaceVariant
                     : isUrgent
-                    ? cs.errorContainer
-                    : cs.tertiaryContainer,
-                borderRadius: RadiusToken.circular(RadiusToken.xs),
-              ),
-              child: Text(
-                timeLeft,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: timeLeft == 'Expired'
-                      ? cs.onSurfaceVariant
-                      : isUrgent
-                      ? cs.error
-                      : cs.tertiary,
-                ),
+                    ? cs.error
+                    : cs.tertiary,
               ),
             ),
-          ],
+          ),
         ],
-      ),
-    
+      ],
+    ),
   );
 }
 
@@ -155,19 +151,19 @@ Widget buildJobLinkSection(
       borderRadius: BorderRadius.circular(RadiusToken.lg),
       border: Border.all(
         color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white10
-            : Colors.grey.shade200,
+            ? context.colors.border
+            : context.colors.border,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.03),
+          color: context.colors.shadow,
           blurRadius: 10,
           offset: const Offset(0, 4),
         ),
       ],
     ),
-    margin: const EdgeInsets.only(bottom: 12),
-    padding: .only(left: 12, top:6, bottom: 6),
+    margin: const EdgeInsets.only(bottom: Spacing.md),
+    padding: .only(left: 12, top: 6, bottom: 6),
     child: Row(
       children: [
         Container(
@@ -178,10 +174,10 @@ Widget buildJobLinkSection(
           ),
           child: Icon(icon, size: 18, color: cs.primary),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: Spacing.md),
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Text(
                 title,
@@ -193,11 +189,11 @@ Widget buildJobLinkSection(
               Text(
                 url,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   color: cs.onSurface,
                 ),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
             ],
           ),

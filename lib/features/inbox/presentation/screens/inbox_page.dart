@@ -16,6 +16,8 @@ import '/routes/app_route.dart';
 import '/routes/scaffold_with_navbar.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class InboxPage extends ConsumerStatefulWidget {
   const InboxPage({super.key});
@@ -76,7 +78,7 @@ class _InboxPageState extends ConsumerState<InboxPage>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final conversationsAsync = ref.watch(conversationsProvider);
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -87,7 +89,7 @@ class _InboxPageState extends ConsumerState<InboxPage>
         scrolledUnderElevation: 0,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: Spacing.sm),
             child: GestureDetector(
               onTap: () =>
                   ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
@@ -95,16 +97,13 @@ class _InboxPageState extends ConsumerState<InboxPage>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: context.colors.surface.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(Spacing.xs),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                  borderRadius: BorderRadius.circular(RadiusToken.lg),
+                  child: Image.asset('assets/images/logo.png', fit: .contain),
                 ),
               ),
             ),
@@ -113,9 +112,9 @@ class _InboxPageState extends ConsumerState<InboxPage>
         title: Text(
           'Inbox',
           style: GoogleFonts.outfit(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
+            fontWeight: .bold,
+            color: context.colors.onPrimary,
+            fontSize: FontSizeToken.xxl,
           ),
         ),
       ),
@@ -125,16 +124,14 @@ class _InboxPageState extends ConsumerState<InboxPage>
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: isDark
-                    ? Theme.of(context).scaffoldBackgroundColor
-                    : const Color(0xFFF8F9FA),
+                color: context.colors.surfaceAlt,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
                 child: Center(
                   child: ConstrainedBox(
@@ -154,7 +151,9 @@ class _InboxPageState extends ConsumerState<InboxPage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.pushNamed(AppRoute.newChat.name),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(RadiusToken.xl),
+        ),
         child: const Icon(LucideIcons.plus),
       ),
     );
@@ -166,28 +165,39 @@ class _InboxPageState extends ConsumerState<InboxPage>
 
   Widget _buildSearchBar(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.xs,
+        Spacing.lg,
+        Spacing.xl,
+      ),
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
         child: TextField(
           controller: _searchController,
           style: TextStyle(
-            fontSize: 15,
-            color: isDark ? Colors.white : Colors.black87,
+            fontSize: FontSizeToken.lg,
+            color: context.colors.text,
           ),
           decoration: InputDecoration(
             hintText: 'Search',
-            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 15),
+            hintStyle: TextStyle(
+              color: context.colors.textSubtle,
+              fontSize: FontSizeToken.lg,
+            ),
             prefixIcon: Padding(
-              padding: const EdgeInsets.only(left: 12, right: 8),
+              padding: const EdgeInsets.only(
+                left: Spacing.md,
+                right: Spacing.sm,
+              ),
               child: Icon(
                 LucideIcons.search,
                 size: 20,
-                color: Colors.grey.shade400,
+                color: context.colors.textSubtle,
               ),
             ),
             prefixIconConstraints: const BoxConstraints(minWidth: 40),
@@ -198,18 +208,20 @@ class _InboxPageState extends ConsumerState<InboxPage>
                       setState(() => _filterText = '');
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.md,
+                      ),
                       child: Icon(
                         LucideIcons.circleX,
                         size: 18,
-                        color: Colors.grey.shade400,
+                        color: context.colors.textSubtle,
                       ),
                     ),
                   )
                 : null,
             suffixIconConstraints: const BoxConstraints(maxHeight: 32),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(vertical: Spacing.lg),
           ),
           onChanged: (v) => setState(() => _filterText = v),
         ),
@@ -246,16 +258,16 @@ class _InboxPageState extends ConsumerState<InboxPage>
               ? 'No conversations found'
               : 'No conversations yet',
           style: TextStyle(
-            color: Colors.grey.shade400,
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
+            color: context.colors.textSubtle,
+            fontSize: FontSizeToken.lg,
+            fontWeight: .w500,
           ),
         ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       itemCount: filtered.length,
       itemBuilder: (context, index) {
         final conv = filtered[index];
@@ -315,22 +327,24 @@ class _InboxPageState extends ConsumerState<InboxPage>
       context: ctx,
       backgroundColor: cs.surfaceContainerHighest,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (sheetCtx) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Container(
                   width: 36,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: Spacing.sm),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.borderStrong,
+                    borderRadius: BorderRadius.circular(RadiusToken.xs),
                   ),
                 ),
                 ListTile(
@@ -338,12 +352,12 @@ class _InboxPageState extends ConsumerState<InboxPage>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      color: context.colors.textSubtle.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       LucideIcons.archive,
-                      color: Colors.grey,
+                      color: context.colors.textSubtle,
                       size: 22,
                     ),
                   ),
@@ -378,12 +392,12 @@ class _InboxPageState extends ConsumerState<InboxPage>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      color: context.colors.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.delete_outline,
-                      color: Colors.red,
+                      color: context.colors.danger,
                       size: 22,
                     ),
                   ),
@@ -432,12 +446,12 @@ class _InboxPageState extends ConsumerState<InboxPage>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      color: context.colors.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       LucideIcons.ban,
-                      color: Colors.red,
+                      color: context.colors.danger,
                       size: 22,
                     ),
                   ),
@@ -528,15 +542,18 @@ class _ConversationTile extends StatelessWidget {
         },
         onLongPress: onLongPress,
         child: Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          margin: const EdgeInsets.only(bottom: Spacing.sm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.md,
+            vertical: Spacing.md,
+          ),
           decoration: BoxDecoration(
-            color: isDark ? Theme.of(context).cardColor : Colors.white,
+            color: context.colors.surface,
             borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: isPending
-                  ? Colors.orange.shade300
-                  : (isDark ? Colors.white10 : Colors.grey.shade200),
+                  ? context.colors.warning
+                  : (context.colors.border),
             ),
           ),
           child: Row(
@@ -547,23 +564,25 @@ class _ConversationTile extends StatelessWidget {
                     ? NetworkImage(ApiEndpoints.resolveImageUrl(imageUrl))
                     : null,
                 backgroundColor: isPending
-                    ? Colors.orange.withValues(alpha: 0.2)
-                    : Colors.teal.withValues(alpha: 0.2),
+                    ? context.colors.warning.withValues(alpha: 0.2)
+                    : context.colors.primary.withValues(alpha: 0.2),
                 child: imageUrl.isEmpty
                     ? Text(
                         name.isNotEmpty ? name[0].toUpperCase() : '?',
                         style: TextStyle(
-                          color: isPending ? Colors.orange : Colors.teal,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          color: isPending
+                              ? context.colors.warning
+                              : context.colors.primary,
+                          fontWeight: .bold,
+                          fontSize: FontSizeToken.lg,
                         ),
                       )
                     : null,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.md),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Row(
                       children: [
@@ -574,7 +593,7 @@ class _ConversationTile extends StatelessWidget {
                               fontWeight: unreadCount > 0
                                   ? FontWeight.w600
                                   : FontWeight.w500,
-                              fontSize: 14,
+                              fontSize: FontSizeToken.base,
                             ),
                           ),
                         ),
@@ -582,33 +601,33 @@ class _ConversationTile extends StatelessWidget {
                           Text(
                             time,
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: FontSizeToken.xs,
                               color: unreadCount > 0
-                                  ? Colors.teal
-                                  : Colors.grey,
+                                  ? context.colors.primary
+                                  : context.colors.textSubtle,
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: Spacing.xxs),
                     Row(
                       children: [
                         if (isPending)
                           Padding(
-                            padding: const EdgeInsets.only(right: 4),
+                            padding: const EdgeInsets.only(right: Spacing.xs),
                             child: Icon(
                               LucideIcons.mailQuestion,
                               size: 14,
-                              color: Colors.orange,
+                              color: context.colors.warning,
                             ),
                           )
                         else if (isSentByMe)
                           Padding(
-                            padding: const EdgeInsets.only(right: 4),
+                            padding: const EdgeInsets.only(right: Spacing.xs),
                             child: Icon(
                               Icons.done_all,
                               size: 14,
-                              color: Colors.teal,
+                              color: context.colors.primary,
                             ),
                           ),
                         Expanded(
@@ -619,35 +638,37 @@ class _ConversationTile extends StatelessWidget {
                                       : lastMessage)
                                 : (isSentByMe ? 'You: ' : ''),
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: FontSizeToken.md,
                               color: unreadCount > 0
-                                  ? (isDark ? Colors.white : Colors.black87)
-                                  : Colors.grey.shade600,
+                                  ? (context.colors.text)
+                                  : context.colors.textMuted,
                               fontWeight: unreadCount > 0
                                   ? FontWeight.w500
                                   : FontWeight.normal,
                             ),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                           ),
                         ),
                         if (unreadCount > 0)
                           Container(
-                            margin: const EdgeInsets.only(left: 6),
+                            margin: const EdgeInsets.only(left: Spacing.sm),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 1,
+                              horizontal: Spacing.xs,
+                              vertical: Spacing.xxs,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.teal,
-                              borderRadius: BorderRadius.circular(10),
+                              color: context.colors.primary,
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
                             ),
                             child: Text(
                               '$unreadCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                              style: TextStyle(
+                                color: context.colors.onPrimary,
+                                fontSize: FontSizeToken.xxs,
+                                fontWeight: .w600,
                               ),
                             ),
                           ),

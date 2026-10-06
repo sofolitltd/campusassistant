@@ -11,6 +11,8 @@ import '/features/club/domain/entities/club.dart';
 import '/features/club/presentation/providers/club_management_provider.dart';
 import '/features/club/presentation/widgets/contact_admin_banner.dart';
 import '/routes/app_route.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// Clubs the current user requested (suggested) or co-manages. Tapping any
 /// of them — pending or active — opens Manage Club, since the requester is
@@ -28,43 +30,43 @@ class MyClubsPage extends ConsumerWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(title: const Text('My Clubs')),
-      body: clubsAsync.when(
-        data: (clubs) {
-          if (clubs.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.groups_outlined,
-                      size: 56,
-                      color: Colors.grey.shade400,
+          appBar: AppBar(title: const Text('My Clubs')),
+          body: clubsAsync.when(
+            data: (clubs) {
+              if (clubs.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Spacing.xxxl),
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Icon(
+                          Icons.groups_outlined,
+                          size: 56,
+                          color: context.colors.textSubtle,
+                        ),
+                        const SizedBox(height: Spacing.md),
+                        Text(
+                          'You haven\'t suggested or joined managing any club '
+                          'yet.',
+                          textAlign: .center,
+                          style: TextStyle(color: context.colors.textMuted),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: Spacing.md),
-                    Text(
-                      'You haven\'t suggested or joined managing any club '
-                      'yet.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: clubs.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            itemBuilder: (context, i) => _MyClubCard(club: clubs[i]),
-          );
-        },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
-      ),
+                  ),
+                );
+              }
+              return ListView.separated(
+                padding: const EdgeInsets.all(Spacing.lg),
+                itemCount: clubs.length,
+                separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
+                itemBuilder: (context, i) => _MyClubCard(club: clubs[i]),
+              );
+            },
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+            error: (err, _) => Center(child: Text('Error: $err')),
+          ),
         ),
       ),
     );
@@ -78,21 +80,17 @@ class _MyClubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: () => context.pushNamed(
         AppRoute.manageClub.name,
         pathParameters: {'clubId': club.id},
       ),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(Spacing.md),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-          ),
+          border: Border.all(color: context.colors.border),
         ),
         child: Row(
           children: [
@@ -100,66 +98,61 @@ class _MyClubCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : Colors.grey.shade100,
+                color: context.colors.surfaceAlt,
                 shape: BoxShape.circle,
               ),
               child: club.logoUrl != null && club.logoUrl!.isNotEmpty
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxxl),
                       child: CachedNetworkImage(
                         imageUrl: ApiEndpoints.resolveImageUrl(club.logoUrl),
-                        fit: BoxFit.cover,
+                        fit: .cover,
                       ),
                     )
-                  : Icon(Icons.groups, color: Colors.grey.shade400),
+                  : Icon(Icons.groups, color: context.colors.textSubtle),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Spacing.md),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     club.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: .bold),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Spacing.xs),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
+                      horizontal: Spacing.sm,
+                      vertical: Spacing.xxs,
                     ),
                     decoration: BoxDecoration(
                       color: club.isActive
-                          ? Colors.green.withValues(alpha: 0.12)
-                          : Colors.amber.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(20),
+                          ? context.colors.success.withValues(alpha: 0.12)
+                          : context.colors.warning.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                     ),
                     child: Text(
                       club.isActive ? 'Active' : 'Pending Review',
                       style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                        fontSize: FontSizeToken.xs,
+                        fontWeight: .w600,
                         color: club.isActive
-                            ? Colors.green.shade700
-                            : Colors.amber.shade800,
+                            ? context.colors.success
+                            : context.colors.warning,
                       ),
                     ),
                   ),
                   if (!club.isActive) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
                     const ContactAdminBanner(compact: true),
                   ],
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: isDark ? Colors.white38 : Colors.grey.shade400,
-            ),
+            Icon(Icons.chevron_right, color: context.colors.textSubtle),
           ],
         ),
       ),

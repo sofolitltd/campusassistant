@@ -9,6 +9,8 @@ import '/features/chapter/presentation/providers/chapter_provider.dart';
 import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class CourseChaptersScreen extends ConsumerStatefulWidget {
   const CourseChaptersScreen({
@@ -71,8 +73,11 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
           return ListView.separated(
             shrinkWrap: true,
             itemCount: filteredChapters.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.md,
+              vertical: Spacing.md,
+            ),
             itemBuilder: (context, index) {
               final chapterModel = filteredChapters[index];
 
@@ -81,12 +86,12 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
                   borderRadius: BorderRadius.circular(RadiusToken.md),
                   color: theme.cardColor,
                   border: Border.all(
-                    color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
+                    color: context.colors.surfaceAlt,
                     width: .5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: context.colors.shadow,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -114,40 +119,38 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
                     ),
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(Spacing.md),
                     child: Row(
                       children: [
                         Container(
                           height: 40,
                           width: 40,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(RadiusToken.sm),
                             color: isDark
                                 ? theme.colorScheme.surface.withValues(
                                     alpha: 0.5,
                                   )
-                                : Colors.grey.shade100,
+                                : context.colors.surfaceAlt,
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             '${chapterModel.chapterNo}',
-                            style: Theme.of(context).textTheme.titleSmall!
-                                .copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleSmall!.copyWith(fontWeight: .bold),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: Spacing.md),
                         Expanded(
                           child: Text(
                             chapterModel.chapterTitle,
                             maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                             style: Theme.of(context).textTheme.bodyMedium!
-                                .copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  height: 1.3,
-                                ),
+                                .copyWith(fontWeight: .bold, height: 1.3),
                           ),
                         ),
                       ],

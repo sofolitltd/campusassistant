@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
+// Immersive media surface: the black backdrop and white chrome are
+// intentional and theme-independent — photos are always viewed against
+// black, in light mode as well as dark. These are the documented
+// exception to the context.colors rule (see app_colors.dart).
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,6 +16,8 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/core/network/api_endpoints.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class PdfViewerPage extends StatefulWidget {
   final String filePath;
@@ -79,13 +85,12 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
           ? AppBar(
               title: Text(
                 widget.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold,
-                color: Colors.white,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontWeight: .bold,
+                  color: Colors.white,
                 ),
               ),
-              
+
               actions: [
                 IconButton(
                   icon: Icon(
@@ -138,26 +143,21 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         switch (value) {
           case 'save':
             await _saveToDownloads();
-            break;
           case 'share':
             await SharePlus.instance.share(
               ShareParams(files: [XFile(widget.filePath)], text: widget.title),
             );
-            break;
           case 'open_with':
             await OpenFilex.open(widget.filePath);
-            break;
           case 'open_browser':
             await launchUrl(
               Uri.parse(widget.url),
               mode: LaunchMode.externalApplication,
             );
-            break;
           case 'share_link':
             await SharePlus.instance.share(
               ShareParams(text: '${widget.title}\n${widget.url}'),
             );
-            break;
         }
       },
       itemBuilder: (context) => kIsWeb
@@ -170,8 +170,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 child: Row(
                   children: [
                     Icon(LucideIcons.externalLink, size: 18),
-                    SizedBox(width: 10),
-                    Text('Open in Browser', style: TextStyle(fontSize: 13)),
+                    SizedBox(width: Spacing.md),
+                    Text(
+                      'Open in Browser',
+                      style: TextStyle(fontSize: FontSizeToken.md),
+                    ),
                   ],
                 ),
               ),
@@ -181,8 +184,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 child: Row(
                   children: [
                     Icon(LucideIcons.share2, size: 18),
-                    SizedBox(width: 10),
-                    Text('Share Link', style: TextStyle(fontSize: 13)),
+                    SizedBox(width: Spacing.md),
+                    Text(
+                      'Share Link',
+                      style: TextStyle(fontSize: FontSizeToken.md),
+                    ),
                   ],
                 ),
               ),
@@ -194,8 +200,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 child: Row(
                   children: [
                     Icon(LucideIcons.download, size: 18),
-                    SizedBox(width: 10),
-                    Text('Save to Downloads', style: TextStyle(fontSize: 13)),
+                    SizedBox(width: Spacing.md),
+                    Text(
+                      'Save to Downloads',
+                      style: TextStyle(fontSize: FontSizeToken.md),
+                    ),
                   ],
                 ),
               ),
@@ -205,8 +214,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 child: Row(
                   children: [
                     Icon(LucideIcons.share2, size: 18),
-                    SizedBox(width: 10),
-                    Text('Share', style: TextStyle(fontSize: 13)),
+                    SizedBox(width: Spacing.md),
+                    Text('Share', style: TextStyle(fontSize: FontSizeToken.md)),
                   ],
                 ),
               ),
@@ -216,8 +225,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 child: Row(
                   children: [
                     Icon(LucideIcons.externalLink, size: 18),
-                    SizedBox(width: 10),
-                    Text('Open with', style: TextStyle(fontSize: 13)),
+                    SizedBox(width: Spacing.md),
+                    Text(
+                      'Open with',
+                      style: TextStyle(fontSize: FontSizeToken.md),
+                    ),
                   ],
                 ),
               ),

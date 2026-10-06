@@ -13,6 +13,11 @@ import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import '/features/community/utils/image_compress.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
   final int tabIndex;
@@ -86,22 +91,23 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final scopeLabels = ['Batch', 'Department', 'My University'];
     final currentLabel = scopeLabels[widget.tabIndex];
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Spacing.xl),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -110,8 +116,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
               Text(
                 'Create Post',
                 style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.lg,
                 ),
               ),
               ElevatedButton(
@@ -158,23 +164,26 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(70, 32),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  minimumSize: const Size(70, ControlToken.height),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                 ),
                 child: _isUploading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 14,
                         height: 14,
                         child: CupertinoActivityIndicator(
-                          color: Colors.white,
+                          color: context.colors.onPrimary,
                         ),
                       )
-                    : const Text('Post', style: TextStyle(fontSize: 13)),
+                    : const Text(
+                        'Post',
+                        style: TextStyle(fontSize: FontSizeToken.md),
+                      ),
               ),
             ],
           ),
           const Divider(),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.md),
           Row(
             children: [
               CircleAvatar(
@@ -209,9 +218,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                       ),
                     ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.md),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     ref
@@ -223,22 +232,25 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                           orElse: () => 'User Name',
                         ),
                     style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontWeight: .w600,
+                      fontSize: FontSizeToken.base,
                     ),
                   ),
                   Text(
                     'Post to $currentLabel',
-                    style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
+                    style: GoogleFonts.outfit(
+                      fontSize: FontSizeToken.sm,
+                      color: context.colors.textSubtle,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: Spacing.xl),
           if (_images.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: Spacing.md),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -247,12 +259,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                           child: Image.memory(
                             _images[i],
                             width: 72,
                             height: 72,
-                            fit: BoxFit.cover,
+                            fit: .cover,
                           ),
                         ),
                         Positioned(
@@ -261,15 +273,15 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                           child: GestureDetector(
                             onTap: () => _removeImage(i),
                             child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.black54,
+                              decoration: BoxDecoration(
+                                color: context.colors.textMuted,
                                 shape: BoxShape.circle,
                               ),
-                              padding: const EdgeInsets.all(2),
-                              child: const Icon(
+                              padding: const EdgeInsets.all(Spacing.xxs),
+                              child: Icon(
                                 LucideIcons.x,
                                 size: 14,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                               ),
                             ),
                           ),
@@ -284,10 +296,10 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
               controller: _controller,
               maxLines: null,
               autofocus: true,
-              style: GoogleFonts.outfit(fontSize: 16),
+              style: GoogleFonts.outfit(fontSize: FontSizeToken.lg),
               decoration: InputDecoration(
                 hintText: "What's on your mind?",
-                hintStyle: GoogleFonts.outfit(color: Colors.grey.shade400),
+                hintStyle: GoogleFonts.outfit(color: context.colors.textSubtle),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -305,7 +317,10 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
               ),
               Text(
                 '${_images.length}/$_maxImages',
-                style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
+                style: GoogleFonts.outfit(
+                  fontSize: FontSizeToken.sm,
+                  color: context.colors.textSubtle,
+                ),
               ),
             ],
           ),

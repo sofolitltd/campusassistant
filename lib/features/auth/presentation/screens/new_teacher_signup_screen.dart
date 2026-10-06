@@ -9,6 +9,9 @@ import '/routes/app_route.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class NewTeacherSignupScreen extends ConsumerStatefulWidget {
   const NewTeacherSignupScreen({
@@ -72,7 +75,7 @@ class _NewTeacherSignupScreenState
               vertical: 16,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Card(
                   elevation: 6,
@@ -81,30 +84,28 @@ class _NewTeacherSignupScreenState
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(Spacing.lg),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: .stretch,
                       children: [
                         Text(
-                          'Hello Sir'.toUpperCase(),
+                          'Hello sir',
                           style: Theme.of(context).textTheme.titleLarge!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
-                              ),
+                              .copyWith(fontWeight: .bold, letterSpacing: 1),
                         ),
                         Text(
                           'Please sign up your account',
-                          style: Theme.of(context).textTheme.labelLarge!
-                              .copyWith(fontWeight: FontWeight.w100),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelLarge!.copyWith(fontWeight: .w100),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: Spacing.xxl),
                         CommonTextFieldWidget(
                           controller: _nameController,
                           heading: 'Name',
                           hintText: 'Enter full name',
-                          keyboardType: TextInputType.name,
-                          textCapitalization: TextCapitalization.words,
+                          keyboardType: .name,
+                          textCapitalization: .words,
                           validator: (val) {
                             if (val == null || val.isEmpty) {
                               return 'Enter your name';
@@ -117,7 +118,7 @@ class _NewTeacherSignupScreenState
                           controller: _mobileController,
                           heading: 'Mobile',
                           hintText: 'Enter mobile number',
-                          keyboardType: TextInputType.phone,
+                          keyboardType: .phone,
                           validator: (val) {
                             if (val == null || val.isEmpty) {
                               return 'Enter mobile number';
@@ -133,7 +134,7 @@ class _NewTeacherSignupScreenState
                           controller: _emailController,
                           heading: 'Email',
                           hintText: 'Enter your email',
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: .emailAddress,
                           validator: (val) {
                             if (val == null || val.isEmpty) {
                               return 'Enter your email';
@@ -148,7 +149,7 @@ class _NewTeacherSignupScreenState
                           heading: 'Password',
                           controller: _passwordController,
                           hintText: 'Enter new password',
-                          keyboardType: TextInputType.visiblePassword,
+                          keyboardType: .visiblePassword,
                           obscureText: true,
                           validator: (val) {
                             if (val == null || val.isEmpty) {
@@ -159,15 +160,21 @@ class _NewTeacherSignupScreenState
                             return null;
                           },
                         ),
-                        const SizedBox(height: 10),
-                        const Text(
+                        const SizedBox(height: Spacing.md),
+                        Text(
                           '* Please remember this email and password for further login.',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: FontSizeToken.sm,
+                            color: context.colors.textSubtle,
+                          ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: Spacing.xxl),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 50),
+                            minimumSize: const Size(
+                              double.infinity,
+                              ControlToken.height,
+                            ),
                           ),
                           onPressed: _isLoading
                               ? null
@@ -223,18 +230,18 @@ class _NewTeacherSignupScreenState
                                   }
                                 },
                           child: _isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   height: 24,
                                   width: 24,
                                   child: CupertinoActivityIndicator(
-                                    color: Colors.white,
+                                    color: context.colors.onPrimary,
                                   ),
                                 )
                               : Text(
-                                  'Sign up'.toUpperCase(),
+                                  'Sign up',
                                   style: const TextStyle(
                                     letterSpacing: 1,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: .bold,
                                   ),
                                 ),
                         ),

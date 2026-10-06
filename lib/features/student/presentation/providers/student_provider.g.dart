@@ -308,11 +308,11 @@ final class StudentsWithTotalByBatchPaginatedProvider
         $FunctionalProvider<
           AsyncValue<PaginatedStudents>,
           PaginatedStudents,
-          FutureOr<PaginatedStudents>
+          Stream<PaginatedStudents>
         >
     with
         $FutureModifier<PaginatedStudents>,
-        $FutureProvider<PaginatedStudents> {
+        $StreamProvider<PaginatedStudents> {
   StudentsWithTotalByBatchPaginatedProvider._({
     required StudentsWithTotalByBatchPaginatedFamily super.from,
     required ({String batchId, int limit, int offset}) super.argument,
@@ -337,12 +337,12 @@ final class StudentsWithTotalByBatchPaginatedProvider
 
   @$internal
   @override
-  $FutureProviderElement<PaginatedStudents> $createElement(
+  $StreamProviderElement<PaginatedStudents> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<PaginatedStudents> create(Ref ref) {
+  Stream<PaginatedStudents> create(Ref ref) {
     final argument = this.argument as ({String batchId, int limit, int offset});
     return studentsWithTotalByBatchPaginated(
       ref,
@@ -365,12 +365,12 @@ final class StudentsWithTotalByBatchPaginatedProvider
 }
 
 String _$studentsWithTotalByBatchPaginatedHash() =>
-    r'5b7cccda02aa6d28d41de4857a0e0b04886148fc';
+    r'c24cafbe5c1b8a38a8e67dfef0116c121e49b2df';
 
 final class StudentsWithTotalByBatchPaginatedFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<PaginatedStudents>,
+          Stream<PaginatedStudents>,
           ({String batchId, int limit, int offset})
         > {
   StudentsWithTotalByBatchPaginatedFamily._()
@@ -810,11 +810,11 @@ final class StudentsWithTotalAllPaginatedProvider
         $FunctionalProvider<
           AsyncValue<PaginatedStudents>,
           PaginatedStudents,
-          FutureOr<PaginatedStudents>
+          Stream<PaginatedStudents>
         >
     with
         $FutureModifier<PaginatedStudents>,
-        $FutureProvider<PaginatedStudents> {
+        $StreamProvider<PaginatedStudents> {
   StudentsWithTotalAllPaginatedProvider._({
     required StudentsWithTotalAllPaginatedFamily super.from,
     required ({
@@ -844,12 +844,12 @@ final class StudentsWithTotalAllPaginatedProvider
 
   @$internal
   @override
-  $FutureProviderElement<PaginatedStudents> $createElement(
+  $StreamProviderElement<PaginatedStudents> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<PaginatedStudents> create(Ref ref) {
+  Stream<PaginatedStudents> create(Ref ref) {
     final argument =
         this.argument
             as ({
@@ -880,12 +880,12 @@ final class StudentsWithTotalAllPaginatedProvider
 }
 
 String _$studentsWithTotalAllPaginatedHash() =>
-    r'ef35462b47360fefcccfbbabe21aee20be7f592a';
+    r'6fc014297c4c4d64c70dde5dcd3d096914e9224e';
 
 final class StudentsWithTotalAllPaginatedFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<PaginatedStudents>,
+          Stream<PaginatedStudents>,
           ({String? universityId, String? departmentId, int limit, int offset})
         > {
   StudentsWithTotalAllPaginatedFamily._()

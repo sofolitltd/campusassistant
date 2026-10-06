@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+
 class SmoothTabControl extends StatelessWidget {
   final TabController tabController;
   final List<String> labels;
@@ -14,33 +19,33 @@ class SmoothTabControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.colors;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.sm,
+      ),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(Spacing.sm),
         decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1,
-          ),
+          color: colors.surfaceAlt,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(color: colors.border, width: 1),
         ),
         child: AnimatedBuilder(
           animation: tabController.animation!,
           builder: (context, child) {
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: .horizontal,
               physics: const BouncingScrollPhysics(),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 spacing: 8,
                 children: List.generate(labels.length, (index) {
-                  return _buildTab(labels[index], index, isDark);
+                  return _buildTab(labels[index], index, colors);
                 }),
               ),
             );
@@ -50,19 +55,19 @@ class SmoothTabControl extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(String label, int index, bool isDark) {
+  Widget _buildTab(String label, int index, AppColors colors) {
     final double animationValue = tabController.animation!.value;
     final double progress = (1.0 - (animationValue - index).abs()).clamp(
       0.0,
       1.0,
     );
 
-    final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.white;
-    final Color activeTextColor = isDark ? Colors.black : Colors.white;
-    final Color inactiveTextColor = Colors.grey.shade600;
+    // The selected pill inverts against the surface in both themes, which is
+    // exactly what surfaceInverse/textInverse mean — no brightness check needed.
+    final Color activeColor = colors.surfaceInverse;
+    final Color inactiveColor = colors.surface;
+    final Color activeTextColor = colors.textInverse;
+    final Color inactiveTextColor = colors.textMuted;
 
     return GestureDetector(
       onTap: () {
@@ -70,19 +75,14 @@ class SmoothTabControl extends StatelessWidget {
         onTabChanged?.call(index);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
         height: 32,
         decoration: BoxDecoration(
           color: Color.lerp(inactiveColor, activeColor, progress),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: Color.lerp(
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              progress,
-            )!,
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
+          // Both lerp ends were already identical, so the border never
+          // animated — it's just the border colour.
+          border: Border.all(color: colors.borderStrong, width: 1),
           boxShadow: progress > 0.5
               ? [
                   BoxShadow(
@@ -99,7 +99,7 @@ class SmoothTabControl extends StatelessWidget {
             style: TextStyle(
               color: Color.lerp(inactiveTextColor, activeTextColor, progress),
               fontWeight: progress > 0.5 ? FontWeight.bold : FontWeight.w600,
-              fontSize: 12,
+              fontSize: FontSizeToken.sm,
             ),
           ),
         ),

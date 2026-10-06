@@ -188,13 +188,13 @@
 //                                               .textTheme
 //                                               .bodyLarge!
 //                                               .copyWith(
-//                                                 fontWeight: FontWeight.bold,
+//                                                 fontWeight: .bold,
 //                                               ),
 //                                           children: const [
 //                                             TextSpan(
 //                                               text: ' added a new post.',
 //                                               style: TextStyle(
-//                                                 fontWeight: FontWeight.normal,
+//                                                 fontWeight: .normal,
 //                                               ),
 //                                             ),
 //                                           ],

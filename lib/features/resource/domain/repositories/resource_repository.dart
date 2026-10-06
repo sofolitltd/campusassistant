@@ -17,7 +17,7 @@ abstract class ResourceRepository {
     String? batch,
     String? batchId,
     int? lessonNo,
-    String? uploaderUid,
+    String? createdById,
     String? status,
     int? limit,
     int? offset,
@@ -26,6 +26,15 @@ abstract class ResourceRepository {
   });
 
   Future<Either<Failure, void>> deleteResource(String id);
+
+  /// Fetches [id]'s current server-side state — used to refresh stats
+  /// (download/view/rating counts) that may have changed since the resource
+  /// was last loaded as part of a list.
+  Future<Either<Failure, Resource>> getResourceById(String id);
+
+  /// Returns the current user's own 1-5 rating for [id], or null if they
+  /// haven't rated it yet — used to pre-fill a star-rating widget.
+  Future<Either<Failure, int?>> getMyRating(String id);
 
   Future<Either<Failure, Resource>> createResource(Resource resource);
 

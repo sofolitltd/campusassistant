@@ -6,42 +6,42 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class AccountSection extends ConsumerWidget {
   const AccountSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.only(top: Spacing.lg),
       child: GestureDetector(
         onTap: () => _showLogoutBottomSheet(context, ref),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: Spacing.md),
           decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.06),
+            color: context.colors.danger.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(RadiusToken.lg),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.red.shade200,
-            ),
+            border: Border.all(color: context.colors.danger),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               Text(
                 'LOGOUT',
                 style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  color: context.colors.danger,
+                  fontSize: FontSizeToken.lg,
+                  fontWeight: .bold,
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(width: 10),
-              Icon(LucideIcons.logOut, color: Colors.red, size: 16),
+              const SizedBox(width: Spacing.md),
+              Icon(LucideIcons.logOut, color: context.colors.danger, size: 16),
             ],
           ),
         ),
@@ -54,14 +54,21 @@ class AccountSection extends ConsumerWidget {
       context: context,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxxl),
+        ),
       ),
       builder: (context) {
         return SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 36),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.xxl,
+              Spacing.xxxl,
+              Spacing.xxl,
+              36,
+            ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 // Warning icon circle
                 Container(
@@ -71,33 +78,36 @@ class AccountSection extends ConsumerWidget {
                     color: Color(0xFFFFC107),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     LucideIcons.alertTriangle,
-                    color: Colors.white,
+                    color: context.colors.onPrimary,
                     size: 36,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: Spacing.xl),
                 const Text(
                   'Are you sure you want to log out?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: .center,
+                  style: TextStyle(
+                    fontSize: FontSizeToken.xxl,
+                    fontWeight: .bold,
+                  ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: Spacing.sm),
                 Text(
                   'You will need to log in again to continue using your account.',
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                   style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
+                    fontSize: FontSizeToken.base,
+                    color: context.colors.textMuted,
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: Spacing.xxxl),
                 // Yes, Log Out button
                 SizedBox(
                   width: double.infinity,
-                  height: 52,
+                  height: ControlToken.height,
                   child: ElevatedButton(
                     onPressed: () async {
                       Navigator.pop(context);
@@ -115,8 +125,8 @@ class AccountSection extends ConsumerWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade600,
-                      foregroundColor: Colors.white,
+                      backgroundColor: context.colors.danger,
+                      foregroundColor: context.colors.onPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(RadiusToken.lg),
                       ),
@@ -125,21 +135,21 @@ class AccountSection extends ConsumerWidget {
                     child: const Text(
                       'Yes, Log Out',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: FontSizeToken.lg,
+                        fontWeight: .w600,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Spacing.md),
                 // Cancel button
                 SizedBox(
                   width: double.infinity,
-                  height: 52,
+                  height: ControlToken.height,
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade300),
+                      side: BorderSide(color: context.colors.borderStrong),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(RadiusToken.lg),
                       ),
@@ -147,9 +157,9 @@ class AccountSection extends ConsumerWidget {
                     child: Text(
                       'Cancel',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade700,
+                        fontSize: FontSizeToken.lg,
+                        fontWeight: .w500,
+                        color: context.colors.textMuted,
                       ),
                     ),
                   ),

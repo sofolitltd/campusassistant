@@ -109,6 +109,99 @@ class StudentRepositoryImpl implements StudentRepository {
   }
 
   @override
+  Stream<PaginatedStudents> watchStudents({
+    String? universityId,
+    String? departmentId,
+    String? batchId,
+    String? userId,
+    String? search,
+    String? bloodGroup,
+    int? limit,
+    int? offset,
+  }) async* {
+    final cacheKey = _buildCacheKey(
+      universityId: universityId,
+      departmentId: departmentId,
+      batchId: batchId,
+      userId: userId,
+      limit: limit,
+      offset: offset,
+    );
+    var emittedCache = false;
+
+    // 1. Emit cached data immediately if present
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'student_$cacheKey',
+      );
+
+      if (cachedData.isNotEmpty) {
+        final students = cachedData
+            .map((json) => StudentModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint(
+          '[StudentRepo] Emitting ${students.length} cached students (offline-first)',
+        );
+        yield PaginatedStudents(students: students, total: students.length);
+        emittedCache = true;
+      }
+    } catch (e) {
+      debugPrint('[StudentRepo] Cache read failed: $e');
+    }
+
+    // 2. Refresh from network in the background and emit when done
+    if (connectivity.isConnected) {
+      try {
+        final queryParams = <String, dynamic>{};
+        if (universityId != null) queryParams['university_id'] = universityId;
+        if (departmentId != null) queryParams['department_id'] = departmentId;
+        if (batchId != null) queryParams['batch_id'] = batchId;
+        if (userId != null) queryParams['user_id'] = userId;
+        if (search != null) queryParams['search'] = search;
+        if (bloodGroup != null) queryParams['blood_group'] = bloodGroup;
+        if (limit != null) queryParams['limit'] = limit.toString();
+        if (offset != null) queryParams['offset'] = offset.toString();
+        queryParams['preload'] = 'true';
+
+        final response = await apiClient.get(
+          ApiEndpoints.students,
+          queryParameters: queryParams,
+        );
+
+        final Map<String, dynamic> body = response.data;
+        final List<dynamic> data = body['data'] ?? [];
+        final int total = body['count'] ?? data.length;
+
+        final cacheItems = data.cast<Map<String, dynamic>>();
+        await cacheManager.cacheList(
+          entityType: 'student_$cacheKey',
+          items: cacheItems,
+          ttl: CacheTTL.student,
+        );
+
+        yield PaginatedStudents(
+          students: data
+              .map((json) => StudentModel.fromJson(json).toEntity())
+              .toList(),
+          total: total,
+        );
+        return;
+      } catch (e) {
+        debugPrint('[StudentRepo] Remote fetch failed: $e');
+      }
+    }
+
+    // 3. Nothing was ever emitted
+    if (!emittedCache) {
+      if (!connectivity.isConnected) {
+        yield PaginatedStudents(students: [], total: 0);
+      } else {
+        throw Exception('Failed to fetch students');
+      }
+    }
+  }
+
+  @override
   Future<Student?> getStudentByAcademicId(String studentId) async {
     // This is a specific lookup - try remote first, fall back to cache
     if (connectivity.isConnected) {

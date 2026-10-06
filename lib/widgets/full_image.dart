@@ -1,6 +1,10 @@
 //
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+// Immersive media surface: the black backdrop and white chrome are
+// intentional and theme-independent — photos are always viewed against
+// black, in light mode as well as dark. These are the documented
+// exception to the context.colors rule (see app_colors.dart).
 import 'package:flutter/material.dart';
 
 import '../core/theme/tokens/app_radius.dart' show RadiusToken;
@@ -44,7 +48,7 @@ class FullImage extends StatelessWidget {
                   )
                 : CachedNetworkImage(
                     width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
+                    fit: .cover,
                     imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
                     fadeInDuration: const Duration(milliseconds: 500),
                     imageBuilder: (context, imageProvider) => InteractiveViewer(

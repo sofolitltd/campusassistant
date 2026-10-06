@@ -7,6 +7,9 @@ import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../providers/university_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class UniversityHallsPage extends ConsumerWidget {
   const UniversityHallsPage({super.key});
@@ -31,7 +34,12 @@ class UniversityHallsPage extends ConsumerWidget {
                   const SizedBox(height: Spacing.sm),
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        0,
+                        Spacing.lg,
+                        Spacing.lg,
+                      ),
                       itemCount: halls.length,
                       itemBuilder: (context, index) {
                         final hall = halls[index];
@@ -55,37 +63,36 @@ class _HallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: Spacing.md),
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: Spacing.lg,
+          vertical: Spacing.xs,
+        ),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(Spacing.sm),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white10 : Colors.grey.shade50,
+            color: context.colors.surfaceAlt,
             borderRadius: BorderRadius.circular(RadiusToken.sm),
           ),
-          child: Icon(LucideIcons.hotel, size: 20, color: Colors.blue.shade700),
+          child: Icon(LucideIcons.hotel, size: 20, color: context.colors.info),
         ),
         title: Text(
           name,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: const TextStyle(fontWeight: .bold, fontSize: FontSizeToken.lg),
         ),
         onTap: () {},
       ),
@@ -106,24 +113,21 @@ class _TotalCountBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(Spacing.lg),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF3B82F6).withValues(alpha: 0.1),
-              Color(0xFF8B5CF6).withValues(alpha: 0.1),
+              AccentToken.blue.withValues(alpha: 0.1),
+              AccentToken.violet.withValues(alpha: 0.1),
             ],
           ),
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.blue.shade100,
-          ),
+          border: Border.all(color: context.colors.info),
         ),
         child: Row(
           children: [
@@ -131,27 +135,27 @@ class _TotalCountBanner extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: Color(0xFF3B82F6).withValues(alpha: 0.15),
+                color: AccentToken.blue.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
               ),
-              child: Icon(icon, color: Color(0xFF3B82F6), size: 22),
+              child: Icon(icon, color: AccentToken.blue, size: 22),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: Spacing.lg),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   '$count',
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3B82F6),
+                    fontWeight: .bold,
+                    color: AccentToken.blue,
                   ),
                 ),
                 Text(
                   label,
                   style: TextStyle(
-                    color: isDark ? Colors.white60 : Colors.grey.shade600,
-                    fontSize: 13,
+                    color: context.colors.textMuted,
+                    fontSize: FontSizeToken.md,
                   ),
                 ),
               ],

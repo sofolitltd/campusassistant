@@ -170,7 +170,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                   child: GestureDetector(
                     onTap: _pickLogo,
                     child: Stack(
-                      clipBehavior: Clip.none,
+                      clipBehavior: .none,
                       children: [
                         Container(
                           height: 96,
@@ -179,7 +179,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                             shape: BoxShape.circle,
                             color: colors.surfaceAltBg,
                             border: Border.all(
-                              color: colors.primaryColor.withValues(alpha: 0.4),
+                              color: colors.primary.withValues(alpha: 0.4),
                               width: 1.5,
                             ),
                           ),
@@ -189,16 +189,19 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                           bottom: 0,
                           right: 0,
                           child: Container(
-                            padding: const EdgeInsets.all(6),
+                            padding: const EdgeInsets.all(Spacing.sm),
                             decoration: BoxDecoration(
-                              color: colors.primaryColor,
+                              color: colors.primary,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(
+                                color: context.colors.onPrimary,
+                                width: 2,
+                              ),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               LucideIcons.camera,
                               size: 14,
-                              color: Colors.white,
+                              color: context.colors.onPrimary,
                             ),
                           ),
                         ),
@@ -239,7 +242,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                 const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _phoneController,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: .phone,
                   decoration: const InputDecoration(labelText: 'Contact Phone'),
                   validator: (v) =>
                       (v == null || v.trim().isEmpty) ? 'Required' : null,
@@ -247,7 +250,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                 const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: .emailAddress,
                   decoration: const InputDecoration(labelText: 'Contact Email'),
                   validator: (v) =>
                       (v == null || v.trim().isEmpty) ? 'Required' : null,
@@ -255,7 +258,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                 const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _websiteController,
-                  keyboardType: TextInputType.url,
+                  keyboardType: .url,
                   decoration: const InputDecoration(
                     labelText: 'Website (Optional)',
                   ),
@@ -263,7 +266,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                 const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _socialMediaController,
-                  keyboardType: TextInputType.url,
+                  keyboardType: .url,
                   decoration: const InputDecoration(
                     labelText: 'Facebook / Social Media Link (Optional)',
                   ),
@@ -283,7 +286,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                 const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _payoutAccountController,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: .phone,
                   decoration: const InputDecoration(
                     labelText: 'Payout Account / Wallet Number',
                   ),
@@ -294,11 +297,11 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                 ElevatedButton.icon(
                   onPressed: _saving ? null : _save,
                   icon: _saving
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 16,
                           width: 16,
                           child: CupertinoActivityIndicator(
-                            color: Colors.white,
+                            color: context.colors.onPrimary,
                           ),
                         )
                       : const Icon(LucideIcons.save, size: 18),
@@ -315,17 +318,17 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
   Widget _buildLogoPreview(AppColors colors) {
     final logoFile = _logoFile;
     if (logoFile != null) {
-      return ClipOval(child: Image.file(logoFile, fit: BoxFit.cover));
+      return ClipOval(child: Image.file(logoFile, fit: .cover));
     }
     if (widget.merchant.logoUrl.isNotEmpty) {
       return ClipOval(
         child: Image.network(
           ApiEndpoints.resolveImageUrl(widget.merchant.logoUrl),
-          fit: BoxFit.cover,
+          fit: .cover,
           errorBuilder: (_, _, _) => Icon(
             LucideIcons.store,
             size: 32,
-            color: colors.primaryColor.withValues(alpha: 0.6),
+            color: colors.primary.withValues(alpha: 0.6),
           ),
         ),
       );
@@ -333,7 +336,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
     return Icon(
       LucideIcons.store,
       size: 32,
-      color: colors.primaryColor.withValues(alpha: 0.6),
+      color: colors.primary.withValues(alpha: 0.6),
     );
   }
 }

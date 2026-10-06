@@ -32,12 +32,17 @@ class Bkash {
     BuildContext context,
     WidgetRef ref, {
     required String planId,
+    String? couponCode,
   }) async {
     try {
       final apiClient = ref.read(apiClientProvider);
+      final body = <String, dynamic>{'plan_id': planId};
+      if (couponCode != null && couponCode.isNotEmpty) {
+        body['coupon_code'] = couponCode;
+      }
       final response = await apiClient.post(
         '/payments/bkash/create',
-        data: {'plan_id': planId},
+        data: body,
       );
       final data = response.data as Map<String, dynamic>;
       final paymentId = data['payment_id'] as String;
@@ -69,6 +74,17 @@ class Bkash {
       );
 
       if (webViewResult != 'success') {
+        // Notify backend so the transaction shows "Cancelled" rather than
+        // dangling as "Pending" in the user's history.
+        try {
+          await apiClient.post(
+            '/payments/bkash/cancel',
+            data: {'payment_id': paymentId},
+          );
+        } catch (_) {
+          // Best-effort — the hourly sweeper will catch stale initiated
+          // transactions that we failed to report.
+        }
         return (status: webViewResult ?? 'cancel', subscription: null);
       }
 

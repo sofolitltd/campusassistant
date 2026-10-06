@@ -9,6 +9,8 @@ import '/features/student/presentation/providers/student_provider.dart';
 import '/widgets/district_sub_district_picker.dart';
 import '../../data/models/address.dart';
 import '../providers/marketplace_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 const _labelOptions = ['Home', 'Hall', 'Other'];
 
@@ -101,9 +103,9 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_districtId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Select a district'),
-          backgroundColor: Colors.red,
+          backgroundColor: context.colors.danger,
         ),
       );
       return;
@@ -136,7 +138,10 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: context.colors.danger,
+          ),
         );
       }
     } finally {
@@ -154,7 +159,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
     if (present == null && permanent == null) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: Spacing.lg),
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -188,22 +193,19 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Spacing.lg),
               children: [
                 _buildQuickFillChips(),
                 DropdownButtonFormField<String>(
                   initialValue: _labelOption,
-                  decoration: const InputDecoration(
-                    labelText: 'Label',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Label'),
                   items: _labelOptions
                       .map((l) => DropdownMenuItem(value: l, child: Text(l)))
                       .toList(),
                   onChanged: (v) => setState(() => _labelOption = v ?? 'Home'),
                 ),
                 if (_labelOption == 'Other') ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   TextFormField(
                     controller: _customLabelController,
                     decoration: const InputDecoration(
@@ -214,7 +216,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
                         (v == null || v.trim().isEmpty) ? 'Required' : null,
                   ),
                 ],
-                const SizedBox(height: 12),
+                const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _recipientController,
                   decoration: const InputDecoration(
@@ -223,15 +225,15 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
                   validator: (v) =>
                       (v == null || v.isEmpty) ? 'Required' : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _phoneController,
                   decoration: const InputDecoration(labelText: 'Phone'),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: .phone,
                   validator: (v) =>
                       (v == null || v.isEmpty) ? 'Required' : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Spacing.md),
                 TextFormField(
                   controller: _addressController,
                   decoration: const InputDecoration(labelText: 'Address'),
@@ -239,7 +241,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
                   validator: (v) =>
                       (v == null || v.isEmpty) ? 'Required' : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Spacing.md),
                 DistrictSubDistrictPicker(
                   districtId: _districtId,
                   subDistrictId: _subDistrictId,
@@ -254,14 +256,14 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
                     _subDistrictName = s?.name;
                   }),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Spacing.md),
                 CheckboxListTile(
                   title: const Text('Set as default address'),
                   value: _isDefault,
                   onChanged: (v) => setState(() => _isDefault = v ?? false),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: Spacing.xxl),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../jobs/presentation/widgets/attachment_thumbnail.dart';
 import '../../data/models/career_circular.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CircularCard extends StatelessWidget {
   final CareerCircular circular;
@@ -13,14 +16,17 @@ class CircularCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.sm,
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(Spacing.md),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               AttachmentThumbnail(
                 attachmentUrls: circular.attachmentUrls,
@@ -29,10 +35,10 @@ class CircularCard extends StatelessWidget {
                 background: theme.colorScheme.primaryContainer,
                 foreground: theme.colorScheme.onPrimaryContainer,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.md),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Row(
                       children: [
@@ -41,24 +47,30 @@ class CircularCard extends StatelessWidget {
                               ? Text(
                                   circular.category!.name,
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                                  overflow: .ellipsis,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: .bold,
+                                  ),
                                 )
                               : const SizedBox.shrink(),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: Spacing.sm),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Spacing.sm,
+                            vertical: Spacing.xxs,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.tertiary,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(RadiusToken.xs),
                           ),
                           child: Text(
                             'OFFICIAL',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.onTertiary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                              fontWeight: .bold,
+                              fontSize: FontSizeToken.xxs,
                             ),
                           ),
                         ),
@@ -67,25 +79,30 @@ class CircularCard extends StatelessWidget {
                     Text(
                       circular.title,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                      overflow: .ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: .bold,
+                      ),
                     ),
                     if (circular.organization.isNotEmpty)
                       Text(
                         circular.organization,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: theme.textTheme.bodySmall,
                       ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: Spacing.sm),
                     if (circular.deadlineDate != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.sm,
+                          vertical: Spacing.xs,
+                        ),
                         decoration: BoxDecoration(
                           color: circular.isPastDeadline
                               ? theme.colorScheme.errorContainer
                               : theme.colorScheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(RadiusToken.sm),
                         ),
                         child: Text(
                           circular.isPastDeadline
@@ -106,8 +123,18 @@ class CircularCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]}, ${date.year}';
   }

@@ -9,6 +9,4 @@ abstract class SubscriptionRepository {
   });
 
   Future<Either<Failure, Subscription?>> getUserSubscription(String userId);
-
-  Future<Either<Failure, void>> createSubscription(Subscription subscription);
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -23,16 +25,16 @@ class SectionHeader extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark
               ? Theme.of(context).cardColor
-              : Colors.white,
+              : context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
-                : Colors.grey.shade200,
+                ? context.colors.border
+                : context.colors.border,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: context.colors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -41,19 +43,22 @@ class SectionHeader extends StatelessWidget {
         child: Icon(
           icon,
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white
-              : Colors.blueGrey.shade700,
+              ? context.colors.onPrimary
+              : context.colors.textMuted,
           size: 20,
         ),
       ),
       title: Text(
         title,
         style: TextStyle(
-          fontWeight: FontWeight.bold,
+          fontWeight: .bold,
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: FontSizeToken.sm),
+      ),
     );
   }
 }

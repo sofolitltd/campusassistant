@@ -52,23 +52,4 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
-
-  @override
-  Future<Either<Failure, void>> createSubscription(
-    Subscription subscription,
-  ) async {
-    try {
-      final model = SubscriptionModel(
-        id: subscription.id,
-        userId: subscription.userId,
-        plan: subscription.plan,
-        startDate: subscription.startDate,
-        endDate: subscription.endDate,
-      );
-      await apiClient.post('/subscriptions', data: model.toJson());
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
 }

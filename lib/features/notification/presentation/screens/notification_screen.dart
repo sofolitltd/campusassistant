@@ -11,6 +11,9 @@ import '../providers/notification_provider.dart';
 import '../widgets/notification_tile.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -48,23 +51,25 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     ref.read(notificationRepositoryProvider).markAllAsRead();
                     ref.invalidate(notificationsProvider);
                   },
-                  child: const Text(
+                  child: Text(
                     'Mark all read',
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      fontSize: FontSizeToken.sm,
+                      fontWeight: .w600,
+                      color: context.colors.onPrimary,
                     ),
                   ),
                 );
               },
             ) ??
             const SizedBox.shrink(),
-        const SizedBox(width: 4),
+        const SizedBox(width: Spacing.xs),
       ],
       body: notificationsAsync.when(
         data: (notifications) {
-          final visible = notifications.where((n) => !_dismissedIds.contains(n.id));
+          final visible = notifications.where(
+            (n) => !_dismissedIds.contains(n.id),
+          );
           final filtered = _showUnreadOnly
               ? visible.where((n) => !n.isRead).toList()
               : visible.toList();
@@ -82,7 +87,12 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               _buildFilterChip(isDark),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.sm,
+                    Spacing.lg,
+                    Spacing.xxl,
+                  ),
                   children: [
                     ...grouped.entries.map((entry) {
                       return _buildDateSection(entry.key, entry.value, isDark);
@@ -97,10 +107,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(Spacing.xxxl),
             child: Text(
               'Error: $err',
-              style: const TextStyle(color: Colors.red),
+              style: TextStyle(color: context.colors.danger),
             ),
           ),
         ),
@@ -110,48 +120,54 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
   Widget _buildFilterChip(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.xs,
+        Spacing.lg,
+        Spacing.sm,
+      ),
       child: Align(
         alignment: Alignment.centerLeft,
         child: GestureDetector(
           onTap: () => setState(() => _showUnreadOnly = !_showUnreadOnly),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.md,
+              vertical: Spacing.sm,
+            ),
             decoration: BoxDecoration(
               color: _showUnreadOnly
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-                  : (isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.grey.shade100),
+                  : (context.colors.surfaceAlt),
               borderRadius: BorderRadius.circular(RadiusToken.sm),
               border: Border.all(
                 color: _showUnreadOnly
                     ? Theme.of(
                         context,
                       ).colorScheme.primary.withValues(alpha: 0.3)
-                    : (isDark ? Colors.white10 : Colors.grey.shade200),
+                    : (context.colors.border),
               ),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Icon(
                   _showUnreadOnly ? LucideIcons.filter : LucideIcons.mailOpen,
                   size: 14,
                   color: _showUnreadOnly
                       ? Theme.of(context).colorScheme.primary
-                      : (isDark ? Colors.white54 : Colors.grey.shade600),
+                      : (context.colors.textMuted),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: Spacing.sm),
                 Text(
                   _showUnreadOnly ? 'Unread Only' : 'All Notifications',
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontSize: FontSizeToken.sm,
+                    fontWeight: .w600,
                     color: _showUnreadOnly
                         ? Theme.of(context).colorScheme.primary
-                        : (isDark ? Colors.white54 : Colors.grey.shade600),
+                        : (context.colors.textMuted),
                   ),
                 ),
               ],
@@ -164,7 +180,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
   Widget _buildLoadMore(bool isDark, NotificationsNotifier notifier) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.lg),
       child: Center(
         child: _loadingMore
             ? const CupertinoActivityIndicator()
@@ -177,9 +193,9 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 child: Text(
                   'Load older notifications',
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white70 : Colors.grey.shade700,
+                    fontSize: FontSizeToken.sm,
+                    fontWeight: .w600,
+                    color: context.colors.textMuted,
                   ),
                 ),
               ),
@@ -190,44 +206,42 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(Spacing.xxxl),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Container(
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : Colors.grey.shade100,
+                color: context.colors.surfaceAlt,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 _showUnreadOnly ? LucideIcons.inbox : LucideIcons.bellOff,
                 size: 36,
-                color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                color: context.colors.textSubtle,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: Spacing.xl),
             Text(
               _showUnreadOnly
                   ? 'No unread notifications'
                   : 'No notifications yet',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white60 : Colors.grey.shade600,
+                fontSize: FontSizeToken.lg,
+                fontWeight: .w600,
+                color: context.colors.textMuted,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             Text(
               _showUnreadOnly
                   ? 'You\'ve caught up on everything!'
                   : 'You\'ll see updates here when they arrive.',
               style: TextStyle(
-                fontSize: 13,
-                color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                fontSize: FontSizeToken.md,
+                color: context.colors.textSubtle,
               ),
             ),
           ],
@@ -285,23 +299,27 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     bool isDark,
   ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 10, left: 4),
+          padding: const EdgeInsets.only(
+            top: Spacing.md,
+            bottom: Spacing.md,
+            left: Spacing.xs,
+          ),
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+              fontSize: FontSizeToken.sm,
+              fontWeight: .bold,
+              color: context.colors.textSubtle,
               letterSpacing: 0.5,
             ),
           ),
         ),
         ...notifications.map(
           (notification) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: Spacing.md),
             child: NotificationTile(
               notification: notification,
               onTap: () => _handleNotificationTap(notification),

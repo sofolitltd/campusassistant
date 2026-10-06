@@ -9,6 +9,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../presentation/providers/questions_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class QuestionsPage extends ConsumerStatefulWidget {
   const QuestionsPage({super.key});
@@ -45,7 +47,6 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   }
 
   void _showYearFilterSheet(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final years = ref.read(questionYearsProvider);
     final selectedYear = ref.read(questionsSelectedYearProvider);
 
@@ -53,7 +54,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: context.colors.surfaceInverse.withValues(alpha: 0.5),
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
@@ -63,36 +64,34 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
           builder: (context, scrollController) {
             return Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                color: context.colors.surface,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Container(
                     width: 40,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
+                      color: context.colors.borderStrong,
+                      borderRadius: BorderRadius.circular(RadiusToken.md),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Year',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.grey.shade900,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
+                            color: context.colors.text,
                           ),
                         ),
                         if (selectedYear != null)
@@ -106,22 +105,24 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   null;
                               Navigator.pop(context);
                             },
-                            child: const Text(
+                            child: Text(
                               'Clear Filter',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.redAccent,
+                                fontWeight: .w600,
+                                color: context.colors.danger,
                               ),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Expanded(
                     child: ListView.separated(
                       controller: scrollController,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.xl,
+                      ),
                       itemCount: years.length + 1,
                       separatorBuilder: (_, _) =>
                           const Divider(height: 1, indent: 16, endIndent: 16),
@@ -129,13 +130,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         final isAll = index == 0;
                         final year = isAll ? null : years[index - 1];
                         final isSelected = selectedYear == year;
-                        final primary = Theme.of(
-                          context,
-                        ).appColors.primaryColor;
+                        final primary = Theme.of(context).appColors.primary;
                         final selectedColor = primary;
-                        final selectedBg = primary.withValues(
-                          alpha: isDark ? 0.22 : 0.12,
-                        );
+                        final selectedBg = context.colors.primarySubtle;
 
                         return ListTile(
                           selected: isSelected,
@@ -148,7 +145,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   : FontWeight.normal,
                               color: isSelected
                                   ? selectedColor
-                                  : (isDark ? Colors.white : Colors.black87),
+                                  : (context.colors.text),
                             ),
                           ),
                           trailing: isSelected
@@ -181,7 +178,6 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   }
 
   void _showCourseFilterSheet(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedCourse = ref.read(questionsSelectedCourseProvider);
     final docs = ref.read(questionsPaginationProvider).asData?.value.docs ?? [];
     final courses =
@@ -196,7 +192,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: context.colors.surfaceInverse.withValues(alpha: 0.5),
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
@@ -206,36 +202,34 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
           builder: (context, scrollController) {
             return Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                color: context.colors.surface,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Container(
                     width: 40,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
+                      color: context.colors.borderStrong,
+                      borderRadius: BorderRadius.circular(RadiusToken.md),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
                           'Select Course',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.grey.shade900,
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
+                            color: context.colors.text,
                           ),
                         ),
                         if (selectedCourse != null)
@@ -250,22 +244,24 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   null;
                               Navigator.pop(context);
                             },
-                            child: const Text(
+                            child: Text(
                               'Clear Filter',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.redAccent,
+                                fontWeight: .w600,
+                                color: context.colors.danger,
                               ),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Expanded(
                     child: ListView.separated(
                       controller: scrollController,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.xl,
+                      ),
                       itemCount: courses.length + 1,
                       separatorBuilder: (_, _) =>
                           const Divider(height: 1, indent: 16, endIndent: 16),
@@ -273,13 +269,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         final isAll = index == 0;
                         final course = isAll ? null : courses[index - 1];
                         final isSelected = selectedCourse == course;
-                        final primary = Theme.of(
-                          context,
-                        ).appColors.primaryColor;
+                        final primary = Theme.of(context).appColors.primary;
                         final selectedColor = primary;
-                        final selectedBg = primary.withValues(
-                          alpha: isDark ? 0.22 : 0.12,
-                        );
+                        final selectedBg = context.colors.primarySubtle;
 
                         return ListTile(
                           selected: isSelected,
@@ -292,7 +284,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                   : FontWeight.normal,
                               color: isSelected
                                   ? selectedColor
-                                  : (isDark ? Colors.white : Colors.black87),
+                                  : (context.colors.text),
                             ),
                           ),
                           trailing: isSelected
@@ -332,28 +324,33 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-          borderRadius: BorderRadius.circular(8),
+          color: context.colors.surface.withValues(alpha: 0.15),
+          border: Border.all(
+            color: context.colors.onPrimary.withValues(alpha: 0.4),
+          ),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: FontSizeToken.md,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: Colors.white,
+                color: context.colors.onPrimary,
               ),
             ),
-            const SizedBox(width: 6),
-            const Icon(
+            const SizedBox(width: Spacing.sm),
+            Icon(
               Icons.keyboard_arrow_down,
               size: 16,
-              color: Colors.white,
+              color: context.colors.onPrimary,
             ),
           ],
         ),
@@ -364,7 +361,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     final questionsAsync = ref.watch(questionsPaginationProvider);
     final selectedCourse = ref.watch(questionsSelectedCourseProvider);
@@ -375,206 +372,224 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          'Question Bank',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          // ── Search bar ─────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                onChanged: _onSearchChanged,
-                style: const TextStyle(color: Colors.black87),
-                decoration: InputDecoration(
-                  hintText: searchHint,
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 15,
-                  ),
-                  prefixIcon: Icon(
-                    LucideIcons.search,
-                    color: Colors.grey.shade400,
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                ),
+          backgroundColor: primaryColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
+            title: Text(
+              'Question Bank',
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: .bold,
+                fontSize: FontSizeToken.xxl,
               ),
             ),
+            centerTitle: true,
           ),
-
-          // ── Filter row ────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                const Text(
-                  'Filter:',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+          body: Column(
+            children: [
+              // ── Search bar ─────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.sm,
+                  Spacing.lg,
+                  Spacing.md,
+                ),
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
                   ),
-                ),
-                const Spacer(),
-                _buildFilterChip(
-                  label: selectedCourse ?? 'Course',
-                  isActive: selectedCourse != null,
-                  onTap: () => _showCourseFilterSheet(context),
-                ),
-                const SizedBox(width: 12),
-                _buildFilterChip(
-                  label: selectedYear ?? 'Year',
-                  isActive: selectedYear != null,
-                  onTap: () => _showYearFilterSheet(context),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // ── White body area ───────────────────────────────────────
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-                child: questionsAsync.when(
-                  data: (state) {
-                    if (state.docs.isEmpty && !state.isLoadingMore) {
-                      return const Center(
-                        child: Text('No questions found for your department.'),
-                      );
-                    }
-
-                    return Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'Showing ${state.docs.length} / ${state.totalCount}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 12),
-                            controller: _scrollController,
-                            itemCount:
-                                state.docs.length + (state.hasMore ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index >= state.docs.length - 5 &&
-                                  state.hasMore &&
-                                  !state.isLoadingMore) {
-                                Future.microtask(() {
-                                  ref
-                                      .read(
-                                        questionsPaginationProvider.notifier,
-                                      )
-                                      .loadNextPage();
-                                });
-                              }
-
-                              if (index < state.docs.length) {
-                                final doc = state.docs[index];
-                                return ContentCard(contentModel: doc);
-                              } else {
-                                return const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: 14,
-                                          height: 14,
-                                          child: CupertinoActivityIndicator(),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Loading more questions...',
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () =>
-                      const Center(child: CupertinoActivityIndicator()),
-                  error: (e, st) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          LucideIcons.circleAlert,
-                          color: Colors.red,
-                          size: 48,
-                        ),
-                        const SizedBox(height: Spacing.lg),
-                        Text('Error: $e'),
-                        TextButton(
-                          onPressed: () => ref
-                              .read(questionsPaginationProvider.notifier)
-                              .refresh(),
-                          child: const Text('Try Again'),
-                        ),
-                      ],
+                  child: TextField(
+                    onChanged: _onSearchChanged,
+                    style: TextStyle(color: context.colors.text),
+                    decoration: InputDecoration(
+                      hintText: searchHint,
+                      hintStyle: TextStyle(
+                        color: context.colors.textSubtle,
+                        fontSize: FontSizeToken.lg,
+                      ),
+                      prefixIcon: Icon(
+                        LucideIcons.search,
+                        color: context.colors.textSubtle,
+                        size: 20,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.lg,
+                        vertical: Spacing.lg,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+
+              // ── Filter row ────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                child: Row(
+                  children: [
+                    Text(
+                      'Filter:',
+                      style: TextStyle(
+                        color: context.colors.onPrimary,
+                        fontWeight: .w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    _buildFilterChip(
+                      label: selectedCourse ?? 'Course',
+                      isActive: selectedCourse != null,
+                      onTap: () => _showCourseFilterSheet(context),
+                    ),
+                    const SizedBox(width: Spacing.md),
+                    _buildFilterChip(
+                      label: selectedYear ?? 'Year',
+                      isActive: selectedYear != null,
+                      onTap: () => _showYearFilterSheet(context),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: Spacing.lg),
+
+              // ── White body area ───────────────────────────────────────
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                    child: questionsAsync.when(
+                      data: (state) {
+                        if (state.docs.isEmpty && !state.isLoadingMore) {
+                          return const Center(
+                            child: Text(
+                              'No questions found for your department.',
+                            ),
+                          );
+                        }
+
+                        return Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Spacing.lg,
+                                vertical: Spacing.sm,
+                              ),
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                'Showing ${state.docs.length} / ${state.totalCount}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontWeight: .bold,
+                                  color: context.colors.textMuted,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.separated(
+                                padding: const EdgeInsets.fromLTRB(
+                                  Spacing.lg,
+                                  0,
+                                  Spacing.lg,
+                                  Spacing.lg,
+                                ),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: Spacing.md),
+                                controller: _scrollController,
+                                itemCount:
+                                    state.docs.length + (state.hasMore ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (index >= state.docs.length - 5 &&
+                                      state.hasMore &&
+                                      !state.isLoadingMore) {
+                                    Future.microtask(() {
+                                      ref
+                                          .read(
+                                            questionsPaginationProvider
+                                                .notifier,
+                                          )
+                                          .loadNextPage();
+                                    });
+                                  }
+
+                                  if (index < state.docs.length) {
+                                    final doc = state.docs[index];
+                                    return ContentCard(contentModel: doc);
+                                  } else {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: Spacing.lg,
+                                      ),
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              width: 14,
+                                              height: 14,
+                                              child:
+                                                  CupertinoActivityIndicator(),
+                                            ),
+                                            SizedBox(width: Spacing.sm),
+                                            Text(
+                                              'Loading more questions...',
+                                              style: TextStyle(
+                                                fontSize: FontSizeToken.sm,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      loading: () =>
+                          const Center(child: CupertinoActivityIndicator()),
+                      error: (e, st) => Center(
+                        child: Column(
+                          mainAxisAlignment: .center,
+                          children: [
+                            Icon(
+                              LucideIcons.circleAlert,
+                              color: context.colors.danger,
+                              size: 48,
+                            ),
+                            const SizedBox(height: Spacing.lg),
+                            Text('Error: $e'),
+                            TextButton(
+                              onPressed: () => ref
+                                  .read(questionsPaginationProvider.notifier)
+                                  .refresh(),
+                              child: const Text('Try again'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
         ),
       ),
     );

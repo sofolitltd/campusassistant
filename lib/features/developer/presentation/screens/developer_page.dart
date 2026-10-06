@@ -8,32 +8,35 @@ import '/core/theme/app_colors.dart';
 import '/utils/constants.dart';
 import '/widgets/open_app.dart';
 import '/routes/scaffold_with_navbar.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class DeveloperPage extends ConsumerWidget {
   const DeveloperPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
         centerTitle: false,
-        title: const Text(
+        title: Text(
           'Developer',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
+            fontWeight: .bold,
+            color: context.colors.onPrimary,
+            fontSize: FontSizeToken.xxl,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: Spacing.sm),
             child: GestureDetector(
               onTap: () =>
                   ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
@@ -41,16 +44,13 @@ class DeveloperPage extends ConsumerWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: context.colors.surface.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(Spacing.xs),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                  borderRadius: BorderRadius.circular(RadiusToken.lg),
+                  child: Image.asset('assets/images/logo.png', fit: .contain),
                 ),
               ),
             ),
@@ -62,15 +62,15 @@ class DeveloperPage extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(24),
+              top: Radius.circular(RadiusToken.xxxl),
             ),
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(Spacing.xxl),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   // ── Developer Profile ──
                   Center(
@@ -79,129 +79,136 @@ class DeveloperPage extends ConsumerWidget {
                         Container(
                           height: 100,
                           width: 100,
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(Spacing.sm),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.pink.shade100,
                             image: const DecorationImage(
-                              fit: BoxFit.cover,
+                              fit: .cover,
                               image: AssetImage('assets/images/reyad.jpg'),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         Text(
                           kDeveloperName,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(fontWeight: .bold),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: Spacing.xs),
                         Text(
                           'App Developer | UI/UX Designer',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: isDark ? Colors.white70 : Colors.grey.shade600,
+                            fontSize: FontSizeToken.base,
+                            color: context.colors.textMuted,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: Spacing.md),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
+                                horizontal: Spacing.md,
+                                vertical: Spacing.xs,
                               ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.orange[100],
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.xs,
+                                ),
+                                color: context.colors.warning,
                               ),
-                              child: const Text(
+                              child: Text(
                                 kDeveloperBatch,
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                                  fontSize: FontSizeToken.sm,
+                                  fontWeight: .w500,
+                                  color: context.colors.text,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: Spacing.sm),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
+                                horizontal: Spacing.md,
+                                vertical: Spacing.xs,
                               ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.blue.shade100,
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.xs,
+                                ),
+                                color: context.colors.info,
                               ),
-                              child: const Text(
+                              child: Text(
                                 kDeveloperSession,
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                                  fontSize: FontSizeToken.sm,
+                                  fontWeight: .w500,
+                                  color: context.colors.text,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Spacing.sm),
                         Text(
                           'Department of Psychology',
                           style: TextStyle(
-                            fontSize: 13,
-                            color: isDark ? Colors.white60 : Colors.grey.shade600,
+                            fontSize: FontSizeToken.md,
+                            color: context.colors.textMuted,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: Spacing.xxs),
                         Text(
                           'University of Chittagong',
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: [
                             MaterialButton(
-                              onPressed: () => OpenApp.withNumber(kDeveloperMobile),
+                              onPressed: () =>
+                                  OpenApp.withNumber(kDeveloperMobile),
                               minWidth: 32,
                               elevation: 2,
-                              color: Colors.green,
+                              color: context.colors.success,
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(kIsWeb ? 16 : 8),
-                              child: const Icon(
+                              child: Icon(
                                 LucideIcons.phone,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                                 size: 18,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: Spacing.md),
                             MaterialButton(
                               onPressed: () => OpenApp.withEmail(kAppEmail),
                               minWidth: 32,
                               elevation: 2,
-                              color: Colors.red,
+                              color: context.colors.danger,
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(kIsWeb ? 16 : 8),
-                              child: const Icon(
+                              child: Icon(
                                 LucideIcons.mail,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                                 size: 18,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: Spacing.md),
                             MaterialButton(
                               onPressed: () => OpenApp.withUrl(kDeveloperFb),
                               minWidth: 32,
                               elevation: 2,
-                              color: Colors.blue,
+                              color: context.colors.info,
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(kIsWeb ? 16 : 8),
-                              child: const Icon(
+                              child: Icon(
                                 LucideIcons.link,
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                                 size: 18,
                               ),
                             ),
@@ -211,15 +218,16 @@ class DeveloperPage extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Spacing.xxl),
 
                   // ── About the App ──
                   Text(
-                    'About the App'.toUpperCase(),
-                    style: Theme.of(context).textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    'About the app',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Text(
                     'Campus Assistant is a comprehensive campus management platform '
                     'built to connect students, teachers, and departments in a single '
@@ -227,12 +235,12 @@ class DeveloperPage extends ConsumerWidget {
                     'management and event notifications, the app simplifies every '
                     'aspect of university life.',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: FontSizeToken.base,
                       height: 1.6,
-                      color: isDark ? Colors.white70 : Colors.grey.shade700,
+                      color: context.colors.textMuted,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Text(
                     'Developed with ❤️ by Md Asifuzzaman Reyad, Campus Assistant '
                     'started as a small departmental project and has grown into a '
@@ -240,30 +248,29 @@ class DeveloperPage extends ConsumerWidget {
                     'continues to evolve with new features and improvements based on '
                     'student and faculty feedback.',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: FontSizeToken.base,
                       height: 1.6,
-                      color: isDark ? Colors.white70 : Colors.grey.shade700,
+                      color: context.colors.textMuted,
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Spacing.xxl),
 
                   // ── Development Team ──
                   Text(
-                    'Development Team'.toUpperCase(),
-                    style: Theme.of(context).textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    'Development team',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(Spacing.lg),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isDark ? Colors.white10 : Colors.grey.shade200,
-                      ),
+                      color: context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.lg),
+                      border: Border.all(color: context.colors.border),
                     ),
                     child: Column(
                       children: [
@@ -273,40 +280,41 @@ class DeveloperPage extends ConsumerWidget {
                           errorBuilder: (_, _, _) => Text(
                             'Sofolit',
                             style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                                ?.copyWith(fontWeight: .bold),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Spacing.sm),
                         Text(
                           'Sofolit Ltd.',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: Spacing.xs),
                         const Text(
                           'Software & IT Solutions',
-                          style: TextStyle(fontSize: 13),
+                          style: TextStyle(fontSize: FontSizeToken.md),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: Spacing.md),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: [
                             _IconChip(
                               icon: LucideIcons.globe,
                               onTap: () => OpenApp.withUrl(kDevWebsite),
-                              color: Colors.blue,
+                              color: context.colors.info,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: Spacing.sm),
                             _IconChip(
                               icon: LucideIcons.mail,
                               onTap: () => OpenApp.withEmail(kDevEmail),
-                              color: Colors.red,
+                              color: context.colors.danger,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: Spacing.sm),
                             _IconChip(
                               icon: LucideIcons.video,
                               onTap: () => OpenApp.withUrl(kDevYoutube),
-                              color: Colors.red.shade700,
+                              color: context.colors.danger,
                             ),
                           ],
                         ),
@@ -314,48 +322,49 @@ class DeveloperPage extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Spacing.xxl),
 
                   // ── Links ──
                   Text(
-                    'Links'.toUpperCase(),
-                    style: Theme.of(context).textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    'Links',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   _LinkTile(
                     icon: LucideIcons.link,
-                    iconColor: Colors.blue,
+                    iconColor: context.colors.info,
                     label: 'Facebook Page',
                     onTap: () => OpenApp.withUrl(kFbGroup),
                     isDark: isDark,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   _LinkTile(
                     icon: LucideIcons.link,
-                    iconColor: Colors.red,
+                    iconColor: context.colors.danger,
                     label: 'YouTube Channel',
                     onTap: () => OpenApp.withUrl(kYoutubeUrl),
                     isDark: isDark,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   _LinkTile(
                     icon: LucideIcons.star,
-                    iconColor: Colors.orange,
+                    iconColor: context.colors.warning,
                     label: 'Rate on PlayStore',
                     onTap: () => OpenApp.withUrl(kPlayStoreUrl),
                     isDark: isDark,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   _LinkTile(
                     icon: LucideIcons.globe,
-                    iconColor: Theme.of(context).appColors.primaryColor,
+                    iconColor: context.colors.primary,
                     label: 'Visit Website',
                     onTap: () => OpenApp.withUrl(kDevWebsite),
                     isDark: isDark,
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
 
                   // ── Contributors button ──
                   SizedBox(
@@ -363,16 +372,15 @@ class DeveloperPage extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: () => context.push('/contributors'),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(RadiusToken.lg),
                         ),
                       ),
-                      child: const Text('Our Contributors'),
+                      child: const Text('Our contributors'),
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: Spacing.xxxl),
                 ],
               ),
             ),
@@ -402,7 +410,7 @@ class _IconChip extends StatelessWidget {
       elevation: 1,
       color: color.withValues(alpha: 0.1),
       shape: const CircleBorder(),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(Spacing.md),
       child: Icon(icon, color: color, size: 18),
     );
   }
@@ -427,20 +435,21 @@ class _LinkTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+        border: Border.all(color: context.colors.border),
       ),
       child: ListTile(
         onTap: onTap,
         visualDensity: VisualDensity.compact,
         leading: Icon(icon, color: iconColor, size: 20),
-        title: Text(label, style: const TextStyle(fontSize: 14)),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: FontSizeToken.base),
+        ),
         trailing: Icon(
           LucideIcons.chevronRight,
           size: 16,
-          color: isDark ? Colors.white38 : Colors.grey.shade400,
+          color: context.colors.textSubtle,
         ),
       ),
     );

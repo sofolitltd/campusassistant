@@ -11,6 +11,7 @@ import '/core/theme/app_colors.dart';
 
 import '../../../../core/theme/tokens/app_spacing.dart';
 import 'profile_completion_card.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class HeaderCard extends StatelessWidget {
   final user_entity.User user;
@@ -21,7 +22,7 @@ class HeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPro = user.subscriptionStatus == 'pro';
     final planLabel = isPro ? 'Pro' : 'Basic';
-    final planColor = Colors.grey.shade700;
+    final planColor = context.colors.textMuted;
     final isProfileComplete = profileCompletionPercent(user) == 100;
 
     return Container(
@@ -33,54 +34,54 @@ class HeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
             ? Theme.of(context).cardColor
-            : Colors.white,
+            : context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         border: Border.all(
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white10
-              : Colors.grey.shade200,
+              ? context.colors.border
+              : context.colors.border,
         ),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: .center,
         children: [
           _ProfileImage(imageUrl: user.profileImage ?? ''),
           SizedBox(width: Spacing.md),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: .start,
+              mainAxisAlignment: .center,
               children: [
                 Text(
                   user.fullName.toUpperCase(),
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: .bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.md),
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
+                        horizontal: Spacing.md,
+                        vertical: Spacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(20),
+                        color: context.colors.surface,
+                        border: Border.all(color: context.colors.borderStrong),
+                        borderRadius: BorderRadius.circular(RadiusToken.xxl),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           Icon(LucideIcons.trophy, size: 14, color: planColor),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: Spacing.sm),
                           Text(
                             planLabel,
                             style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              fontSize: FontSizeToken.sm,
+                              fontWeight: .w600,
                               color: planColor,
                             ),
                           ),
@@ -88,32 +89,34 @@ class HeaderCard extends StatelessWidget {
                       ),
                     ),
                     if (isProfileComplete) ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: Spacing.sm),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                          horizontal: Spacing.md,
+                          vertical: Spacing.xs,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(20),
+                          color: context.colors.surface,
+                          border: Border.all(
+                            color: context.colors.borderStrong,
+                          ),
+                          borderRadius: BorderRadius.circular(RadiusToken.xxl),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: .min,
                           children: [
-                            const Icon(
+                            Icon(
                               LucideIcons.circleCheck,
                               size: 14,
-                              color: Colors.green,
+                              color: context.colors.success,
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: Spacing.sm),
                             Text(
                               '100%',
                               style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.green.shade700,
+                                fontSize: FontSizeToken.sm,
+                                fontWeight: .w600,
+                                color: context.colors.success,
                               ),
                             ),
                           ],
@@ -131,7 +134,7 @@ class HeaderCard extends StatelessWidget {
                       child: Icon(
                         LucideIcons.pencil,
                         size: 18,
-                        color: Theme.of(context).appColors.primaryColor,
+                        color: context.colors.primary,
                       ),
                     ),
                   ],
@@ -152,7 +155,7 @@ class _ProfileImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: .none,
       children: [
         Container(
           height: 80,
@@ -161,30 +164,30 @@ class _ProfileImage extends StatelessWidget {
             color: const Color(0xFFF4A3A4), // Pinkish color from design
             shape: BoxShape.circle,
           ),
-          clipBehavior: Clip.antiAlias,
+          clipBehavior: .antiAlias,
           child: imageUrl.isEmpty
-              ? const Center(
+              ? Center(
                   child: Icon(
                     Icons.person_outline,
                     size: 40,
-                    color: Colors.white,
+                    color: context.colors.onPrimary,
                   ),
                 )
               : CachedNetworkImage(
                   imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
+                  fit: .cover,
+                  placeholder: (context, url) => Center(
                     child: Icon(
                       Icons.person_outline,
                       size: 40,
-                      color: Colors.white,
+                      color: context.colors.onPrimary,
                     ),
                   ),
-                  errorWidget: (context, url, error) => const Center(
+                  errorWidget: (context, url, error) => Center(
                     child: Icon(
                       Icons.person_outline,
                       size: 40,
-                      color: Colors.white,
+                      color: context.colors.onPrimary,
                     ),
                   ),
                 ),
@@ -193,16 +196,16 @@ class _ProfileImage extends StatelessWidget {
           bottom: 0,
           right: 0,
           child: Container(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(Spacing.xs),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.colors.surface,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade200, width: 1),
+              border: Border.all(color: context.colors.border, width: 1),
             ),
             child: Icon(
               Icons.camera_alt_outlined,
               size: 14,
-              color: Theme.of(context).appColors.primaryColor,
+              color: context.colors.primary,
             ),
           ),
         ),

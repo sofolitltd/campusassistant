@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+
 class CommonDropDownWidget extends StatelessWidget {
   const CommonDropDownWidget({
     super.key,
@@ -19,39 +22,29 @@ class CommonDropDownWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         Text(
           heading,
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            fontWeight: FontWeight.w500,
-            color: Colors.black54,
+            fontWeight: .w500,
+            color: context.colors.textMuted,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Spacing.sm),
         ButtonTheme(
           alignedDropdown: true,
           child: DropdownButtonFormField(
             isExpanded: true,
             initialValue: value,
             hint: Text(hint),
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: const BorderSide(width: .5),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: const BorderSide(width: .5),
-              ),
-            ),
+            decoration: InputDecoration(),
             onChanged: (String? value) => onChanged(value),
             validator: (value) => value == null ? "Select something" : null,
             items: itemList.map((String val) {
               return DropdownMenuItem(
                 value: val,
-                child: Text(val, overflow: TextOverflow.ellipsis),
+                child: Text(val, overflow: .ellipsis),
               );
             }).toList(),
           ),

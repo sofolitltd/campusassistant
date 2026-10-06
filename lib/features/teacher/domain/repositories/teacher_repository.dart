@@ -9,6 +9,15 @@ abstract class TeacherRepository {
     bool? isPresent,
   });
 
+  /// Offline-first variant of [getTeachers]: emits cached teachers
+  /// immediately if present, then emits the fresh network result once it
+  /// arrives (or an error/empty result if offline with no cache).
+  Stream<Either<Failure, List<Teacher>>> watchTeachers({
+    required String universityId,
+    required String departmentId,
+    bool? isPresent,
+  });
+
   Future<Either<Failure, int>> getTeacherCount({
     required String universityId,
     required String departmentId,

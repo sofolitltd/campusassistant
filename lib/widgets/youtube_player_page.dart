@@ -19,120 +19,51 @@ class YoutubePlayerPage extends StatefulWidget {
 }
 
 class _YoutubePlayerPageState extends State<YoutubePlayerPage> {
-  late YoutubePlayerController _controller;
+  late final YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.videoId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-        enableCaption: true,
-        useHybridComposition: true,
-      ),
-    )..addListener(_listener);
-  }
-
-  void _listener() {
-    if (mounted) {
-      setState(() {});
-    }
+    _controller = YoutubePlayerController.fromVideoId(
+      videoId: widget.videoId,
+      autoPlay: true,
+      params: const YoutubePlayerParams(mute: false, enableCaption: true),
+    );
   }
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    );
-    _controller.removeListener(_listener);
-    _controller.dispose();
+    _controller.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
-      onEnterFullScreen: () {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
-      },
-      onExitFullScreen: () {
-        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-        SystemChrome.setEnabledSystemUIMode(
-          SystemUiMode.manual,
-          overlays: SystemUiOverlay.values,
-        );
-      },
-      player: YoutubePlayer(
-        controller: _controller,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: Colors.blueAccent,
-        topActions: <Widget>[
-          const SizedBox(width: 8.0),
-          Expanded(
-            child: Text(
-              _controller.metadata.title,
-              style: const TextStyle(color: Colors.white, fontSize: 18.0),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
+    final primaryColor = context.colors.primary;
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            fontWeight: .bold,
+            color: Colors.white,
           ),
+        ),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: primaryColor,
+        ),
+      ),
+      body: Column(
+        children: [
+          // Fullscreen, orientation and system UI are handled by the player.
+          YoutubePlayer(controller: _controller),
+          const Expanded(child: SizedBox.shrink()),
         ],
       ),
-      builder: (context, player) {
-        final primaryColor = Theme.of(context).appColors.primaryColor;
-        return Scaffold(
-          appBar: _controller.value.isFullScreen
-              ? null
-              : AppBar(
-                  centerTitle: true,
-                  title: Text(
-                    widget.title,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
-                    statusBarColor: primaryColor,
-                  ),
-                ),
-          body: PopScope(
-            canPop: !_controller.value.isFullScreen,
-            onPopInvokedWithResult: (didPop, result) {
-              if (!didPop && _controller.value.isFullScreen) {
-                _controller.toggleFullScreenMode();
-              }
-            },
-            child: Column(
-              children: [
-                player,
-                if (!_controller.value.isFullScreen)
-                  const Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

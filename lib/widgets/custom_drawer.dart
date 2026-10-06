@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+
+import '/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/utils/constants.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/routes/app_route.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -13,7 +18,12 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        padding: const EdgeInsets.fromLTRB(
+          Spacing.sm,
+          0,
+          Spacing.sm,
+          Spacing.sm,
+        ),
         child: Stack(
           alignment: Alignment.topRight,
           children: [
@@ -26,44 +36,45 @@ class CustomDrawer extends StatelessWidget {
               //from right side
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: .stretch,
+                  // mainAxisAlignment: .spaceBetween,
                   children: [
                     //
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(Spacing.lg),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: .start,
+                        mainAxisSize: .max,
                         children: [
-                          const SizedBox(height: 8),
+                          const SizedBox(height: Spacing.sm),
                           Text(
-                            'Developer:'.toUpperCase(),
-                            style: Theme.of(context).textTheme.titleSmall!
-                                .copyWith(fontWeight: FontWeight.bold),
+                            'Developer:',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleSmall!.copyWith(fontWeight: .bold),
                           ),
-                          const SizedBox(height: 16.0),
+                          const SizedBox(height: Spacing.lg),
                           Container(
                             height: 100,
                             width: 100,
-                            padding: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(Spacing.sm),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               // borderRadius: BorderRadius.circular(RadiusToken.sm),
-                              color: Colors.pink.shade100,
+                              color: context.colors.primarySubtle,
                               image: const DecorationImage(
-                                fit: BoxFit.cover,
+                                fit: .cover,
                                 image: AssetImage('assets/images/reyad.jpg'),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16.0),
+                          const SizedBox(height: Spacing.lg),
                           Text(
                             kDeveloperName,
                             style: Theme.of(context).textTheme.titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
+                                .copyWith(fontWeight: .bold),
                           ),
-                          // const SizedBox(height: 4),
+                          // const SizedBox(height: Spacing.xs),
                           Text(
                             'App Developer | UI/UX Designer',
 
@@ -71,60 +82,65 @@ class CustomDrawer extends StatelessWidget {
                               context,
                             ).textTheme.bodySmall!.copyWith(),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: Spacing.md),
                           Row(
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                                  horizontal: Spacing.md,
+                                  vertical: Spacing.xs,
                                 ),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Colors.orange[100],
+                                  borderRadius: BorderRadius.circular(
+                                    RadiusToken.xs,
+                                  ),
+                                  color: context.colors.warningSubtle,
                                 ),
-                                child: const Text(
+                                child: Text(
                                   kDeveloperBatch,
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    fontSize: FontSizeToken.sm,
+                                    fontWeight: .w500,
+                                    color: context.colors.text,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: Spacing.sm),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                                  horizontal: Spacing.md,
+                                  vertical: Spacing.xs,
                                 ),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Colors.blue.shade100,
+                                  borderRadius: BorderRadius.circular(
+                                    RadiusToken.xs,
+                                  ),
+                                  color: context.colors.infoSubtle,
                                 ),
-                                child: const Text(
+                                child: Text(
                                   kDeveloperSession,
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    fontSize: FontSizeToken.sm,
+                                    fontWeight: .w500,
+                                    color: context.colors.text,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: Spacing.xs),
                           Text(
                             'Department of Psychology',
                             style: Theme.of(context).textTheme.bodySmall!,
                           ),
                           Text(
                             'University of Chittagong',
-                            style: Theme.of(context).textTheme.titleSmall!
-                                .copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleSmall!.copyWith(fontWeight: .bold),
                           ),
 
-                          const SizedBox(height: 12),
+                          const SizedBox(height: Spacing.md),
 
                           GestureDetector(
                             onTap: () {
@@ -134,12 +150,14 @@ class CustomDrawer extends StatelessWidget {
                             child: Container(
                               width: 154,
                               decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: .05),
-                                borderRadius: BorderRadius.circular(8),
+                                color: context.colors.shadow,
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.md,
+                                ),
                               ),
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                                horizontal: Spacing.md,
+                                vertical: Spacing.sm,
                               ),
                               child: Row(
                                 spacing: 8,
@@ -151,14 +169,14 @@ class CustomDrawer extends StatelessWidget {
                                         .bodySmall!
                                         .copyWith(
                                           height: 1,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.teal.shade300,
+                                          fontWeight: .bold,
+                                          color: context.colors.primary,
                                         ),
                                   ),
                                   Icon(
                                     LucideIcons.arrowUpRight,
                                     size: 14,
-                                    color: Colors.teal.shade300,
+                                    color: context.colors.primary,
                                   ),
                                 ],
                               ),
@@ -168,24 +186,27 @@ class CustomDrawer extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
 
                     //
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.lg,
+                      ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
-                            'Follow Us'.toUpperCase(),
-                            style: Theme.of(context).textTheme.titleSmall!
-                                .copyWith(fontWeight: FontWeight.bold),
+                            'Follow us',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleSmall!.copyWith(fontWeight: .bold),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.sm),
 
                     //
                     ListTileTheme(
@@ -193,11 +214,16 @@ class CustomDrawer extends StatelessWidget {
                       minVerticalPadding: 0,
                       dense: true,
                       shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.grey.shade300, width: 1),
+                        side: BorderSide(
+                          color: context.colors.border,
+                          width: 1,
+                        ),
                         borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.lg,
+                        ),
                         child: Column(
                           children: [
                             // fb
@@ -207,11 +233,11 @@ class CustomDrawer extends StatelessWidget {
                               },
                               visualDensity: VisualDensity.compact,
                               contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
+                                horizontal: Spacing.sm,
                               ),
-                              leading: const Icon(
+                              leading: Icon(
                                 LucideIcons.link,
-                                color: Colors.blue,
+                                color: context.colors.info,
                               ),
                               title: const Text('Facebook Page'),
                               trailing: const Icon(
@@ -220,7 +246,7 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
 
                             // youtube
                             ListTile(
@@ -229,11 +255,11 @@ class CustomDrawer extends StatelessWidget {
                               },
                               visualDensity: VisualDensity.compact,
                               contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
+                                horizontal: Spacing.sm,
                               ),
-                              leading: const Icon(
+                              leading: Icon(
                                 LucideIcons.link,
-                                color: Colors.red,
+                                color: context.colors.danger,
                               ),
                               title: const Text('Youtube Channel'),
                               trailing: const Icon(
@@ -242,7 +268,7 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
 
                             // Rate us
                             ListTile(
@@ -251,11 +277,11 @@ class CustomDrawer extends StatelessWidget {
                               },
                               visualDensity: VisualDensity.compact,
                               contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
+                                horizontal: Spacing.sm,
                               ),
-                              leading: const Icon(
+                              leading: Icon(
                                 LucideIcons.star,
-                                color: Colors.orange,
+                                color: context.colors.warning,
                               ),
                               title: const Text('Rate on PlayStore'),
                               trailing: const Icon(
@@ -264,7 +290,30 @@ class CustomDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 24),
+                            const SizedBox(height: Spacing.sm),
+
+                            // Send Feedback
+                            ListTile(
+                              onTap: () {
+                                Navigator.pop(context);
+                                context.push(AppRoute.feedback.path);
+                              },
+                              visualDensity: VisualDensity.compact,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: Spacing.sm,
+                              ),
+                              leading: Icon(
+                                LucideIcons.messageSquare,
+                                color: context.colors.primary,
+                              ),
+                              title: const Text('Send Feedback'),
+                              trailing: const Icon(
+                                LucideIcons.chevronRight,
+                                size: 16,
+                              ),
+                            ),
+
+                            const SizedBox(height: Spacing.xxl),
 
                             // contributors
                             SizedBox(
@@ -274,11 +323,11 @@ class CustomDrawer extends StatelessWidget {
                                   Navigator.pop(context);
                                   context.push('/contributors');
                                 },
-                                child: const Text('Our Contributors'),
+                                child: const Text('Our contributors'),
                               ),
                             ),
 
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: Spacing.lg),
                           ],
                         ),
                       ),
@@ -290,7 +339,10 @@ class CustomDrawer extends StatelessWidget {
 
             //
             Padding(
-              padding: const EdgeInsets.only(top: 8, right: 8),
+              padding: const EdgeInsets.only(
+                top: Spacing.sm,
+                right: Spacing.sm,
+              ),
               child: IconButton(
                 onPressed: () {
                   Navigator.pop(context);

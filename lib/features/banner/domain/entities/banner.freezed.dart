@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'banner.dart';
@@ -9,13 +9,13 @@ part of 'banner.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Banner {
 
- String get id; String get title; String get imageUrl; String get clickUrl; int get priority; bool get isActive; DateTime get startAt; DateTime get endAt; String get targetScope;// National, University, Department
- List<BannerTarget> get targets;
+ String get id; String get title; String get imageUrl; String get clickUrl; int get priority; bool get isActive; DateTime get startAt; DateTime get endAt; String get targetScope; List<BannerTarget> get targets;
 /// Create a copy of Banner
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,21 @@ $BannerCopyWith<Banner> get copyWith => _$BannerCopyWithImpl<Banner>(this as Ban
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Banner&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.clickUrl, clickUrl) || other.clickUrl == clickUrl)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startAt, startAt) || other.startAt == startAt)&&(identical(other.endAt, endAt) || other.endAt == endAt)&&(identical(other.targetScope, targetScope) || other.targetScope == targetScope)&&const DeepCollectionEquality().equals(other.targets, targets));
+  final _this = this as Banner;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Banner&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.clickUrl, _this.clickUrl) || other.clickUrl == _this.clickUrl)&&(identical(other.priority, _this.priority) || other.priority == _this.priority)&&(identical(other.isActive, _this.isActive) || other.isActive == _this.isActive)&&(identical(other.startAt, _this.startAt) || other.startAt == _this.startAt)&&(identical(other.endAt, _this.endAt) || other.endAt == _this.endAt)&&(identical(other.targetScope, _this.targetScope) || other.targetScope == _this.targetScope)&&const DeepCollectionEquality().equals(other.targets, _this.targets));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,imageUrl,clickUrl,priority,isActive,startAt,endAt,targetScope,const DeepCollectionEquality().hash(targets));
+int get hashCode {
+  final _this = this as Banner;
+  return Object.hash(runtimeType,_this.id,_this.title,_this.imageUrl,_this.clickUrl,_this.priority,_this.isActive,_this.startAt,_this.endAt,_this.targetScope,const DeepCollectionEquality().hash(_this.targets));
+}
 
 @override
 String toString() {
-  return 'Banner(id: $id, title: $title, imageUrl: $imageUrl, clickUrl: $clickUrl, priority: $priority, isActive: $isActive, startAt: $startAt, endAt: $endAt, targetScope: $targetScope, targets: $targets)';
+  final _this = this as Banner;
+  return 'Banner(id: ${_this.id}, title: ${_this.title}, imageUrl: ${_this.imageUrl}, clickUrl: ${_this.clickUrl}, priority: ${_this.priority}, isActive: ${_this.isActive}, startAt: ${_this.startAt}, endAt: ${_this.endAt}, targetScope: ${_this.targetScope}, targets: ${_this.targets})';
 }
 
 
@@ -64,7 +69,7 @@ class _$BannerCopyWithImpl<$Res>
 /// Create a copy of Banner
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? imageUrl = null,Object? clickUrl = null,Object? priority = null,Object? isActive = null,Object? startAt = null,Object? endAt = null,Object? targetScope = null,Object? targets = null,}) {
-  return _then(_self.copyWith(
+  return _then(Banner(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -216,7 +221,7 @@ return $default(_that.id,_that.title,_that.imageUrl,_that.clickUrl,_that.priorit
 
 
 class _Banner implements Banner {
-  const _Banner({required this.id, required this.title, required this.imageUrl, required this.clickUrl, required this.priority, required this.isActive, required this.startAt, required this.endAt, required this.targetScope, final  List<BannerTarget> targets = const []}): _targets = targets;
+  const _Banner({required this.id, required this.title, required this.imageUrl, required this.clickUrl, required this.priority, required this.isActive, required this.startAt, required this.endAt, required this.targetScope,  List<BannerTarget> targets = const []}): _targets = targets;
   
 
 @override final  String id;
@@ -228,9 +233,7 @@ class _Banner implements Banner {
 @override final  DateTime startAt;
 @override final  DateTime endAt;
 @override final  String targetScope;
-// National, University, Department
  final  List<BannerTarget> _targets;
-// National, University, Department
 @override@JsonKey() List<BannerTarget> get targets {
   if (_targets is EqualUnmodifiableListView) return _targets;
   // ignore: implicit_dynamic_type
@@ -248,16 +251,18 @@ _$BannerCopyWith<_Banner> get copyWith => __$BannerCopyWithImpl<_Banner>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Banner&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.clickUrl, clickUrl) || other.clickUrl == clickUrl)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startAt, startAt) || other.startAt == startAt)&&(identical(other.endAt, endAt) || other.endAt == endAt)&&(identical(other.targetScope, targetScope) || other.targetScope == targetScope)&&const DeepCollectionEquality().equals(other._targets, _targets));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Banner&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.clickUrl, clickUrl) || other.clickUrl == clickUrl)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startAt, startAt) || other.startAt == startAt)&&(identical(other.endAt, endAt) || other.endAt == endAt)&&(identical(other.targetScope, targetScope) || other.targetScope == targetScope)&&const DeepCollectionEquality().equals(other.targets, _targets));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,imageUrl,clickUrl,priority,isActive,startAt,endAt,targetScope,const DeepCollectionEquality().hash(_targets));
+int get hashCode {
+    return Object.hash(runtimeType,id,title,imageUrl,clickUrl,priority,isActive,startAt,endAt,targetScope,const DeepCollectionEquality().hash(_targets));
+}
 
 @override
 String toString() {
-  return 'Banner(id: $id, title: $title, imageUrl: $imageUrl, clickUrl: $clickUrl, priority: $priority, isActive: $isActive, startAt: $startAt, endAt: $endAt, targetScope: $targetScope, targets: $targets)';
+    return 'Banner(id: $id, title: $title, imageUrl: $imageUrl, clickUrl: $clickUrl, priority: $priority, isActive: $isActive, startAt: $startAt, endAt: $endAt, targetScope: $targetScope, targets: $targets)';
 }
 
 
@@ -318,16 +323,21 @@ $BannerTargetCopyWith<BannerTarget> get copyWith => _$BannerTargetCopyWithImpl<B
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BannerTarget&&(identical(other.id, id) || other.id == id)&&(identical(other.bannerId, bannerId) || other.bannerId == bannerId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+  final _this = this as BannerTarget;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BannerTarget&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.bannerId, _this.bannerId) || other.bannerId == _this.bannerId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,bannerId,universityId,departmentId);
+int get hashCode {
+  final _this = this as BannerTarget;
+  return Object.hash(runtimeType,_this.id,_this.bannerId,_this.universityId,_this.departmentId);
+}
 
 @override
 String toString() {
-  return 'BannerTarget(id: $id, bannerId: $bannerId, universityId: $universityId, departmentId: $departmentId)';
+  final _this = this as BannerTarget;
+  return 'BannerTarget(id: ${_this.id}, bannerId: ${_this.bannerId}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId})';
 }
 
 
@@ -356,7 +366,7 @@ class _$BannerTargetCopyWithImpl<$Res>
 /// Create a copy of BannerTarget
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? bannerId = null,Object? universityId = freezed,Object? departmentId = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(BannerTarget(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,bannerId: null == bannerId ? _self.bannerId : bannerId // ignore: cast_nullable_to_non_nullable
 as String,universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
@@ -520,16 +530,18 @@ _$BannerTargetCopyWith<_BannerTarget> get copyWith => __$BannerTargetCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BannerTarget&&(identical(other.id, id) || other.id == id)&&(identical(other.bannerId, bannerId) || other.bannerId == bannerId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BannerTarget&&(identical(other.id, id) || other.id == id)&&(identical(other.bannerId, bannerId) || other.bannerId == bannerId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,bannerId,universityId,departmentId);
+int get hashCode {
+    return Object.hash(runtimeType,id,bannerId,universityId,departmentId);
+}
 
 @override
 String toString() {
-  return 'BannerTarget(id: $id, bannerId: $bannerId, universityId: $universityId, departmentId: $departmentId)';
+    return 'BannerTarget(id: $id, bannerId: $bannerId, universityId: $universityId, departmentId: $departmentId)';
 }
 
 

@@ -14,6 +14,8 @@ import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
 import '/routes/app_route.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class CourseTypesDetails extends ConsumerStatefulWidget {
   const CourseTypesDetails({
@@ -93,18 +95,13 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
 
   /// Maps the display tab name to the backend `type` field value.
   String get _resourceType {
-    switch (widget.courseType.toLowerCase()) {
-      case 'books':
-        return 'book';
-      case 'questions':
-        return 'question';
-      case 'syllabus':
-        return 'syllabus';
-      case 'notes':
-        return 'note';
-      default:
-        return widget.courseType.toLowerCase();
-    }
+    return switch (widget.courseType.toLowerCase()) {
+      'books' => 'book',
+      'questions' => 'question',
+      'syllabus' => 'syllabus',
+      'notes' => 'note',
+      _ => widget.courseType.toLowerCase(),
+    };
   }
 
   @override
@@ -124,7 +121,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
       batch: isAllBatches(effectiveBatch) ? null : effectiveBatch?.name,
       batchId: isAllBatches(effectiveBatch) ? null : effectiveBatch?.id,
       lessonNo: null,
-      uploaderUid: null,
+      createdById: null,
       status: null,
       limit: kDefaultPageSize,
     );
@@ -138,7 +135,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
         batch: params.batch,
         batchId: params.batchId,
         lessonNo: params.lessonNo,
-        uploaderUid: params.uploaderUid,
+        createdById: params.createdById,
         status: params.status,
         limit: params.limit,
       ),
@@ -166,11 +163,12 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
+                    horizontal: Spacing.md,
+                    vertical: Spacing.md,
                   ),
                   itemCount: adList.itemCount,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: Spacing.md),
                   itemBuilder: adList.itemBuilder,
                 );
               },
@@ -214,7 +212,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
         );
       },
       backgroundColor: Theme.of(context).colorScheme.primary,
-      child: const Icon(Icons.add, color: Colors.white),
+      child: Icon(Icons.add, color: context.colors.onPrimary),
     );
   }
 }

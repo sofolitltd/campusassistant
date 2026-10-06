@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'get_emergency_contacts.dart';
@@ -9,6 +9,7 @@ part of 'get_emergency_contacts.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $GetEmergencyContactsParamsCopyWith<GetEmergencyContactsParams> get copyWith => 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetEmergencyContactsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.search, search) || other.search == search)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
+  final _this = this as GetEmergencyContactsParams;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetEmergencyContactsParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.scope, _this.scope) || other.scope == _this.scope)&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.limit, _this.limit) || other.limit == _this.limit)&&(identical(other.offset, _this.offset) || other.offset == _this.offset));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId,scope,search,limit,offset);
+int get hashCode {
+  final _this = this as GetEmergencyContactsParams;
+  return Object.hash(runtimeType,_this.universityId,_this.departmentId,_this.scope,_this.search,_this.limit,_this.offset);
+}
 
 @override
 String toString() {
-  return 'GetEmergencyContactsParams(universityId: $universityId, departmentId: $departmentId, scope: $scope, search: $search, limit: $limit, offset: $offset)';
+  final _this = this as GetEmergencyContactsParams;
+  return 'GetEmergencyContactsParams(universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, scope: ${_this.scope}, search: ${_this.search}, limit: ${_this.limit}, offset: ${_this.offset})';
 }
 
 
@@ -63,7 +69,7 @@ class _$GetEmergencyContactsParamsCopyWithImpl<$Res>
 /// Create a copy of GetEmergencyContactsParams
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? universityId = freezed,Object? departmentId = freezed,Object? scope = freezed,Object? search = freezed,Object? limit = freezed,Object? offset = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(GetEmergencyContactsParams(
 universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String?,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,scope: freezed == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
@@ -231,16 +237,18 @@ _$GetEmergencyContactsParamsCopyWith<_GetEmergencyContactsParams> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetEmergencyContactsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.search, search) || other.search == search)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetEmergencyContactsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.search, search) || other.search == search)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId,scope,search,limit,offset);
+int get hashCode {
+    return Object.hash(runtimeType,universityId,departmentId,scope,search,limit,offset);
+}
 
 @override
 String toString() {
-  return 'GetEmergencyContactsParams(universityId: $universityId, departmentId: $departmentId, scope: $scope, search: $search, limit: $limit, offset: $offset)';
+    return 'GetEmergencyContactsParams(universityId: $universityId, departmentId: $departmentId, scope: $scope, search: $search, limit: $limit, offset: $offset)';
 }
 
 

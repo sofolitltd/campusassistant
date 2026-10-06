@@ -50,6 +50,12 @@ class ApiEndpoints {
     return resolvedUrl;
   }
 
+  // Auth / password
+  static const String authForgotPassword = '/auth/forgot-password';
+  static const String authVerifyResetCode = '/auth/verify-reset-code';
+  static const String authResetPassword = '/auth/reset-password';
+  static const String authChangePassword = '/auth/change-password';
+
   static const String universities = '/universities';
   static const String departments = '/departments';
   static const String semesters = '/levels';
@@ -124,4 +130,11 @@ class ApiEndpoints {
   static String conversationArchive(String id) => '/conversations/$id/archive';
   static String conversationMessageDelete(String id, String msgId) =>
       '/conversations/$id/messages/$msgId';
+
+  // Rewards
+  static const String rewardBalance = '/rewards/balance';
+  static const String rewardEarn = '/rewards/earn';
+  static String rewardSpend(String resourceId) => '/rewards/spend/$resourceId';
+  static const String rewardTransactions = '/rewards/transactions';
+  static String rewardCost(String resourceId) => '/rewards/cost/$resourceId';
 }

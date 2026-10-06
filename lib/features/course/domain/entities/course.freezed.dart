@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'course.dart';
@@ -9,6 +9,7 @@ part of 'course.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $CourseCopyWith<Course> get copyWith => _$CourseCopyWithImpl<Course>(this as Cou
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Course&&(identical(other.id, id) || other.id == id)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&const DeepCollectionEquality().equals(other.batches, batches)&&(identical(other.totalCredits, totalCredits) || other.totalCredits == totalCredits)&&(identical(other.totalMarks, totalMarks) || other.totalMarks == totalMarks)&&(identical(other.thumbnailURL, thumbnailURL) || other.thumbnailURL == thumbnailURL)&&(identical(other.courseCategoryId, courseCategoryId) || other.courseCategoryId == courseCategoryId)&&(identical(other.courseCategory, courseCategory) || other.courseCategory == courseCategory)&&(identical(other.semesterId, semesterId) || other.semesterId == semesterId)&&(identical(other.semesterName, semesterName) || other.semesterName == semesterName));
+  final _this = this as Course;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Course&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.courseCode, _this.courseCode) || other.courseCode == _this.courseCode)&&(identical(other.courseTitle, _this.courseTitle) || other.courseTitle == _this.courseTitle)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&const DeepCollectionEquality().equals(other.batches, _this.batches)&&(identical(other.totalCredits, _this.totalCredits) || other.totalCredits == _this.totalCredits)&&(identical(other.totalMarks, _this.totalMarks) || other.totalMarks == _this.totalMarks)&&(identical(other.thumbnailURL, _this.thumbnailURL) || other.thumbnailURL == _this.thumbnailURL)&&(identical(other.courseCategoryId, _this.courseCategoryId) || other.courseCategoryId == _this.courseCategoryId)&&(identical(other.courseCategory, _this.courseCategory) || other.courseCategory == _this.courseCategory)&&(identical(other.semesterId, _this.semesterId) || other.semesterId == _this.semesterId)&&(identical(other.semesterName, _this.semesterName) || other.semesterName == _this.semesterName));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,courseCode,courseTitle,universityId,departmentId,const DeepCollectionEquality().hash(batches),totalCredits,totalMarks,thumbnailURL,courseCategoryId,courseCategory,semesterId,semesterName);
+int get hashCode {
+  final _this = this as Course;
+  return Object.hash(runtimeType,_this.id,_this.courseCode,_this.courseTitle,_this.universityId,_this.departmentId,const DeepCollectionEquality().hash(_this.batches),_this.totalCredits,_this.totalMarks,_this.thumbnailURL,_this.courseCategoryId,_this.courseCategory,_this.semesterId,_this.semesterName);
+}
 
 @override
 String toString() {
-  return 'Course(id: $id, courseCode: $courseCode, courseTitle: $courseTitle, universityId: $universityId, departmentId: $departmentId, batches: $batches, totalCredits: $totalCredits, totalMarks: $totalMarks, thumbnailURL: $thumbnailURL, courseCategoryId: $courseCategoryId, courseCategory: $courseCategory, semesterId: $semesterId, semesterName: $semesterName)';
+  final _this = this as Course;
+  return 'Course(id: ${_this.id}, courseCode: ${_this.courseCode}, courseTitle: ${_this.courseTitle}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, batches: ${_this.batches}, totalCredits: ${_this.totalCredits}, totalMarks: ${_this.totalMarks}, thumbnailURL: ${_this.thumbnailURL}, courseCategoryId: ${_this.courseCategoryId}, courseCategory: ${_this.courseCategory}, semesterId: ${_this.semesterId}, semesterName: ${_this.semesterName})';
 }
 
 
@@ -63,7 +69,7 @@ class _$CourseCopyWithImpl<$Res>
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? courseCode = null,Object? courseTitle = null,Object? universityId = null,Object? departmentId = null,Object? batches = null,Object? totalCredits = null,Object? totalMarks = null,Object? thumbnailURL = null,Object? courseCategoryId = freezed,Object? courseCategory = freezed,Object? semesterId = freezed,Object? semesterName = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Course(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,courseCode: null == courseCode ? _self.courseCode : courseCode // ignore: cast_nullable_to_non_nullable
 as String,courseTitle: null == courseTitle ? _self.courseTitle : courseTitle // ignore: cast_nullable_to_non_nullable
@@ -230,7 +236,7 @@ return $default(_that.id,_that.courseCode,_that.courseTitle,_that.universityId,_
 
 
 class _Course implements Course {
-  const _Course({required this.id, required this.courseCode, required this.courseTitle, required this.universityId, required this.departmentId, final  List<Batch> batches = const [], this.totalCredits = 0.0, this.totalMarks = 0, this.thumbnailURL = '', this.courseCategoryId, this.courseCategory, this.semesterId, this.semesterName}): _batches = batches;
+  const _Course({required this.id, required this.courseCode, required this.courseTitle, required this.universityId, required this.departmentId,  List<Batch> batches = const [], this.totalCredits = 0.0, this.totalMarks = 0, this.thumbnailURL = '', this.courseCategoryId, this.courseCategory, this.semesterId, this.semesterName}): _batches = batches;
   
 
 @override final  String id;
@@ -263,16 +269,18 @@ _$CourseCopyWith<_Course> get copyWith => __$CourseCopyWithImpl<_Course>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Course&&(identical(other.id, id) || other.id == id)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&const DeepCollectionEquality().equals(other._batches, _batches)&&(identical(other.totalCredits, totalCredits) || other.totalCredits == totalCredits)&&(identical(other.totalMarks, totalMarks) || other.totalMarks == totalMarks)&&(identical(other.thumbnailURL, thumbnailURL) || other.thumbnailURL == thumbnailURL)&&(identical(other.courseCategoryId, courseCategoryId) || other.courseCategoryId == courseCategoryId)&&(identical(other.courseCategory, courseCategory) || other.courseCategory == courseCategory)&&(identical(other.semesterId, semesterId) || other.semesterId == semesterId)&&(identical(other.semesterName, semesterName) || other.semesterName == semesterName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Course&&(identical(other.id, id) || other.id == id)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&const DeepCollectionEquality().equals(other.batches, _batches)&&(identical(other.totalCredits, totalCredits) || other.totalCredits == totalCredits)&&(identical(other.totalMarks, totalMarks) || other.totalMarks == totalMarks)&&(identical(other.thumbnailURL, thumbnailURL) || other.thumbnailURL == thumbnailURL)&&(identical(other.courseCategoryId, courseCategoryId) || other.courseCategoryId == courseCategoryId)&&(identical(other.courseCategory, courseCategory) || other.courseCategory == courseCategory)&&(identical(other.semesterId, semesterId) || other.semesterId == semesterId)&&(identical(other.semesterName, semesterName) || other.semesterName == semesterName));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,courseCode,courseTitle,universityId,departmentId,const DeepCollectionEquality().hash(_batches),totalCredits,totalMarks,thumbnailURL,courseCategoryId,courseCategory,semesterId,semesterName);
+int get hashCode {
+    return Object.hash(runtimeType,id,courseCode,courseTitle,universityId,departmentId,const DeepCollectionEquality().hash(_batches),totalCredits,totalMarks,thumbnailURL,courseCategoryId,courseCategory,semesterId,semesterName);
+}
 
 @override
 String toString() {
-  return 'Course(id: $id, courseCode: $courseCode, courseTitle: $courseTitle, universityId: $universityId, departmentId: $departmentId, batches: $batches, totalCredits: $totalCredits, totalMarks: $totalMarks, thumbnailURL: $thumbnailURL, courseCategoryId: $courseCategoryId, courseCategory: $courseCategory, semesterId: $semesterId, semesterName: $semesterName)';
+    return 'Course(id: $id, courseCode: $courseCode, courseTitle: $courseTitle, universityId: $universityId, departmentId: $departmentId, batches: $batches, totalCredits: $totalCredits, totalMarks: $totalMarks, thumbnailURL: $thumbnailURL, courseCategoryId: $courseCategoryId, courseCategory: $courseCategory, semesterId: $semesterId, semesterName: $semesterName)';
 }
 
 

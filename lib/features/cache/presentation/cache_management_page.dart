@@ -7,6 +7,10 @@ import '../../../core/cache/cache_manager.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/theme/tokens/app_radius.dart';
 import '../../../core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class CacheManagementPage extends ConsumerStatefulWidget {
   const CacheManagementPage({super.key});
@@ -117,7 +121,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
               _selected.length == (_stats?.length ?? 0)
                   ? Icons.check_box
                   : Icons.check_box_outline_blank,
-              color: Colors.white,
+              color: context.colors.onPrimary,
             ),
             tooltip: _selected.length == (_stats?.length ?? 0)
                 ? 'Deselect All'
@@ -127,7 +131,12 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
       bottomBar: hasSelection
           ? SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  0,
+                  Spacing.lg,
+                  Spacing.lg,
+                ),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -159,9 +168,8 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                     icon: const Icon(LucideIcons.trash2, size: 18),
                     label: Text('Clear Selected (${_selected.length})'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: context.colors.danger,
+                      foregroundColor: context.colors.onPrimary,
                     ),
                   ),
                 ),
@@ -179,7 +187,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
               : _buildContent(isDark, hasSelection),
           if (_clearing)
             Container(
-              color: Colors.black26,
+              color: context.colors.textSubtle,
               child: const Center(child: CupertinoActivityIndicator()),
             ),
         ],
@@ -199,12 +207,12 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
     return RefreshIndicator(
       onRefresh: _loadStats,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Spacing.lg),
         children: [
           _buildSummaryCard(isDark, totalEntries, formattedTotal),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           for (final stat in _stats!) _buildEntityCard(isDark, stat),
-          const SizedBox(height: 24),
+          const SizedBox(height: Spacing.xxl),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -225,7 +233,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text('Clear All'),
+                              child: const Text('Clear all'),
                             ),
                           ],
                         ),
@@ -233,15 +241,14 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                       if (confirm == true) await _clearAll();
                     },
               icon: const Icon(LucideIcons.trash2, size: 18),
-              label: const Text('Clear All Cache'),
+              label: const Text('Clear all cache'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                foregroundColor: context.colors.danger,
+                side: BorderSide(color: context.colors.danger),
               ),
             ),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: Spacing.xxxxl),
         ],
       ),
     );
@@ -253,25 +260,17 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
     String formattedTotal,
   ) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Spacing.xl),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.grey.shade50,
+        color: context.colors.surfaceAlt,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade300,
-        ),
+        border: Border.all(color: context.colors.borderStrong),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: .spaceAround,
         children: [
           _summaryItem(LucideIcons.database, '$totalEntries', 'Entries'),
-          Container(
-            height: 40,
-            width: 1,
-            color: isDark ? Colors.white12 : Colors.grey.shade300,
-          ),
+          Container(height: 40, width: 1, color: context.colors.borderStrong),
           _summaryItem(LucideIcons.hardDrive, formattedTotal, 'Data Stored'),
         ],
       ),
@@ -281,13 +280,19 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
   Widget _summaryItem(IconData icon, String value, String label) {
     return Column(
       children: [
-        Icon(icon, size: 24, color: Colors.grey),
-        const SizedBox(height: 8),
+        Icon(icon, size: 24, color: context.colors.textSubtle),
+        const SizedBox(height: Spacing.sm),
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: FontSizeToken.xl, fontWeight: .bold),
         ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: FontSizeToken.sm,
+            color: context.colors.textSubtle,
+          ),
+        ),
       ],
     );
   }
@@ -297,60 +302,61 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
     final name = _displayName(stat.entityType);
     final selected = _selected.contains(stat.entityType);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: Spacing.sm),
       child: InkWell(
         onTap: () => _toggleSelection(stat.entityType),
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         child: Container(
           decoration: BoxDecoration(
             color: selected
-                ? (isDark
-                      ? Colors.blue.withValues(alpha: 0.1)
-                      : Colors.blue.withValues(alpha: 0.05))
+                ? (context.colors.info.withValues(alpha: 0.05))
                 : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(RadiusToken.lg),
             border: Border.all(
-              color: selected
-                  ? Colors.blue
-                  : (isDark ? Colors.white10 : Colors.grey.shade200),
+              color: selected ? context.colors.info : (context.colors.border),
               width: selected ? 1.5 : 1,
             ),
           ),
           child: ListTile(
-            leading: Icon(icon, color: selected ? Colors.blue : Colors.grey),
+            leading: Icon(
+              icon,
+              color: selected ? context.colors.info : context.colors.textSubtle,
+            ),
             title: Text(
               name,
               style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: selected ? Colors.blue : null,
+                fontWeight: .w500,
+                color: selected ? context.colors.info : null,
               ),
             ),
             subtitle: Text(
               '${stat.entryCount} entries · ${stat.formattedSize}',
               style: TextStyle(
-                fontSize: 12,
-                color: isDark ? Colors.white54 : Colors.grey.shade600,
+                fontSize: FontSizeToken.sm,
+                color: context.colors.textMuted,
               ),
             ),
             trailing: selected
-                ? const Icon(
+                ? Icon(
                     LucideIcons.checkCircle,
-                    color: Colors.blue,
+                    color: context.colors.info,
                     size: 22,
                   )
                 : SizedBox(
-                    height: 32,
+                    height: ControlToken.height,
                     child: TextButton(
                       onPressed: _clearing
                           ? null
                           : () => _clearEntity(stat.entityType),
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        foregroundColor: context.colors.danger,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.md,
+                        ),
                       ),
                       child: const Text(
                         'Clear',
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: FontSizeToken.sm),
                       ),
                     ),
                   ),

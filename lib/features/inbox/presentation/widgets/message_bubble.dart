@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -47,7 +50,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.xxs),
       child: Row(
         mainAxisAlignment: isMe
             ? MainAxisAlignment.end
@@ -55,7 +58,7 @@ class MessageBubble extends StatelessWidget {
         children: [
           if (selectMode && !isMe)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(right: Spacing.sm),
               child: GestureDetector(
                 onTap: onTap,
                 child: Icon(
@@ -63,31 +66,33 @@ class MessageBubble extends StatelessWidget {
                       ? Icons.check_circle
                       : Icons.radio_button_unchecked,
                   size: 22,
-                  color: isSelected ? Colors.teal : Colors.grey.shade500,
+                  color: isSelected
+                      ? context.colors.primary
+                      : context.colors.textSubtle,
                 ),
               ),
             ),
           if (!isMe && showAvatar && !selectMode)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(right: Spacing.sm),
               child: CircleAvatar(
                 radius: 12,
-                backgroundColor: Colors.teal.withValues(alpha: 0.2),
+                backgroundColor: context.colors.primary.withValues(alpha: 0.2),
                 child: Text(
                   senderName.isNotEmpty ? senderName[0].toUpperCase() : '?',
-                  style: const TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
+                  style: TextStyle(
+                    color: context.colors.primary,
+                    fontWeight: .bold,
+                    fontSize: FontSizeToken.xs,
                   ),
                 ),
               ),
             )
           else if (!isMe && !selectMode)
-            const SizedBox(width: 32),
+            const SizedBox(width: Spacing.xxxl),
           if (selectMode && isMe)
             Padding(
-              padding: const EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: Spacing.sm),
               child: GestureDetector(
                 onTap: onTap,
                 child: Icon(
@@ -95,7 +100,9 @@ class MessageBubble extends StatelessWidget {
                       ? Icons.check_circle
                       : Icons.radio_button_unchecked,
                   size: 22,
-                  color: isSelected ? Colors.teal : Colors.grey.shade500,
+                  color: isSelected
+                      ? context.colors.primary
+                      : context.colors.textSubtle,
                 ),
               ),
             ),
@@ -112,85 +119,71 @@ class MessageBubble extends StatelessWidget {
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: Spacing.md,
+                  vertical: Spacing.sm,
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? (isDark
-                            ? Colors.teal.withValues(alpha: 0.3)
-                            : Colors.teal.withValues(alpha: 0.15))
+                      ? (context.colors.primary.withValues(alpha: 0.15))
                       : (isMe
                             ? (isDark
                                   ? const Color(0xFF005C4B)
                                   : const Color(0xFFDCF8C6))
-                            : (isDark
-                                  ? const Color(0xFF1F2C33)
-                                  : Colors.white)),
+                            : (context.colors.onPrimary)),
                   borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(12),
-                    topRight: const Radius.circular(12),
+                    topLeft: const Radius.circular(RadiusToken.lg),
+                    topRight: const Radius.circular(RadiusToken.lg),
                     bottomLeft: Radius.circular(isMe ? 12 : 4),
                     bottomRight: Radius.circular(isMe ? 4 : 12),
                   ),
                   border: isMe
                       ? null
-                      : Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                      : Border.all(color: context.colors.border),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     if (repliedToId != null && repliedToText != null)
                       GestureDetector(
                         onTap: onTapReply,
                         child: Container(
-                          padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.only(bottom: 6),
+                          padding: const EdgeInsets.all(Spacing.sm),
+                          margin: const EdgeInsets.only(bottom: Spacing.sm),
                           decoration: BoxDecoration(
-                            color: isDark
-                                ? Colors.white10
-                                : Colors.black.withValues(alpha: 0.05),
+                            color: context.colors.text.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             border: Border(
                               left: BorderSide(
                                 color: isMe
-                                    ? (isDark ? Colors.white38 : Colors.black38)
-                                    : Colors.teal,
+                                    ? (context.colors.textSubtle)
+                                    : context.colors.primary,
                                 width: 3,
                               ),
                             ),
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Text(
                                 'Replied',
                                 style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: FontSizeToken.xs,
+                                  fontWeight: .w600,
                                   color: isMe
-                                      ? (isDark
-                                            ? Colors.white60
-                                            : Colors.black54)
-                                      : Colors.teal,
+                                      ? (context.colors.textMuted)
+                                      : context.colors.primary,
                                 ),
                               ),
-                              const SizedBox(height: 2),
+                              const SizedBox(height: Spacing.xxs),
                               Text(
                                 repliedToText!,
                                 maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: FontSizeToken.sm,
                                   color: isMe
-                                      ? (isDark
-                                            ? Colors.white60
-                                            : Colors.black54)
-                                      : (isDark
-                                            ? Colors.white60
-                                            : Colors.grey.shade700),
+                                      ? (context.colors.textMuted)
+                                      : (context.colors.textMuted),
                                 ),
                               ),
                             ],
@@ -200,41 +193,41 @@ class MessageBubble extends StatelessWidget {
                     Text(
                       text,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: FontSizeToken.lg,
                         color: isMe
-                            ? (isDark ? Colors.white : Colors.black87)
-                            : (isDark ? Colors.white : Colors.black87),
+                            ? (context.colors.text)
+                            : (context.colors.text),
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: Spacing.xxs),
                     Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: .min,
                       children: [
                         Text(
                           time,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: FontSizeToken.xs,
                             color: isMe
-                                ? (isDark ? Colors.white38 : Colors.black45)
-                                : Colors.grey.shade500,
+                                ? (context.colors.textSubtle)
+                                : context.colors.textSubtle,
                           ),
                         ),
                         if (isEdited) ...[
-                          const SizedBox(width: 4),
+                          const SizedBox(width: Spacing.xs),
                           Text(
                             'Edited',
                             style: TextStyle(
-                              fontSize: 10,
-                              fontStyle: FontStyle.italic,
+                              fontSize: FontSizeToken.xxs,
+                              fontStyle: .italic,
                               color: isMe
-                                  ? (isDark ? Colors.white38 : Colors.black45)
-                                  : Colors.grey.shade500,
+                                  ? (context.colors.textSubtle)
+                                  : context.colors.textSubtle,
                             ),
                           ),
                         ],
                         if (isMe) ...[
-                          const SizedBox(width: 4),
-                          _buildStatusIcon(),
+                          const SizedBox(width: Spacing.xs),
+                          _buildStatusIcon(context),
                         ],
                       ],
                     ),
@@ -248,7 +241,7 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusIcon() {
+  Widget _buildStatusIcon(BuildContext context) {
     final status = messageStatus;
     if (status == 'sending') {
       return const SizedBox(
@@ -261,18 +254,22 @@ class MessageBubble extends StatelessWidget {
     if (status == 'failed') {
       return GestureDetector(
         onTap: onTapRetry,
-        child: const Icon(Icons.error_outline, size: 16, color: Colors.red),
+        child: Icon(
+          Icons.error_outline,
+          size: 16,
+          color: context.colors.danger,
+        ),
       );
     }
 
     if (isRead || status == 'read') {
-      return Icon(Icons.done_all, size: 14, color: Colors.teal);
+      return Icon(Icons.done_all, size: 14, color: context.colors.primary);
     }
 
     if (status == 'delivered') {
-      return Icon(Icons.done_all, size: 14, color: Colors.grey.shade500);
+      return Icon(Icons.done_all, size: 14, color: context.colors.textSubtle);
     }
 
-    return Icon(Icons.done, size: 14, color: Colors.grey.shade500);
+    return Icon(Icons.done, size: 14, color: context.colors.textSubtle);
   }
 }

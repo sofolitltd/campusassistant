@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'emergency_contact.dart';
@@ -9,6 +9,7 @@ part of 'emergency_contact.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $EmergencyContactCopyWith<EmergencyContact> get copyWith => _$EmergencyContactCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmergencyContact&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.designation, designation) || other.designation == designation)&&(identical(other.description, description) || other.description == description)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.category, category) || other.category == category)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl));
+  final _this = this as EmergencyContact;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmergencyContact&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.designation, _this.designation) || other.designation == _this.designation)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.category, _this.category) || other.category == _this.category)&&(identical(other.scope, _this.scope) || other.scope == _this.scope)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.isVerified, _this.isVerified) || other.isVerified == _this.isVerified)&&(identical(other.logoUrl, _this.logoUrl) || other.logoUrl == _this.logoUrl));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,designation,description,phone,email,category,scope,universityId,departmentId,isVerified,logoUrl);
+int get hashCode {
+  final _this = this as EmergencyContact;
+  return Object.hash(runtimeType,_this.id,_this.title,_this.designation,_this.description,_this.phone,_this.email,_this.category,_this.scope,_this.universityId,_this.departmentId,_this.isVerified,_this.logoUrl);
+}
 
 @override
 String toString() {
-  return 'EmergencyContact(id: $id, title: $title, designation: $designation, description: $description, phone: $phone, email: $email, category: $category, scope: $scope, universityId: $universityId, departmentId: $departmentId, isVerified: $isVerified, logoUrl: $logoUrl)';
+  final _this = this as EmergencyContact;
+  return 'EmergencyContact(id: ${_this.id}, title: ${_this.title}, designation: ${_this.designation}, description: ${_this.description}, phone: ${_this.phone}, email: ${_this.email}, category: ${_this.category}, scope: ${_this.scope}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, isVerified: ${_this.isVerified}, logoUrl: ${_this.logoUrl})';
 }
 
 
@@ -63,7 +69,7 @@ class _$EmergencyContactCopyWithImpl<$Res>
 /// Create a copy of EmergencyContact
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? designation = freezed,Object? description = freezed,Object? phone = null,Object? email = freezed,Object? category = freezed,Object? scope = null,Object? universityId = freezed,Object? departmentId = freezed,Object? isVerified = null,Object? logoUrl = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EmergencyContact(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,designation: freezed == designation ? _self.designation : designation // ignore: cast_nullable_to_non_nullable
@@ -243,16 +249,18 @@ _$EmergencyContactCopyWith<_EmergencyContact> get copyWith => __$EmergencyContac
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmergencyContact&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.designation, designation) || other.designation == designation)&&(identical(other.description, description) || other.description == description)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.category, category) || other.category == category)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmergencyContact&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.designation, designation) || other.designation == designation)&&(identical(other.description, description) || other.description == description)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.category, category) || other.category == category)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,designation,description,phone,email,category,scope,universityId,departmentId,isVerified,logoUrl);
+int get hashCode {
+    return Object.hash(runtimeType,id,title,designation,description,phone,email,category,scope,universityId,departmentId,isVerified,logoUrl);
+}
 
 @override
 String toString() {
-  return 'EmergencyContact(id: $id, title: $title, designation: $designation, description: $description, phone: $phone, email: $email, category: $category, scope: $scope, universityId: $universityId, departmentId: $departmentId, isVerified: $isVerified, logoUrl: $logoUrl)';
+    return 'EmergencyContact(id: $id, title: $title, designation: $designation, description: $description, phone: $phone, email: $email, category: $category, scope: $scope, universityId: $universityId, departmentId: $departmentId, isVerified: $isVerified, logoUrl: $logoUrl)';
 }
 
 

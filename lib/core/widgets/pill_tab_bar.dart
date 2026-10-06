@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '/core/theme/app_colors.dart';
+
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
@@ -39,7 +41,7 @@ class PillTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final colors = context.colors;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -51,16 +53,16 @@ class PillTabBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(Spacing.xs),
         decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest.withValues(alpha: 0.6),
+          color: colors.surfaceAlt.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(RadiusToken.sm),
-          border: Border.all(color: cs.outlineVariant, width: 0.5),
+          border: Border.all(color: colors.border, width: 0.5),
         ),
         child: AnimatedBuilder(
           animation: controller.animation!,
           builder: (context, _) {
             if (scrollable) {
               return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+                scrollDirection: .horizontal,
                 physics: const BouncingScrollPhysics(),
                 child: _buildRow(context),
               );
@@ -74,30 +76,30 @@ class PillTabBar extends StatelessWidget {
 
   Widget _buildRow(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       spacing: Spacing.xs,
       children: List.generate(labels.length, (i) => _buildPill(context, i)),
     );
   }
 
   Widget _buildPill(BuildContext context, int index) {
-    final cs = Theme.of(context).colorScheme;
+    final colors = context.colors;
     final animationValue = controller.animation!.value;
     final progress = (1.0 - (animationValue - index).abs()).clamp(0.0, 1.0);
 
     final Color pillColor = Color.lerp(
       Colors.transparent,
-      cs.primary,
+      colors.primary,
       progress,
     )!;
     final Color textColor = Color.lerp(
-      cs.onSurfaceVariant,
-      cs.onPrimary,
+      colors.textMuted,
+      colors.onPrimary,
       progress,
     )!;
     final Color borderColor = progress > 0.5
-        ? cs.primary.withValues(alpha: 0.4)
-        : cs.outlineVariant.withValues(alpha: 0.3);
+        ? colors.primary.withValues(alpha: 0.4)
+        : colors.border.withValues(alpha: 0.3);
 
     return GestureDetector(
       onTap: () {

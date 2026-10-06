@@ -78,7 +78,7 @@ final class ResourcesListProvider
       String? batch,
       String? batchId,
       int? lessonNo,
-      String? uploaderUid,
+      String? createdById,
       String? status,
       int? limit,
       int? offset,
@@ -120,7 +120,7 @@ final class ResourcesListProvider
               String? batch,
               String? batchId,
               int? lessonNo,
-              String? uploaderUid,
+              String? createdById,
               String? status,
               int? limit,
               int? offset,
@@ -134,7 +134,7 @@ final class ResourcesListProvider
       batch: argument.batch,
       batchId: argument.batchId,
       lessonNo: argument.lessonNo,
-      uploaderUid: argument.uploaderUid,
+      createdById: argument.createdById,
       status: argument.status,
       limit: argument.limit,
       offset: argument.offset,
@@ -152,7 +152,7 @@ final class ResourcesListProvider
   }
 }
 
-String _$resourcesListHash() => r'35aa75ab1ceb944687dcad1e6f76e774c5593871';
+String _$resourcesListHash() => r'e9348a4426666f61b4ccc5418688f0ddfcb33b70';
 
 final class ResourcesListFamily extends $Family
     with
@@ -166,7 +166,7 @@ final class ResourcesListFamily extends $Family
             String? batch,
             String? batchId,
             int? lessonNo,
-            String? uploaderUid,
+            String? createdById,
             String? status,
             int? limit,
             int? offset,
@@ -189,7 +189,7 @@ final class ResourcesListFamily extends $Family
     String? batch,
     String? batchId,
     int? lessonNo,
-    String? uploaderUid,
+    String? createdById,
     String? status,
     int? limit,
     int? offset,
@@ -202,7 +202,7 @@ final class ResourcesListFamily extends $Family
       batch: batch,
       batchId: batchId,
       lessonNo: lessonNo,
-      uploaderUid: uploaderUid,
+      createdById: createdById,
       status: status,
       limit: limit,
       offset: offset,

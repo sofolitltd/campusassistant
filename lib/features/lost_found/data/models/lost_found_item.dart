@@ -12,16 +12,12 @@ String lostFoundTypeToString(LostFoundType type) =>
     type == LostFoundType.found ? 'found' : 'lost';
 
 LostFoundStatus lostFoundStatusFromString(String? value) {
-  switch (value) {
-    case 'claimed':
-      return LostFoundStatus.claimed;
-    case 'resolved':
-      return LostFoundStatus.resolved;
-    case 'removed':
-      return LostFoundStatus.removed;
-    default:
-      return LostFoundStatus.open;
-  }
+  return switch (value) {
+    'claimed' => LostFoundStatus.claimed,
+    'resolved' => LostFoundStatus.resolved,
+    'removed' => LostFoundStatus.removed,
+    _ => LostFoundStatus.open,
+  };
 }
 
 class LostFoundItem {
@@ -70,7 +66,9 @@ class LostFoundItem {
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       categoryId: json['category_id'] as String?,
-      category: categoryJson != null && (categoryJson['id'] as String?)?.isNotEmpty == true
+      category:
+          categoryJson != null &&
+              (categoryJson['id'] as String?)?.isNotEmpty == true
           ? LostFoundCategory.fromJson(categoryJson)
           : null,
       imageUrls: imageUrlsJson.map((e) => e.toString()).toList(),
@@ -84,10 +82,13 @@ class LostFoundItem {
           ? DateTime.tryParse(json['resolved_at'].toString())
           : null,
       posterId: json['poster_id'] as String? ?? '',
-      poster: posterJson != null && (posterJson['id'] as String?)?.isNotEmpty == true
+      poster:
+          posterJson != null &&
+              (posterJson['id'] as String?)?.isNotEmpty == true
           ? LostFoundUser.fromJson(posterJson)
           : null,
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
     );
   }
@@ -99,7 +100,8 @@ class LostFoundItem {
       'type': lostFoundTypeToString(type),
       'title': title,
       'description': description,
-      if (categoryId != null && categoryId!.isNotEmpty) 'category_id': categoryId,
+      if (categoryId != null && categoryId!.isNotEmpty)
+        'category_id': categoryId,
       'image_urls': imageUrls,
       'location': location,
       // Go's time.Time JSON unmarshal requires an RFC3339 offset/Z suffix,

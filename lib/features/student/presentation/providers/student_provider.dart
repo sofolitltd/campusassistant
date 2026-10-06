@@ -119,21 +119,21 @@ Future<List<Student>> studentsByBatchPaginated(
 // studentsWithTotalByBatchPaginatedProvider — like above but also returns total
 // ---------------------------------------------------------------------------
 @riverpod
-Future<PaginatedStudents> studentsWithTotalByBatchPaginated(
+Stream<PaginatedStudents> studentsWithTotalByBatchPaginated(
   Ref ref, {
   required String batchId,
   required int limit,
   required int offset,
-}) async {
+}) async* {
   final repository = ref.watch(studentRepositoryProvider);
-  final paginated = await repository.getStudents(
+  await for (final paginated in repository.watchStudents(
     batchId: batchId,
     limit: limit,
     offset: offset,
-  );
-
-  final enriched = await _enrichStudents(ref, paginated.students);
-  return PaginatedStudents(students: enriched, total: paginated.total);
+  )) {
+    final enriched = await _enrichStudents(ref, paginated.students);
+    yield PaginatedStudents(students: enriched, total: paginated.total);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -322,11 +322,7 @@ Future<void> updateMyStudent(
   final apiClient = ref.read(apiClientProvider);
   await apiClient.put(
     '/my/student',
-    data: {
-      'phone': ?phone,
-      'blood_group': ?bloodGroup,
-      'hall_id': ?hallId,
-    },
+    data: {'phone': ?phone, 'blood_group': ?bloodGroup, 'hall_id': ?hallId},
   );
 }
 
@@ -351,26 +347,28 @@ Future<void> updateMyStudentAddress(
 // studentsWithTotalAllPaginated — server-side pagination for "All" tab
 // ---------------------------------------------------------------------------
 @riverpod
-Future<PaginatedStudents> studentsWithTotalAllPaginated(
+Stream<PaginatedStudents> studentsWithTotalAllPaginated(
   Ref ref, {
   required String? universityId,
   required String? departmentId,
   required int limit,
   required int offset,
-}) async {
+}) async* {
   final repository = ref.watch(studentRepositoryProvider);
-  final paginated = await repository.getStudents(
+  await for (final paginated in repository.watchStudents(
     universityId: universityId,
     departmentId: departmentId,
     limit: limit,
     offset: offset,
-  );
-
-  final enriched = await _enrichStudents(
-    ref,
-    paginated.students,
-    universityId: universityId ?? paginated.students.firstOrNull?.universityId,
-    departmentId: departmentId ?? paginated.students.firstOrNull?.departmentId,
-  );
-  return PaginatedStudents(students: enriched, total: paginated.total);
+  )) {
+    final enriched = await _enrichStudents(
+      ref,
+      paginated.students,
+      universityId:
+          universityId ?? paginated.students.firstOrNull?.universityId,
+      departmentId:
+          departmentId ?? paginated.students.firstOrNull?.departmentId,
+    );
+    yield PaginatedStudents(students: enriched, total: paginated.total);
+  }
 }

@@ -7,42 +7,71 @@ import '../../data/models/category.dart';
 import '../../data/models/merchant.dart';
 import '../../data/models/product.dart';
 
-final productsListProvider = FutureProvider.family<
-    List<Product>, ({String universityId, String departmentId})>(
-  (ref, params) async {
-    final apiClient = ref.watch(apiClientProvider);
-    final response = await apiClient.get(
-      '/products-by-location',
-      queryParameters: {
-        'university_id': params.universityId,
-        'department_id': params.departmentId,
-      },
-    );
-    final data = response.data as List;
-    return data.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
-  },
-);
+final productsListProvider =
+    FutureProvider.family<
+      List<Product>,
+      ({String universityId, String departmentId})
+    >((ref, params) async {
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get(
+        '/products-by-location',
+        queryParameters: {
+          'university_id': params.universityId,
+          'department_id': params.departmentId,
+        },
+      );
+      final data = response.data as List;
+      return data
+          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
-final productsListByCategoryProvider = FutureProvider.family<
-    List<Product>,
-    ({String universityId, String departmentId, String categoryId})>(
-  (ref, params) async {
-    final apiClient = ref.watch(apiClientProvider);
-    final response = await apiClient.get(
-      '/products-by-location',
-      queryParameters: {
-        'university_id': params.universityId,
-        'department_id': params.departmentId,
-        'category_id': params.categoryId,
-      },
-    );
-    final data = response.data as List;
-    return data.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
-  },
-);
+/// Admin-featured products for the home carousel.
+final featuredProductsProvider =
+    FutureProvider.family<
+      List<Product>,
+      ({String universityId, String departmentId})
+    >((ref, params) async {
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get(
+        '/products-by-location',
+        queryParameters: {
+          'university_id': params.universityId,
+          'department_id': params.departmentId,
+          'featured': 'true',
+          'limit': 10,
+        },
+      );
+      final data = response.data as List;
+      return data
+          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
-final productDetailsProvider =
-    FutureProvider.family<Product, String>((ref, productId) async {
+final productsListByCategoryProvider =
+    FutureProvider.family<
+      List<Product>,
+      ({String universityId, String departmentId, String categoryId})
+    >((ref, params) async {
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get(
+        '/products-by-location',
+        queryParameters: {
+          'university_id': params.universityId,
+          'department_id': params.departmentId,
+          'category_id': params.categoryId,
+        },
+      );
+      final data = response.data as List;
+      return data
+          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
+
+final productDetailsProvider = FutureProvider.family<Product, String>((
+  ref,
+  productId,
+) async {
   final apiClient = ref.watch(apiClientProvider);
   final response = await apiClient.get('/products/$productId');
   return Product.fromJson(response.data as Map<String, dynamic>);
@@ -60,15 +89,19 @@ final categoriesListProvider = FutureProvider<List<Category>>((ref) async {
       .toList();
 });
 
-final merchantByIdProvider =
-    FutureProvider.family<Merchant, String>((ref, merchantId) async {
+final merchantByIdProvider = FutureProvider.family<Merchant, String>((
+  ref,
+  merchantId,
+) async {
   final apiClient = ref.watch(apiClientProvider);
   final response = await apiClient.get('/merchants/$merchantId');
   return Merchant.fromJson(response.data as Map<String, dynamic>);
 });
 
-final merchantProductsProvider =
-    FutureProvider.family<List<Product>, String>((ref, merchantId) async {
+final merchantProductsProvider = FutureProvider.family<List<Product>, String>((
+  ref,
+  merchantId,
+) async {
   final apiClient = ref.watch(apiClientProvider);
   final response = await apiClient.get(
     '/products',
@@ -88,16 +121,19 @@ final merchantProductsProvider =
 /// `merchantProductsProvider` (the public storefront view), this includes
 /// unpublished/draft products, since the owner needs to see and manage
 /// everything, not just what's live.
-final myMerchantProductsProvider =
-    FutureProvider.family<List<Product>, String>((ref, merchantId) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.get('/my/merchants/$merchantId/products');
-  final rawData = response.data;
-  final items = rawData is List
-      ? rawData
-      : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
-  return items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
-});
+final myMerchantProductsProvider = FutureProvider.family<List<Product>, String>(
+  (ref, merchantId) async {
+    final apiClient = ref.watch(apiClientProvider);
+    final response = await apiClient.get('/my/merchants/$merchantId/products');
+    final rawData = response.data;
+    final items = rawData is List
+        ? rawData
+        : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
+    return items
+        .map((e) => Product.fromJson(e as Map<String, dynamic>))
+        .toList();
+  },
+);
 
 Future<Product> createMyProduct(
   WidgetRef ref, {
@@ -108,6 +144,7 @@ Future<Product> createMyProduct(
   required int stock,
   List<String> imageUrls = const [],
   bool isPublished = false,
+  String? categoryId,
 }) async {
   final apiClient = ref.read(apiClientProvider);
   final response = await apiClient.post(
@@ -119,6 +156,7 @@ Future<Product> createMyProduct(
       'stock': stock,
       'image_urls': imageUrls,
       'is_published': isPublished,
+      'category_id': ?categoryId,
     },
   );
   return Product.fromJson(response.data as Map<String, dynamic>);
@@ -134,6 +172,7 @@ Future<Product> updateMyProduct(
   required int stock,
   List<String> imageUrls = const [],
   required bool isPublished,
+  String? categoryId,
 }) async {
   final apiClient = ref.read(apiClientProvider);
   final response = await apiClient.put(
@@ -145,12 +184,17 @@ Future<Product> updateMyProduct(
       'stock': stock,
       'image_urls': imageUrls,
       'is_published': isPublished,
+      'category_id': ?categoryId,
     },
   );
   return Product.fromJson(response.data as Map<String, dynamic>);
 }
 
-Future<void> deleteMyProduct(WidgetRef ref, {required String merchantId, required String productId}) async {
+Future<void> deleteMyProduct(
+  WidgetRef ref, {
+  required String merchantId,
+  required String productId,
+}) async {
   final apiClient = ref.read(apiClientProvider);
   await apiClient.delete('/my/merchants/$merchantId/products/$productId');
 }
@@ -164,7 +208,9 @@ final myMerchantsProvider = FutureProvider<List<Merchant>>((ref) async {
   final items = rawData is List
       ? rawData
       : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
-  return items.map((e) => Merchant.fromJson(e as Map<String, dynamic>)).toList();
+  return items
+      .map((e) => Merchant.fromJson(e as Map<String, dynamic>))
+      .toList();
 });
 
 final addressesProvider = FutureProvider<List<Address>>((ref) async {
@@ -254,7 +300,10 @@ Future<void> deleteMerchant(WidgetRef ref, {required String merchantId}) async {
 
 Future<Address> createAddress(WidgetRef ref, {required Address address}) async {
   final apiClient = ref.read(apiClientProvider);
-  final response = await apiClient.post('/my/addresses', data: address.toJson());
+  final response = await apiClient.post(
+    '/my/addresses',
+    data: address.toJson(),
+  );
   return Address.fromJson(response.data as Map<String, dynamic>);
 }
 
@@ -272,8 +321,10 @@ Future<void> deleteAddress(WidgetRef ref, {required String addressId}) async {
   await apiClient.delete('/my/addresses/$addressId');
 }
 
-Future<void> setDefaultAddress(WidgetRef ref,
-    {required String addressId}) async {
+Future<void> setDefaultAddress(
+  WidgetRef ref, {
+  required String addressId,
+}) async {
   final apiClient = ref.read(apiClientProvider);
   await apiClient.put('/my/addresses/$addressId/default');
 }

@@ -10,6 +10,7 @@ import '/routes/app_route.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import 'job_card.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 enum _DeadlineFilter { all, upcoming, expired }
 
@@ -38,7 +39,9 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
       context: context,
       backgroundColor: cs.surfaceContainerHighest,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(RadiusToken.xl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (context) {
         CareerJobStatus? tempStatus = _statusFilter;
@@ -47,17 +50,23 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
           builder: (context, setSheetState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(Spacing.xxl, Spacing.lg, Spacing.xxl, Spacing.xxl),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.xxl,
+                  Spacing.lg,
+                  Spacing.xxl,
+                  Spacing.xxl,
+                ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .start,
                   children: [
                     Row(
                       children: [
                         Expanded(
                           child: Text(
                             'Filter',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: .w900),
                           ),
                         ),
                         TextButton(
@@ -67,12 +76,20 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                               tempDeadline = _DeadlineFilter.all;
                             });
                           },
-                          child: Text('Reset', style: TextStyle(color: cs.primary)),
+                          child: Text(
+                            'Reset',
+                            style: TextStyle(color: cs.primary),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: Spacing.lg),
-                    Text('Status', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Status',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                    ),
                     const SizedBox(height: Spacing.sm),
                     Wrap(
                       spacing: Spacing.sm,
@@ -85,14 +102,22 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                         ),
                         for (final status in CareerJobStatus.values)
                           _FilterChip(
-                            label: status.name[0].toUpperCase() + status.name.substring(1),
+                            label:
+                                status.name[0].toUpperCase() +
+                                status.name.substring(1),
                             selected: tempStatus == status,
-                            onTap: () => setSheetState(() => tempStatus = status),
+                            onTap: () =>
+                                setSheetState(() => tempStatus = status),
                           ),
                       ],
                     ),
                     const SizedBox(height: Spacing.xl),
-                    Text('Deadline', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Deadline',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                    ),
                     const SizedBox(height: Spacing.sm),
                     Wrap(
                       spacing: Spacing.sm,
@@ -101,17 +126,23 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                         _FilterChip(
                           label: 'All',
                           selected: tempDeadline == _DeadlineFilter.all,
-                          onTap: () => setSheetState(() => tempDeadline = _DeadlineFilter.all),
+                          onTap: () => setSheetState(
+                            () => tempDeadline = _DeadlineFilter.all,
+                          ),
                         ),
                         _FilterChip(
                           label: 'Upcoming',
                           selected: tempDeadline == _DeadlineFilter.upcoming,
-                          onTap: () => setSheetState(() => tempDeadline = _DeadlineFilter.upcoming),
+                          onTap: () => setSheetState(
+                            () => tempDeadline = _DeadlineFilter.upcoming,
+                          ),
                         ),
                         _FilterChip(
                           label: 'Expired',
                           selected: tempDeadline == _DeadlineFilter.expired,
-                          onTap: () => setSheetState(() => tempDeadline = _DeadlineFilter.expired),
+                          onTap: () => setSheetState(
+                            () => tempDeadline = _DeadlineFilter.expired,
+                          ),
                         ),
                       ],
                     ),
@@ -142,7 +173,9 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
   bool _passesDeadlineFilter(CareerJob job) {
     if (_deadlineFilter == _DeadlineFilter.all) return true;
     if (job.deadlineDate == null) return true;
-    return _deadlineFilter == _DeadlineFilter.upcoming ? !job.isPastDeadline : job.isPastDeadline;
+    return _deadlineFilter == _DeadlineFilter.upcoming
+        ? !job.isPastDeadline
+        : job.isPastDeadline;
   }
 
   @override
@@ -154,7 +187,12 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.lg,
+            Spacing.sm,
+            Spacing.lg,
+            0,
+          ),
           child: Row(
             children: [
               Expanded(
@@ -162,41 +200,50 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                   decoration: const InputDecoration(
                     hintText: 'Search...',
                     prefixIcon: Icon(LucideIcons.search),
-                    isDense: true,
-                    contentPadding: .zero,
-                    border: OutlineInputBorder(),
                   ),
                   onChanged: (value) => setState(() => _search = value.trim()),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               GestureDetector(
                 onTap: _openFilterSheet,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Spacing.md,
+                    vertical: Spacing.md,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: cs.outline),
                     borderRadius: RadiusToken.circular(RadiusToken.sm),
                   ),
                   child: Badge(
                     isLabelVisible: activeCount > 0,
-                    label: Text('$activeCount', style: const TextStyle(fontSize: 10)),
-                    child: Icon(LucideIcons.slidersHorizontal, size: 20, color: cs.onSurface),
+                    label: Text(
+                      '$activeCount',
+                      style: const TextStyle(fontSize: FontSizeToken.xxs),
+                    ),
+                    child: Icon(
+                      LucideIcons.slidersHorizontal,
+                      size: 20,
+                      color: cs.onSurface,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Spacing.sm),
         Expanded(
           child: jobsAsync.when(
             data: (jobs) {
               final query = _search.toLowerCase();
               final filtered = jobs.where((job) {
-                final statusOk = _statusFilter == null || job.status == _statusFilter;
+                final statusOk =
+                    _statusFilter == null || job.status == _statusFilter;
                 final deadlineOk = _passesDeadlineFilter(job);
-                final searchOk = query.isEmpty ||
+                final searchOk =
+                    query.isEmpty ||
                     job.title.toLowerCase().contains(query) ||
                     job.organization.toLowerCase().contains(query);
                 return statusOk && deadlineOk && searchOk;
@@ -204,12 +251,16 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
               if (filtered.isEmpty) {
                 return Center(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: .min,
                     children: [
-                      Icon(LucideIcons.briefcase, size: 48, color: Theme.of(context).colorScheme.outline),
-                      const SizedBox(height: 12),
+                      Icon(
+                        LucideIcons.briefcase,
+                        size: 48,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                      const SizedBox(height: Spacing.md),
                       const Text('No jobs yet'),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Spacing.xs),
                       const Text('Save a circular or add one manually.'),
                     ],
                   ),
@@ -244,7 +295,11 @@ class _FilterChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _FilterChip({required this.label, required this.selected, required this.onTap});
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +308,10 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
           color: selected ? cs.primaryContainer : cs.surfaceContainerLow,
           borderRadius: RadiusToken.circular(RadiusToken.sm),
@@ -262,7 +320,7 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: FontSizeToken.md,
             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
             color: selected ? cs.onPrimaryContainer : cs.onSurface,
           ),

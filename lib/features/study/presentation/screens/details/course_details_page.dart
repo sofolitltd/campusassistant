@@ -19,6 +19,9 @@ import '/features/study/presentation/widgets/details/course_filter_button.dart';
 import 'course_chapters_page.dart';
 import 'course_types_details.dart';
 import 'course_videos_page.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CourseDetailsScreen extends ConsumerStatefulWidget {
   final String courseCode;
@@ -196,7 +199,7 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
     final isLoading = userAsync.isLoading || courseAsync.isLoading;
     final hasError = userAsync.hasError || courseAsync.hasError;
 
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
     final appBarTitle = courseModel != null
         ? '${courseModel.courseCode.toUpperCase()} : ${courseModel.courseTitle}'
         : widget.courseCode.toUpperCase();
@@ -209,7 +212,7 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
         body: Center(
           child: Text(
             'Error: $errorMsg',
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colors.onPrimary),
           ),
         ),
       );
@@ -221,51 +224,51 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: context.colors.onPrimary),
         centerTitle: true,
         titleSpacing: 0,
         title: Text(
           appBarTitle,
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          overflow: .ellipsis,
+          style: TextStyle(
+            color: context.colors.onPrimary,
+            fontWeight: .bold,
+            fontSize: FontSizeToken.xl,
           ),
         ),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           // ── Filter row (red area) ────────────────────────────
           Padding(
             padding: const .fromLTRB(16, 0, 0, 16),
             child: Row(
               children: [
-                const Text(
+                Text(
                   'Filter:',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                    color: context.colors.onPrimary,
+                    fontWeight: .w500,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 Expanded(
                   child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: .horizontal,
                     child: Row(
                       children: [
                         // Batch filter button (first)
                         const BatchDropdown(redBg: true),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Spacing.sm),
                         // Semester/Year filter button (second)
                         SemesterFilterButton(
                           selectedSemester: selectedSemester,
                           semesters: semestersAsync,
                           redBg: true,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Spacing.sm),
                         // Course filter button (third)
                         coursesAsync.when(
                           data: (courses) {
@@ -276,12 +279,12 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
                               redBg: true,
                             );
                           },
-                          loading: () => const SizedBox(
+                          loading: () => SizedBox(
                             width: 100,
                             height: 32,
                             child: Center(
                               child: CupertinoActivityIndicator(
-                                color: Colors.white,
+                                color: context.colors.onPrimary,
                               ),
                             ),
                           ),
@@ -302,14 +305,14 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
               decoration: BoxDecoration(
                 color: isDark
                     ? theme.scaffoldBackgroundColor
-                    : const Color(0xFFF8F9FA),
+                    : context.colors.surfaceAlt,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
                 child: courseModel == null
                     ? const Center(child: CupertinoActivityIndicator())
@@ -317,7 +320,12 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
                         children: [
                           // ── SectionTabBar ──────────────────────────
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            padding: const EdgeInsets.fromLTRB(
+                              Spacing.lg,
+                              Spacing.lg,
+                              Spacing.lg,
+                              Spacing.sm,
+                            ),
                             child: SectionTabBar(
                               controller: _tabController,
                               isScrollable: true,

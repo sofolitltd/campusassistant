@@ -7,7 +7,6 @@ import '../../data/datasources/teacher_remote_data_source.dart';
 import '../../data/repositories/teacher_repository_impl.dart';
 import '../../domain/entities/teacher.dart';
 import '../../domain/repositories/teacher_repository.dart';
-import '../../domain/usecases/get_teachers.dart';
 import '../../../university/presentation/providers/university_provider.dart';
 import '../../../department/presentation/providers/department_provider.dart';
 
@@ -32,34 +31,27 @@ TeacherRepository teacherRepository(Ref ref) {
   );
 }
 
-@Riverpod(keepAlive: true)
-GetTeachers getTeachers(Ref ref) {
-  final repository = ref.watch(teacherRepositoryProvider);
-  return GetTeachers(repository);
-}
-
 @riverpod
-Future<List<Teacher>> teachersList(Ref ref, bool? isPresent) async {
+Stream<List<Teacher>> teachersList(Ref ref, bool? isPresent) async* {
   final university = await ref.watch(myUniversityProvider.future);
   final department = await ref.watch(myDepartmentProvider.future);
 
   if (university.id.isEmpty || department.id.isEmpty) {
-    return [];
+    yield [];
+    return;
   }
 
-  final getTeachers = ref.watch(getTeachersProvider);
-  final result = await getTeachers(
-    GetTeachersParams(
-      universityId: university.id,
-      departmentId: department.id,
-      isPresent: isPresent,
-    ),
-  );
-
-  return result.fold((failure) => throw failure, (teachers) {
-    if (isPresent == null) return teachers;
-    return teachers.where((t) => t.present == isPresent).toList();
-  });
+  final repository = ref.watch(teacherRepositoryProvider);
+  await for (final result in repository.watchTeachers(
+    universityId: university.id,
+    departmentId: department.id,
+    isPresent: isPresent,
+  )) {
+    yield result.fold((failure) => throw failure, (teachers) {
+      if (isPresent == null) return teachers;
+      return teachers.where((t) => t.present == isPresent).toList();
+    });
+  }
 }
 
 /// Lightweight teacher total for count displays — avoids downloading the full

@@ -48,7 +48,10 @@ class AppRoute {
     name: 'clubDetails',
     path: '/clubs/:clubId',
   );
-  static const association = AppRoute(name: 'association', path: '/association');
+  static const association = AppRoute(
+    name: 'association',
+    path: '/association',
+  );
   static const associationDetails = AppRoute(
     name: 'associationDetails',
     path: '/associations/:associationId',
@@ -143,6 +146,10 @@ class AppRoute {
 
   //////  study ///////
   static const study = AppRoute(name: 'study', path: '/study');
+  static const studySearch = AppRoute(
+    name: 'studySearch',
+    path: '/study-search',
+  );
   static const courseDetails = AppRoute(
     name: 'courseDetails',
     path: '/study/courses/:courseCode',
@@ -163,10 +170,7 @@ class AppRoute {
   );
 
   //// lost & found ////
-  static const lostFound = AppRoute(
-    name: 'lostFound',
-    path: '/lost-found',
-  );
+  static const lostFound = AppRoute(name: 'lostFound', path: '/lost-found');
   static const lostFoundCreate = AppRoute(
     name: 'lostFoundCreate',
     path: '/lost-found/create',
@@ -180,6 +184,18 @@ class AppRoute {
   static const marketplace = AppRoute(
     name: 'marketplace',
     path: '/campusmarket',
+  );
+  static const marketplaceSearch = AppRoute(
+    name: 'marketplaceSearch',
+    path: '/campusmarket/search',
+  );
+  static const marketplaceWishlist = AppRoute(
+    name: 'marketplaceWishlist',
+    path: '/campusmarket/wishlist',
+  );
+  static const marketplaceInvoices = AppRoute(
+    name: 'marketplaceInvoices',
+    path: '/campusmarket/invoices',
   );
   static const marketplaceProductDetails = AppRoute(
     name: 'marketplaceProductDetails',
@@ -262,10 +278,7 @@ class AppRoute {
     name: 'mySubmissions',
     path: '/my-submissions',
   );
-  static const developer = AppRoute(
-    name: 'developer',
-    path: '/developer',
-  );
+  static const developer = AppRoute(name: 'developer', path: '/developer');
   static const contributors = AppRoute(
     name: 'contributors',
     path: '/contributors',
@@ -281,6 +294,18 @@ class AppRoute {
   static const forgotPassword = AppRoute(
     name: 'forgotPassword',
     path: '/forgot-password',
+  );
+
+  // Second step of the forgot-password flow — takes the email as `extra`.
+  static const resetPassword = AppRoute(
+    name: 'resetPassword',
+    path: '/reset-password',
+  );
+
+  // Third step — takes {email, resetToken} as `extra`.
+  static const newPassword = AppRoute(
+    name: 'newPassword',
+    path: '/new-password',
   );
 
   static const changePassword = AppRoute(
@@ -321,5 +346,15 @@ class AppRoute {
   static const registration = AppRoute(
     name: 'register',
     path: '/register/:studentId',
+  );
+
+  //reward
+  static const reward = AppRoute(name: 'reward', path: '/reward');
+
+  //feedback
+  static const feedback = AppRoute(name: 'feedback', path: '/feedback');
+  static const createFeedback = AppRoute(
+    name: 'createFeedback',
+    path: '/feedback/create',
   );
 }

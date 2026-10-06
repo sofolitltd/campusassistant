@@ -161,7 +161,7 @@ class FirebaseApi {
   }
 
   Future<void> _initLocalNotifications() async {
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const android = AndroidInitializationSettings('ic_notification');
     const settings = InitializationSettings(android: android);
     await _localNotifications.initialize(
       settings: settings,
@@ -188,7 +188,8 @@ class FirebaseApi {
     final notification = message.notification;
     if (notification == null) return;
 
-    final imageUrl = notification.android?.imageUrl ?? notification.apple?.imageUrl;
+    final imageUrl =
+        notification.android?.imageUrl ?? notification.apple?.imageUrl;
     final imageBytes = await _downloadImage(imageUrl);
 
     BigPictureStyleInformation? bigPictureStyle;
@@ -200,7 +201,10 @@ class FirebaseApi {
         contentTitle: notification.title,
         summaryText: notification.body,
       );
-      final iosAttachmentPath = await _writeToTempFile(imageBytes, notification.hashCode);
+      final iosAttachmentPath = await _writeToTempFile(
+        imageBytes,
+        notification.hashCode,
+      );
       if (iosAttachmentPath != null) {
         iosAttachments = [DarwinNotificationAttachment(iosAttachmentPath)];
       }
@@ -227,7 +231,7 @@ class FirebaseApi {
           channel.name,
           channelDescription: channel.description,
           importance: channel.importance,
-          icon: '@mipmap/ic_launcher',
+          icon: 'ic_notification',
           styleInformation: bigPictureStyle,
         ),
         iOS: DarwinNotificationDetails(attachments: iosAttachments),

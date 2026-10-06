@@ -9,9 +9,13 @@ import '/features/subscription/domain/entities/subscription.dart';
 import '/features/subscription/presentation/providers/subscription_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
+import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/widgets/section_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class SubscriptionPage extends ConsumerStatefulWidget {
   const SubscriptionPage({super.key});
@@ -22,6 +26,13 @@ class SubscriptionPage extends ConsumerStatefulWidget {
 
 class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   SubscriptionPlan? selectedPlan;
+  final _couponController = TextEditingController();
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,18 +51,20 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
 
           return plansAsync.when(
             data: (plans) {
-              return RefreshIndicator(
-                onRefresh: () async {
+              void refresh() =>
                   ref.invalidate(subscriptionPlansProvider(params));
-                },
-                child: plans.isEmpty
-                    ? _buildEmptyState()
-                    : _buildContent(context, plans),
-              );
+              return plans.isEmpty
+                  ? _scrollableCentered(_buildEmptyState(), refresh)
+                  : RefreshIndicator(
+                      onRefresh: () async => refresh(),
+                      child: _buildContent(context, plans),
+                    );
             },
-            loading: () =>
-                const Center(child: CupertinoActivityIndicator(radius: 20)),
-            error: (e, _) => _buildErrorState(e.toString(), params),
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+            error: (e, _) => _scrollableCentered(
+              _buildErrorState(e.toString()),
+              () => ref.invalidate(subscriptionPlansProvider(params)),
+            ),
           );
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -60,39 +73,46 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     );
   }
 
-  Widget _buildEmptyState() {
-    return const SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      child: SizedBox(
-        height: 500,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(LucideIcons.packageSearch, size: 64, color: Colors.grey),
-              SizedBox(height: Spacing.lg),
-              Text(
-                "No plans available right now.",
-                style: TextStyle(color: Colors.grey, fontSize: 16),
-              ),
-            ],
+  /// Scrollable (so pull-to-refresh works) and vertically centred in the
+  /// available space — not a hard-coded 500px box that left the message
+  /// floating at an arbitrary height.
+  Widget _scrollableCentered(Widget child, VoidCallback onRefresh) {
+    return RefreshIndicator(
+      onRefresh: () async => onRefresh(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(child: child),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildErrorState(String error, dynamic params) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(subscriptionPlansProvider(params));
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: 500,
-          child: Center(child: Text('Error: $error')),
+  Widget _buildEmptyState() {
+    final colors = context.colors;
+    return Column(
+      mainAxisSize: .min,
+      children: [
+        Icon(LucideIcons.packageSearch, size: 56, color: colors.textSubtle),
+        const SizedBox(height: Spacing.md),
+        Text(
+          'No plans available right now.',
+          style: TextStyle(color: colors.textMuted, fontSize: FontSizeToken.lg),
         ),
+      ],
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Padding(
+      padding: const EdgeInsets.all(Spacing.lg),
+      child: Text(
+        'Something went wrong. Pull down to retry.\n$error',
+        textAlign: .center,
+        style: TextStyle(color: context.colors.textMuted),
       ),
     );
   }
@@ -102,82 +122,82 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
       selectedPlan = plans.first;
     }
 
+    // Same rhythm as the other list pages: Spacing.lg on every side, plus
+    // the bottom safe area so the CTA clears the gesture bar.
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.lg + MediaQuery.paddingOf(context).bottom,
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
-          const SizedBox(height: 8),
           _buildHeroCard(context),
-          const SizedBox(height: 24),
+          const SizedBox(height: Spacing.xl),
           _buildSectionHeader('Choose Your Plan'),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           _buildPlansSelector(context, plans),
-          const SizedBox(height: 24),
+          const SizedBox(height: Spacing.xl),
           _buildPaymentSection(),
-          const SizedBox(height: 32),
+          const SizedBox(height: Spacing.xl),
+          _buildCouponSection(),
+          const SizedBox(height: Spacing.xxl),
           _buildSubscribeButton(context),
-          const SizedBox(height: 40),
         ],
       ),
     );
   }
 
+  /// A quiet tinted banner rather than a full-bleed gradient block, so the
+  /// plan cards below stay the focus.
   Widget _buildHeroCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.teal.shade900, Colors.teal.shade600],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(RadiusToken.sm),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.teal.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    final colors = context.colors;
+    return SectionCard(
+      radius: RadiusToken.lg,
+      color: colors.primarySubtle,
+      borderColor: Colors.transparent,
+      shadow: false,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.sm + 2,
+              vertical: Spacing.xs,
             ),
-            child: const Text(
+            decoration: BoxDecoration(
+              color: colors.primary,
+              borderRadius: BorderRadius.circular(RadiusToken.full),
+            ),
+            child: Text(
               'PRO ACCESS',
               style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
+                color: colors.onPrimary,
+                fontWeight: .bold,
+                fontSize: FontSizeToken.xs,
                 letterSpacing: 1.1,
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          const Text(
+          const SizedBox(height: Spacing.md),
+          Text(
             'Unlock Your Full Potential',
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              height: 1.1,
+              color: colors.text,
+              fontSize: FontSizeToken.xxl,
+              fontWeight: .bold,
+              height: 1.15,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Text(
             'Enjoy ad-free experience and exclusive features.',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.85),
-              fontSize: 13,
+              color: colors.textMuted,
+              fontSize: FontSizeToken.md,
             ),
           ),
         ],
@@ -188,10 +208,9 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF1E293B),
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: .w700,
+        color: context.colors.text,
       ),
     );
   }
@@ -200,170 +219,172 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     BuildContext context,
     List<SubscriptionPlan> plans,
   ) {
-    final primaryColor = Theme.of(context).primaryColor;
     return Column(
-      children: plans.map((plan) {
-        final isSelected = selectedPlan?.id == plan.id;
-        final String accessLine;
-        if (plan.isLifetime) {
-          accessLine = 'Lifetime access';
-        } else {
-          final expiryDate = DateTime.now().add(
-            Duration(days: plan.durationDays),
-          );
-          accessLine =
-              'Access until ${DateFormat('MMM dd, yyyy').format(expiryDate)}';
-        }
+      children: [
+        for (final plan in plans)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Spacing.sm + 2),
+            child: _buildPlanCard(context, plan, selectedPlan?.id == plan.id),
+          ),
+      ],
+    );
+  }
 
-        return GestureDetector(
-          onTap: () => setState(() => selectedPlan = plan),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? primaryColor.withValues(alpha: 0.04)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(RadiusToken.sm),
-              border: Border.all(
-                color: isSelected ? primaryColor : Colors.grey.shade200,
-                width: isSelected ? 2 : 1,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: primaryColor.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : [],
-            ),
-            child: Row(
+  Widget _buildPlanCard(
+    BuildContext context,
+    SubscriptionPlan plan,
+    bool isSelected,
+  ) {
+    final colors = context.colors;
+    final accessLine = plan.isLifetime
+        ? 'Lifetime access'
+        : 'Access until ${DateFormat('MMM dd, yyyy').format(DateTime.now().add(Duration(days: plan.durationDays)))}';
+
+    // Flat, 1px card; selection is shown by tint + border colour + the
+    // radio mark, not by a thicker border and drop shadow.
+    return SectionCard(
+      radius: RadiusToken.lg,
+      shadow: false,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.md,
+      ),
+      color: isSelected ? colors.primarySubtle : colors.surface,
+      borderColor: isSelected ? colors.primary : colors.border,
+      onTap: () => setState(() => selectedPlan = plan),
+      child: Row(
+        children: [
+          Icon(
+            isSelected ? LucideIcons.circleCheck : LucideIcons.circle,
+            size: 20,
+            color: isSelected ? colors.primary : colors.borderStrong,
+          ),
+          const SizedBox(width: Spacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        plan.title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: isSelected
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFF64748B),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            plan.isLifetime
-                                ? LucideIcons.infinity
-                                : LucideIcons.calendarDays,
-                            size: 13,
-                            color: isSelected
-                                ? primaryColor
-                                : Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            accessLine,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? primaryColor
-                                  : Colors.grey.shade500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                Text(
+                  plan.title,
+                  style: TextStyle(
+                    fontWeight: .w600,
+                    fontSize: FontSizeToken.lg,
+                    color: colors.text,
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                const SizedBox(height: Spacing.xs),
+                Row(
+                  mainAxisSize: .min,
                   children: [
-                    if (plan.discount > 0)
-                      Text(
-                        '৳${plan.mainPrice}',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          decoration: TextDecoration.lineThrough,
-                          fontWeight: FontWeight.w600,
+                    Icon(
+                      plan.isLifetime
+                          ? LucideIcons.infinity
+                          : LucideIcons.calendarDays,
+                      size: 13,
+                      color: colors.textMuted,
+                    ),
+                    const SizedBox(width: Spacing.xs),
+                    Flexible(
+                      child: Text(
+                        accessLine,
+                        style: TextStyle(
+                          fontSize: FontSizeToken.sm,
+                          color: colors.textMuted,
                         ),
-                      ),
-                    Text(
-                      '৳${plan.price}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 20,
-                        color: isSelected
-                            ? const Color(0xFF6366F1)
-                            : const Color(0xFF1E293B),
                       ),
                     ),
-                    if (plan.discount > 0)
-                      Text(
-                        '${plan.discount}% OFF · Save ৳${plan.savedAmount}',
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                   ],
                 ),
               ],
             ),
           ),
-        );
-      }).toList(),
+          const SizedBox(width: Spacing.md),
+          Column(
+            crossAxisAlignment: .end,
+            children: [
+              if (plan.discount > 0)
+                Text(
+                  '৳${plan.mainPrice}',
+                  style: TextStyle(
+                    color: colors.textSubtle,
+                    fontSize: FontSizeToken.sm,
+                    decoration: .lineThrough,
+                  ),
+                ),
+              Text(
+                '৳${plan.price}',
+                style: TextStyle(
+                  fontWeight: .w800,
+                  fontSize: FontSizeToken.xl,
+                  color: isSelected ? colors.primary : colors.text,
+                ),
+              ),
+              if (plan.discount > 0)
+                Text(
+                  '${plan.discount}% OFF · Save ৳${plan.savedAmount}',
+                  style: TextStyle(
+                    color: colors.success,
+                    fontSize: FontSizeToken.xs,
+                    fontWeight: .w600,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildPaymentSection() {
+    final colors = context.colors;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         _buildSectionHeader('Payment Method'),
-        const SizedBox(height: Spacing.lg),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(RadiusToken.sm),
-            border: Border.all(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
-              width: 1.5,
-            ),
+        const SizedBox(height: Spacing.md),
+        SectionCard(
+          radius: RadiusToken.lg,
+          shadow: false,
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.lg,
+            vertical: Spacing.md,
           ),
           child: Row(
             children: [
               Image.asset('assets/images/bkash_logo.png', height: 26),
-              const SizedBox(width: 16),
-              const Expanded(
+              const SizedBox(width: Spacing.lg),
+              Expanded(
                 child: Text(
                   'bKash Payment',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Color(0xFF1E293B),
+                    fontWeight: .w600,
+                    fontSize: FontSizeToken.lg,
+                    color: colors.text,
                   ),
                 ),
               ),
-              Icon(
-                LucideIcons.circleCheck,
-                color: Theme.of(context).primaryColor,
-                size: 24,
-              ),
+              Icon(LucideIcons.circleCheck, color: colors.primary, size: 22),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCouponSection() {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        _buildSectionHeader('Have a coupon?'),
+        const SizedBox(height: Spacing.md),
+        // Border, fill and padding come from the app-wide input theme.
+        TextField(
+          controller: _couponController,
+          decoration: const InputDecoration(
+            hintText: 'Enter coupon code',
+            prefixIcon: Icon(LucideIcons.tag, size: 20),
+          ),
+          textCapitalization: .characters,
         ),
       ],
     );
@@ -375,7 +396,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     // primary CTA button in the app.
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: ControlToken.height,
       child: ElevatedButton(
         onPressed: selectedPlan == null
             ? null
@@ -390,11 +411,15 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
 
     // plan_title/amount are display-only on PaymentPage — the actual charge
     // is always computed server-side from plan_id, never trusted from here.
-    final params = {
+    final params = <String, String>{
       'plan_id': selectedPlan!.id,
       'plan_title': selectedPlan!.title,
       'amount': selectedPlan!.price.toString(),
     };
+    final coupon = _couponController.text.trim();
+    if (coupon.isNotEmpty) {
+      params['coupon_code'] = coupon;
+    }
     context.pushNamed(AppRoute.payment.name, queryParameters: params);
   }
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CommunityTabs extends StatelessWidget {
   final TabController tabController;
@@ -13,30 +17,30 @@ class CommunityTabs extends StatelessWidget {
     return Align(
       alignment: Alignment.center,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        padding: const EdgeInsets.fromLTRB(
+          Spacing.lg,
+          Spacing.lg,
+          Spacing.lg,
+          Spacing.sm,
+        ),
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(Spacing.sm),
           decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.05)
-                : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-              width: 1,
-            ),
+            color: context.colors.surfaceAlt,
+            borderRadius: BorderRadius.circular(RadiusToken.md),
+            border: Border.all(color: context.colors.border, width: 1),
           ),
           child: AnimatedBuilder(
             animation: tabController.animation!,
             builder: (context, child) {
               return Row(
                 spacing: 8,
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
-                  _buildTab('Batch', 0, isDark),
-                  _buildTab('Department', 1, isDark),
-                  _buildTab('University', 2, isDark),
-                  _buildTab('Saved', 3, isDark),
+                  _buildTab(context, 'Batch', 0, isDark),
+                  _buildTab(context, 'Department', 1, isDark),
+                  _buildTab(context, 'University', 2, isDark),
+                  _buildTab(context, 'Saved', 3, isDark),
                 ],
               );
             },
@@ -46,32 +50,30 @@ class CommunityTabs extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(String label, int index, bool isDark) {
+  Widget _buildTab(BuildContext context, String label, int index, bool isDark) {
     final double animationValue = tabController.animation!.value;
     final double progress = (1.0 - (animationValue - index).abs()).clamp(
       0.0,
       1.0,
     );
 
-    final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.white;
-    final Color activeTextColor = isDark ? Colors.black : Colors.white;
-    final Color inactiveTextColor = Colors.grey.shade600;
+    final Color activeColor = context.colors.text;
+    final Color inactiveColor = context.colors.onPrimary;
+    final Color activeTextColor = context.colors.onPrimary;
+    final Color inactiveTextColor = context.colors.textMuted;
 
     return GestureDetector(
       onTap: () => tabController.animateTo(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
         height: 32,
         decoration: BoxDecoration(
           color: Color.lerp(inactiveColor, activeColor, progress),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
           border: Border.all(
             color: Color.lerp(
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              isDark ? Colors.white24 : Colors.grey.shade300,
+              context.colors.borderStrong,
+              context.colors.borderStrong,
               progress,
             )!,
             width: 1,
@@ -92,7 +94,7 @@ class CommunityTabs extends StatelessWidget {
             style: GoogleFonts.outfit(
               color: Color.lerp(inactiveTextColor, activeTextColor, progress),
               fontWeight: progress > 0.5 ? FontWeight.bold : FontWeight.w600,
-              fontSize: 12,
+              fontSize: FontSizeToken.sm,
             ),
           ),
         ),

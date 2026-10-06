@@ -40,6 +40,24 @@ bool _parseBool(dynamic value) {
 /// JSON serializer  — just passes through
 List<String>? _stringListToJson(List<String>? value) => value;
 
+/// Extracts the creator's display name from the nested user JSON. The Go
+/// User model serializes first_name/last_name (no single `name` field).
+String? _creatorName(Map<String, dynamic>? creator) {
+  if (creator == null) return null;
+  final first = creator['first_name']?.toString() ?? '';
+  final last = creator['last_name']?.toString() ?? '';
+  final name = '$first $last'.trim();
+  return name.isNotEmpty ? name : null;
+}
+
+/// Fallback uploader name stored in the resource metadata (legacy rows where
+/// the creator user wasn't resolved).
+String? _metadataUploader(Map<String, dynamic>? metadata) {
+  if (metadata == null) return null;
+  final uploader = metadata['uploader']?.toString();
+  return (uploader != null && uploader.isNotEmpty) ? uploader : null;
+}
+
 @freezed
 abstract class ResourceModel with _$ResourceModel {
   const ResourceModel._();
@@ -63,9 +81,8 @@ abstract class ResourceModel with _$ResourceModel {
       toJson: _dateTimeToJson,
     )
     DateTime? reviewedAt,
-    @JsonKey(name: 'uploader_id') String? uploaderId,
-    @JsonKey(name: 'uploader_uid') required String uploaderUid,
-    @JsonKey(name: 'uploader_name') required String uploaderName,
+    @JsonKey(name: 'creator') Map<String, dynamic>? creator,
+    @JsonKey(name: 'created_by_id') String? createdById,
     @JsonKey(name: 'university_id') required String universityId,
     @JsonKey(name: 'department_id') required String departmentId,
     @JsonKey(name: 'file_size_bytes') required int fileSizeBytes,
@@ -115,9 +132,8 @@ abstract class ResourceModel with _$ResourceModel {
     rejectedNote: rejectedNote ?? '',
     reviewedBy: reviewedBy ?? '',
     reviewedAt: reviewedAt,
-    uploaderId: uploaderId ?? '',
-    uploaderUid: uploaderUid,
-    uploaderName: uploaderName,
+    creatorId: createdById,
+    creator: _creatorName(creator) ?? _metadataUploader(metadata),
     universityId: universityId,
     departmentId: departmentId,
     fileSizeBytes: fileSizeBytes,
@@ -154,9 +170,8 @@ abstract class ResourceModel with _$ResourceModel {
     rejectedNote: resource.rejectedNote,
     reviewedBy: resource.reviewedBy,
     reviewedAt: resource.reviewedAt,
-    uploaderId: resource.uploaderId,
-    uploaderUid: resource.uploaderUid,
-    uploaderName: resource.uploaderName,
+    creator: null,
+    createdById: resource.creatorId,
     universityId: resource.universityId,
     departmentId: resource.departmentId,
     fileSizeBytes: resource.fileSizeBytes,

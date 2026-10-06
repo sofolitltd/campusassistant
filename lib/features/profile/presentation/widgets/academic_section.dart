@@ -9,6 +9,8 @@ import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/features/student/presentation/providers/student_provider.dart';
 import 'section_header.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AcademicSection extends ConsumerWidget {
   final user_entity.User user;
@@ -23,7 +25,7 @@ class AcademicSection extends ConsumerWidget {
           data: (student) {
             if (student == null) return const SizedBox.shrink();
             return Padding(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: Spacing.lg),
               child: Column(
                 children: [
                   SectionHeader(
@@ -32,20 +34,20 @@ class AcademicSection extends ConsumerWidget {
                     icon: LucideIcons.graduationCap,
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(Spacing.lg),
                     decoration: BoxDecoration(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).cardColor
-                          : Colors.white,
+                          : context.colors.surface,
                       borderRadius: BorderRadius.circular(RadiusToken.md),
                       border: Border.all(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white10
-                            : Colors.grey.shade200,
+                            ? context.colors.border
+                            : context.colors.border,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
+                          color: context.colors.shadow,
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -60,23 +62,26 @@ class AcademicSection extends ConsumerWidget {
           loading: () => const Center(child: CupertinoActivityIndicator()),
           error: (err, _) => Center(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Spacing.lg),
               child: Column(
                 children: [
                   Icon(
                     err is NetworkFailure
                         ? Icons.cloud_off
                         : Icons.error_outline,
-                    color: Colors.grey.shade400,
+                    color: context.colors.textSubtle,
                     size: 32,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   Text(
                     err is NetworkFailure
                         ? 'No internet connection'
                         : 'Unable to load academic info',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                    textAlign: .center,
+                    style: TextStyle(
+                      color: context.colors.textMuted,
+                      fontSize: FontSizeToken.base,
+                    ),
                   ),
                 ],
               ),
@@ -98,7 +103,7 @@ class _AcademicRow extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.md),
       decoration: BoxDecoration(
         color: appColors.academicRowBg,
         borderRadius: BorderRadius.circular(RadiusToken.sm),
@@ -152,15 +157,18 @@ class _AcademicBadge extends StatelessWidget {
           Text(
             value,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.base,
               color: textColor,
             ),
           ),
-          const SizedBox(height: 2),
-          Text(label, style: TextStyle(fontSize: 10, color: mutedColor)),
+          const SizedBox(height: Spacing.xxs),
+          Text(
+            label,
+            style: TextStyle(fontSize: FontSizeToken.xxs, color: mutedColor),
+          ),
         ],
       ),
     );
@@ -177,7 +185,7 @@ class _BadgeDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 32,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: Spacing.sm),
       color: color,
     );
   }

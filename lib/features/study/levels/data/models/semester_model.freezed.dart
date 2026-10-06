@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'semester_model.dart';
@@ -9,14 +9,14 @@ part of 'semester_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$SemesterModel {
 
- String get id; String get name; int get order; String get status;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;@JsonKey(name: 'total_courses') int get totalCourses;@JsonKey(name: 'total_credits') double get totalCredits;@JsonKey(name: 'total_marks') int get totalMarks; List<dynamic> get batches;// Use dynamic to handle flexible parsing
-@JsonKey(name: 'created_by_id') String? get createdById;@JsonKey(name: 'updated_by_id') String? get updatedById;
+ String get id; String get name; int get order; String get status;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;@JsonKey(name: 'total_courses') int get totalCourses;@JsonKey(name: 'total_credits') double get totalCredits;@JsonKey(name: 'total_marks') int get totalMarks; List<dynamic> get batches;@JsonKey(name: 'created_by_id') String? get createdById;@JsonKey(name: 'updated_by_id') String? get updatedById;
 /// Create a copy of SemesterModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,21 @@ $SemesterModelCopyWith<SemesterModel> get copyWith => _$SemesterModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SemesterModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.order, order) || other.order == order)&&(identical(other.status, status) || other.status == status)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.totalCourses, totalCourses) || other.totalCourses == totalCourses)&&(identical(other.totalCredits, totalCredits) || other.totalCredits == totalCredits)&&(identical(other.totalMarks, totalMarks) || other.totalMarks == totalMarks)&&const DeepCollectionEquality().equals(other.batches, batches)&&(identical(other.createdById, createdById) || other.createdById == createdById)&&(identical(other.updatedById, updatedById) || other.updatedById == updatedById));
+  final _this = this as SemesterModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SemesterModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.order, _this.order) || other.order == _this.order)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.totalCourses, _this.totalCourses) || other.totalCourses == _this.totalCourses)&&(identical(other.totalCredits, _this.totalCredits) || other.totalCredits == _this.totalCredits)&&(identical(other.totalMarks, _this.totalMarks) || other.totalMarks == _this.totalMarks)&&const DeepCollectionEquality().equals(other.batches, _this.batches)&&(identical(other.createdById, _this.createdById) || other.createdById == _this.createdById)&&(identical(other.updatedById, _this.updatedById) || other.updatedById == _this.updatedById));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,order,status,universityId,departmentId,totalCourses,totalCredits,totalMarks,const DeepCollectionEquality().hash(batches),createdById,updatedById);
+int get hashCode {
+  final _this = this as SemesterModel;
+  return Object.hash(runtimeType,_this.id,_this.name,_this.order,_this.status,_this.universityId,_this.departmentId,_this.totalCourses,_this.totalCredits,_this.totalMarks,const DeepCollectionEquality().hash(_this.batches),_this.createdById,_this.updatedById);
+}
 
 @override
 String toString() {
-  return 'SemesterModel(id: $id, name: $name, order: $order, status: $status, universityId: $universityId, departmentId: $departmentId, totalCourses: $totalCourses, totalCredits: $totalCredits, totalMarks: $totalMarks, batches: $batches, createdById: $createdById, updatedById: $updatedById)';
+  final _this = this as SemesterModel;
+  return 'SemesterModel(id: ${_this.id}, name: ${_this.name}, order: ${_this.order}, status: ${_this.status}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, totalCourses: ${_this.totalCourses}, totalCredits: ${_this.totalCredits}, totalMarks: ${_this.totalMarks}, batches: ${_this.batches}, createdById: ${_this.createdById}, updatedById: ${_this.updatedById})';
 }
 
 
@@ -67,7 +72,7 @@ class _$SemesterModelCopyWithImpl<$Res>
 /// Create a copy of SemesterModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? order = null,Object? status = null,Object? universityId = null,Object? departmentId = null,Object? totalCourses = null,Object? totalCredits = null,Object? totalMarks = null,Object? batches = null,Object? createdById = freezed,Object? updatedById = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(SemesterModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
@@ -221,7 +226,7 @@ return $default(_that.id,_that.name,_that.order,_that.status,_that.universityId,
 @JsonSerializable()
 
 class _SemesterModel extends SemesterModel {
-  const _SemesterModel({required this.id, required this.name, required this.order, required this.status, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, @JsonKey(name: 'total_courses') required this.totalCourses, @JsonKey(name: 'total_credits') required this.totalCredits, @JsonKey(name: 'total_marks') required this.totalMarks, required final  List<dynamic> batches, @JsonKey(name: 'created_by_id') this.createdById, @JsonKey(name: 'updated_by_id') this.updatedById}): _batches = batches,super._();
+  const _SemesterModel({required this.id, required this.name, required this.order, required this.status, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId, @JsonKey(name: 'total_courses') required this.totalCourses, @JsonKey(name: 'total_credits') required this.totalCredits, @JsonKey(name: 'total_marks') required this.totalMarks, required  List<dynamic> batches, @JsonKey(name: 'created_by_id') this.createdById, @JsonKey(name: 'updated_by_id') this.updatedById}): _batches = batches,super._();
   factory _SemesterModel.fromJson(Map<String, dynamic> json) => _$SemesterModelFromJson(json);
 
 @override final  String id;
@@ -240,7 +245,6 @@ class _SemesterModel extends SemesterModel {
   return EqualUnmodifiableListView(_batches);
 }
 
-// Use dynamic to handle flexible parsing
 @override@JsonKey(name: 'created_by_id') final  String? createdById;
 @override@JsonKey(name: 'updated_by_id') final  String? updatedById;
 
@@ -257,16 +261,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SemesterModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.order, order) || other.order == order)&&(identical(other.status, status) || other.status == status)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.totalCourses, totalCourses) || other.totalCourses == totalCourses)&&(identical(other.totalCredits, totalCredits) || other.totalCredits == totalCredits)&&(identical(other.totalMarks, totalMarks) || other.totalMarks == totalMarks)&&const DeepCollectionEquality().equals(other._batches, _batches)&&(identical(other.createdById, createdById) || other.createdById == createdById)&&(identical(other.updatedById, updatedById) || other.updatedById == updatedById));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SemesterModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.order, order) || other.order == order)&&(identical(other.status, status) || other.status == status)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.totalCourses, totalCourses) || other.totalCourses == totalCourses)&&(identical(other.totalCredits, totalCredits) || other.totalCredits == totalCredits)&&(identical(other.totalMarks, totalMarks) || other.totalMarks == totalMarks)&&const DeepCollectionEquality().equals(other.batches, _batches)&&(identical(other.createdById, createdById) || other.createdById == createdById)&&(identical(other.updatedById, updatedById) || other.updatedById == updatedById));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,order,status,universityId,departmentId,totalCourses,totalCredits,totalMarks,const DeepCollectionEquality().hash(_batches),createdById,updatedById);
+int get hashCode {
+    return Object.hash(runtimeType,id,name,order,status,universityId,departmentId,totalCourses,totalCredits,totalMarks,const DeepCollectionEquality().hash(_batches),createdById,updatedById);
+}
 
 @override
 String toString() {
-  return 'SemesterModel(id: $id, name: $name, order: $order, status: $status, universityId: $universityId, departmentId: $departmentId, totalCourses: $totalCourses, totalCredits: $totalCredits, totalMarks: $totalMarks, batches: $batches, createdById: $createdById, updatedById: $updatedById)';
+    return 'SemesterModel(id: $id, name: $name, order: $order, status: $status, universityId: $universityId, departmentId: $departmentId, totalCourses: $totalCourses, totalCredits: $totalCredits, totalMarks: $totalMarks, batches: $batches, createdById: $createdById, updatedById: $updatedById)';
 }
 
 

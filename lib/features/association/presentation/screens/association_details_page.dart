@@ -19,6 +19,9 @@ import '/widgets/open_app.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 /// [association], if provided (a list-card tap), is rendered immediately
 /// with no network round-trip. If null (a deep link, e.g. an association
@@ -158,7 +161,6 @@ class _AssociationDetailsViewState
   @override
   Widget build(BuildContext context) {
     final association = widget.association;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return CustomHeaderLayout(
       title: 'Association Details',
@@ -173,44 +175,47 @@ class _AssociationDetailsViewState
                 imageUrl: ApiEndpoints.resolveImageUrl(association.bannerUrl),
                 height: 160,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                fit: .cover,
               ),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              0,
+            ),
             child: Row(
               children: [
                 Container(
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.grey.shade100,
+                    color: context.colors.surfaceAlt,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isDark ? Colors.white10 : Colors.grey.shade200,
-                      width: 2,
-                    ),
+                    border: Border.all(color: context.colors.border, width: 2),
                   ),
                   child:
                       association.logoUrl != null &&
                           association.logoUrl!.isNotEmpty
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(RadiusToken.xxxl),
                           child: CachedNetworkImage(
                             imageUrl: ApiEndpoints.resolveImageUrl(
                               association.logoUrl,
                             ),
-                            fit: BoxFit.cover,
+                            fit: .cover,
                           ),
                         )
-                      : const Icon(Icons.account_balance, color: Colors.grey),
+                      : Icon(
+                          Icons.account_balance,
+                          color: context.colors.textSubtle,
+                        ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: Spacing.lg),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Row(
                         children: [
@@ -218,20 +223,20 @@ class _AssociationDetailsViewState
                             child: Text(
                               association.name,
                               style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
+                                  ?.copyWith(fontWeight: .bold),
                             ),
                           ),
                           if (association.isVerified) ...[
-                            const SizedBox(width: 6),
+                            const SizedBox(width: Spacing.sm),
                             Icon(
                               Icons.verified,
                               size: 18,
-                              color: Colors.blue.shade400,
+                              color: context.colors.info,
                             ),
                           ],
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Spacing.xs),
                       Text(
                         [
                           association.associationType == 'sub_district'
@@ -241,10 +246,8 @@ class _AssociationDetailsViewState
                           '$membersCount members',
                         ].join(' · '),
                         style: TextStyle(
-                          fontSize: 12,
-                          color: isDark
-                              ? Colors.white54
-                              : Colors.grey.shade600,
+                          fontSize: FontSizeToken.sm,
+                          color: context.colors.textMuted,
                         ),
                       ),
                     ],
@@ -254,7 +257,12 @@ class _AssociationDetailsViewState
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.md,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -263,26 +271,30 @@ class _AssociationDetailsViewState
                   isFollowing ? Icons.favorite : Icons.favorite_border,
                   size: 18,
                   color: isFollowing
-                      ? Colors.pinkAccent
+                      ? AccentToken.pink
                       : Theme.of(context).primaryColor,
                 ),
                 label: Text(isFollowing ? 'Following' : 'Follow'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: isFollowing
-                      ? Colors.pinkAccent
+                      ? AccentToken.pink
                       : Theme.of(context).primaryColor,
                   side: BorderSide(
                     color: isFollowing
-                        ? Colors.pinkAccent
+                        ? AccentToken.pink
                         : Theme.of(context).primaryColor,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              0,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               isScrollable: true,
@@ -326,18 +338,17 @@ class _AboutTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         Text(
           association.description.isEmpty
               ? 'No description yet.'
               : association.description,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: FontSizeToken.base,
             height: 1.5,
-            color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+            color: context.colors.textMuted,
           ),
         ),
         const SizedBox(height: Spacing.lg),
@@ -378,26 +389,25 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: Row(
         children: [
           Icon(icon, size: 18, color: Theme.of(context).primaryColor),
-          const SizedBox(width: 10),
+          const SizedBox(width: Spacing.md),
           Text(
             '$label: ',
             style: TextStyle(
-              fontSize: 13,
-              color: isDark ? Colors.white54 : Colors.grey.shade600,
+              fontSize: FontSizeToken.md,
+              color: context.colors.textMuted,
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black87,
+              fontSize: FontSizeToken.md,
+              fontWeight: .w600,
+              color: context.colors.text,
             ),
           ),
         ],
@@ -423,13 +433,13 @@ class _ContactTab extends StatelessWidget {
       return Center(
         child: Text(
           'No contact information provided.',
-          style: TextStyle(color: Colors.grey.shade600),
+          style: TextStyle(color: context.colors.textMuted),
         ),
       );
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         if (association.contactPhone != null)
           _buildContactRow(
@@ -459,22 +469,21 @@ class _ContactTab extends StatelessWidget {
     String text,
     VoidCallback onTap,
   ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: GestureDetector(
         onTap: onTap,
         child: Row(
           children: [
             Icon(icon, size: 18, color: Theme.of(context).primaryColor),
-            const SizedBox(width: 10),
+            const SizedBox(width: Spacing.md),
             Expanded(
               child: Text(
                 text,
                 style: TextStyle(
-                  fontSize: 14,
-                  decoration: TextDecoration.underline,
-                  color: isDark ? Colors.white70 : Colors.grey.shade800,
+                  fontSize: FontSizeToken.base,
+                  decoration: .underline,
+                  color: context.colors.text,
                 ),
               ),
             ),
@@ -485,9 +494,8 @@ class _ContactTab extends StatelessWidget {
   }
 
   Widget _buildSocialRow(BuildContext context, String platform, String value) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: GestureDetector(
         onTap: () => OpenApp.withUrl(value),
         child: Row(
@@ -497,14 +505,14 @@ class _ContactTab extends StatelessWidget {
               size: 18,
               color: Theme.of(context).primaryColor,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: Spacing.md),
             Expanded(
               child: Text(
                 '$platform: $value',
                 style: TextStyle(
-                  fontSize: 14,
-                  decoration: TextDecoration.underline,
-                  color: isDark ? Colors.white70 : Colors.grey.shade800,
+                  fontSize: FontSizeToken.base,
+                  decoration: .underline,
+                  color: context.colors.text,
                 ),
               ),
             ),
@@ -536,7 +544,7 @@ class _MembersTab extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       children: [
         if (isPendingMember) ...[
           SizedBox(
@@ -544,14 +552,14 @@ class _MembersTab extends ConsumerWidget {
             child: OutlinedButton.icon(
               onPressed: null,
               icon: const Icon(Icons.hourglass_top, size: 18),
-              label: const Text('Pending Approval'),
+              label: const Text('Pending approval'),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Center(
             child: TextButton(
               onPressed: memberPending ? null : onToggleMembership,
-              child: const Text('Cancel Request'),
+              child: const Text('Cancel request'),
             ),
           ),
         ] else
@@ -566,7 +574,7 @@ class _MembersTab extends ConsumerWidget {
                 : ElevatedButton.icon(
                     onPressed: memberPending ? null : onToggleMembership,
                     icon: const Icon(Icons.group_add, size: 18),
-                    label: const Text('Join Association'),
+                    label: const Text('Join association'),
                   ),
           ),
         const SizedBox(height: Spacing.lg),
@@ -575,10 +583,10 @@ class _MembersTab extends ConsumerWidget {
             if (members.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  padding: const EdgeInsets.symmetric(vertical: Spacing.xxxl),
                   child: Text(
                     'No members yet — be the first to join!',
-                    style: TextStyle(color: Colors.grey.shade600),
+                    style: TextStyle(color: context.colors.textMuted),
                   ),
                 ),
               );
@@ -617,7 +625,7 @@ class _MemberRow extends StatelessWidget {
       ),
       title: Text(
         member.fullName.isEmpty ? 'Member' : member.fullName,
-        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        style: TextStyle(color: context.colors.text),
       ),
     );
   }
@@ -639,16 +647,16 @@ class _EventsTab extends ConsumerWidget {
           return Center(
             child: Text(
               'No upcoming events.',
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: context.colors.textMuted),
             ),
           );
         }
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Spacing.lg),
           children: events
               .map(
                 (event) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(bottom: Spacing.md),
                   child: _EventCard(event: event, isDark: isDark),
                 ),
               )
@@ -659,7 +667,7 @@ class _EventsTab extends ConsumerWidget {
       error: (_, _) => Center(
         child: Text(
           'Failed to load events.',
-          style: TextStyle(color: Colors.grey.shade600),
+          style: TextStyle(color: context.colors.textMuted),
         ),
       ),
     );
@@ -675,85 +683,83 @@ class _EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Container(
             width: 44,
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
             child: Column(
               children: [
                 Text(
                   DateFormat('MMM').format(event.startAt).toUpperCase(),
                   style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+                    fontSize: FontSizeToken.xxs,
+                    fontWeight: .bold,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
                 Text(
                   DateFormat('d').format(event.startAt),
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: .bold,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: Spacing.md),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   event.title,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: isDark ? Colors.white : Colors.black87,
+                    fontWeight: .w600,
+                    fontSize: FontSizeToken.base,
+                    color: context.colors.text,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: Spacing.xxs),
                 Text(
                   DateFormat('MMM d, h:mm a').format(event.startAt),
                   style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.white54 : Colors.grey.shade600,
+                    fontSize: FontSizeToken.sm,
+                    color: context.colors.textMuted,
                   ),
                 ),
                 if (event.location.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(top: 2),
+                    padding: const EdgeInsets.only(top: Spacing.xxs),
                     child: Row(
                       children: [
                         Icon(
                           Icons.place_outlined,
                           size: 12,
-                          color: isDark ? Colors.white54 : Colors.grey.shade600,
+                          color: context.colors.textMuted,
                         ),
-                        const SizedBox(width: 2),
+                        const SizedBox(width: Spacing.xxs),
                         Expanded(
                           child: Text(
                             event.location,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                             style: TextStyle(
-                              fontSize: 12,
-                              color: isDark
-                                  ? Colors.white54
-                                  : Colors.grey.shade600,
+                              fontSize: FontSizeToken.sm,
+                              color: context.colors.textMuted,
                             ),
                           ),
                         ),
@@ -785,14 +791,14 @@ class _NotificationsTab extends ConsumerWidget {
           return Center(
             child: Text(
               'No updates posted yet.',
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: context.colors.textMuted),
             ),
           );
         }
         return ListView.separated(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Spacing.lg),
           itemCount: posts.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
           itemBuilder: (context, i) =>
               _PostCard(post: posts[i], isDark: isDark),
         );
@@ -801,7 +807,7 @@ class _NotificationsTab extends ConsumerWidget {
       error: (_, _) => Center(
         child: Text(
           'Failed to load updates.',
-          style: TextStyle(color: Colors.grey.shade600),
+          style: TextStyle(color: context.colors.textMuted),
         ),
       ),
     );
@@ -817,14 +823,14 @@ class _PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
@@ -833,34 +839,34 @@ class _PostCard extends StatelessWidget {
                 size: 16,
                 color: Theme.of(context).primaryColor,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: Spacing.sm),
               Expanded(
                 child: Text(
                   post.title,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: isDark ? Colors.white : Colors.black87,
+                    fontWeight: .w600,
+                    fontSize: FontSizeToken.base,
+                    color: context.colors.text,
                   ),
                 ),
               ),
               Text(
                 DateFormat('MMM d').format(post.createdAt),
                 style: TextStyle(
-                  fontSize: 11,
-                  color: isDark ? Colors.white38 : Colors.grey.shade500,
+                  fontSize: FontSizeToken.xs,
+                  color: context.colors.textSubtle,
                 ),
               ),
             ],
           ),
           if (post.body.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: Spacing.sm),
             Text(
               post.body,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: FontSizeToken.md,
                 height: 1.4,
-                color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                color: context.colors.textMuted,
               ),
             ),
           ],

@@ -10,6 +10,9 @@ import '../../circular/presentation/widgets/circular_list_tab.dart';
 import '../../jobs/presentation/widgets/jobs_list_tab.dart';
 import '../../reminders/presentation/widgets/reminders_list_tab.dart';
 import '../../reminders/presentation/widgets/set_reminder_sheet.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CareerPage extends ConsumerStatefulWidget {
   final int initialTab;
@@ -22,13 +25,11 @@ class CareerPage extends ConsumerStatefulWidget {
 
 class _CareerPageState extends ConsumerState<CareerPage>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(
-    length: 3,
-    vsync: this,
-    initialIndex: widget.initialTab,
-  )..addListener(() {
-      if (!_tabController.indexIsChanging) setState(() {});
-    });
+  late final TabController _tabController =
+      TabController(length: 3, vsync: this, initialIndex: widget.initialTab)
+        ..addListener(() {
+          if (!_tabController.indexIsChanging) setState(() {});
+        });
 
   @override
   void dispose() {
@@ -42,13 +43,13 @@ class _CareerPageState extends ConsumerState<CareerPage>
         return FloatingActionButton.extended(
           onPressed: () => context.pushNamed(AppRoute.careerJobCreate.name),
           icon: const Icon(Icons.add),
-          label: const Text('Add Job'),
+          label: const Text('Add job'),
         );
       case 2:
         return FloatingActionButton.extended(
           onPressed: () => showSetReminderSheet(context, ref),
           icon: const Icon(Icons.add),
-          label: const Text('Add Reminder'),
+          label: const Text('Add reminder'),
         );
       default:
         return null;
@@ -57,26 +58,26 @@ class _CareerPageState extends ConsumerState<CareerPage>
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     return Scaffold(
       backgroundColor: primaryColor,
       floatingActionButton: _buildFab(),
       appBar: AppBar(
         centerTitle: false,
-        title: const Text(
+        title: Text(
           'Career',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
+            fontWeight: .bold,
+            color: context.colors.onPrimary,
+            fontSize: FontSizeToken.xxl,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: Spacing.sm),
             child: GestureDetector(
               onTap: () =>
                   ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
@@ -84,16 +85,13 @@ class _CareerPageState extends ConsumerState<CareerPage>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: context.colors.surface.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(Spacing.xs),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                  borderRadius: BorderRadius.circular(RadiusToken.lg),
+                  child: Image.asset('assets/images/logo.png', fit: .contain),
                 ),
               ),
             ),
@@ -107,13 +105,18 @@ class _CareerPageState extends ConsumerState<CareerPage>
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
               ),
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.sm,
+                    ),
                     child: SectionTabBar(
                       controller: _tabController,
                       tabs: const [

@@ -68,7 +68,7 @@ class _AppPdfViewerState extends State<AppPdfViewer> {
     if (kIsWeb) {
       return Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Icon(LucideIcons.fileText, size: 48, color: cs.outline),
             const SizedBox(height: Spacing.md),
@@ -83,7 +83,10 @@ class _AppPdfViewerState extends State<AppPdfViewer> {
     if (_isLoading) return const Center(child: CupertinoActivityIndicator());
     if (_pdfController == null) {
       return Center(
-        child: Text('Could not load PDF', style: TextStyle(color: cs.onSurface)),
+        child: Text(
+          'Could not load PDF',
+          style: TextStyle(color: cs.onSurface),
+        ),
       );
     }
     return PdfViewPinch(controller: _pdfController!);

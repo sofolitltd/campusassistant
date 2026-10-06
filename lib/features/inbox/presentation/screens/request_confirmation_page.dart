@@ -9,6 +9,9 @@ import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class RequestConfirmationPage extends ConsumerWidget {
   final String conversationId;
@@ -26,197 +29,196 @@ class RequestConfirmationPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final messagesAsync = ref.watch(messagesProvider(conversationId));
 
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      backgroundColor: isDark ? const Color(0xFF111B21) : Colors.grey.shade50,
-      appBar: AppBar(
-        backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Message Request',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-      ),
-      body: messagesAsync.when(
-        data: (messages) {
-          final msg = messages.isNotEmpty ? messages.last : null;
-          return Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.orange.withValues(alpha: 0.2),
-                    child: Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 32,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Text(
-                    name,
-                    style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          LucideIcons.mailQuestion,
-                          size: 14,
-                          color: Colors.orange,
+          backgroundColor: context.colors.surfaceAlt,
+          appBar: AppBar(
+            backgroundColor: context.colors.surface,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(
+              'Message Request',
+              style: GoogleFonts.outfit(
+                fontWeight: .w600,
+                fontSize: FontSizeToken.lg,
+              ),
+            ),
+          ),
+          body: messagesAsync.when(
+            data: (messages) {
+              final msg = messages.isNotEmpty ? messages.last : null;
+              return Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(Spacing.xxl),
+                  child: Column(
+                    mainAxisSize: .min,
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundColor: context.colors.warning.withValues(
+                          alpha: 0.2,
                         ),
-                        SizedBox(width: 4),
-                        Text(
-                          'Message Request',
+                        child: Text(
+                          name.isNotEmpty ? name[0].toUpperCase() : '?',
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w500,
+                            color: context.colors.warning,
+                            fontWeight: .bold,
+                            fontSize: 32,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  if (msg != null) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1F2C33) : Colors.white,
-                        borderRadius: BorderRadius.circular(RadiusToken.md),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                      ),
+                      const SizedBox(height: Spacing.lg),
+                      Text(
+                        name,
+                        style: GoogleFonts.outfit(
+                          fontWeight: .w600,
+                          fontSize: FontSizeToken.xxl,
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                LucideIcons.messageCircle,
-                                size: 16,
-                                color: Colors.grey.shade500,
+                      const SizedBox(height: Spacing.sm),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.md,
+                          vertical: Spacing.sm,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.colors.warning.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(RadiusToken.xxl),
+                        ),
+                        child: Row(
+                          mainAxisSize: .min,
+                          children: [
+                            Icon(
+                              LucideIcons.mailQuestion,
+                              size: 14,
+                              color: context.colors.warning,
+                            ),
+                            SizedBox(width: Spacing.xs),
+                            Text(
+                              'Message Request',
+                              style: TextStyle(
+                                fontSize: FontSizeToken.sm,
+                                color: context.colors.warning,
+                                fontWeight: .w500,
                               ),
-                              const SizedBox(width: 6),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.xxxl),
+                      if (msg != null) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(Spacing.lg),
+                          decoration: BoxDecoration(
+                            color: context.colors.surface,
+                            borderRadius: BorderRadius.circular(RadiusToken.md),
+                            border: Border.all(color: context.colors.border),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    LucideIcons.messageCircle,
+                                    size: 16,
+                                    color: context.colors.textSubtle,
+                                  ),
+                                  const SizedBox(width: Spacing.sm),
+                                  Text(
+                                    'Message',
+                                    style: TextStyle(
+                                      fontSize: FontSizeToken.sm,
+                                      color: context.colors.textSubtle,
+                                      fontWeight: .w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: Spacing.sm),
                               Text(
-                                'Message',
+                                msg['text'] as String? ?? '',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: FontSizeToken.lg,
+                                  color: context.colors.text,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            msg['text'] as String? ?? '',
+                        ),
+                        const SizedBox(height: Spacing.xxxl),
+                      ],
+                      Text(
+                        'Accepting will move this conversation to your inbox.',
+                        textAlign: .center,
+                        style: TextStyle(
+                          fontSize: FontSizeToken.md,
+                          color: context.colors.textSubtle,
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.xxl),
+                      SizedBox(
+                        width: double.infinity,
+                        height: ControlToken.height,
+                        child: ElevatedButton(
+                          onPressed: () => _handleAccept(context, ref),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.colors.primary,
+                            foregroundColor: context.colors.onPrimary,
+                          ),
+                          child: const Text(
+                            'Accept',
                             style: TextStyle(
-                              fontSize: 15,
-                              color: isDark ? Colors.white : Colors.black87,
+                              fontSize: FontSizeToken.lg,
+                              fontWeight: .w600,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                  ],
-                  const Text(
-                    'Accepting will move this conversation to your inbox.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: () => _handleAccept(context, ref),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(RadiusToken.md),
                         ),
                       ),
-                      child: const Text(
-                        'Accept',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(height: Spacing.md),
+                      SizedBox(
+                        width: double.infinity,
+                        height: ControlToken.height,
+                        child: OutlinedButton(
+                          onPressed: () => _handleBlock(context, ref),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: context.colors.danger,
+                            side: BorderSide(color: context.colors.danger),
+                          ),
+                          child: const Text(
+                            'Block',
+                            style: TextStyle(
+                              fontSize: FontSizeToken.lg,
+                              fontWeight: .w500,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: OutlinedButton(
-                      onPressed: () => _handleBlock(context, ref),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(RadiusToken.md),
+                      const SizedBox(height: Spacing.md),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                          'Not now',
+                          style: TextStyle(color: context.colors.textSubtle),
                         ),
                       ),
-                      child: const Text(
-                        'Block',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text(
-                      'Not now',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-      ),
+                ),
+              );
+            },
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+            error: (e, _) => Center(child: Text('Error: $e')),
+          ),
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'config/env.dart';
 import 'network/api_client.dart';
 import 'network/api_endpoints.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
@@ -32,10 +31,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
         final dio = Dio(
           BaseOptions(
             baseUrl: ApiEndpoints.baseUrl,
-            headers: {
-              if (Env.apiKey.isNotEmpty) 'X-API-Key': Env.apiKey,
-              'Content-Type': 'application/json',
-            },
+            headers: {'Content-Type': 'application/json'},
           ),
         );
         final response = await dio.post(
@@ -90,7 +86,9 @@ final careerJobRepositoryProvider = Provider<CareerJobRepository>((ref) {
   return CareerJobRepository(apiClient);
 });
 
-final careerReminderRepositoryProvider = Provider<CareerReminderRepository>((ref) {
+final careerReminderRepositoryProvider = Provider<CareerReminderRepository>((
+  ref,
+) {
   final apiClient = ref.watch(apiClientProvider);
   return CareerReminderRepository(apiClient);
 });

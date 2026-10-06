@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'get_staff.dart';
@@ -9,6 +9,7 @@ part of 'get_staff.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $GetStaffParamsCopyWith<GetStaffParams> get copyWith => _$GetStaffParamsCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetStaffParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+  final _this = this as GetStaffParams;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetStaffParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId);
+int get hashCode {
+  final _this = this as GetStaffParams;
+  return Object.hash(runtimeType,_this.universityId,_this.departmentId);
+}
 
 @override
 String toString() {
-  return 'GetStaffParams(universityId: $universityId, departmentId: $departmentId)';
+  final _this = this as GetStaffParams;
+  return 'GetStaffParams(universityId: ${_this.universityId}, departmentId: ${_this.departmentId})';
 }
 
 
@@ -63,7 +69,7 @@ class _$GetStaffParamsCopyWithImpl<$Res>
 /// Create a copy of GetStaffParams
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? universityId = null,Object? departmentId = null,}) {
-  return _then(_self.copyWith(
+  return _then(GetStaffParams(
 universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String,
@@ -223,16 +229,18 @@ _$GetStaffParamsCopyWith<_GetStaffParams> get copyWith => __$GetStaffParamsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetStaffParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetStaffParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId);
+int get hashCode {
+    return Object.hash(runtimeType,universityId,departmentId);
+}
 
 @override
 String toString() {
-  return 'GetStaffParams(universityId: $universityId, departmentId: $departmentId)';
+    return 'GetStaffParams(universityId: $universityId, departmentId: $departmentId)';
 }
 
 

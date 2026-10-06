@@ -9,6 +9,9 @@ import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CommentItem extends ConsumerStatefulWidget {
   final CommunityComment comment;
@@ -60,17 +63,12 @@ class _CommentItemState extends ConsumerState<CommentItem> {
       builder: (context) => AlertDialog(
         title: Text(
           'Edit Comment',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(fontWeight: .bold),
         ),
         content: TextField(
           controller: controller,
           maxLines: 3,
-          decoration: InputDecoration(
-            hintText: 'Update your comment...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(RadiusToken.md),
-            ),
-          ),
+          decoration: InputDecoration(hintText: 'Update your comment...'),
         ),
         actions: [
           TextButton(
@@ -102,7 +100,7 @@ class _CommentItemState extends ConsumerState<CommentItem> {
       builder: (context) => AlertDialog(
         title: Text(
           'Delete Comment',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(fontWeight: .bold),
         ),
         content: const Text('Are you sure you want to delete this comment?'),
         actions: [
@@ -120,7 +118,7 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                 widget.onRefresh();
               }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: context.colors.danger),
             child: const Text('Delete'),
           ),
         ],
@@ -130,17 +128,16 @@ class _CommentItemState extends ConsumerState<CommentItem> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentUser = ref.watch(currentUserProvider).value;
     final isAuthor = currentUser?.id == widget.comment.authorId;
 
     return Padding(
       padding: EdgeInsets.only(bottom: 16, left: widget.isReply ? 40 : 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               CircleAvatar(
                 radius: widget.isReply ? 12 : 14,
@@ -160,47 +157,48 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontSize: widget.isReply ? 8 : 10,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       )
                     : null,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.md),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(Spacing.md),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : Colors.grey.shade100,
+                        color: context.colors.surfaceAlt,
                         borderRadius: BorderRadius.circular(RadiusToken.md),
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
                             widget.comment.authorName,
                             style: GoogleFonts.outfit(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                              fontWeight: .bold,
+                              fontSize: FontSizeToken.sm,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: Spacing.xxs),
                           Text(
                             widget.comment.content,
                             style: GoogleFonts.outfit(
-                              fontSize: 13,
-                              color: isDark ? Colors.white70 : Colors.black87,
+                              fontSize: FontSizeToken.md,
+                              color: context.colors.text,
                             ),
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 8, top: 4),
+                      padding: const EdgeInsets.only(
+                        left: Spacing.sm,
+                        top: Spacing.xs,
+                      ),
                       child: Row(
                         children: [
                           Text(
@@ -209,35 +207,35 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                               locale: 'en_short',
                             ),
                             style: GoogleFonts.outfit(
-                              fontSize: 11,
-                              color: Colors.grey,
+                              fontSize: FontSizeToken.xs,
+                              color: context.colors.textSubtle,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: Spacing.lg),
                           GestureDetector(
                             onTap: _handleLike,
                             child: Text(
                               _isLiked ? 'Liked' : 'Like',
                               style: GoogleFonts.outfit(
-                                fontSize: 11,
+                                fontSize: FontSizeToken.xs,
                                 color: _isLiked
                                     ? Theme.of(context).primaryColor
-                                    : Colors.grey,
-                                fontWeight: FontWeight.bold,
+                                    : context.colors.textSubtle,
+                                fontWeight: .bold,
                               ),
                             ),
                           ),
                           if (_likesCount > 0) ...[
-                            const SizedBox(width: 4),
+                            const SizedBox(width: Spacing.xs),
                             Text(
                               '$_likesCount',
                               style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                color: Colors.grey,
+                                fontSize: FontSizeToken.xs,
+                                color: context.colors.textSubtle,
                               ),
                             ),
                           ],
-                          const SizedBox(width: 16),
+                          const SizedBox(width: Spacing.lg),
                           GestureDetector(
                             onTap: () => widget.onReply(
                               widget.comment.id,
@@ -246,34 +244,34 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                             child: Text(
                               'Reply',
                               style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
+                                fontSize: FontSizeToken.xs,
+                                color: context.colors.textSubtle,
+                                fontWeight: .bold,
                               ),
                             ),
                           ),
                           if (isAuthor) ...[
-                            const SizedBox(width: 16),
+                            const SizedBox(width: Spacing.lg),
                             GestureDetector(
                               onTap: _showEditDialog,
                               child: Text(
                                 'Edit',
                                 style: GoogleFonts.outfit(
-                                  fontSize: 11,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: FontSizeToken.xs,
+                                  color: context.colors.textSubtle,
+                                  fontWeight: .bold,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: Spacing.lg),
                             GestureDetector(
                               onTap: _showDeleteConfirm,
                               child: Text(
                                 'Delete',
                                 style: GoogleFonts.outfit(
-                                  fontSize: 11,
-                                  color: Colors.red.shade400,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: FontSizeToken.xs,
+                                  color: context.colors.danger,
+                                  fontWeight: .bold,
                                 ),
                               ),
                             ),

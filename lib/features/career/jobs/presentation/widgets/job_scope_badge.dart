@@ -31,7 +31,9 @@ class JobScopeBadge extends ConsumerWidget {
   }
 
   IconData _icon(CareerJobScope scope) {
-    return scope == CareerJobScope.private_ ? LucideIcons.lock : LucideIcons.radio;
+    return scope == CareerJobScope.private_
+        ? LucideIcons.lock
+        : LucideIcons.radio;
   }
 
   @override
@@ -42,20 +44,23 @@ class JobScopeBadge extends ConsumerWidget {
       key: _badgeKey,
       onTap: () => _showScopePicker(context, ref),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
           color: cs.primaryContainer,
           borderRadius: RadiusToken.circular(RadiusToken.sm),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Icon(_icon(job.scope), size: 12, color: cs.primary),
             const SizedBox(width: Spacing.sm),
             Text(
               _label(job.scope),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 color: cs.primary,
               ),
             ),
@@ -69,7 +74,8 @@ class JobScopeBadge extends ConsumerWidget {
 
   void _showScopePicker(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final renderBox = _badgeKey.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox =
+        _badgeKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero);
@@ -83,7 +89,9 @@ class JobScopeBadge extends ConsumerWidget {
         position.dx + size.width,
         position.dy + size.height + 4,
       ),
-      shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: RadiusToken.circular(RadiusToken.sm),
+      ),
       color: cs.surfaceContainerHighest,
       items: CareerJobScope.values.map((scope) {
         final isSelected = job.scope == scope;
@@ -101,12 +109,15 @@ class JobScopeBadge extends ConsumerWidget {
                 child: Text(
                   _label(scope),
                   style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     color: isSelected ? cs.primary : cs.onSurface,
                   ),
                 ),
               ),
-              if (isSelected) Icon(LucideIcons.check, size: 16, color: cs.primary),
+              if (isSelected)
+                Icon(LucideIcons.check, size: 16, color: cs.primary),
             ],
           ),
         );

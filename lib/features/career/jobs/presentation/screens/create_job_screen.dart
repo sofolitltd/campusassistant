@@ -59,14 +59,12 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
   }
 
   Future<void> _pickFiles() async {
-    final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-      withData: kIsWeb,
     );
-    if (result != null) {
-      setState(() => _selectedFiles.addAll(result.files));
+    if (result.isNotEmpty) {
+      setState(() => _selectedFiles.addAll(result));
     }
   }
 
@@ -218,207 +216,212 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text('Add Job Post')),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(Spacing.lg),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildSectionTitle(context, 'Job Identity'),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: Spacing.sm,
-                      horizontal: Spacing.lg,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        width: .2,
-                      ),
-
-                      borderRadius: RadiusToken.circular(RadiusToken.sm),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 4),
-                        buildCustomField(
-                          context,
-                          'Job Title *',
-                          _titleController,
-                          LucideIcons.briefcase,
-                          (v) => v!.isEmpty ? 'Required' : null,
-                        ),
-                        buildCustomField(
-                          context,
-                          'Organization *',
-                          _orgController,
-                          LucideIcons.building,
-                          (v) => v!.isEmpty ? 'Required' : null,
-                        ),
-                        _buildCategoryField(context),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: Spacing.xl),
-                  buildSectionTitle(context, 'Connections'),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        width: .2,
-                      ),
-                      borderRadius: RadiusToken.circular(RadiusToken.sm),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: Spacing.sm,
-                      horizontal: Spacing.lg,
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 4),
-                        buildCustomField(
-                          context,
-                          'Resource Link (URL)',
-                          _resourceLinkController,
-                          LucideIcons.link,
-                        ),
-                        buildCustomField(
-                          context,
-                          'Job Post Link (URL)',
-                          _postLinkController,
-                          LucideIcons.externalLink,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: Spacing.xl),
-                  buildSectionTitle(context, 'Important Dates'),
-                  buildModernDateTile(
-                    context,
-                    'Publish Date',
-                    _publishDate,
-                    LucideIcons.calendar,
-                    _selectPublishDate,
-                  ),
-                  buildModernDateTile(
-                    context,
-                    'Deadline Date & Time',
-                    _deadlineDate,
-                    LucideIcons.clock,
-                    _selectDeadline,
-                    isUrgent: true,
-                  ),
-                  buildModernDateTile(
-                    context,
-                    'Reminder Date & Time',
-                    _reminderDateTime,
-                    LucideIcons.bell,
-                    _selectReminderDateTime,
-                  ),
-
-                  const SizedBox(height: Spacing.xl),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          appBar: AppBar(centerTitle: true, title: const Text('Add Job Post')),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(Spacing.lg),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: .start,
                     children: [
-                      buildSectionTitle(context, 'Attachments'),
-                      TextButton.icon(
-                        onPressed: _pickFiles,
-                        icon: const Icon(LucideIcons.filePlus, size: 16),
-                        label: const Text('Add Files'),
+                      buildSectionTitle(context, 'Job Identity'),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Spacing.sm,
+                          horizontal: Spacing.lg,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                            width: .2,
+                          ),
+
+                          borderRadius: RadiusToken.circular(RadiusToken.sm),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(height: Spacing.xs),
+                            buildCustomField(
+                              context,
+                              'Job Title *',
+                              _titleController,
+                              LucideIcons.briefcase,
+                              (v) => v!.isEmpty ? 'Required' : null,
+                            ),
+                            buildCustomField(
+                              context,
+                              'Organization *',
+                              _orgController,
+                              LucideIcons.building,
+                              (v) => v!.isEmpty ? 'Required' : null,
+                            ),
+                            _buildCategoryField(context),
+                          ],
+                        ),
                       ),
+
+                      const SizedBox(height: Spacing.xl),
+                      buildSectionTitle(context, 'Connections'),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                            width: .2,
+                          ),
+                          borderRadius: RadiusToken.circular(RadiusToken.sm),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: Spacing.sm,
+                          horizontal: Spacing.lg,
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(height: Spacing.xs),
+                            buildCustomField(
+                              context,
+                              'Resource Link (URL)',
+                              _resourceLinkController,
+                              LucideIcons.link,
+                            ),
+                            buildCustomField(
+                              context,
+                              'Job Post Link (URL)',
+                              _postLinkController,
+                              LucideIcons.externalLink,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: Spacing.xl),
+                      buildSectionTitle(context, 'Important Dates'),
+                      buildModernDateTile(
+                        context,
+                        'Publish Date',
+                        _publishDate,
+                        LucideIcons.calendar,
+                        _selectPublishDate,
+                      ),
+                      buildModernDateTile(
+                        context,
+                        'Deadline Date & Time',
+                        _deadlineDate,
+                        LucideIcons.clock,
+                        _selectDeadline,
+                        isUrgent: true,
+                      ),
+                      buildModernDateTile(
+                        context,
+                        'Reminder Date & Time',
+                        _reminderDateTime,
+                        LucideIcons.bell,
+                        _selectReminderDateTime,
+                      ),
+
+                      const SizedBox(height: Spacing.xl),
+                      Row(
+                        mainAxisAlignment: .spaceBetween,
+                        children: [
+                          buildSectionTitle(context, 'Attachments'),
+                          TextButton.icon(
+                            onPressed: _pickFiles,
+                            icon: const Icon(LucideIcons.filePlus, size: 16),
+                            label: const Text('Add files'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: Spacing.xs),
+                      if (_selectedFiles.isNotEmpty)
+                        SizedBox(
+                          height: 160,
+                          child: ReorderableListView.builder(
+                            scrollDirection: .horizontal,
+                            proxyDecorator: (child, index, animation) =>
+                                Material(
+                                  elevation: 10,
+                                  color: Colors.transparent,
+                                  child: child,
+                                ),
+                            itemCount: _selectedFiles.length,
+                            onReorderItem: (oldIndex, newIndex) {
+                              setState(() {
+                                final item = _selectedFiles.removeAt(oldIndex);
+                                _selectedFiles.insert(newIndex, item);
+                              });
+                            },
+                            itemBuilder: (context, index) =>
+                                _buildFilePreview(_selectedFiles[index], index),
+                          ),
+                        )
+                      else
+                        GestureDetector(
+                          onTap: _pickFiles,
+                          child: buildEmptyAttachmentPlaceholder(context),
+                        ),
+
+                      const SizedBox(height: Spacing.xl),
+                      buildSectionTitle(context, 'Want to share with Others?'),
+                      Text(
+                        'Optionally share this posting with other students — like a Community post.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: Spacing.sm),
+                      Wrap(
+                        spacing: Spacing.sm,
+                        runSpacing: Spacing.sm,
+                        children: [
+                          ChoiceChip(
+                            label: const Text('Just me'),
+                            selected: _shareScope == CareerJobScope.private_,
+                            onSelected: (_) => setState(
+                              () => _shareScope = CareerJobScope.private_,
+                            ),
+                          ),
+                          ChoiceChip(
+                            label: const Text('My Batch'),
+                            selected: _shareScope == CareerJobScope.batch,
+                            onSelected: (_) => setState(
+                              () => _shareScope = CareerJobScope.batch,
+                            ),
+                          ),
+                          ChoiceChip(
+                            label: const Text('My Department'),
+                            selected: _shareScope == CareerJobScope.department,
+                            onSelected: (_) => setState(
+                              () => _shareScope = CareerJobScope.department,
+                            ),
+                          ),
+                          ChoiceChip(
+                            label: const Text('My University'),
+                            selected: _shareScope == CareerJobScope.university,
+                            onSelected: (_) => setState(
+                              () => _shareScope = CareerJobScope.university,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: Spacing.xxl),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isUploading ? null : _saveJob,
+                          child: const Text('Save job entry'),
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.lg),
                     ],
                   ),
-                  const SizedBox(height: Spacing.xs),
-                  if (_selectedFiles.isNotEmpty)
-                    SizedBox(
-                      height: 160,
-                      child: ReorderableListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        proxyDecorator: (child, index, animation) => Material(
-                          elevation: 10,
-                          color: Colors.transparent,
-                          child: child,
-                        ),
-                        itemCount: _selectedFiles.length,
-                        onReorderItem: (oldIndex, newIndex) {
-                          setState(() {
-                            final item = _selectedFiles.removeAt(oldIndex);
-                            _selectedFiles.insert(newIndex, item);
-                          });
-                        },
-                        itemBuilder: (context, index) =>
-                            _buildFilePreview(_selectedFiles[index], index),
-                      ),
-                    )
-                  else
-                    GestureDetector(onTap: _pickFiles, child: buildEmptyAttachmentPlaceholder(context)),
-
-                  const SizedBox(height: Spacing.xl),
-                  buildSectionTitle(context, 'Want to share with Others?'),
-                  Text(
-                    'Optionally share this posting with other students — like a Community post.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: Spacing.sm),
-                  Wrap(
-                    spacing: Spacing.sm,
-                    runSpacing: Spacing.sm,
-                    children: [
-                      ChoiceChip(
-                        label: const Text('Just me'),
-                        selected: _shareScope == CareerJobScope.private_,
-                        onSelected: (_) => setState(
-                          () => _shareScope = CareerJobScope.private_,
-                        ),
-                      ),
-                      ChoiceChip(
-                        label: const Text('My Batch'),
-                        selected: _shareScope == CareerJobScope.batch,
-                        onSelected: (_) =>
-                            setState(() => _shareScope = CareerJobScope.batch),
-                      ),
-                      ChoiceChip(
-                        label: const Text('My Department'),
-                        selected: _shareScope == CareerJobScope.department,
-                        onSelected: (_) => setState(
-                          () => _shareScope = CareerJobScope.department,
-                        ),
-                      ),
-                      ChoiceChip(
-                        label: const Text('My University'),
-                        selected: _shareScope == CareerJobScope.university,
-                        onSelected: (_) => setState(
-                          () => _shareScope = CareerJobScope.university,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: Spacing.xxl),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isUploading ? null : _saveJob,
-                      child: const Text('Save Job Entry'),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                ],
+                ),
               ),
-            ),
+              if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
+            ],
           ),
-          if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
-        ],
-      ),
         ),
       ),
     );
@@ -435,7 +438,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: Spacing.md),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text('Category', style: Theme.of(context).textTheme.labelMedium),
           const SizedBox(height: Spacing.xs),
@@ -443,21 +446,6 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
             initialValue: _categoryId,
             decoration: InputDecoration(
               prefixIcon: const Icon(LucideIcons.tag, size: 18),
-              border: OutlineInputBorder(
-                borderRadius: RadiusToken.circular(RadiusToken.sm),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: RadiusToken.circular(RadiusToken.sm),
-                borderSide: BorderSide(color: cs.outlineVariant),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: RadiusToken.circular(RadiusToken.sm),
-                borderSide: BorderSide(color: cs.primary, width: 2),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: Spacing.md,
-                vertical: Spacing.md,
-              ),
               filled: true,
               fillColor: cs.surface,
             ),
@@ -501,7 +489,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                     File(file.path!),
                     width: 120,
                     height: 160,
-                    fit: BoxFit.cover,
+                    fit: .cover,
                   )
                 : Container(
                     width: 120,

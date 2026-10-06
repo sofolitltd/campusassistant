@@ -8,6 +8,10 @@ import '/features/inbox/data/repositories/chat_repository.dart';
 import '/features/inbox/presentation/providers/chat_providers.dart';
 import '/routes/app_route.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class NewChatPage extends ConsumerStatefulWidget {
   const NewChatPage({super.key});
@@ -100,166 +104,169 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Container(
-          height: 36,
-          margin: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white10 : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: TextField(
-            controller: _searchController,
-            autofocus: true,
-            onChanged: (v) {
-              setState(() {});
-              _loadContacts();
-            },
-            style: TextStyle(
-              color: isDark ? Colors.white : Colors.black87,
-              fontSize: 15,
+          appBar: AppBar(
+            titleSpacing: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            decoration: InputDecoration(
-              hintText: 'Search contacts',
-              hintStyle: TextStyle(
-                color: isDark ? Colors.white38 : Colors.grey.shade500,
-                fontSize: 15,
+            title: Container(
+              height: 36,
+              margin: const EdgeInsets.only(right: Spacing.lg),
+              decoration: BoxDecoration(
+                color: context.colors.surfaceAlt,
+                borderRadius: BorderRadius.circular(RadiusToken.md),
               ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
+                onChanged: (v) {
+                  setState(() {});
+                  _loadContacts();
+                },
+                style: TextStyle(
+                  color: context.colors.text,
+                  fontSize: FontSizeToken.lg,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Search contacts',
+                  hintStyle: TextStyle(
+                    color: context.colors.textSubtle,
+                    fontSize: FontSizeToken.lg,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Spacing.md,
+                    vertical: Spacing.sm,
+                  ),
+                  prefixIcon: Icon(
+                    LucideIcons.search,
+                    size: 18,
+                    color: context.colors.textSubtle,
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(
+                            LucideIcons.x,
+                            size: 16,
+                            color: context.colors.textSubtle,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                            _loadContacts();
+                          },
+                        )
+                      : null,
+                  isDense: true,
+                  prefixIconConstraints: const BoxConstraints(
+                    minWidth: 32,
+                    minHeight: 0,
+                  ),
+                ),
               ),
-              prefixIcon: Icon(
-                LucideIcons.search,
-                size: 18,
-                color: isDark ? Colors.white38 : Colors.grey.shade500,
-              ),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: Icon(
-                        LucideIcons.x,
-                        size: 16,
-                        color: isDark ? Colors.white54 : Colors.grey.shade500,
+            ),
+          ),
+          body: _loading
+              ? const Center(child: CupertinoActivityIndicator())
+              : _contacts.isEmpty
+              ? Center(
+                  child: Text(
+                    'No contacts found',
+                    style: TextStyle(color: context.colors.textSubtle),
+                  ),
+                )
+              : ListView.separated(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+                  itemCount: _contacts.length + (_hasMore ? 1 : 0),
+                  separatorBuilder: (_, _) => Divider(
+                    height: 0,
+                    indent: 72,
+                    color: context.colors.border,
+                  ),
+                  itemBuilder: (context, index) {
+                    if (index >= _contacts.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(Spacing.lg),
+                        child: Center(child: CupertinoActivityIndicator()),
+                      );
+                    }
+                    final contact = _contacts[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        radius: 22,
+                        backgroundImage:
+                            contact.avatarUrl != null &&
+                                contact.avatarUrl!.isNotEmpty
+                            ? NetworkImage(
+                                ApiEndpoints.resolveImageUrl(contact.avatarUrl),
+                              )
+                            : null,
+                        backgroundColor: context.colors.primary.withValues(
+                          alpha: 0.2,
+                        ),
+                        child:
+                            contact.avatarUrl == null ||
+                                contact.avatarUrl!.isEmpty
+                            ? Text(
+                                contact.name.isNotEmpty
+                                    ? contact.name[0].toUpperCase()
+                                    : '?',
+                                style: TextStyle(
+                                  color: context.colors.primary,
+                                  fontWeight: .bold,
+                                  fontSize: FontSizeToken.lg,
+                                ),
+                              )
+                            : null,
                       ),
-                      onPressed: () {
-                        _searchController.clear();
-                        _loadContacts();
-                      },
-                    )
-                  : null,
-              isDense: true,
-              prefixIconConstraints: const BoxConstraints(
-                minWidth: 32,
-                minHeight: 0,
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: _loading
-          ? const Center(child: CupertinoActivityIndicator())
-          : _contacts.isEmpty
-          ? Center(
-              child: Text(
-                'No contacts found',
-                style: TextStyle(color: Colors.grey.shade500),
-              ),
-            )
-          : ListView.separated(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              itemCount: _contacts.length + (_hasMore ? 1 : 0),
-              separatorBuilder: (_, _) => Divider(
-                height: 0,
-                indent: 72,
-                color: isDark ? Colors.white10 : Colors.grey.shade200,
-              ),
-              itemBuilder: (context, index) {
-                if (index >= _contacts.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CupertinoActivityIndicator()),
-                  );
-                }
-                final contact = _contacts[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    radius: 22,
-                    backgroundImage:
-                        contact.avatarUrl != null &&
-                            contact.avatarUrl!.isNotEmpty
-                        ? NetworkImage(
-                            ApiEndpoints.resolveImageUrl(contact.avatarUrl),
-                          )
-                        : null,
-                    backgroundColor: Colors.teal.withValues(alpha: 0.2),
-                    child:
-                        contact.avatarUrl == null || contact.avatarUrl!.isEmpty
-                        ? Text(
-                            contact.name.isNotEmpty
-                                ? contact.name[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: Colors.teal,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          )
-                        : null,
-                  ),
-                  title: Text(
-                    contact.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
-                  ),
-                  onTap: () async {
-                    final repo = ref.read(chatRepositoryProvider);
-                    final result = await repo.getOrCreateConversation(
-                      otherUserId: contact.userId,
-                      otherUserName: contact.name,
-                      otherUserImage:
-                          contact.avatarUrl != null &&
-                              contact.avatarUrl!.isNotEmpty
-                          ? contact.avatarUrl
-                          : null,
-                    );
-                    final convId = result['id'] as String;
-                    final status = result['status'] as String? ?? 'pending';
-                    final initiatorId = result['initiatorId'] as String?;
-                    await ChatDatabase.tryDbVoid(
-                      () => ChatDatabase.upsertConversations([result]),
-                    );
-                    ref.read(conversationsRefreshProvider.notifier).trigger();
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop();
-                    context.pushNamed(
-                      AppRoute.inboxChat.name,
-                      pathParameters: {'conversationId': convId},
-                      extra: {
-                        'name': contact.name,
-                        'otherUserId': contact.userId,
-                        'status': status,
-                        'initiatorId': initiatorId,
+                      title: Text(
+                        contact.name,
+                        style: const TextStyle(
+                          fontWeight: .w500,
+                          fontSize: FontSizeToken.lg,
+                        ),
+                      ),
+                      onTap: () async {
+                        final repo = ref.read(chatRepositoryProvider);
+                        final result = await repo.getOrCreateConversation(
+                          otherUserId: contact.userId,
+                          otherUserName: contact.name,
+                          otherUserImage:
+                              contact.avatarUrl != null &&
+                                  contact.avatarUrl!.isNotEmpty
+                              ? contact.avatarUrl
+                              : null,
+                        );
+                        final convId = result['id'] as String;
+                        final status = result['status'] as String? ?? 'pending';
+                        final initiatorId = result['initiatorId'] as String?;
+                        await ChatDatabase.tryDbVoid(
+                          () => ChatDatabase.upsertConversations([result]),
+                        );
+                        ref
+                            .read(conversationsRefreshProvider.notifier)
+                            .trigger();
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop();
+                        context.pushNamed(
+                          AppRoute.inboxChat.name,
+                          pathParameters: {'conversationId': convId},
+                          extra: {
+                            'name': contact.name,
+                            'otherUserId': contact.userId,
+                            'status': status,
+                            'initiatorId': initiatorId,
+                          },
+                        );
                       },
                     );
                   },
-                );
-              },
-            ),
+                ),
         ),
       ),
     );

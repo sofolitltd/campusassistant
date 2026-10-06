@@ -1,11 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/content_model.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 
 class LibraryState {
-  final List<ContentModel> docs;
+  final List<Resource> docs;
   final int totalCount;
   final bool isLoadingMore;
   final bool hasMore;
@@ -18,7 +17,7 @@ class LibraryState {
   });
 
   LibraryState copyWith({
-    List<ContentModel>? docs,
+    List<Resource>? docs,
     int? totalCount,
     bool? isLoadingMore,
     bool? hasMore,
@@ -96,11 +95,8 @@ class LibraryPaginationNotifier extends AsyncNotifier<LibraryState> {
     return result.fold(
       (failure) => LibraryState(docs: [], totalCount: 0, hasMore: false),
       (paginated) {
-        final newDocs = paginated.resources
-            .map((r) => _mapToContentModel(r))
-            .toList();
         return LibraryState(
-          docs: newDocs,
+          docs: paginated.resources,
           totalCount: paginated.total,
           hasMore: paginated.total > (offset + _limit),
         );
@@ -144,41 +140,14 @@ class LibraryPaginationNotifier extends AsyncNotifier<LibraryState> {
         currentState.copyWith(isLoadingMore: false, hasMore: false),
       ),
       (paginated) {
-        final newDocs = paginated.resources
-            .map((r) => _mapToContentModel(r))
-            .toList();
         state = AsyncValue.data(
           currentState.copyWith(
-            docs: [...currentState.docs, ...newDocs],
+            docs: [...currentState.docs, ...paginated.resources],
             totalCount: paginated.total,
             isLoadingMore: false,
             hasMore: paginated.total > (nextOffset + _limit),
           ),
         );
-      },
-    );
-  }
-
-  ContentModel _mapToContentModel(Resource r) {
-    return ContentModel(
-      contentId: r.id,
-      courseCode: r.courseCode,
-      contentType: r.type,
-      lessonNo: r.lessonNo,
-      status: r.status,
-      batches: [],
-      contentTitle: r.title,
-      contentSubtitle: r.description,
-      contentSubtitleType: 'text',
-      uploadDate: (r.createdAt ?? DateTime.now()).toString().split(' ')[0],
-      fileUrl: r.fileUrl,
-      imageUrl: r.thumbnailUrl,
-      uploader: r.uploaderName,
-      departmentId: r.departmentId,
-      metadata: {
-        ...r.metadata,
-        'fileSizeBytes': r.fileSizeBytes,
-        'pageCount': r.pageCount,
       },
     );
   }

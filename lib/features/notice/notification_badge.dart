@@ -55,11 +55,11 @@
 //                         border: Border.all(color: Colors.white, width: .5)),
 //                     child: Text(
 //                       unseenMessage.toString(),
-//                       textAlign: TextAlign.center,
+//                       textAlign: .center,
 //                       style: const TextStyle(
 //                         fontSize: 10,
 //                         height: 1,
-//                         fontWeight: FontWeight.bold,
+//                         fontWeight: .bold,
 //                       ),
 //                     ),
 //                     // child: Text('10'),

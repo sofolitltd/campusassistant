@@ -12,6 +12,8 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 void _openImage(BuildContext context, NoticeModel notice, String rawImage) {
   context.pushNamed(
@@ -45,7 +47,11 @@ String _formatExact(String dateString) {
 /// Shows the notice's full text/images in a bottom sheet and records a view.
 /// Self-contained so [NoticeCard] can call it directly without any external
 /// wiring from the page that hosts the card.
-void showNoticeDetails(BuildContext context, WidgetRef ref, NoticeModel notice) {
+void showNoticeDetails(
+  BuildContext context,
+  WidgetRef ref,
+  NoticeModel notice,
+) {
   if (notice.id.isNotEmpty) {
     ref.read(noticeRepositoryProvider).viewNotice(notice.id).catchError((_) {});
   }
@@ -55,7 +61,6 @@ void showNoticeDetails(BuildContext context, WidgetRef ref, NoticeModel notice) 
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (sheetContext) {
-      final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
       return DraggableScrollableSheet(
         initialChildSize: 0.6,
         minChildSize: 0.3,
@@ -64,28 +69,33 @@ void showNoticeDetails(BuildContext context, WidgetRef ref, NoticeModel notice) 
         builder: (context, scrollController) {
           return Container(
             decoration: BoxDecoration(
-              color: isDark ? Theme.of(context).cardColor : Colors.white,
+              color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+                top: Radius.circular(RadiusToken.xxxl),
               ),
             ),
             child: ListView(
               controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.xl,
+                Spacing.md,
+                Spacing.xl,
+                Spacing.xxxl,
+              ),
               children: [
                 Center(
                   child: Container(
                     width: 40,
                     height: 4,
-                    margin: const EdgeInsets.only(bottom: 20),
+                    margin: const EdgeInsets.only(bottom: Spacing.xl),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white24 : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
+                      color: context.colors.borderStrong,
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
                     ),
                   ),
                 ),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Container(
                       width: 44,
@@ -93,36 +103,34 @@ void showNoticeDetails(BuildContext context, WidgetRef ref, NoticeModel notice) 
                       decoration: BoxDecoration(
                         color: Theme.of(
                           context,
-                        ).appColors.primaryColor.withValues(alpha: 0.1),
+                        ).appColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Icon(
                         LucideIcons.megaphone,
                         size: 22,
-                        color: Theme.of(context).appColors.primaryColor,
+                        color: context.colors.primary,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: Spacing.md),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
                             notice.uploader,
                             style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              color: isDark ? Colors.white : Colors.black87,
+                              fontWeight: .w700,
+                              fontSize: FontSizeToken.lg,
+                              color: context.colors.text,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: Spacing.xxs),
                           Text(
                             _formatExact(notice.time),
                             style: TextStyle(
-                              fontSize: 12,
-                              color: isDark
-                                  ? Colors.white38
-                                  : Colors.grey.shade500,
+                              fontSize: FontSizeToken.sm,
+                              color: context.colors.textSubtle,
                             ),
                           ),
                         ],
@@ -130,20 +138,20 @@ void showNoticeDetails(BuildContext context, WidgetRef ref, NoticeModel notice) 
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: Spacing.xl),
                 Text(
                   notice.message,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: FontSizeToken.base,
                     height: 1.5,
-                    color: isDark ? Colors.white70 : Colors.grey.shade800,
+                    color: context.colors.text,
                   ),
                 ),
                 if (notice.imageUrl.isNotEmpty) ...[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: Spacing.xl),
                   ...notice.imageUrl.map(
                     (url) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.only(bottom: Spacing.md),
                       child: GestureDetector(
                         onTap: () => _openImage(context, notice, url),
                         child: ClipRRect(
@@ -151,10 +159,10 @@ void showNoticeDetails(BuildContext context, WidgetRef ref, NoticeModel notice) 
                           child: Image.network(
                             ApiEndpoints.resolveImageUrl(url),
                             width: double.infinity,
-                            fit: BoxFit.cover,
+                            fit: .cover,
                             errorBuilder: (_, _, _) => Container(
                               height: 160,
-                              color: Colors.grey.shade200,
+                              color: context.colors.border,
                               child: const Icon(Icons.broken_image),
                             ),
                           ),
@@ -222,9 +230,7 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
       if (_isLiked) {
         await ref.read(noticeRepositoryProvider).likeNotice(widget.notice.id);
       } else {
-        await ref
-            .read(noticeRepositoryProvider)
-            .unlikeNotice(widget.notice.id);
+        await ref.read(noticeRepositoryProvider).unlikeNotice(widget.notice.id);
       }
     } catch (e) {
       if (mounted) {
@@ -252,33 +258,29 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
   @override
   Widget build(BuildContext context) {
     final notice = widget.notice;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => showNoticeDetails(context, ref, notice),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: Spacing.md),
+        padding: const EdgeInsets.all(Spacing.lg),
         decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
+          color: context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1,
-          ),
+          border: Border.all(color: context.colors.border, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: context.colors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Container(
                   width: 40,
@@ -286,36 +288,36 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                   decoration: BoxDecoration(
                     color: Theme.of(
                       context,
-                    ).appColors.primaryColor.withValues(alpha: 0.1),
+                    ).appColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: Icon(
                     LucideIcons.megaphone,
                     size: 20,
-                    color: Theme.of(context).appColors.primaryColor,
+                    color: context.colors.primary,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: Spacing.md),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
                         notice.uploader,
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: isDark ? Colors.white : Colors.black87,
+                          fontWeight: .w600,
+                          fontSize: FontSizeToken.base,
+                          color: context.colors.text,
                         ),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: Spacing.xxs),
                       Text(
                         _timeAgo(notice.time),
                         style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? Colors.white38 : Colors.grey.shade500,
+                          fontSize: FontSizeToken.sm,
+                          color: context.colors.textSubtle,
                         ),
                       ),
                     ],
@@ -327,41 +329,39 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                       Icon(
                         LucideIcons.eye,
                         size: 13,
-                        color: isDark ? Colors.white30 : Colors.grey.shade400,
+                        color: context.colors.textSubtle,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: Spacing.xs),
                       Text(
                         '${notice.viewsCount}',
                         style: TextStyle(
-                          fontSize: 11,
-                          color: isDark
-                              ? Colors.white30
-                              : Colors.grey.shade400,
+                          fontSize: FontSizeToken.xs,
+                          color: context.colors.textSubtle,
                         ),
                       ),
                     ],
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Spacing.md),
             Text(
               notice.message,
               maxLines: 4,
-              overflow: TextOverflow.ellipsis,
+              overflow: .ellipsis,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: FontSizeToken.md,
                 height: 1.4,
-                color: isDark ? Colors.white70 : Colors.grey.shade800,
+                color: context.colors.text,
               ),
             ),
             if (notice.imageUrl.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               SizedBox(
                 height: 160,
                 child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: .horizontal,
                   itemCount: notice.imageUrl.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  separatorBuilder: (_, _) => const SizedBox(width: Spacing.sm),
                   itemBuilder: (context, index) {
                     final rawUrl = notice.imageUrl[index];
                     return GestureDetector(
@@ -371,10 +371,10 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                         child: Image.network(
                           ApiEndpoints.resolveImageUrl(rawUrl),
                           width: 200,
-                          fit: BoxFit.cover,
+                          fit: .cover,
                           errorBuilder: (_, _, _) => Container(
                             width: 200,
-                            color: Colors.grey.shade200,
+                            color: context.colors.border,
                             child: const Icon(Icons.broken_image),
                           ),
                         ),
@@ -384,7 +384,7 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                 ),
               ),
             ],
-            const SizedBox(height: 10),
+            const SizedBox(height: Spacing.md),
             Row(
               children: [
                 _EngagementButton(
@@ -392,10 +392,10 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                   label: '$_commentCount',
                   onTap: _showComments,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: Spacing.lg),
                 _EngagementButton(
                   icon: _isLiked ? Icons.favorite : LucideIcons.heart,
-                  iconColor: _isLiked ? Colors.red : null,
+                  iconColor: _isLiked ? context.colors.danger : null,
                   label: '$_likeCount',
                   onTap: _toggleLike,
                 ),
@@ -457,24 +457,26 @@ class _EngagementButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultColor = isDark ? Colors.white38 : Colors.grey.shade500;
+    final defaultColor = context.colors.textSubtle;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(RadiusToken.xs),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        padding: const EdgeInsets.symmetric(
+          vertical: Spacing.xs,
+          horizontal: Spacing.xxs,
+        ),
         child: Row(
           children: [
             Icon(icon, size: 17, color: iconColor ?? defaultColor),
             if (label.isNotEmpty) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: Spacing.sm),
               Text(
                 label,
                 style: TextStyle(
                   color: iconColor ?? defaultColor,
-                  fontSize: 12,
+                  fontSize: FontSizeToken.sm,
                   fontWeight: iconColor != null
                       ? FontWeight.w600
                       : FontWeight.w400,

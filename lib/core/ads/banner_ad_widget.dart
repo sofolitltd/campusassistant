@@ -12,7 +12,11 @@ import 'ad_config.dart';
 /// Fails silently — a broken/failed load just leaves an empty gap, never a
 /// visibly broken ad box.
 class BannerAdWidget extends ConsumerStatefulWidget {
-  const BannerAdWidget({super.key});
+  const BannerAdWidget({super.key, this.margin});
+
+  /// Space around the ad, applied only while an ad slot is actually shown
+  /// (so a hidden ad for Pro users leaves no gap).
+  final EdgeInsetsGeometry? margin;
 
   @override
   ConsumerState<BannerAdWidget> createState() => _BannerAdWidgetState();
@@ -68,14 +72,25 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
       return const SizedBox.shrink();
     }
 
-    if (!_isLoaded || _bannerAd == null) {
-      return SizedBox(height: AdSize.banner.height.toDouble());
-    }
-
-    return SizedBox(
-      width: AdSize.banner.width.toDouble(),
-      height: AdSize.banner.height.toDouble(),
-      child: AdWidget(ad: _bannerAd!),
+    // Occupy no space until an ad has actually loaded: while loading, on a
+    // failed/no-fill request, and for Pro users the slot is collapsed, so
+    // there is no blank 50px gap. AnimatedSize eases the page down when an ad
+    // arrives instead of jumping.
+    final loaded = _isLoaded && _bannerAd != null;
+    final slot = loaded
+        ? SizedBox(
+            width: AdSize.banner.width.toDouble(),
+            height: AdSize.banner.height.toDouble(),
+            child: AdWidget(ad: _bannerAd!),
+          )
+        : const SizedBox(width: double.infinity);
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: loaded && widget.margin != null
+          ? Padding(padding: widget.margin!, child: slot)
+          : slot,
     );
   }
 }

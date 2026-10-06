@@ -12,6 +12,7 @@ import '../../../jobs/presentation/widgets/shared_job_card.dart';
 import '../../../presentation/models/career_feed_item.dart';
 import '../providers/circular_provider.dart';
 import 'circular_card.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 enum _DateFilter { latest, upcoming, outdated }
 
@@ -38,12 +39,16 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
 
   void _openFilterSheet() {
     final cs = Theme.of(context).colorScheme;
-    final categories = ref.read(circularCategoriesProvider).maybeWhen(data: (v) => v, orElse: () => const []);
+    final categories = ref
+        .read(circularCategoriesProvider)
+        .maybeWhen(data: (v) => v, orElse: () => const []);
     showModalBottomSheet(
       context: context,
       backgroundColor: cs.surfaceContainerHighest,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(RadiusToken.xl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (context) {
         String? tempCategoryId = _categoryId;
@@ -53,18 +58,24 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
           builder: (context, setSheetState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(Spacing.xxl, Spacing.lg, Spacing.xxl, Spacing.xxl),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.xxl,
+                  Spacing.lg,
+                  Spacing.xxl,
+                  Spacing.xxl,
+                ),
                 child: SingleChildScrollView(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: .min,
+                    crossAxisAlignment: .start,
                     children: [
                       Row(
                         children: [
                           Expanded(
                             child: Text(
                               'Filter',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: .w900),
                             ),
                           ),
                           TextButton(
@@ -75,13 +86,21 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                                 tempDate = _DateFilter.latest;
                               });
                             },
-                            child: Text('Reset', style: TextStyle(color: cs.primary)),
+                            child: Text(
+                              'Reset',
+                              style: TextStyle(color: cs.primary),
+                            ),
                           ),
                         ],
                       ),
                       if (categories.isNotEmpty) ...[
                         const SizedBox(height: Spacing.lg),
-                        Text('Category', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Category',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                        ),
                         const SizedBox(height: Spacing.sm),
                         Wrap(
                           spacing: Spacing.sm,
@@ -90,19 +109,27 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                             _FilterChip(
                               label: 'All',
                               selected: tempCategoryId == null,
-                              onTap: () => setSheetState(() => tempCategoryId = null),
+                              onTap: () =>
+                                  setSheetState(() => tempCategoryId = null),
                             ),
                             for (final category in categories)
                               _FilterChip(
                                 label: category.name,
                                 selected: tempCategoryId == category.id,
-                                onTap: () => setSheetState(() => tempCategoryId = category.id),
+                                onTap: () => setSheetState(
+                                  () => tempCategoryId = category.id,
+                                ),
                               ),
                           ],
                         ),
                       ],
                       const SizedBox(height: Spacing.xl),
-                      Text('Scope', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        'Scope',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                      ),
                       const SizedBox(height: Spacing.sm),
                       Wrap(
                         spacing: Spacing.sm,
@@ -116,22 +143,33 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                           _FilterChip(
                             label: 'Batch',
                             selected: tempScope == CareerJobScope.batch,
-                            onTap: () => setSheetState(() => tempScope = CareerJobScope.batch),
+                            onTap: () => setSheetState(
+                              () => tempScope = CareerJobScope.batch,
+                            ),
                           ),
                           _FilterChip(
                             label: 'Department',
                             selected: tempScope == CareerJobScope.department,
-                            onTap: () => setSheetState(() => tempScope = CareerJobScope.department),
+                            onTap: () => setSheetState(
+                              () => tempScope = CareerJobScope.department,
+                            ),
                           ),
                           _FilterChip(
                             label: 'University',
                             selected: tempScope == CareerJobScope.university,
-                            onTap: () => setSheetState(() => tempScope = CareerJobScope.university),
+                            onTap: () => setSheetState(
+                              () => tempScope = CareerJobScope.university,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: Spacing.xl),
-                      Text('Deadline', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        'Deadline',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                      ),
                       const SizedBox(height: Spacing.sm),
                       Wrap(
                         spacing: Spacing.sm,
@@ -140,17 +178,23 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                           _FilterChip(
                             label: 'Latest',
                             selected: tempDate == _DateFilter.latest,
-                            onTap: () => setSheetState(() => tempDate = _DateFilter.latest),
+                            onTap: () => setSheetState(
+                              () => tempDate = _DateFilter.latest,
+                            ),
                           ),
                           _FilterChip(
                             label: 'Upcoming',
                             selected: tempDate == _DateFilter.upcoming,
-                            onTap: () => setSheetState(() => tempDate = _DateFilter.upcoming),
+                            onTap: () => setSheetState(
+                              () => tempDate = _DateFilter.upcoming,
+                            ),
                           ),
                           _FilterChip(
                             label: 'Expired',
                             selected: tempDate == _DateFilter.outdated,
-                            onTap: () => setSheetState(() => tempDate = _DateFilter.outdated),
+                            onTap: () => setSheetState(
+                              () => tempDate = _DateFilter.outdated,
+                            ),
                           ),
                         ],
                       ),
@@ -198,14 +242,21 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
     // Keep categories warm so the filter sheet has data ready by the time
     // it's opened, even though this tab no longer renders them inline.
     ref.watch(circularCategoriesProvider);
-    final feedAsync = ref.watch(careerFeedProvider((categoryId: _categoryId, search: _search)));
+    final feedAsync = ref.watch(
+      careerFeedProvider((categoryId: _categoryId, search: _search)),
+    );
     final cs = Theme.of(context).colorScheme;
     final activeCount = _activeFilterCount;
 
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.lg,
+            Spacing.sm,
+            Spacing.lg,
+            0,
+          ),
           child: Row(
             children: [
               Expanded(
@@ -213,67 +264,77 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                   decoration: const InputDecoration(
                     hintText: 'Search...',
                     prefixIcon: Icon(LucideIcons.search),
-                    isDense: true,
-                    contentPadding: .zero,
-                    border: OutlineInputBorder(),
                   ),
-                  onSubmitted: (value) => setState(() => _search = value.trim()),
+                  onSubmitted: (value) =>
+                      setState(() => _search = value.trim()),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               GestureDetector(
                 onTap: _openFilterSheet,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Spacing.md,
+                    vertical: Spacing.md,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: cs.outline),
                     borderRadius: RadiusToken.circular(RadiusToken.sm),
                   ),
                   child: Badge(
                     isLabelVisible: activeCount > 0,
-                    label: Text('$activeCount', style: const TextStyle(fontSize: 10)),
-                    child: Icon(LucideIcons.slidersHorizontal, size: 20, color: cs.onSurface),
+                    label: Text(
+                      '$activeCount',
+                      style: const TextStyle(fontSize: FontSizeToken.xxs),
+                    ),
+                    child: Icon(
+                      LucideIcons.slidersHorizontal,
+                      size: 20,
+                      color: cs.onSurface,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Spacing.sm),
         Expanded(
           child: feedAsync.when(
             data: (items) {
               final filtered = items.where((item) {
-                final scopeOk = _scopeFilter == null ||
-                    (item is SharedJobFeedItem && item.job.scope == _scopeFilter);
+                final scopeOk =
+                    _scopeFilter == null ||
+                    (item is SharedJobFeedItem &&
+                        item.job.scope == _scopeFilter);
                 final dateOk = _passesDateFilter(item);
                 return scopeOk && dateOk;
               }).toList();
               if (filtered.isEmpty) {
                 return Center(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: .min,
                     children: [
                       Icon(LucideIcons.fileText, size: 48, color: cs.outline),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: Spacing.md),
                       const Text('Nothing here yet'),
                     ],
                   ),
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: Spacing.lg),
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
                   final item = filtered[index];
                   return switch (item) {
                     CircularFeedItem(:final circular) => CircularCard(
-                        circular: circular,
-                        onTap: () => context.pushNamed(
-                          AppRoute.careerCircularDetails.name,
-                          pathParameters: {'circularId': circular.id},
-                        ),
+                      circular: circular,
+                      onTap: () => context.pushNamed(
+                        AppRoute.careerCircularDetails.name,
+                        pathParameters: {'circularId': circular.id},
                       ),
+                    ),
                     SharedJobFeedItem(:final job) => SharedJobCard(job: job),
                   };
                 },
@@ -293,7 +354,11 @@ class _FilterChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _FilterChip({required this.label, required this.selected, required this.onTap});
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +367,10 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
           color: selected ? cs.primaryContainer : cs.surfaceContainerLow,
           borderRadius: RadiusToken.circular(RadiusToken.sm),
@@ -311,7 +379,7 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: FontSizeToken.md,
             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
             color: selected ? cs.onPrimaryContainer : cs.onSurface,
           ),

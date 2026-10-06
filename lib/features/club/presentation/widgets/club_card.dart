@@ -7,6 +7,9 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/features/club/domain/entities/club.dart';
 import '/routes/app_route.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// A single club — public, drop-in card. Tap navigates to the club details
 /// route (built in, no external onTap wiring needed). Used by both
@@ -18,7 +21,6 @@ class ClubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).primaryColor;
 
     return GestureDetector(
@@ -31,15 +33,12 @@ class ClubCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
+          color: context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1.0,
-          ),
+          border: Border.all(color: context.colors.border, width: 1.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: context.colors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -48,13 +47,13 @@ class ClubCard extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(RadiusToken.md),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               club.bannerUrl != null && club.bannerUrl!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: ApiEndpoints.resolveImageUrl(club.bannerUrl),
                       height: 120,
-                      fit: BoxFit.cover,
+                      fit: .cover,
                       errorWidget: (context, url, error) => Container(
                         height: 120,
                         color: primaryColor.withValues(alpha: 0.08),
@@ -73,47 +72,52 @@ class ClubCard extends StatelessWidget {
                       ),
                     ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.md,
+                  Spacing.lg,
+                  Spacing.lg,
+                ),
                 child: Row(
                   children: [
                     Container(
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : Colors.grey.shade100,
+                        color: context.colors.surfaceAlt,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                          color: context.colors.border,
                           width: 2,
                         ),
                       ),
                       child: club.logoUrl != null && club.logoUrl!.isNotEmpty
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.xxxl,
+                              ),
                               child: CachedNetworkImage(
                                 imageUrl: ApiEndpoints.resolveImageUrl(
                                   club.logoUrl,
                                 ),
-                                fit: BoxFit.cover,
+                                fit: .cover,
                                 errorWidget: (context, url, error) => Icon(
                                   LucideIcons.users,
-                                  color: Colors.grey.shade400,
+                                  color: context.colors.textSubtle,
                                   size: 22,
                                 ),
                               ),
                             )
                           : Icon(
                               LucideIcons.users,
-                              color: Colors.grey.shade400,
+                              color: context.colors.textSubtle,
                               size: 22,
                             ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: Spacing.md),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Row(
                             children: [
@@ -121,53 +125,45 @@ class ClubCard extends StatelessWidget {
                                 child: Text(
                                   club.name,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: isDark
-                                        ? Colors.white
-                                        : Colors.black87,
+                                    fontWeight: .bold,
+                                    fontSize: FontSizeToken.lg,
+                                    color: context.colors.text,
                                   ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: .ellipsis,
                                 ),
                               ),
                               if (club.isVerified) ...[
-                                const SizedBox(width: 4),
+                                const SizedBox(width: Spacing.xs),
                                 Icon(
                                   Icons.verified,
                                   size: 14,
-                                  color: Colors.blue.shade400,
+                                  color: context.colors.info,
                                 ),
                               ],
                             ],
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: Spacing.xxs),
                           Row(
                             children: [
                               Icon(
                                 LucideIcons.calendar,
                                 size: 11,
-                                color: isDark
-                                    ? Colors.white54
-                                    : Colors.grey.shade500,
+                                color: context.colors.textSubtle,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: Spacing.xs),
                               Text(
                                 club.foundedYear?.toString() ?? 'N/A',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: isDark
-                                      ? Colors.white54
-                                      : Colors.grey.shade500,
+                                  fontSize: FontSizeToken.sm,
+                                  color: context.colors.textSubtle,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: Spacing.md),
                               Icon(
                                 LucideIcons.chevronRight,
                                 size: 14,
-                                color: isDark
-                                    ? Colors.white38
-                                    : Colors.grey.shade400,
+                                color: context.colors.textSubtle,
                               ),
                             ],
                           ),

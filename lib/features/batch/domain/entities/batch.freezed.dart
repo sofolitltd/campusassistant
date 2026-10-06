@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'batch.dart';
@@ -9,6 +9,7 @@ part of 'batch.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $BatchCopyWith<Batch> get copyWith => _$BatchCopyWithImpl<Batch>(this as Batch, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Batch&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.isStudying, isStudying) || other.isStudying == isStudying)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&const DeepCollectionEquality().equals(other.sessions, sessions));
+  final _this = this as Batch;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Batch&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.isStudying, _this.isStudying) || other.isStudying == _this.isStudying)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&const DeepCollectionEquality().equals(other.sessions, _this.sessions));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,isStudying,departmentId,universityId,const DeepCollectionEquality().hash(sessions));
+int get hashCode {
+  final _this = this as Batch;
+  return Object.hash(runtimeType,_this.id,_this.name,_this.slug,_this.isStudying,_this.departmentId,_this.universityId,const DeepCollectionEquality().hash(_this.sessions));
+}
 
 @override
 String toString() {
-  return 'Batch(id: $id, name: $name, slug: $slug, isStudying: $isStudying, departmentId: $departmentId, universityId: $universityId, sessions: $sessions)';
+  final _this = this as Batch;
+  return 'Batch(id: ${_this.id}, name: ${_this.name}, slug: ${_this.slug}, isStudying: ${_this.isStudying}, departmentId: ${_this.departmentId}, universityId: ${_this.universityId}, sessions: ${_this.sessions})';
 }
 
 
@@ -63,7 +69,7 @@ class _$BatchCopyWithImpl<$Res>
 /// Create a copy of Batch
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? isStudying = null,Object? departmentId = null,Object? universityId = null,Object? sessions = null,}) {
-  return _then(_self.copyWith(
+  return _then(Batch(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,slug: null == slug ? _self.slug : slug // ignore: cast_nullable_to_non_nullable
@@ -212,7 +218,7 @@ return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.department
 
 
 class _Batch implements Batch {
-  const _Batch({required this.id, required this.name, required this.slug, required this.isStudying, required this.departmentId, required this.universityId, required final  List<Session> sessions}): _sessions = sessions;
+  const _Batch({required this.id, required this.name, required this.slug, required this.isStudying, required this.departmentId, required this.universityId, required  List<Session> sessions}): _sessions = sessions;
   
 
 @override final  String id;
@@ -239,16 +245,18 @@ _$BatchCopyWith<_Batch> get copyWith => __$BatchCopyWithImpl<_Batch>(this, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Batch&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.isStudying, isStudying) || other.isStudying == isStudying)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&const DeepCollectionEquality().equals(other._sessions, _sessions));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Batch&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.isStudying, isStudying) || other.isStudying == isStudying)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&const DeepCollectionEquality().equals(other.sessions, _sessions));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,isStudying,departmentId,universityId,const DeepCollectionEquality().hash(_sessions));
+int get hashCode {
+    return Object.hash(runtimeType,id,name,slug,isStudying,departmentId,universityId,const DeepCollectionEquality().hash(_sessions));
+}
 
 @override
 String toString() {
-  return 'Batch(id: $id, name: $name, slug: $slug, isStudying: $isStudying, departmentId: $departmentId, universityId: $universityId, sessions: $sessions)';
+    return 'Batch(id: $id, name: $name, slug: $slug, isStudying: $isStudying, departmentId: $departmentId, universityId: $universityId, sessions: $sessions)';
 }
 
 

@@ -22,6 +22,9 @@ import '/features/inbox/presentation/widgets/message_bubble.dart';
 import '/features/inbox/presentation/widgets/reply_banner.dart';
 import '/features/inbox/presentation/widgets/select_bar.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final String conversationId;
@@ -259,26 +262,27 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF1F2C33)
-          : Colors.white,
+          ? context.colors.surface
+          : context.colors.onPrimary,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (ctx) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Container(
                   width: 36,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: Spacing.sm),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.borderStrong,
+                    borderRadius: BorderRadius.circular(RadiusToken.xs),
                   ),
                 ),
                 ListTile(
@@ -286,20 +290,20 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      color: context.colors.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.delete_outline,
-                      color: Colors.red,
+                      color: context.colors.danger,
                       size: 22,
                     ),
                   ),
                   title: Text(
                     'Delete ${_selectedMsgIds.length} messages',
                     style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black87,
-                      fontWeight: FontWeight.w500,
+                      color: context.colors.text,
+                      fontWeight: .w500,
                     ),
                   ),
                   onTap: () async {
@@ -437,71 +441,72 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      backgroundColor: isDark ? const Color(0xFF111B21) : Colors.grey.shade50,
-      appBar: _selectMode ? _selectAppBar(isDark) : _chatAppBar(isDark),
-      body: Column(
-        children: [
-          Expanded(
-            child: s.initialLoading
-                ? const Center(child: CupertinoActivityIndicator())
-                : NotificationListener<ScrollNotification>(
-                    onNotification: (notification) {
-                      if (notification is ScrollEndNotification) {
-                        final max = _scrollController.position.maxScrollExtent;
-                        final current = _scrollController.position.pixels;
-                        _autoScroll = (max - current) < 100;
-                      }
-                      return false;
-                    },
-                    child: _buildMessages(
-                      userAsync.asData?.value?.id,
-                      isDark,
-                      s,
-                    ),
-                  ),
+          backgroundColor: context.colors.surfaceAlt,
+          appBar: _selectMode ? _selectAppBar(isDark) : _chatAppBar(isDark),
+          body: Column(
+            children: [
+              Expanded(
+                child: s.initialLoading
+                    ? const Center(child: CupertinoActivityIndicator())
+                    : NotificationListener<ScrollNotification>(
+                        onNotification: (notification) {
+                          if (notification is ScrollEndNotification) {
+                            final max =
+                                _scrollController.position.maxScrollExtent;
+                            final current = _scrollController.position.pixels;
+                            _autoScroll = (max - current) < 100;
+                          }
+                          return false;
+                        },
+                        child: _buildMessages(
+                          userAsync.asData?.value?.id,
+                          isDark,
+                          s,
+                        ),
+                      ),
+              ),
+              if (s.loadingMore)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: Spacing.xs),
+                  child: CupertinoActivityIndicator(),
+                ),
+              if (_selectMode)
+                SelectBar(
+                  count: _selectedMsgIds.length,
+                  onDelete: _deleteSelectedMessages,
+                  onCancel: _exitSelectMode,
+                  isDark: isDark,
+                ),
+              if (!_selectMode && _replyingText != null)
+                ReplyBanner(
+                  text: _replyingText!,
+                  onCancel: _cancelReply,
+                  isDark: isDark,
+                ),
+              if (!_selectMode && _editingMsgId != null)
+                EditBanner(
+                  oldText: _editingOldText ?? '',
+                  onCancel: _cancelEdit,
+                  isDark: isDark,
+                ),
+              if (!_selectMode)
+                ChatInput(
+                  controller: _messageController,
+                  isDark: isDark,
+                  onSend: _sendMessage,
+                  isSending: _isSending,
+                  hasText: _hasText,
+                  isMultiline: _isMultiline,
+                ),
+            ],
           ),
-          if (s.loadingMore)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              child: CupertinoActivityIndicator(),
-            ),
-          if (_selectMode)
-            SelectBar(
-              count: _selectedMsgIds.length,
-              onDelete: _deleteSelectedMessages,
-              onCancel: _exitSelectMode,
-              isDark: isDark,
-            ),
-          if (!_selectMode && _replyingText != null)
-            ReplyBanner(
-              text: _replyingText!,
-              onCancel: _cancelReply,
-              isDark: isDark,
-            ),
-          if (!_selectMode && _editingMsgId != null)
-            EditBanner(
-              oldText: _editingOldText ?? '',
-              onCancel: _cancelEdit,
-              isDark: isDark,
-            ),
-          if (!_selectMode)
-            ChatInput(
-              controller: _messageController,
-              isDark: isDark,
-              onSend: _sendMessage,
-              isSending: _isSending,
-              hasText: _hasText,
-              isMultiline: _isMultiline,
-            ),
-        ],
-      ),
         ),
       ),
     );
   }
 
   AppBar _selectAppBar(bool isDark) => AppBar(
-    backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
+    backgroundColor: context.colors.surface,
     elevation: 0,
     scrolledUnderElevation: 0,
     leading: IconButton(
@@ -510,12 +515,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     ),
     title: Text(
       '${_selectedMsgIds.length} selected',
-      style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 16),
+      style: GoogleFonts.outfit(fontWeight: .w600, fontSize: FontSizeToken.lg),
     ),
   );
 
   AppBar _chatAppBar(bool isDark) => AppBar(
-    backgroundColor: isDark ? const Color(0xFF1F2C33) : Colors.white,
+    backgroundColor: context.colors.surface,
     elevation: 0,
     scrolledUnderElevation: 0,
     titleSpacing: 0,
@@ -527,34 +532,34 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       children: [
         CircleAvatar(
           radius: 16,
-          backgroundColor: Colors.teal.withValues(alpha: 0.2),
+          backgroundColor: context.colors.primary.withValues(alpha: 0.2),
           child: Text(
             widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
-            style: const TextStyle(
-              color: Colors.teal,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+            style: TextStyle(
+              color: context.colors.primary,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.base,
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: Spacing.md),
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Text(
               widget.name,
               style: GoogleFonts.outfit(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+                fontWeight: .w600,
+                fontSize: FontSizeToken.lg,
               ),
             ),
             if (_typingUsers.isNotEmpty)
-              const Text(
+              Text(
                 'typing...',
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.teal,
-                  fontStyle: FontStyle.italic,
+                  fontSize: FontSizeToken.sm,
+                  color: context.colors.primary,
+                  fontStyle: .italic,
                 ),
               ),
           ],
@@ -575,22 +580,28 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     if (messages.isEmpty) {
       return Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Icon(
               LucideIcons.messageCircle,
               size: 48,
-              color: Colors.grey.shade400,
+              color: context.colors.textSubtle,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Spacing.md),
             Text(
               'No messages yet',
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
+              style: TextStyle(
+                color: context.colors.textSubtle,
+                fontSize: FontSizeToken.lg,
+              ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Spacing.xs),
             Text(
               'Send a message to start chatting',
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+              style: TextStyle(
+                color: context.colors.textSubtle,
+                fontSize: FontSizeToken.md,
+              ),
             ),
           ],
         ),
@@ -613,7 +624,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 80),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.md,
+        Spacing.sm,
+        Spacing.md,
+        80,
+      ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -756,8 +772,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
       ],
       color: Theme.of(ctx).brightness == Brightness.dark
-          ? const Color(0xFF1F2C33)
-          : Colors.white,
+          ? context.colors.surface
+          : context.colors.onPrimary,
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(RadiusToken.md),
@@ -808,26 +824,27 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF1F2C33)
-          : Colors.white,
+          ? context.colors.surface
+          : context.colors.onPrimary,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (ctx) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Container(
                   width: 36,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: Spacing.sm),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.borderStrong,
+                    borderRadius: BorderRadius.circular(RadiusToken.xs),
                   ),
                 ),
                 ListTile(
@@ -835,20 +852,20 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      color: context.colors.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(RadiusToken.xxl),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.delete_outline,
-                      color: Colors.red,
+                      color: context.colors.danger,
                       size: 22,
                     ),
                   ),
                   title: Text(
                     'Delete for me',
                     style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black87,
-                      fontWeight: FontWeight.w500,
+                      color: context.colors.text,
+                      fontWeight: .w500,
                     ),
                   ),
                   onTap: () async {

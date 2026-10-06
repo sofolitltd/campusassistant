@@ -10,6 +10,9 @@ import '../screens/marketplace_home_screen.dart';
 import '../screens/category_grid_screen.dart';
 import '../screens/cart_screen.dart';
 import '../screens/account_tab.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class MarketplaceShell extends ConsumerStatefulWidget {
   const MarketplaceShell({super.key});
@@ -33,7 +36,6 @@ class _MarketplaceShellState extends ConsumerState<MarketplaceShell> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-
           body: IndexedStack(
             index: _currentIndex,
             children: [
@@ -87,18 +89,17 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final primaryColor = context.colors.primary;
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(RadiusToken.xxl),
+          topRight: Radius.circular(RadiusToken.xxl),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
+            color: context.colors.shadow,
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, -4),
@@ -107,19 +108,17 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(RadiusToken.xxl),
+          topRight: Radius.circular(RadiusToken.xxl),
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.65)
-                  : Colors.white.withValues(alpha: 0.82),
+              color: context.colors.surface.withValues(alpha: 0.82),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+                topLeft: Radius.circular(RadiusToken.xxl),
+                topRight: Radius.circular(RadiusToken.xxl),
               ),
             ),
             child: SafeArea(
@@ -135,7 +134,7 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                         behavior: HitTestBehavior.opaque,
                         onTap: () => onDestinationSelected(index),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: .start,
                           children: [
                             AnimatedContainer(
                               duration: const Duration(milliseconds: 250),
@@ -145,30 +144,30 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: primaryColor,
                                 borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(4),
-                                  bottomRight: Radius.circular(4),
+                                  bottomLeft: Radius.circular(RadiusToken.xs),
+                                  bottomRight: Radius.circular(RadiusToken.xs),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: Spacing.sm),
                             Stack(
-                              clipBehavior: Clip.none,
+                              clipBehavior: .none,
                               children: [
                                 Icon(
                                   tab.icon,
                                   size: 22,
                                   color: isSelected
                                       ? primaryColor
-                                      : Colors.grey,
+                                      : context.colors.textSubtle,
                                 ),
                                 if (index == 2 && cartCount > 0)
                                   Positioned(
                                     right: -10,
                                     top: -4,
                                     child: Container(
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.red,
+                                      padding: const EdgeInsets.all(Spacing.xs),
+                                      decoration: BoxDecoration(
+                                        color: context.colors.danger,
                                         shape: BoxShape.circle,
                                       ),
                                       constraints: const BoxConstraints(
@@ -179,26 +178,28 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                                         cartCount > 99
                                             ? '99+'
                                             : cartCount.toString(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.bold,
+                                        style: TextStyle(
+                                          color: context.colors.onPrimary,
+                                          fontSize: FontSizeToken.xxs,
+                                          fontWeight: .bold,
                                         ),
-                                        textAlign: TextAlign.center,
+                                        textAlign: .center,
                                       ),
                                     ),
                                   ),
                               ],
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: Spacing.xxs),
                             Text(
                               tab.label,
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: FontSizeToken.xs,
                                 fontWeight: isSelected
                                     ? FontWeight.w600
                                     : FontWeight.w400,
-                                color: isSelected ? primaryColor : Colors.grey,
+                                color: isSelected
+                                    ? primaryColor
+                                    : context.colors.textSubtle,
                               ),
                             ),
                           ],

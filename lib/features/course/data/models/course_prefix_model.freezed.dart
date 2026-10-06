@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'course_prefix_model.dart';
@@ -9,6 +9,7 @@ part of 'course_prefix_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $CoursePrefixModelCopyWith<CoursePrefixModel> get copyWith => _$CoursePrefixMode
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoursePrefixModel&&(identical(other.id, id) || other.id == id)&&(identical(other.prefix, prefix) || other.prefix == prefix)&&(identical(other.description, description) || other.description == description)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId));
+  final _this = this as CoursePrefixModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoursePrefixModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.prefix, _this.prefix) || other.prefix == _this.prefix)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,prefix,description,departmentId,universityId);
+int get hashCode {
+  final _this = this as CoursePrefixModel;
+  return Object.hash(runtimeType,_this.id,_this.prefix,_this.description,_this.departmentId,_this.universityId);
+}
 
 @override
 String toString() {
-  return 'CoursePrefixModel(id: $id, prefix: $prefix, description: $description, departmentId: $departmentId, universityId: $universityId)';
+  final _this = this as CoursePrefixModel;
+  return 'CoursePrefixModel(id: ${_this.id}, prefix: ${_this.prefix}, description: ${_this.description}, departmentId: ${_this.departmentId}, universityId: ${_this.universityId})';
 }
 
 
@@ -66,7 +72,7 @@ class _$CoursePrefixModelCopyWithImpl<$Res>
 /// Create a copy of CoursePrefixModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? prefix = null,Object? description = null,Object? departmentId = null,Object? universityId = null,}) {
-  return _then(_self.copyWith(
+  return _then(CoursePrefixModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,prefix: null == prefix ? _self.prefix : prefix // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -235,16 +241,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoursePrefixModel&&(identical(other.id, id) || other.id == id)&&(identical(other.prefix, prefix) || other.prefix == prefix)&&(identical(other.description, description) || other.description == description)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoursePrefixModel&&(identical(other.id, id) || other.id == id)&&(identical(other.prefix, prefix) || other.prefix == prefix)&&(identical(other.description, description) || other.description == description)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,prefix,description,departmentId,universityId);
+int get hashCode {
+    return Object.hash(runtimeType,id,prefix,description,departmentId,universityId);
+}
 
 @override
 String toString() {
-  return 'CoursePrefixModel(id: $id, prefix: $prefix, description: $description, departmentId: $departmentId, universityId: $universityId)';
+    return 'CoursePrefixModel(id: $id, prefix: $prefix, description: $description, departmentId: $departmentId, universityId: $universityId)';
 }
 
 

@@ -8,6 +8,9 @@ import '/core/widgets/custom_header_layout.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
 import 'staff_card.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class StaffPage extends ConsumerStatefulWidget {
   const StaffPage({super.key});
@@ -42,23 +45,23 @@ class _StaffPageState extends ConsumerState<StaffPage> {
           if (filteredStaff.isEmpty) {
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Icon(
                     _searchQuery.isNotEmpty
                         ? LucideIcons.searchX
                         : LucideIcons.briefcase,
                     size: 48,
-                    color: Colors.grey.shade300,
+                    color: context.colors.borderStrong,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Text(
                     _searchQuery.isNotEmpty
                         ? 'No matches found'
                         : 'No data found',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
+                    style: TextStyle(
+                      color: context.colors.textSubtle,
+                      fontWeight: .w500,
                     ),
                   ),
                 ],
@@ -70,12 +73,17 @@ class _StaffPageState extends ConsumerState<StaffPage> {
 
           return ListView.separated(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+            ),
             itemCount: filteredStaff.length,
             itemBuilder: (context, index) {
               final staff = filteredStaff[index];
               return InkWell(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(RadiusToken.lg),
                 onTap: () => context.push('/staff/details?id=${staff.id}'),
                 child: StaffCard(staff: staff, user: user),
               );

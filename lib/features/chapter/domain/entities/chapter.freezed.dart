@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'chapter.dart';
@@ -9,6 +9,7 @@ part of 'chapter.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $ChapterCopyWith<Chapter> get copyWith => _$ChapterCopyWithImpl<Chapter>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Chapter&&(identical(other.id, id) || other.id == id)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.chapterNo, chapterNo) || other.chapterNo == chapterNo)&&(identical(other.chapterTitle, chapterTitle) || other.chapterTitle == chapterTitle)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&const DeepCollectionEquality().equals(other.batches, batches));
+  final _this = this as Chapter;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Chapter&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.courseCode, _this.courseCode) || other.courseCode == _this.courseCode)&&(identical(other.chapterNo, _this.chapterNo) || other.chapterNo == _this.chapterNo)&&(identical(other.chapterTitle, _this.chapterTitle) || other.chapterTitle == _this.chapterTitle)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&const DeepCollectionEquality().equals(other.batches, _this.batches));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,courseCode,chapterNo,chapterTitle,universityId,departmentId,const DeepCollectionEquality().hash(batches));
+int get hashCode {
+  final _this = this as Chapter;
+  return Object.hash(runtimeType,_this.id,_this.courseCode,_this.chapterNo,_this.chapterTitle,_this.universityId,_this.departmentId,const DeepCollectionEquality().hash(_this.batches));
+}
 
 @override
 String toString() {
-  return 'Chapter(id: $id, courseCode: $courseCode, chapterNo: $chapterNo, chapterTitle: $chapterTitle, universityId: $universityId, departmentId: $departmentId, batches: $batches)';
+  final _this = this as Chapter;
+  return 'Chapter(id: ${_this.id}, courseCode: ${_this.courseCode}, chapterNo: ${_this.chapterNo}, chapterTitle: ${_this.chapterTitle}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, batches: ${_this.batches})';
 }
 
 
@@ -63,7 +69,7 @@ class _$ChapterCopyWithImpl<$Res>
 /// Create a copy of Chapter
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? courseCode = null,Object? chapterNo = null,Object? chapterTitle = null,Object? universityId = null,Object? departmentId = null,Object? batches = null,}) {
-  return _then(_self.copyWith(
+  return _then(Chapter(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,courseCode: null == courseCode ? _self.courseCode : courseCode // ignore: cast_nullable_to_non_nullable
 as String,chapterNo: null == chapterNo ? _self.chapterNo : chapterNo // ignore: cast_nullable_to_non_nullable
@@ -212,7 +218,7 @@ return $default(_that.id,_that.courseCode,_that.chapterNo,_that.chapterTitle,_th
 
 
 class _Chapter implements Chapter {
-  const _Chapter({required this.id, required this.courseCode, required this.chapterNo, required this.chapterTitle, required this.universityId, required this.departmentId, required final  List<String> batches}): _batches = batches;
+  const _Chapter({required this.id, required this.courseCode, required this.chapterNo, required this.chapterTitle, required this.universityId, required this.departmentId, required  List<String> batches}): _batches = batches;
   
 
 @override final  String id;
@@ -239,16 +245,18 @@ _$ChapterCopyWith<_Chapter> get copyWith => __$ChapterCopyWithImpl<_Chapter>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Chapter&&(identical(other.id, id) || other.id == id)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.chapterNo, chapterNo) || other.chapterNo == chapterNo)&&(identical(other.chapterTitle, chapterTitle) || other.chapterTitle == chapterTitle)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&const DeepCollectionEquality().equals(other._batches, _batches));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Chapter&&(identical(other.id, id) || other.id == id)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.chapterNo, chapterNo) || other.chapterNo == chapterNo)&&(identical(other.chapterTitle, chapterTitle) || other.chapterTitle == chapterTitle)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&const DeepCollectionEquality().equals(other.batches, _batches));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,courseCode,chapterNo,chapterTitle,universityId,departmentId,const DeepCollectionEquality().hash(_batches));
+int get hashCode {
+    return Object.hash(runtimeType,id,courseCode,chapterNo,chapterTitle,universityId,departmentId,const DeepCollectionEquality().hash(_batches));
+}
 
 @override
 String toString() {
-  return 'Chapter(id: $id, courseCode: $courseCode, chapterNo: $chapterNo, chapterTitle: $chapterTitle, universityId: $universityId, departmentId: $departmentId, batches: $batches)';
+    return 'Chapter(id: $id, courseCode: $courseCode, chapterNo: $chapterNo, chapterTitle: $chapterTitle, universityId: $universityId, departmentId: $departmentId, batches: $batches)';
 }
 
 

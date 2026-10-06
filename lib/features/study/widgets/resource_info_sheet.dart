@@ -3,8 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/study/data/models/content_model.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
+import '/features/resource/presentation/widgets/user_profile_dialog.dart';
+import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/utils/date_formatters.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class ResourceInfoSheet extends ConsumerWidget {
   final ContentModel contentModel;
@@ -37,8 +42,11 @@ class ResourceInfoSheet extends ConsumerWidget {
 
     final metadata = contentModel.metadata ?? {};
 
-    // Type specific extracted fields
+    // Type specific extracted fields. Notes in this app store the teacher/creator
+    // reference under `subtitle` (with an optional `subtitle_type` of 'Creator'),
+    // not under `creator`/`teacher` — check all of them.
     final creator =
+        metadata['subtitle']?.toString() ??
         metadata['creator']?.toString() ??
         metadata['teacher']?.toString() ??
         'N/A';
@@ -68,69 +76,72 @@ class ResourceInfoSheet extends ConsumerWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.sm,
+      ),
       child: ListView(
         controller: scrollController,
         children: [
           // Drag handle
           Center(
             child: Container(
-              margin: const EdgeInsets.only(bottom: 16),
+              margin: const EdgeInsets.only(bottom: Spacing.lg),
               height: 4,
               width: 40,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
+                color: context.colors.borderStrong,
+                borderRadius: BorderRadius.circular(RadiusToken.xs),
               ),
             ),
           ),
 
           // Header
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Container(
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent.shade100.withValues(alpha: 0.1),
+                  color: AccentToken.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: Center(
                   child: Icon(
                     _getIconForType(contentModel.contentType),
                     size: 30,
-                    color: Colors.teal,
+                    color: context.colors.primary,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: Spacing.lg),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       contentModel.contentTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Spacing.xs),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
+                        horizontal: Spacing.sm,
+                        vertical: Spacing.xxs,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: context.colors.info,
                         borderRadius: BorderRadius.circular(RadiusToken.md),
                       ),
                       child: Text(
                         contentModel.contentType.toUpperCase(),
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
+                          fontSize: FontSizeToken.xxs,
+                          fontWeight: .bold,
+                          color: context.colors.info,
                         ),
                       ),
                     ),
@@ -139,60 +150,102 @@ class ResourceInfoSheet extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           const Divider(),
 
           // Common Fields
           _buildSectionTitle(context, 'Basic Information'),
-          _buildInfoRow(LucideIcons.user, 'Uploaded By', contentModel.uploader),
           _buildInfoRow(
+            context,
+            LucideIcons.user,
+            'Uploaded By',
+            contentModel.uploader,
+            onTap: contentModel.creatorId != null
+                ? () => showUserProfileDialog(
+                    context,
+                    userId: contentModel.creatorId,
+                    fallbackName: contentModel.uploader,
+                  )
+                : null,
+          ),
+          _buildInfoRow(
+            context,
             LucideIcons.calendar,
             'Upload Date',
-            contentModel.uploadDate,
+            formatDateStringDdMmYyyy(contentModel.uploadDate),
           ),
 
           _buildInfoRow(
+            context,
             LucideIcons.bookType,
             'Course Code',
             contentModel.courseCode,
           ),
           _buildInfoRow(
+            context,
             LucideIcons.fileText,
             'Type',
             contentModel.contentSubtitleType,
           ),
           _buildInfoRow(
+            context,
             LucideIcons.tag,
             'Subtitle',
             contentModel.contentSubtitle,
           ),
-          _buildInfoRow(LucideIcons.users, 'Target Batches', batchNames),
+          _buildInfoRow(
+            context,
+            LucideIcons.users,
+            'Target Batches',
+            batchNames,
+          ),
 
           const SizedBox(height: Spacing.lg),
           _buildSectionTitle(context, 'Type-Specific Details'),
 
           if (contentModel.contentType.toLowerCase().contains('note')) ...[
             _buildInfoRow(
+              context,
               LucideIcons.bookOpen,
               'Lesson No',
               contentModel.lessonNo.toString(),
             ),
-            _buildInfoRow(LucideIcons.graduationCap, 'Creator', creator),
-            _buildInfoRow(LucideIcons.bookOpen, 'Chapter', chapter),
+            _buildInfoRow(
+              context,
+              LucideIcons.graduationCap,
+              'Creator',
+              creator,
+            ),
+            _buildInfoRow(context, LucideIcons.bookOpen, 'Chapter', chapter),
           ] else if (contentModel.contentType.toLowerCase().contains(
             'book',
           )) ...[
-            _buildInfoRow(LucideIcons.user, 'Author', author),
-            _buildInfoRow(LucideIcons.building, 'Publisher', publisher),
-            _buildInfoRow(LucideIcons.book, 'Edition', edition),
+            _buildInfoRow(context, LucideIcons.user, 'Author', author),
+            _buildInfoRow(
+              context,
+              LucideIcons.building,
+              'Publisher',
+              publisher,
+            ),
+            _buildInfoRow(context, LucideIcons.book, 'Edition', edition),
           ] else if (contentModel.contentType.toLowerCase().contains(
             'question',
           )) ...[
-            _buildInfoRow(LucideIcons.fileSpreadsheet, 'Exam Type', examType),
+            _buildInfoRow(
+              context,
+              LucideIcons.fileSpreadsheet,
+              'Exam Type',
+              examType,
+            ),
           ] else if (contentModel.contentType.toLowerCase().contains(
             'syllabus',
           )) ...[
-            _buildInfoRow(LucideIcons.calendar, 'Academic Year', academicYear),
+            _buildInfoRow(
+              context,
+              LucideIcons.calendar,
+              'Academic Year',
+              academicYear,
+            ),
           ],
 
           const SizedBox(height: Spacing.lg),
@@ -201,35 +254,44 @@ class ResourceInfoSheet extends ConsumerWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
+                  context,
                   LucideIcons.download,
                   'Downloads',
                   downloads,
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(child: _buildStatCard(LucideIcons.eye, 'Views', views)),
+              const SizedBox(width: Spacing.sm),
+              Expanded(
+                child: _buildStatCard(context, LucideIcons.eye, 'Views', views),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Row(
             children: [
               Expanded(
                 child: _buildStatCard(
+                  context,
                   LucideIcons.hardDrive,
                   'File Size',
                   fileSizeStr,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Expanded(
-                child: _buildStatCard(LucideIcons.layers, 'Pages', pageCount),
+                child: _buildStatCard(
+                  context,
+                  LucideIcons.layers,
+                  'Pages',
+                  pageCount,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          _buildStatCard(LucideIcons.star, 'Rating', ratingAvg),
+          const SizedBox(height: Spacing.sm),
+          _buildStatCard(context, LucideIcons.star, 'Rating', ratingAvg),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: Spacing.xxxl),
         ],
       ),
     );
@@ -237,67 +299,103 @@ class ResourceInfoSheet extends ConsumerWidget {
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: Spacing.md),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Colors.grey.shade800,
+          fontWeight: .bold,
+          color: context.colors.text,
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value, {
+    VoidCallback? onTap,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 18, color: Colors.grey.shade500),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+      padding: const EdgeInsets.only(bottom: Spacing.md),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
+        child: Row(
+          crossAxisAlignment: .start,
+          children: [
+            Icon(icon, size: 18, color: context.colors.textSubtle),
+            const SizedBox(width: Spacing.md),
+            SizedBox(
+              width: 100,
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: context.colors.textMuted,
+                ),
+              ),
             ),
-          ),
-          Expanded(
-            child: Text(
-              value.isNotEmpty ? value : 'Not provided',
-              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+            Expanded(
+              child: Text(
+                value.isNotEmpty ? value : 'Not provided',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: .w500,
+                  color: onTap != null
+                      ? context.colors.primary
+                      : context.colors.text,
+                ),
+              ),
             ),
-          ),
-        ],
+            if (onTap != null) ...[
+              const SizedBox(width: Spacing.xs),
+              Icon(
+                LucideIcons.chevronRight,
+                size: 16,
+                color: context.colors.textSubtle,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildStatCard(IconData icon, String label, String value) {
+  Widget _buildStatCard(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.md,
+        vertical: Spacing.md,
+      ),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: context.colors.surfaceAlt,
         borderRadius: BorderRadius.circular(RadiusToken.sm),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.colors.border),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.teal),
-          const SizedBox(width: 8),
+          Icon(icon, size: 20, color: context.colors.primary),
+          const SizedBox(width: Spacing.sm),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Text(
                 label,
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                style: TextStyle(
+                  fontSize: FontSizeToken.xs,
+                  color: context.colors.textMuted,
+                ),
               ),
               Text(
                 value,
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.base,
                 ),
               ),
             ],

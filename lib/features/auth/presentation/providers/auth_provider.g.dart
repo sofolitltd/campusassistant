@@ -258,13 +258,13 @@ final class CurrentUserProvider
   CurrentUser create() => CurrentUser();
 }
 
-String _$currentUserHash() => r'd801bd192c9e93df1d5dd5ab1ddc8ef80d15a7c2';
+String _$currentUserHash() => r'f217ba2b8c148aff115b0544b95cbe512a0e59fc';
 
 abstract class _$CurrentUser extends $AsyncNotifier<User?> {
   FutureOr<User?> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<User?>, User?>;
     final element =
         ref.element
@@ -274,6 +274,6 @@ abstract class _$CurrentUser extends $AsyncNotifier<User?> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

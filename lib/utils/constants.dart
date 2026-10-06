@@ -5,13 +5,6 @@ const kAppName = 'Campus Assistant';
 /// Default number of items per page for paginated API requests.
 const kDefaultPageSize = 20;
 
-// theme color
-const Color kPrimaryColor = Color(0xFFFFFFFF);
-const Color kSecondaryColor = Color(0xFF000000);
-
-const Color kContentLightColor = Color(0xFFE88F8F);
-const Color kContentDarkColor = Color(0xFF1587EE);
-
 // category card color
 const Color kCardColor1 = Color(0xFF95E1D3);
 const Color kCardColor2 = Color(0xFFEAFFD0);
@@ -69,7 +62,7 @@ const kPlayStoreUrl =
 //
 const kDevLogo =
     'https://sofolit.vercel.app/_next/image?url=%2Fimages%2Flogo-black.png&w=256&q=75';
-const kDevWebsite = 'https://sofolit.vercel.com';
+const kDevWebsite = 'https://sofolit.vercel.app';
 const kDevEmail = 'sofolitltd@gmail.com';
 const kDevYoutube = 'https://youtube.com/@sofolitltd';
 

@@ -7,6 +7,10 @@ import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/features/department/domain/entities/department.dart';
 import '/features/university/presentation/providers/faculty_provider.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class FacultyDetailsPage extends ConsumerWidget {
   final String facultyId;
@@ -20,9 +24,7 @@ class FacultyDetailsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final departmentsAsync = ref.watch(
-      departmentsByFacultyProvider(facultyId),
-    );
+    final departmentsAsync = ref.watch(departmentsByFacultyProvider(facultyId));
 
     return CustomHeaderLayout(
       title: facultyName.isNotEmpty ? facultyName : 'Faculty',
@@ -35,11 +37,14 @@ class FacultyDetailsPage extends ConsumerWidget {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(Spacing.xl),
             child: Text(
               err.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.redAccent, fontSize: 13),
+              textAlign: .center,
+              style: TextStyle(
+                color: context.colors.danger,
+                fontSize: FontSizeToken.md,
+              ),
             ),
           ),
         ),
@@ -59,26 +64,23 @@ class _DepartmentsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       physics: const BouncingScrollPhysics(),
       children: [
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Spacing.lg),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF3B82F6).withValues(alpha: 0.1),
-                Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                AccentToken.blue.withValues(alpha: 0.1),
+                AccentToken.violet.withValues(alpha: 0.1),
               ],
             ),
             borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.blue.shade100,
-            ),
+            border: Border.all(color: context.colors.info),
           ),
           child: Row(
             children: [
@@ -86,33 +88,33 @@ class _DepartmentsList extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Color(0xFF3B82F6).withValues(alpha: 0.15),
+                  color: AccentToken.blue.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: const Icon(
                   LucideIcons.graduationCap,
-                  color: Color(0xFF3B82F6),
+                  color: AccentToken.blue,
                   size: 24,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: Spacing.lg),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       facultyName.isNotEmpty ? facultyName : 'Faculty',
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                     ),
                     Text(
                       '${departments.length} department${departments.length == 1 ? '' : 's'}',
                       style: TextStyle(
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
-                        fontSize: 13,
+                        color: context.colors.textMuted,
+                        fontSize: FontSizeToken.md,
                       ),
                     ),
                   ],
@@ -121,31 +123,29 @@ class _DepartmentsList extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: Spacing.xxl),
         Text(
           'Assigned Departments',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Spacing.lg),
         if (departments.isEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48),
+            padding: const EdgeInsets.symmetric(vertical: Spacing.xxxxl),
             child: Column(
               children: [
                 Icon(
                   LucideIcons.graduationCap,
                   size: 56,
-                  color: Colors.grey.shade300,
+                  color: context.colors.borderStrong,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: Spacing.lg),
                 Text(
                   'No departments assigned to this faculty yet',
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                   style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
+                    color: context.colors.textMuted,
+                    fontWeight: .w500,
                   ),
                 ),
               ],
@@ -165,20 +165,16 @@ class _DepartmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: Spacing.md),
+      padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -190,7 +186,7 @@ class _DepartmentCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
+              color: AccentToken.blue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(RadiusToken.sm),
             ),
             child: Center(
@@ -199,33 +195,33 @@ class _DepartmentCard extends StatelessWidget {
                     ? department.acronym.substring(0, 2).toUpperCase()
                     : department.name.substring(0, 2).toUpperCase(),
                 style: const TextStyle(
-                  color: Color(0xFF3B82F6),
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
+                  color: AccentToken.blue,
+                  fontWeight: .w800,
+                  fontSize: FontSizeToken.base,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: Spacing.md),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   department.name,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontWeight: .w600,
+                    fontSize: FontSizeToken.base,
                   ),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: Spacing.xxs),
                 Text(
                   'Est. ${department.establishedYear}',
                   style: TextStyle(
-                    color: isDark ? Colors.white54 : Colors.grey.shade600,
-                    fontSize: 12,
+                    color: context.colors.textMuted,
+                    fontSize: FontSizeToken.sm,
                   ),
                 ),
               ],

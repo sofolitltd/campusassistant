@@ -17,6 +17,21 @@ abstract class StudentRepository {
     int? limit,
     int? offset,
   });
+
+  /// Offline-first variant of [getStudents]: emits cached students
+  /// immediately if present, then emits the fresh network result once it
+  /// arrives (or an empty result if offline with no cache).
+  Stream<PaginatedStudents> watchStudents({
+    String? universityId,
+    String? departmentId,
+    String? batchId,
+    String? userId,
+    String? search,
+    String? bloodGroup,
+    int? limit,
+    int? offset,
+  });
+
   Future<Student?> getStudentByAcademicId(String studentId);
   Future<Student> createStudent(Student student);
   Future<Student> verifyCode(String code);

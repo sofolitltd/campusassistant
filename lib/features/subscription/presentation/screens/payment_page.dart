@@ -8,10 +8,14 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '/core/di.dart';
 import '/features/bkash/bkash_payment.dart';
+import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class PaymentPage extends ConsumerStatefulWidget {
   const PaymentPage({
@@ -19,11 +23,13 @@ class PaymentPage extends ConsumerStatefulWidget {
     required this.planId,
     required this.planTitle,
     required this.amount,
+    this.couponCode,
   });
 
   final String planId;
   final String planTitle;
   final String amount;
+  final String? couponCode;
 
   @override
   ConsumerState<PaymentPage> createState() => _PaymentPageState();
@@ -64,7 +70,12 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
       _statusMessage = 'Redirecting to bKash...';
     });
 
-    final result = await Bkash.payment(context, ref, planId: widget.planId);
+    final result = await Bkash.payment(
+      context,
+      ref,
+      planId: widget.planId,
+      couponCode: widget.couponCode,
+    );
     if (!mounted) return;
 
     switch (result.status) {
@@ -98,6 +109,15 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
 
   Future<void> _processWebCallback(String status, String paymentId) async {
     if (status != 'success') {
+      // Notify backend so the transaction shows "Cancelled" rather than
+      // dangling as "Pending" in the user's history.
+      try {
+        await ref
+            .read(apiClientProvider)
+            .post('/payments/bkash/cancel', data: {'payment_id': paymentId});
+      } catch (_) {
+        // Best-effort — the hourly sweeper will catch it.
+      }
       setState(() {
         _isProcessing = false;
         _isSuccess = false;
@@ -139,24 +159,24 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
       showSearchBar: false,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(Spacing.xxl),
           child: _isProcessing
               ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     const CupertinoActivityIndicator(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: Spacing.xl),
                     Text(
                       _statusMessage,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: FontSizeToken.lg,
+                        fontWeight: .w500,
                       ),
                     ),
                   ],
                 )
               : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     Icon(
                       _isSuccess
@@ -165,36 +185,40 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                                 ? LucideIcons.circleX
                                 : LucideIcons.circleAlert),
                       size: 80,
-                      color: _isSuccess ? Colors.green : Colors.red,
+                      color: _isSuccess
+                          ? context.colors.success
+                          : context.colors.danger,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: Spacing.xxl),
                     Text(
                       _statusMessage,
                       style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: _isSuccess ? Colors.green : Colors.black87,
+                        fontSize: FontSizeToken.display,
+                        fontWeight: .bold,
+                        color: _isSuccess
+                            ? context.colors.success
+                            : context.colors.text,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Spacing.md),
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(Spacing.lg),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(RadiusToken.md),
+                        color: context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
                       ),
                       child: Column(
                         children: [
                           Text(
                             'Plan: ${widget.planTitle}',
-                            style: const TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: FontSizeToken.xl),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: Spacing.xs),
                           Text(
                             'Amount: ${widget.amount} BDT',
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontSize: FontSizeToken.xl,
+                              fontWeight: .bold,
                             ),
                           ),
                         ],
@@ -205,9 +229,9 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                       ElevatedButton.icon(
                         onPressed: _startPaymentProcess,
                         icon: const Icon(LucideIcons.refreshCw),
-                        label: const Text('Try Again'),
+                        label: const Text('Try again'),
                         style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(200, 50),
+                          minimumSize: const Size(200, ControlToken.height),
                         ),
                       ),
                       const SizedBox(height: Spacing.lg),
@@ -215,9 +239,13 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                     ElevatedButton(
                       onPressed: () => context.goNamed(AppRoute.home.name),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isSuccess ? Colors.green : null,
-                        foregroundColor: _isSuccess ? Colors.white : null,
-                        minimumSize: const Size(200, 50),
+                        backgroundColor: _isSuccess
+                            ? context.colors.success
+                            : null,
+                        foregroundColor: _isSuccess
+                            ? context.colors.onSuccess
+                            : null,
+                        minimumSize: const Size(200, ControlToken.height),
                       ),
                       child: Text(
                         _isSuccess ? 'Go to Home' : 'Cancel & Return',

@@ -40,7 +40,7 @@
 //         ),
 //         child: SingleChildScrollView(
 //           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.stretch,
+//             crossAxisAlignment: .stretch,
 //             children: [
 //               //
 //               Padding(
@@ -77,7 +77,7 @@
 //                       Text(
 //                         uploader.get('name'),
 //                         style: Theme.of(context).textTheme.titleMedium!
-//                             .copyWith(fontWeight: FontWeight.bold),
+//                             .copyWith(fontWeight: .bold),
 //                       ),
 //
 //                       //
@@ -101,7 +101,7 @@
 //                           ),
 //                           child: Text(
 //                             profileData.information.batch!,
-//                             style: const TextStyle(fontWeight: FontWeight.bold),
+//                             style: const TextStyle(fontWeight: .bold),
 //                           ),
 //                         ),
 //                       ),
@@ -133,7 +133,7 @@
 //                   child: CachedNetworkImage(
 //                     height: 400,
 //                     width: MediaQuery.of(context).size.width,
-//                     fit: BoxFit.cover,
+//                     fit: .cover,
 //                     imageUrl: noticeModel.imageUrl[0],
 //                     fadeInDuration: const Duration(milliseconds: 500),
 //                     imageBuilder: (context, imageProvider) => GestureDetector(
@@ -153,7 +153,7 @@
 //                         decoration: BoxDecoration(
 //                           image: DecorationImage(
 //                             image: imageProvider,
-//                             // fit: BoxFit.cover,
+//                             // fit: .cover,
 //                           ),
 //                         ),
 //                       ),
@@ -179,7 +179,7 @@
 //               Padding(
 //                 padding: const EdgeInsets.symmetric(horizontal: 16),
 //                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   mainAxisAlignment: .spaceBetween,
 //                   children: [
 //                     // seen
 //                     GestureDetector(
@@ -212,7 +212,7 @@
 //                         );
 //                       },
 //                       child: const Row(
-//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         mainAxisAlignment: .center,
 //                         children: [
 //                           Icon(Icons.keyboard_command_key, size: 16),
 //                           Text('Comment'),

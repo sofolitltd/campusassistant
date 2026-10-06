@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class Headline extends StatelessWidget {
   final String title;
@@ -10,14 +11,19 @@ class Headline extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.xs,
+        Spacing.xs,
+        Spacing.xs,
+        Spacing.xs,
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             title.toUpperCase(),
             style: theme.textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               letterSpacing: 1,
               color: theme.colorScheme.onSurface,
             ),

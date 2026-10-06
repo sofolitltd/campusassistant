@@ -1,14 +1,11 @@
 enum CareerReminderStatus { pending, sent, cancelled }
 
 CareerReminderStatus careerReminderStatusFromString(String? value) {
-  switch (value) {
-    case 'sent':
-      return CareerReminderStatus.sent;
-    case 'cancelled':
-      return CareerReminderStatus.cancelled;
-    default:
-      return CareerReminderStatus.pending;
-  }
+  return switch (value) {
+    'sent' => CareerReminderStatus.sent,
+    'cancelled' => CareerReminderStatus.cancelled,
+    _ => CareerReminderStatus.pending,
+  };
 }
 
 class CareerReminder {
@@ -33,7 +30,8 @@ class CareerReminder {
       id: json['id'] as String? ?? '',
       jobId: json['job_id'] as String?,
       title: json['title'] as String? ?? '',
-      remindAt: DateTime.tryParse(json['remind_at']?.toString() ?? '') ??
+      remindAt:
+          DateTime.tryParse(json['remind_at']?.toString() ?? '') ??
           DateTime.now(),
       status: careerReminderStatusFromString(json['status'] as String?),
       sentAt: json['sent_at'] != null

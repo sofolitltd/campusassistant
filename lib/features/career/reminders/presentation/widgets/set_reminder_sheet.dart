@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/career_reminder_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 /// Bottom sheet to create a reminder — title + date/time picker, optionally
 /// pre-filled (e.g. "8 hours before a circular's deadline") and optionally
@@ -39,7 +40,11 @@ class _SetReminderForm extends ConsumerStatefulWidget {
   final String suggestedTitle;
   final DateTime? suggestedTime;
 
-  const _SetReminderForm({this.jobId, required this.suggestedTitle, this.suggestedTime});
+  const _SetReminderForm({
+    this.jobId,
+    required this.suggestedTitle,
+    this.suggestedTime,
+  });
 
   @override
   ConsumerState<_SetReminderForm> createState() => _SetReminderFormState();
@@ -80,7 +85,13 @@ class _SetReminderFormState extends ConsumerState<_SetReminderForm> {
     );
     if (time == null) return;
     setState(() {
-      _remindAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      _remindAt = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
     });
   }
 
@@ -94,7 +105,9 @@ class _SetReminderFormState extends ConsumerState<_SetReminderForm> {
     }
     setState(() => _submitting = true);
     try {
-      await ref.read(careerReminderActionsProvider).createReminder(
+      await ref
+          .read(careerReminderActionsProvider)
+          .createReminder(
             jobId: widget.jobId,
             title: _titleController.text.trim(),
             remindAt: _remindAt!,
@@ -102,9 +115,9 @@ class _SetReminderFormState extends ConsumerState<_SetReminderForm> {
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to set reminder: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to set reminder: $e')));
         setState(() => _submitting = false);
       }
     }
@@ -113,30 +126,38 @@ class _SetReminderFormState extends ConsumerState<_SetReminderForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
       children: [
         Text('Set a reminder', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 12),
+        const SizedBox(height: Spacing.md),
         TextField(
           controller: _titleController,
-          decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder()),
+          decoration: const InputDecoration(labelText: 'Title'),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Spacing.md),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text(_remindAt == null ? 'Pick date & time' : _formatDateTime(_remindAt!)),
+          title: Text(
+            _remindAt == null
+                ? 'Pick date & time'
+                : _formatDateTime(_remindAt!),
+          ),
           trailing: const Icon(Icons.edit_calendar_outlined),
           onTap: _pickDateTime,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Spacing.md),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _submitting ? null : _submit,
             child: _submitting
-                ? const SizedBox(height: 18, width: 18, child: CupertinoActivityIndicator())
-                : const Text('Save Reminder'),
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CupertinoActivityIndicator(),
+                  )
+                : const Text('Save reminder'),
           ),
         ),
       ],

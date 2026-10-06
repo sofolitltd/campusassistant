@@ -15,6 +15,8 @@ import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
 import '/utils/constants.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 
 class CourseVideos extends ConsumerStatefulWidget {
   const CourseVideos({
@@ -105,7 +107,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
       batch: isAllBatches(effectiveBatch) ? null : effectiveBatch?.name,
       batchId: isAllBatches(effectiveBatch) ? null : effectiveBatch?.id,
       lessonNo: null,
-      uploaderUid: null,
+      createdById: null,
       status: null,
       limit: kDefaultPageSize,
     );
@@ -119,7 +121,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
         batch: params.batch,
         batchId: params.batchId,
         lessonNo: params.lessonNo,
-        uploaderUid: params.uploaderUid,
+        createdById: params.createdById,
         status: params.status,
         limit: params.limit,
       ),
@@ -159,13 +161,16 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
             physics: const BouncingScrollPhysics(),
             itemCount: resources.length,
             separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(height: 12),
-            padding: const EdgeInsets.all(16),
+                const SizedBox(height: Spacing.md),
+            padding: const EdgeInsets.all(Spacing.lg),
             itemBuilder: (context, index) {
               final resource = resources[index];
               final videoId =
-                  YoutubePlayer.convertUrlToId(resource.fileUrl) ?? '';
-              final thumb = YoutubePlayer.getThumbnail(videoId: videoId);
+                  YoutubePlayerController.convertUrlToId(resource.fileUrl) ??
+                  '';
+              final thumb = YoutubePlayerController.getThumbnail(
+                videoId: videoId,
+              );
               final title = resource.title;
               final subtitle = resource.description;
               final chapterNo = resource.lessonNo.toString();
@@ -174,13 +179,10 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                 decoration: BoxDecoration(
                   color: theme.cardColor,
                   borderRadius: BorderRadius.circular(RadiusToken.md),
-                  border: Border.all(
-                    color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
-                    width: 1,
-                  ),
+                  border: Border.all(color: context.colors.border, width: 1),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: context.colors.shadow,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -210,30 +212,28 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                             width: 120,
                             child: ClipRRect(
                               borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                bottomLeft: Radius.circular(8),
+                                topLeft: Radius.circular(RadiusToken.md),
+                                bottomLeft: Radius.circular(RadiusToken.md),
                               ),
                               child: Image.network(
                                 thumb,
-                                fit: BoxFit.cover,
+                                fit: .cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
                                       color: isDark
                                           ? theme.colorScheme.surface
                                                 .withValues(alpha: 0.5)
-                                          : Colors.grey.shade100,
+                                          : context.colors.surfaceAlt,
                                       child: Icon(
                                         LucideIcons.video,
-                                        color: isDark
-                                            ? Colors.white38
-                                            : Colors.grey,
+                                        color: context.colors.textSubtle,
                                       ),
                                     ),
                               ),
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(Spacing.xs),
                             decoration: const BoxDecoration(
                               color: Colors.black54,
                               shape: BoxShape.circle,
@@ -250,47 +250,45 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                         child: Container(
                           height: 90,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                            horizontal: Spacing.md,
+                            vertical: Spacing.sm,
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: .start,
+                            mainAxisAlignment: .spaceBetween,
                             children: [
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: .start,
                                 children: [
                                   Text(
                                     '$chapterNo. $title',
                                     maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: .ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
                                         .copyWith(
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: .bold,
                                           height: 1.2,
                                         ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: Spacing.xs),
                                   Text(
                                     subtitle,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: .ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelSmall!
                                         .copyWith(
-                                          color: isDark
-                                              ? Colors.white70
-                                              : Colors.grey,
+                                          color: context.colors.textMuted,
                                         ),
                                   ),
                                 ],
                               ),
                               if (canEdit)
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisAlignment: .end,
                                   children: [
                                     GestureDetector(
                                       onTap: () {
@@ -305,13 +303,13 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                                           extra: resource,
                                         );
                                       },
-                                      child: const Icon(
+                                      child: Icon(
                                         LucideIcons.pencil,
-                                        color: Colors.blue,
+                                        color: context.colors.info,
                                         size: 16,
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: Spacing.md),
                                     GestureDetector(
                                       onTap: () async {
                                         final confirm = await showDialog<bool>(
@@ -334,10 +332,11 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                                                   context,
                                                   true,
                                                 ),
-                                                child: const Text(
+                                                child: Text(
                                                   'Delete',
                                                   style: TextStyle(
-                                                    color: Colors.red,
+                                                    color:
+                                                        context.colors.danger,
                                                   ),
                                                 ),
                                               ),
@@ -348,9 +347,9 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                                           deleteVideo(resource.id);
                                         }
                                       },
-                                      child: const Icon(
+                                      child: Icon(
                                         LucideIcons.trash2,
-                                        color: Colors.red,
+                                        color: context.colors.danger,
                                         size: 16,
                                       ),
                                     ),
@@ -370,27 +369,6 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, stack) =>
             const Center(child: Text('Error loading videos.')),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push(
-            Uri(
-              path: AppRoute.addResource.toPath({
-                'universityId': params.universityId,
-                'departmentId': params.departmentId,
-                'courseCode': widget.courseModel.courseCode,
-              }),
-              queryParameters: {
-                'type': 'video',
-                'lessonNo': '1',
-                if (selectedBatch != null)
-                  'initialBatchName': selectedBatch.name,
-              },
-            ).toString(),
-          );
-        },
-        backgroundColor: theme.colorScheme.primary,
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

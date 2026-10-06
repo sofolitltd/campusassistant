@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AlumniTabControl extends StatelessWidget {
   final TabController tabController;
@@ -15,33 +19,33 @@ class AlumniTabControl extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.sm,
+        Spacing.lg,
+        Spacing.md,
+      ),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(Spacing.sm),
         decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
-            width: 1,
-          ),
+          color: context.colors.surfaceAlt,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(color: context.colors.border, width: 1),
         ),
         child: AnimatedBuilder(
           animation: tabController.animation!,
           builder: (context, child) {
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: .horizontal,
               physics: const BouncingScrollPhysics(),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 spacing: 8,
                 children: [
-                  _buildSmoothTab('Batch', 0, isDark),
-                  _buildSmoothTab('Department', 1, isDark),
-                  _buildSmoothTab('University', 2, isDark),
-                  _buildSmoothTab('National', 3, isDark),
+                  _buildSmoothTab(context, 'Batch', 0, isDark),
+                  _buildSmoothTab(context, 'Department', 1, isDark),
+                  _buildSmoothTab(context, 'University', 2, isDark),
+                  _buildSmoothTab(context, 'National', 3, isDark),
                 ],
               ),
             );
@@ -51,19 +55,22 @@ class AlumniTabControl extends StatelessWidget {
     );
   }
 
-  Widget _buildSmoothTab(String label, int index, bool isDark) {
+  Widget _buildSmoothTab(
+    BuildContext context,
+    String label,
+    int index,
+    bool isDark,
+  ) {
     final double animationValue = tabController.animation!.value;
     final double progress = (1.0 - (animationValue - index).abs()).clamp(
       0.0,
       1.0,
     );
 
-    final Color activeColor = isDark ? Colors.white : Colors.black;
-    final Color inactiveColor = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.white;
-    final Color activeTextColor = isDark ? Colors.black : Colors.white;
-    final Color inactiveTextColor = Colors.grey.shade600;
+    final Color activeColor = context.colors.text;
+    final Color inactiveColor = context.colors.onPrimary;
+    final Color activeTextColor = context.colors.onPrimary;
+    final Color inactiveTextColor = context.colors.textMuted;
 
     return GestureDetector(
       onTap: () {
@@ -71,15 +78,15 @@ class AlumniTabControl extends StatelessWidget {
         onTabChanged(index);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
         height: 32,
         decoration: BoxDecoration(
           color: Color.lerp(inactiveColor, activeColor, progress),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
           border: Border.all(
             color: Color.lerp(
-              isDark ? Colors.white24 : Colors.grey.shade300,
-              isDark ? Colors.white24 : Colors.grey.shade300,
+              context.colors.borderStrong,
+              context.colors.borderStrong,
               progress,
             )!,
             width: 1,
@@ -100,7 +107,7 @@ class AlumniTabControl extends StatelessWidget {
             style: TextStyle(
               color: Color.lerp(inactiveTextColor, activeTextColor, progress),
               fontWeight: progress > 0.5 ? FontWeight.bold : FontWeight.w600,
-              fontSize: 12,
+              fontSize: FontSizeToken.sm,
             ),
           ),
         ),

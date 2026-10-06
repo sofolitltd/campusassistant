@@ -2,7 +2,12 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+
+import '/core/theme/app_colors.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// A premium frosted-glass floating search bar with clear button.
 ///
@@ -74,55 +79,52 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cs = Theme.of(context).colorScheme;
+    final colors = context.colors;
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(RadiusToken.xxl),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           height: 44,
           decoration: BoxDecoration(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.7)
-                : Colors.white.withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade300,
-              width: 1,
-            ),
+            color: colors.surface.withValues(alpha: 0.85),
+            borderRadius: BorderRadius.circular(RadiusToken.xxl),
+            border: Border.all(color: colors.border, width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: colors.shadow,
                 blurRadius: 15,
                 offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: [
               Expanded(
                 child: TextField(
                   controller: _controller,
                   onChanged: _onSearchChanged,
                   style: TextStyle(
-                    fontSize: 13,
-                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: FontSizeToken.md,
+                    color: colors.text,
                   ),
                   decoration: InputDecoration(
                     hintText: widget.hintText,
                     hintStyle: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
+                      color: colors.textSubtle,
+                      fontSize: FontSizeToken.sm,
                     ),
                     prefixIcon: Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 8),
+                      padding: const EdgeInsets.only(
+                        left: Spacing.md,
+                        right: Spacing.sm,
+                      ),
                       child: Icon(
                         LucideIcons.search,
                         size: 14,
-                        color: cs.onSurfaceVariant,
+                        color: colors.textMuted,
                       ),
                     ),
                     prefixIconConstraints: const BoxConstraints(minWidth: 32),
@@ -131,12 +133,12 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
                             onTap: _onClear,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
+                                horizontal: Spacing.md,
                               ),
                               child: Icon(
                                 LucideIcons.circleX,
                                 size: 14,
-                                color: Colors.grey.shade400,
+                                color: colors.textSubtle,
                               ),
                             ),
                           )
@@ -144,16 +146,14 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
                     suffixIconConstraints: const BoxConstraints(maxHeight: 28),
                     border: InputBorder.none,
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: Spacing.md,
+                    ),
                   ),
                 ),
               ),
               if (widget.trailing != null) ...[
-                Container(
-                  height: 18,
-                  width: 1,
-                  color: isDark ? Colors.white24 : Colors.grey.shade300,
-                ),
+                Container(height: 18, width: 1, color: colors.border),
                 widget.trailing!,
               ],
             ],

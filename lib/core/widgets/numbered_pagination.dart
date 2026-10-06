@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+
 /// Page-number pagination bar (prev/next + numbered page buttons), matching
 /// the style used on the All Students page.
 class NumberedPagination extends StatelessWidget {
@@ -22,7 +27,7 @@ class NumberedPagination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.colors;
 
     List<int> pageNumbers;
     if (totalPages <= 5) {
@@ -48,51 +53,47 @@ class NumberedPagination extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.sm,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
-          ),
-        ),
+        color: colors.surfaceAlt,
+        border: Border(top: BorderSide(color: colors.border)),
       ),
       child: Column(
         children: [
           Text(
             'Showing $startIndex-$endIndex of $totalItems',
             style: TextStyle(
-              fontSize: 12,
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              fontSize: FontSizeToken.sm,
+              color: colors.textMuted,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               _PageButton(
                 icon: Icons.chevron_left,
                 isEnabled: currentPage > 1,
-                isDark: isDark,
                 onTap: () => onPageChanged(currentPage - 1),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: Spacing.xs),
               ...pageNumbers.map(
                 (page) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.xxs),
                   child: _PageNumberButton(
                     page: page,
                     isSelected: page == currentPage,
-                    isDark: isDark,
                     onTap: () => onPageChanged(page),
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: Spacing.xs),
               _PageButton(
                 icon: Icons.chevron_right,
                 isEnabled: currentPage < totalPages,
-                isDark: isDark,
                 onTap: () => onPageChanged(currentPage + 1),
               ),
             ],
@@ -106,37 +107,32 @@ class NumberedPagination extends StatelessWidget {
 class _PageButton extends StatelessWidget {
   final IconData icon;
   final bool isEnabled;
-  final bool isDark;
   final VoidCallback onTap;
 
   const _PageButton({
     required this.icon,
     required this.isEnabled,
-    required this.isDark,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return InkWell(
       onTap: isEnabled ? onTap : null,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: Container(
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-          ),
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: Border.all(color: colors.border),
         ),
         child: Icon(
           icon,
           size: 20,
-          color: isEnabled
-              ? (isDark ? Colors.white : Colors.black87)
-              : Colors.grey.shade400,
+          color: isEnabled ? colors.text : colors.textSubtle,
         ),
       ),
     );
@@ -146,44 +142,37 @@ class _PageButton extends StatelessWidget {
 class _PageNumberButton extends StatelessWidget {
   final int page;
   final bool isSelected;
-  final bool isDark;
   final VoidCallback onTap;
 
   const _PageNumberButton({
     required this.page,
     required this.isSelected,
-    required this.isDark,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(RadiusToken.md),
       child: Container(
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark ? Colors.blue.shade700 : Colors.blue.shade600)
-              : (isDark ? Colors.grey.shade800 : Colors.white),
-          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? colors.primary : colors.surface,
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
-            color: isSelected
-                ? Colors.blue.shade600
-                : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+            color: isSelected ? colors.primary : colors.border,
           ),
         ),
         child: Center(
           child: Text(
             '$page',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: FontSizeToken.md,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected
-                  ? Colors.white
-                  : (isDark ? Colors.white70 : Colors.black87),
+              color: isSelected ? colors.onPrimary : colors.text,
             ),
           ),
         ),

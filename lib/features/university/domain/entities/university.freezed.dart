@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'university.dart';
@@ -9,6 +9,7 @@ part of 'university.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $UniversityCopyWith<University> get copyWith => _$UniversityCopyWithImpl<Univers
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is University&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.acronym, acronym) || other.acronym == acronym)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.establishedYear, establishedYear) || other.establishedYear == establishedYear)&&(identical(other.address, address) || other.address == address)&&(identical(other.about, about) || other.about == about)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.websiteUrl, websiteUrl) || other.websiteUrl == websiteUrl)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.totalFaculties, totalFaculties) || other.totalFaculties == totalFaculties)&&(identical(other.totalDepartments, totalDepartments) || other.totalDepartments == totalDepartments)&&(identical(other.totalHalls, totalHalls) || other.totalHalls == totalHalls)&&(identical(other.campusArea, campusArea) || other.campusArea == campusArea));
+  final _this = this as University;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is University&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.acronym, _this.acronym) || other.acronym == _this.acronym)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.establishedYear, _this.establishedYear) || other.establishedYear == _this.establishedYear)&&(identical(other.address, _this.address) || other.address == _this.address)&&(identical(other.about, _this.about) || other.about == _this.about)&&(identical(other.latitude, _this.latitude) || other.latitude == _this.latitude)&&(identical(other.longitude, _this.longitude) || other.longitude == _this.longitude)&&(identical(other.websiteUrl, _this.websiteUrl) || other.websiteUrl == _this.websiteUrl)&&(identical(other.logoUrl, _this.logoUrl) || other.logoUrl == _this.logoUrl)&&const DeepCollectionEquality().equals(other.images, _this.images)&&(identical(other.totalFaculties, _this.totalFaculties) || other.totalFaculties == _this.totalFaculties)&&(identical(other.totalDepartments, _this.totalDepartments) || other.totalDepartments == _this.totalDepartments)&&(identical(other.totalHalls, _this.totalHalls) || other.totalHalls == _this.totalHalls)&&(identical(other.campusArea, _this.campusArea) || other.campusArea == _this.campusArea));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,acronym,slug,establishedYear,address,about,latitude,longitude,websiteUrl,logoUrl,const DeepCollectionEquality().hash(images),totalFaculties,totalDepartments,totalHalls,campusArea);
+int get hashCode {
+  final _this = this as University;
+  return Object.hash(runtimeType,_this.id,_this.name,_this.acronym,_this.slug,_this.establishedYear,_this.address,_this.about,_this.latitude,_this.longitude,_this.websiteUrl,_this.logoUrl,const DeepCollectionEquality().hash(_this.images),_this.totalFaculties,_this.totalDepartments,_this.totalHalls,_this.campusArea);
+}
 
 @override
 String toString() {
-  return 'University(id: $id, name: $name, acronym: $acronym, slug: $slug, establishedYear: $establishedYear, address: $address, about: $about, latitude: $latitude, longitude: $longitude, websiteUrl: $websiteUrl, logoUrl: $logoUrl, images: $images, totalFaculties: $totalFaculties, totalDepartments: $totalDepartments, totalHalls: $totalHalls, campusArea: $campusArea)';
+  final _this = this as University;
+  return 'University(id: ${_this.id}, name: ${_this.name}, acronym: ${_this.acronym}, slug: ${_this.slug}, establishedYear: ${_this.establishedYear}, address: ${_this.address}, about: ${_this.about}, latitude: ${_this.latitude}, longitude: ${_this.longitude}, websiteUrl: ${_this.websiteUrl}, logoUrl: ${_this.logoUrl}, images: ${_this.images}, totalFaculties: ${_this.totalFaculties}, totalDepartments: ${_this.totalDepartments}, totalHalls: ${_this.totalHalls}, campusArea: ${_this.campusArea})';
 }
 
 
@@ -63,7 +69,7 @@ class _$UniversityCopyWithImpl<$Res>
 /// Create a copy of University
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? acronym = null,Object? slug = null,Object? establishedYear = null,Object? address = null,Object? about = null,Object? latitude = null,Object? longitude = null,Object? websiteUrl = null,Object? logoUrl = null,Object? images = null,Object? totalFaculties = null,Object? totalDepartments = null,Object? totalHalls = null,Object? campusArea = null,}) {
-  return _then(_self.copyWith(
+  return _then(University(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,acronym: null == acronym ? _self.acronym : acronym // ignore: cast_nullable_to_non_nullable
@@ -221,7 +227,7 @@ return $default(_that.id,_that.name,_that.acronym,_that.slug,_that.establishedYe
 
 
 class _University implements University {
-  const _University({required this.id, required this.name, required this.acronym, required this.slug, required this.establishedYear, required this.address, required this.about, required this.latitude, required this.longitude, required this.websiteUrl, this.logoUrl = '', final  List<String> images = const [], this.totalFaculties = '0', this.totalDepartments = '0', this.totalHalls = '0', this.campusArea = ''}): _images = images;
+  const _University({required this.id, required this.name, required this.acronym, required this.slug, required this.establishedYear, required this.address, required this.about, required this.latitude, required this.longitude, required this.websiteUrl, this.logoUrl = '',  List<String> images = const [], this.totalFaculties = '0', this.totalDepartments = '0', this.totalHalls = '0', this.campusArea = ''}): _images = images;
   
 
 @override final  String id;
@@ -257,16 +263,18 @@ _$UniversityCopyWith<_University> get copyWith => __$UniversityCopyWithImpl<_Uni
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _University&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.acronym, acronym) || other.acronym == acronym)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.establishedYear, establishedYear) || other.establishedYear == establishedYear)&&(identical(other.address, address) || other.address == address)&&(identical(other.about, about) || other.about == about)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.websiteUrl, websiteUrl) || other.websiteUrl == websiteUrl)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.totalFaculties, totalFaculties) || other.totalFaculties == totalFaculties)&&(identical(other.totalDepartments, totalDepartments) || other.totalDepartments == totalDepartments)&&(identical(other.totalHalls, totalHalls) || other.totalHalls == totalHalls)&&(identical(other.campusArea, campusArea) || other.campusArea == campusArea));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _University&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.acronym, acronym) || other.acronym == acronym)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.establishedYear, establishedYear) || other.establishedYear == establishedYear)&&(identical(other.address, address) || other.address == address)&&(identical(other.about, about) || other.about == about)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.websiteUrl, websiteUrl) || other.websiteUrl == websiteUrl)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&const DeepCollectionEquality().equals(other.images, _images)&&(identical(other.totalFaculties, totalFaculties) || other.totalFaculties == totalFaculties)&&(identical(other.totalDepartments, totalDepartments) || other.totalDepartments == totalDepartments)&&(identical(other.totalHalls, totalHalls) || other.totalHalls == totalHalls)&&(identical(other.campusArea, campusArea) || other.campusArea == campusArea));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,acronym,slug,establishedYear,address,about,latitude,longitude,websiteUrl,logoUrl,const DeepCollectionEquality().hash(_images),totalFaculties,totalDepartments,totalHalls,campusArea);
+int get hashCode {
+    return Object.hash(runtimeType,id,name,acronym,slug,establishedYear,address,about,latitude,longitude,websiteUrl,logoUrl,const DeepCollectionEquality().hash(_images),totalFaculties,totalDepartments,totalHalls,campusArea);
+}
 
 @override
 String toString() {
-  return 'University(id: $id, name: $name, acronym: $acronym, slug: $slug, establishedYear: $establishedYear, address: $address, about: $about, latitude: $latitude, longitude: $longitude, websiteUrl: $websiteUrl, logoUrl: $logoUrl, images: $images, totalFaculties: $totalFaculties, totalDepartments: $totalDepartments, totalHalls: $totalHalls, campusArea: $campusArea)';
+    return 'University(id: $id, name: $name, acronym: $acronym, slug: $slug, establishedYear: $establishedYear, address: $address, about: $about, latitude: $latitude, longitude: $longitude, websiteUrl: $websiteUrl, logoUrl: $logoUrl, images: $images, totalFaculties: $totalFaculties, totalDepartments: $totalDepartments, totalHalls: $totalHalls, campusArea: $campusArea)';
 }
 
 

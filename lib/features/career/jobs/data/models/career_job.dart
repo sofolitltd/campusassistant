@@ -9,30 +9,23 @@ enum CareerJobStatus { pending, applied, completed }
 enum CareerJobScope { private_, batch, department, university }
 
 CareerJobScope careerJobScopeFromString(String? value) {
-  switch (value) {
-    case 'batch':
-      return CareerJobScope.batch;
-    case 'department':
-      return CareerJobScope.department;
-    case 'university':
-      return CareerJobScope.university;
-    default:
-      return CareerJobScope.private_;
-  }
+  return switch (value) {
+    'batch' => CareerJobScope.batch,
+    'department' => CareerJobScope.department,
+    'university' => CareerJobScope.university,
+    _ => CareerJobScope.private_,
+  };
 }
 
 String careerJobScopeToString(CareerJobScope scope) =>
     scope == CareerJobScope.private_ ? 'private' : scope.name;
 
 CareerJobStatus careerJobStatusFromString(String? value) {
-  switch (value) {
-    case 'applied':
-      return CareerJobStatus.applied;
-    case 'completed':
-      return CareerJobStatus.completed;
-    default:
-      return CareerJobStatus.pending;
-  }
+  return switch (value) {
+    'applied' => CareerJobStatus.applied,
+    'completed' => CareerJobStatus.completed,
+    _ => CareerJobStatus.pending,
+  };
 }
 
 String careerJobStatusToString(CareerJobStatus status) => status.name;
@@ -88,7 +81,9 @@ class CareerJob {
       title: json['title'] as String? ?? '',
       organization: json['organization'] as String? ?? '',
       categoryId: json['category_id'] as String?,
-      category: categoryJson != null && (categoryJson['id'] as String?)?.isNotEmpty == true
+      category:
+          categoryJson != null &&
+              (categoryJson['id'] as String?)?.isNotEmpty == true
           ? CircularCategory.fromJson(categoryJson)
           : null,
       postLink: json['post_link'] as String? ?? '',
@@ -102,10 +97,13 @@ class CareerJob {
           : null,
       status: careerJobStatusFromString(json['status'] as String?),
       notes: json['notes'] as String? ?? '',
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
       scope: careerJobScopeFromString(json['scope'] as String?),
-      poster: posterJson != null && (posterJson['id'] as String?)?.isNotEmpty == true
+      poster:
+          posterJson != null &&
+              (posterJson['id'] as String?)?.isNotEmpty == true
           ? CareerUser.fromJson(posterJson)
           : null,
     );
@@ -122,8 +120,10 @@ class CareerJob {
       // Go's time.Time JSON unmarshal requires an RFC3339 offset/Z suffix;
       // a bare local DateTime.toIso8601String() (e.g. "...T00:00:00.000")
       // has neither and fails to parse server-side, so always send UTC.
-      if (publishDate != null) 'publish_date': publishDate!.toUtc().toIso8601String(),
-      if (deadlineDate != null) 'deadline_date': deadlineDate!.toUtc().toIso8601String(),
+      if (publishDate != null)
+        'publish_date': publishDate!.toUtc().toIso8601String(),
+      if (deadlineDate != null)
+        'deadline_date': deadlineDate!.toUtc().toIso8601String(),
       'notes': notes,
       'scope': careerJobScopeToString(scope),
     };

@@ -18,6 +18,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../screens/full_media_viewer.dart';
 import 'app_pdf_viewer.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// In-memory cache for rendered PDF thumbnails so scrolling back doesn't re-download.
 final Map<String, Uint8List> _pdfThumbnailCache = {};
@@ -45,14 +46,20 @@ class _PdfThumbnailWidgetState extends State<PdfThumbnailWidget> {
     // Check cache first
     final cached = _pdfThumbnailCache[widget.url];
     if (cached != null) {
-      if (mounted) setState(() { _bytes = cached; _isLoading = false; });
+      if (mounted) {
+        setState(() {
+          _bytes = cached;
+          _isLoading = false;
+        });
+      }
       return;
     }
 
     PdfDocument? document;
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final fileName = "${widget.url.split('/').last.split('?').first}_thumb.pdf";
+      final fileName =
+          "${widget.url.split('/').last.split('?').first}_thumb.pdf";
       final file = File('${dir.path}/$fileName');
 
       if (!await file.exists()) {
@@ -96,7 +103,7 @@ class _PdfThumbnailWidgetState extends State<PdfThumbnailWidget> {
       );
     }
     if (_bytes != null) {
-      return Image.memory(_bytes!, fit: BoxFit.cover);
+      return Image.memory(_bytes!, fit: .cover);
     }
     return Container(
       color: cs.surfaceContainerHighest,
@@ -202,7 +209,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                               child: InteractiveViewer(
                                 child: CachedNetworkImage(
                                   imageUrl: _resolveUrl(url),
-                                  fit: BoxFit.contain,
+                                  fit: .contain,
                                   placeholder: (c, u) => const Center(
                                     child: CupertinoActivityIndicator(),
                                   ),
@@ -225,10 +232,12 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: cs.errorContainer,
-                                  borderRadius: RadiusToken.circular(RadiusToken.xs),
+                                  borderRadius: RadiusToken.circular(
+                                    RadiusToken.xs,
+                                  ),
                                 ),
                                 child: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisSize: .min,
                                   children: [
                                     Icon(
                                       LucideIcons.fileText,
@@ -239,8 +248,8 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                                     Text(
                                       'PDF',
                                       style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: FontSizeToken.xs,
+                                        fontWeight: .bold,
                                         color: cs.error,
                                       ),
                                     ),
@@ -253,8 +262,12 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                             right: Spacing.sm,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: cs.surfaceContainerHighest.withValues(alpha: 0.85),
-                                borderRadius: RadiusToken.circular(RadiusToken.full),
+                                color: cs.surfaceContainerHighest.withValues(
+                                  alpha: 0.85,
+                                ),
+                                borderRadius: RadiusToken.circular(
+                                  RadiusToken.full,
+                                ),
                               ),
                               child: IconButton(
                                 icon: Icon(
@@ -279,12 +292,14 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                   left: 0,
                   right: 0,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: List.generate(
                       widget.attachmentUrls.length,
                       (i) => AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: Spacing.xs,
+                        ),
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
@@ -310,7 +325,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
             height: 72,
             margin: const EdgeInsets.only(top: Spacing.sm),
             child: ListView.builder(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: .horizontal,
               padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
               itemCount: widget.attachmentUrls.length,
               itemBuilder: (context, i) {
@@ -337,7 +352,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                         width: widget.imageIndex == i ? 2 : 1,
                       ),
                     ),
-                    clipBehavior: Clip.antiAlias,
+                    clipBehavior: .antiAlias,
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
@@ -346,7 +361,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                         else
                           CachedNetworkImage(
                             imageUrl: _resolveUrl(url),
-                            fit: BoxFit.cover,
+                            fit: .cover,
                             placeholder: (c, u) =>
                                 Container(color: cs.surfaceContainerHighest),
                           ),
@@ -355,7 +370,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                             top: 2,
                             right: 2,
                             child: Container(
-                              padding: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.all(Spacing.xxs),
                               decoration: BoxDecoration(
                                 color: cs.errorContainer,
                                 borderRadius: RadiusToken.circular(2),
@@ -400,9 +415,9 @@ class _JobImageGalleryState extends State<JobImageGallery> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Download error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Download error: $e')));
       }
     }
   }

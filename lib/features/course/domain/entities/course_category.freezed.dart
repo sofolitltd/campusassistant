@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'course_category.dart';
@@ -9,6 +9,7 @@ part of 'course_category.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $CourseCategoryCopyWith<CourseCategory> get copyWith => _$CourseCategoryCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CourseCategory&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.order, order) || other.order == order)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId));
+  final _this = this as CourseCategory;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CourseCategory&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.order, _this.order) || other.order == _this.order)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,order,departmentId,universityId);
+int get hashCode {
+  final _this = this as CourseCategory;
+  return Object.hash(runtimeType,_this.id,_this.name,_this.order,_this.departmentId,_this.universityId);
+}
 
 @override
 String toString() {
-  return 'CourseCategory(id: $id, name: $name, order: $order, departmentId: $departmentId, universityId: $universityId)';
+  final _this = this as CourseCategory;
+  return 'CourseCategory(id: ${_this.id}, name: ${_this.name}, order: ${_this.order}, departmentId: ${_this.departmentId}, universityId: ${_this.universityId})';
 }
 
 
@@ -63,7 +69,7 @@ class _$CourseCategoryCopyWithImpl<$Res>
 /// Create a copy of CourseCategory
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? order = null,Object? departmentId = null,Object? universityId = null,}) {
-  return _then(_self.copyWith(
+  return _then(CourseCategory(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
@@ -229,16 +235,18 @@ _$CourseCategoryCopyWith<_CourseCategory> get copyWith => __$CourseCategoryCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CourseCategory&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.order, order) || other.order == order)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CourseCategory&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.order, order) || other.order == order)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,order,departmentId,universityId);
+int get hashCode {
+    return Object.hash(runtimeType,id,name,order,departmentId,universityId);
+}
 
 @override
 String toString() {
-  return 'CourseCategory(id: $id, name: $name, order: $order, departmentId: $departmentId, universityId: $universityId)';
+    return 'CourseCategory(id: $id, name: $name, order: $order, departmentId: $departmentId, universityId: $universityId)';
 }
 
 

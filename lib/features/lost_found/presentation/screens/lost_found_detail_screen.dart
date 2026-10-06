@@ -12,6 +12,9 @@ import '../../data/models/lost_found_item.dart';
 import '../providers/lost_found_provider.dart';
 import '../widgets/claim_bottom_sheet.dart';
 import '../widgets/report_bottom_sheet.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class LostFoundDetailScreen extends ConsumerWidget {
   final String itemId;
@@ -27,108 +30,139 @@ class LostFoundDetailScreen extends ConsumerWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Item Details'),
-        actions: [
-          itemAsync.maybeWhen(
-            data: (item) => currentUser != null && currentUser.id != item.posterId
-                ? IconButton(
-                    icon: const Icon(Icons.flag_outlined),
-                    tooltip: 'Report',
-                    onPressed: () => showReportBottomSheet(context, ref, itemId),
-                  )
-                : const SizedBox.shrink(),
-            orElse: () => const SizedBox.shrink(),
+          appBar: AppBar(
+            title: const Text('Item Details'),
+            actions: [
+              itemAsync.maybeWhen(
+                data: (item) =>
+                    currentUser != null && currentUser.id != item.posterId
+                    ? IconButton(
+                        icon: const Icon(Icons.flag_outlined),
+                        tooltip: 'Report',
+                        onPressed: () =>
+                            showReportBottomSheet(context, ref, itemId),
+                      )
+                    : const SizedBox.shrink(),
+                orElse: () => const SizedBox.shrink(),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: itemAsync.when(
-        data: (item) {
-          final isOwner = currentUser != null && currentUser.id == item.posterId;
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (item.imageUrls.isNotEmpty)
-                  AspectRatio(
-                    aspectRatio: 16 / 10,
-                    child: PageView(
-                      children: item.imageUrls
-                          .map((url) => CachedNetworkImage(
-                                imageUrl: ApiEndpoints.resolveImageUrl(url),
-                                fit: BoxFit.cover,
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+          body: itemAsync.when(
+            data: (item) {
+              final isOwner =
+                  currentUser != null && currentUser.id == item.posterId;
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    if (item.imageUrls.isNotEmpty)
+                      AspectRatio(
+                        aspectRatio: 16 / 10,
+                        child: PageView(
+                          children: item.imageUrls
+                              .map(
+                                (url) => CachedNetworkImage(
+                                  imageUrl: ApiEndpoints.resolveImageUrl(url),
+                                  fit: .cover,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(Spacing.lg),
+                      child: Column(
+                        crossAxisAlignment: .start,
                         children: [
-                          Chip(
-                            label: Text(item.type == LostFoundType.lost ? 'LOST' : 'FOUND'),
-                            backgroundColor:
-                                item.type == LostFoundType.lost ? Colors.orange : Colors.teal,
-                            labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          Row(
+                            children: [
+                              Chip(
+                                label: Text(
+                                  item.type == LostFoundType.lost
+                                      ? 'LOST'
+                                      : 'FOUND',
+                                ),
+                                backgroundColor: item.type == LostFoundType.lost
+                                    ? context.colors.warning
+                                    : context.colors.primary,
+                                labelStyle: TextStyle(
+                                  color: context.colors.onPrimary,
+                                  fontWeight: .bold,
+                                ),
+                              ),
+                              const SizedBox(width: Spacing.sm),
+                              Chip(label: Text(item.status.name.toUpperCase())),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          Chip(label: Text(item.status.name.toUpperCase())),
+                          const SizedBox(height: Spacing.md),
+                          Text(
+                            item.title,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(height: Spacing.sm),
+                          Text(item.description),
+                          const SizedBox(height: Spacing.md),
+                          if (item.location.isNotEmpty)
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: Spacing.xs),
+                                Text(item.location),
+                              ],
+                            ),
+                          const SizedBox(height: Spacing.xs),
+                          Text(
+                            'Posted ${timeago.format(item.createdAt)} by ${item.poster?.name ?? "a student"}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          if (item.status == LostFoundStatus.removed &&
+                              item.removalReason != null) ...[
+                            const SizedBox(height: Spacing.md),
+                            Container(
+                              padding: const EdgeInsets.all(Spacing.md),
+                              decoration: BoxDecoration(
+                                color: context.colors.danger.withValues(
+                                  alpha: 0.08,
+                                ),
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.md,
+                                ),
+                              ),
+                              child: Text(
+                                'Removed by moderators: ${item.removalReason}',
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: Spacing.xl),
+                          if (isOwner)
+                            _OwnerActions(item: item)
+                          else if (item.status == LostFoundStatus.open)
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton.icon(
+                                onPressed: () =>
+                                    showClaimBottomSheet(context, ref, itemId),
+                                icon: const Icon(Icons.pan_tool_alt_outlined),
+                                label: Text(
+                                  item.type == LostFoundType.lost
+                                      ? "I found this"
+                                      : "This is mine",
+                                ),
+                              ),
+                            ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(item.title, style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: 8),
-                      Text(item.description),
-                      const SizedBox(height: 12),
-                      if (item.location.isNotEmpty)
-                        Row(children: [
-                          const Icon(Icons.location_on_outlined, size: 16),
-                          const SizedBox(width: 4),
-                          Text(item.location),
-                        ]),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Posted ${timeago.format(item.createdAt)} by ${item.poster?.name ?? "a student"}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      if (item.status == LostFoundStatus.removed && item.removalReason != null) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text('Removed by moderators: ${item.removalReason}'),
-                        ),
-                      ],
-                      const SizedBox(height: 20),
-                      if (isOwner)
-                        _OwnerActions(item: item)
-                      else if (item.status == LostFoundStatus.open)
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () => showClaimBottomSheet(context, ref, itemId),
-                            icon: const Icon(Icons.pan_tool_alt_outlined),
-                            label: Text(item.type == LostFoundType.lost
-                                ? "I found this"
-                                : "This is mine"),
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Failed to load item: $err')),
-      ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Center(child: Text('Failed to load item: $err')),
+          ),
         ),
       ),
     );
@@ -144,37 +178,41 @@ class _OwnerActions extends ConsumerWidget {
     final claimsAsync = ref.watch(lostFoundClaimsProvider(item.id));
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
             Text('Claims', style: Theme.of(context).textTheme.titleMedium),
             const Spacer(),
-            if (item.status != LostFoundStatus.resolved && item.status != LostFoundStatus.removed)
+            if (item.status != LostFoundStatus.resolved &&
+                item.status != LostFoundStatus.removed)
               TextButton.icon(
                 onPressed: () async {
                   await ref.read(lostFoundActionsProvider).resolveItem(item.id);
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(const SnackBar(content: Text('Marked as resolved')));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Marked as resolved')),
+                    );
                   }
                 },
                 icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Mark Resolved'),
+                label: const Text('Mark resolved'),
               ),
           ],
         ),
         claimsAsync.when(
           data: (claims) => claims.isEmpty
               ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: Spacing.md),
                   child: Text('No claims yet.'),
                 )
               : Column(
-                  children: claims.map((claim) => _ClaimTile(item: item, claim: claim)).toList(),
+                  children: claims
+                      .map((claim) => _ClaimTile(item: item, claim: claim))
+                      .toList(),
                 ),
           loading: () => const Padding(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(Spacing.md),
             child: Center(child: CircularProgressIndicator()),
           ),
           error: (err, _) => Text('Failed to load claims: $err'),
@@ -192,25 +230,29 @@ class _ClaimTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      margin: const EdgeInsets.symmetric(vertical: Spacing.sm),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(Spacing.md),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
-            Text(claim.claimer?.name ?? 'Student', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              claim.claimer?.name ?? 'Student',
+              style: const TextStyle(fontWeight: .bold),
+            ),
             if (claim.message.isNotEmpty) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: Spacing.xs),
               Text(claim.message),
             ],
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             if (claim.status == LostFoundClaimStatus.pending)
               Row(
                 children: [
                   FilledButton(
                     onPressed: () async {
-                      final conversationId =
-                          await ref.read(lostFoundActionsProvider).acceptClaim(item.id, claim.id);
+                      final conversationId = await ref
+                          .read(lostFoundActionsProvider)
+                          .acceptClaim(item.id, claim.id);
                       if (context.mounted && conversationId != null) {
                         context.pushNamed(
                           AppRoute.inboxChat.name,
@@ -225,10 +267,11 @@ class _ClaimTile extends ConsumerWidget {
                     },
                     child: const Text('Accept & Chat'),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: Spacing.sm),
                   OutlinedButton(
-                    onPressed: () =>
-                        ref.read(lostFoundActionsProvider).rejectClaim(item.id, claim.id),
+                    onPressed: () => ref
+                        .read(lostFoundActionsProvider)
+                        .rejectClaim(item.id, claim.id),
                     child: const Text('Reject'),
                   ),
                 ],

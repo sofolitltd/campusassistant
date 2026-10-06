@@ -10,6 +10,9 @@ import '/utils/constants.dart';
 import '/features/session/presentation/providers/session_provider.dart';
 import '/features/blood/presentation/providers/blood_bank_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class BloodBank extends ConsumerStatefulWidget {
   const BloodBank({super.key});
@@ -64,7 +67,12 @@ class _BloodBankState extends ConsumerState<BloodBank>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: const [
@@ -83,23 +91,25 @@ class _BloodBankState extends ConsumerState<BloodBank>
 
                 final totalPages = (state.total / bloodBankPageSize).ceil();
                 final startIndex = (_currentPage - 1) * bloodBankPageSize + 1;
-                final endIndex = (startIndex + state.students.length - 1)
-                    .clamp(0, state.total);
+                final endIndex = (startIndex + state.students.length - 1).clamp(
+                  0,
+                  state.total,
+                );
 
                 return Column(
                   children: [
                     // Count indicator
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                        horizontal: Spacing.lg,
+                        vertical: Spacing.sm,
                       ),
                       alignment: Alignment.centerRight,
                       child: Text(
                         'Showing ${state.students.length} / ${state.total}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade600,
+                          fontWeight: .bold,
+                          color: context.colors.textMuted,
                         ),
                       ),
                     ),
@@ -119,10 +129,11 @@ class _BloodBankState extends ConsumerState<BloodBank>
                               index == state.students.length - 1) {
                             return const SizedBox(height: 0);
                           }
-                          return const SizedBox(height: 10);
+                          return const SizedBox(height: Spacing.md);
                         },
                         itemBuilder: (context, index) {
-                          if (totalPages > 1 && index == state.students.length) {
+                          if (totalPages > 1 &&
+                              index == state.students.length) {
                             return NumberedPagination(
                               currentPage: _currentPage,
                               totalPages: totalPages,
@@ -153,15 +164,12 @@ class _BloodBankState extends ConsumerState<BloodBank>
   Widget _buildDonorCard(dynamic p, int scope, bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-          width: 1,
-        ),
+        border: Border.all(color: context.colors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -170,18 +178,21 @@ class _BloodBankState extends ConsumerState<BloodBank>
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            padding: const EdgeInsets.symmetric(
+              vertical: Spacing.md,
+              horizontal: Spacing.md,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 // Name — always shown
                 Text(
                   p.name,
                   style: Theme.of(
                     context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: Spacing.xs),
 
                 // Scope 0 – Batch: Name · ID · Session
                 if (scope == 0) ...[
@@ -189,7 +200,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
                     'ID: ${p.studentId}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Spacing.xxs),
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
@@ -223,11 +234,11 @@ class _BloodBankState extends ConsumerState<BloodBank>
                     },
                   ),
                   if (p.batchName != null && p.batchName!.isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: Spacing.xxs),
                     Text(
                       p.batchName!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
+                        color: context.colors.textMuted,
                       ),
                     ),
                   ],
@@ -251,13 +262,13 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   ),
                   if (p.departmentName != null &&
                       p.departmentName!.isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: Spacing.xxs),
                     Text(
                       p.departmentName!,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.grey.shade700,
+                        color: context.colors.textMuted,
                       ),
                     ),
                   ],
@@ -271,18 +282,21 @@ class _BloodBankState extends ConsumerState<BloodBank>
             top: 12,
             right: 12,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.sm,
+                vertical: Spacing.xs,
+              ),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.red.shade100),
+                color: context.colors.danger,
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
+                border: Border.all(color: context.colors.danger),
               ),
               child: Text(
                 p.bloodGroup,
                 style: TextStyle(
-                  color: Colors.red.shade700,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                  color: context.colors.danger,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.sm,
                 ),
               ),
             ),
@@ -301,41 +315,38 @@ class _BloodGroupDropdown extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedBlood = ref.watch(bloodBankSelectedGroupProvider);
 
     return Theme(
-      data: Theme.of(
-        context,
-      ).copyWith(canvasColor: isDark ? const Color(0xFF1E1E1E) : Colors.white),
+      data: Theme.of(context).copyWith(canvasColor: context.colors.onPrimary),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: selectedBlood,
           hint: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
             child: Text(
               'Blood',
               style: TextStyle(
-                color: isDark ? Colors.white70 : Colors.grey.shade700,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                color: context.colors.textMuted,
+                fontSize: FontSizeToken.sm,
+                fontWeight: .w600,
               ),
             ),
           ),
           icon: const Padding(
-            padding: EdgeInsets.only(right: 10),
+            padding: EdgeInsets.only(right: Spacing.md),
             child: Icon(LucideIcons.chevronDown, size: 12),
           ),
           items: [
             DropdownMenuItem<String?>(
               value: null,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
                 child: Text(
                   'All',
                   style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.white70 : Colors.black87,
+                    fontSize: FontSizeToken.sm,
+                    color: context.colors.text,
                   ),
                 ),
               ),
@@ -344,13 +355,13 @@ class _BloodGroupDropdown extends ConsumerWidget {
               (group) => DropdownMenuItem<String?>(
                 value: group,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
                   child: Text(
                     group,
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                      fontSize: FontSizeToken.sm,
+                      fontWeight: .bold,
+                      color: context.colors.danger,
                     ),
                   ),
                 ),

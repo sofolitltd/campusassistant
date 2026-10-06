@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CustomHeaderLayout extends StatelessWidget {
   final String title;
@@ -43,8 +46,8 @@ class CustomHeaderLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+    final colors = context.colors;
+    final primaryColor = colors.primary;
 
     return Scaffold(
       // Neutral — NOT primaryColor. The teal header band below is scoped to
@@ -77,7 +80,10 @@ class CustomHeaderLayout extends StatelessWidget {
                             [
                               if (actionIcon != null)
                                 IconButton(
-                                  icon: Icon(actionIcon, color: Colors.white),
+                                  icon: Icon(
+                                    actionIcon,
+                                    color: colors.onPrimary,
+                                  ),
                                   onPressed: onActionTap,
                                 ),
                             ],
@@ -86,26 +92,33 @@ class CustomHeaderLayout extends StatelessWidget {
                       // Search Bar Area
                       if (showSearchBar)
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                          padding: const EdgeInsets.fromLTRB(
+                            Spacing.lg,
+                            Spacing.sm,
+                            Spacing.lg,
+                            Spacing.lg,
+                          ),
                           child: Container(
                             height: 48,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              color: colors.onPrimary,
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.lg,
+                              ),
                             ),
                             child: TextField(
                               controller: controller,
                               onChanged: onSearchChanged,
-                              style: const TextStyle(color: Colors.black87),
+                              style: TextStyle(color: colors.text),
                               decoration: InputDecoration(
                                 hintText: searchHint,
                                 hintStyle: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  fontSize: 15,
+                                  color: colors.textSubtle,
+                                  fontSize: FontSizeToken.lg,
                                 ),
                                 prefixIcon: Icon(
                                   LucideIcons.search,
-                                  color: Colors.grey.shade400,
+                                  color: colors.textSubtle,
                                   size: 20,
                                 ),
                                 suffixIcon: controller == null
@@ -120,7 +133,7 @@ class CustomHeaderLayout extends StatelessWidget {
                                           return IconButton(
                                             icon: Icon(
                                               LucideIcons.x,
-                                              color: Colors.grey.shade400,
+                                              color: colors.textSubtle,
                                               size: 18,
                                             ),
                                             onPressed: () {
@@ -136,8 +149,8 @@ class CustomHeaderLayout extends StatelessWidget {
                                       ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
+                                  horizontal: Spacing.lg,
+                                  vertical: Spacing.lg,
                                 ),
                               ),
                             ),
@@ -153,30 +166,24 @@ class CustomHeaderLayout extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? theme.scaffoldBackgroundColor
-                        : const Color(0xFFF8F9FA),
+                    color: colors.bg,
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
+                      top: Radius.circular(RadiusToken.xxxl),
                     ),
                   ),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
+                      top: Radius.circular(RadiusToken.xxxl),
                     ),
                     child: Column(
                       children: [
                         if (tabs != null && tabController != null)
                           Container(
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? theme.scaffoldBackgroundColor
-                                  : Colors.white,
+                              color: colors.surface,
                               border: Border(
                                 bottom: BorderSide(
-                                  color: isDark
-                                      ? Colors.white10
-                                      : Colors.grey.shade200,
+                                  color: colors.border,
                                   width: 1,
                                 ),
                               ),
@@ -187,19 +194,15 @@ class CustomHeaderLayout extends StatelessWidget {
                               indicatorColor: primaryColor,
                               indicatorWeight: 3,
                               indicatorSize: TabBarIndicatorSize.label,
-                              labelColor: isDark
-                                  ? Colors.white
-                                  : Colors.black87,
-                              unselectedLabelColor: isDark
-                                  ? Colors.white54
-                                  : Colors.grey.shade500,
+                              labelColor: colors.text,
+                              unselectedLabelColor: colors.textMuted,
                               labelStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontWeight: .bold,
+                                fontSize: FontSizeToken.base,
                               ),
                               unselectedLabelStyle: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
+                                fontWeight: .w500,
+                                fontSize: FontSizeToken.base,
                               ),
                               tabs: tabs!.map((t) => Tab(text: t)).toList(),
                             ),

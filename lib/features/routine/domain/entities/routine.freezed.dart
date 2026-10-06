@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'routine.dart';
@@ -9,6 +9,7 @@ part of 'routine.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $RoutineCopyWith<Routine> get copyWith => _$RoutineCopyWithImpl<Routine>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Routine&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.time, time) || other.time == time)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+  final _this = this as Routine;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Routine&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.time, _this.time) || other.time == _this.time)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,imageUrl,time,universityId,departmentId);
+int get hashCode {
+  final _this = this as Routine;
+  return Object.hash(runtimeType,_this.id,_this.title,_this.imageUrl,_this.time,_this.universityId,_this.departmentId);
+}
 
 @override
 String toString() {
-  return 'Routine(id: $id, title: $title, imageUrl: $imageUrl, time: $time, universityId: $universityId, departmentId: $departmentId)';
+  final _this = this as Routine;
+  return 'Routine(id: ${_this.id}, title: ${_this.title}, imageUrl: ${_this.imageUrl}, time: ${_this.time}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId})';
 }
 
 
@@ -63,7 +69,7 @@ class _$RoutineCopyWithImpl<$Res>
 /// Create a copy of Routine
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? imageUrl = null,Object? time = null,Object? universityId = null,Object? departmentId = null,}) {
-  return _then(_self.copyWith(
+  return _then(Routine(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -231,16 +237,18 @@ _$RoutineCopyWith<_Routine> get copyWith => __$RoutineCopyWithImpl<_Routine>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Routine&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.time, time) || other.time == time)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Routine&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.time, time) || other.time == time)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,imageUrl,time,universityId,departmentId);
+int get hashCode {
+    return Object.hash(runtimeType,id,title,imageUrl,time,universityId,departmentId);
+}
 
 @override
 String toString() {
-  return 'Routine(id: $id, title: $title, imageUrl: $imageUrl, time: $time, universityId: $universityId, departmentId: $departmentId)';
+    return 'Routine(id: $id, title: $title, imageUrl: $imageUrl, time: $time, universityId: $universityId, departmentId: $departmentId)';
 }
 
 

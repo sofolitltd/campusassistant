@@ -6,8 +6,11 @@ import '../../data/models/notice_comment_model.dart';
 import '../providers/notice_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
 import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class NoticeCommentItem extends ConsumerWidget {
   final NoticeCommentModel comment;
@@ -44,7 +47,7 @@ class NoticeCommentItem extends ConsumerWidget {
                 if (context.mounted) Navigator.pop(context);
               }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: context.colors.danger),
             child: const Text('Delete'),
           ),
         ],
@@ -54,14 +57,13 @@ class NoticeCommentItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentUser = ref.watch(currentUserProvider).value;
     final isAuthor = currentUser?.id == comment.authorId;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: Spacing.lg),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           CircleAvatar(
             radius: 14,
@@ -75,72 +77,71 @@ class NoticeCommentItem extends ConsumerWidget {
                 : null,
             child: comment.authorAvatar == null
                 ? Text(
-                    comment.authorName.isNotEmpty
-                        ? comment.authorName[0]
-                        : '?',
+                    comment.authorName.isNotEmpty ? comment.authorName[0] : '?',
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                      fontSize: FontSizeToken.xxs,
+                      fontWeight: .bold,
                     ),
                   )
                 : null,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: Spacing.md),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(Spacing.md),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.grey.shade100,
+                    color: context.colors.surfaceAlt,
                     borderRadius: BorderRadius.circular(RadiusToken.md),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
                         comment.authorName,
                         style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontWeight: .bold,
+                          fontSize: FontSizeToken.sm,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: Spacing.xxs),
                       Text(
                         comment.content,
                         style: TextStyle(
-                          fontSize: 13,
-                          color: isDark ? Colors.white70 : Colors.black87,
+                          fontSize: FontSizeToken.md,
+                          color: context.colors.text,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8, top: 4),
+                  padding: const EdgeInsets.only(
+                    left: Spacing.sm,
+                    top: Spacing.xs,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         timeago.format(comment.createdAt, locale: 'en_short'),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
+                        style: TextStyle(
+                          fontSize: FontSizeToken.xs,
+                          color: context.colors.textSubtle,
                         ),
                       ),
                       if (isAuthor) ...[
-                        const SizedBox(width: 16),
+                        const SizedBox(width: Spacing.lg),
                         GestureDetector(
                           onTap: () => _showDeleteConfirm(context, ref),
                           child: Text(
                             'Delete',
                             style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.red.shade400,
-                              fontWeight: FontWeight.bold,
+                              fontSize: FontSizeToken.xs,
+                              color: context.colors.danger,
+                              fontWeight: .bold,
                             ),
                           ),
                         ),

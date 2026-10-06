@@ -5,6 +5,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/routes/app_route.dart';
 import '../providers/marketplace_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
@@ -16,7 +18,7 @@ class AccountTab extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Account')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Spacing.lg),
         children: [
           _ListTile(
             icon: LucideIcons.shoppingBag,
@@ -24,14 +26,28 @@ class AccountTab extends ConsumerWidget {
             subtitle: 'View your order history and tracking',
             onTap: () => context.push(AppRoute.marketplaceOrders.path),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
+          _ListTile(
+            icon: LucideIcons.heart,
+            title: 'Saved Items',
+            subtitle: 'Products you saved for later',
+            onTap: () => context.push(AppRoute.marketplaceWishlist.path),
+          ),
+          const SizedBox(height: Spacing.sm),
+          _ListTile(
+            icon: LucideIcons.receipt,
+            title: 'Invoices & Receipts',
+            subtitle: 'Your payments and refunds',
+            onTap: () => context.push(AppRoute.marketplaceInvoices.path),
+          ),
+          const SizedBox(height: Spacing.sm),
           _ListTile(
             icon: LucideIcons.mapPin,
             title: 'Manage Addresses',
             subtitle: 'Add, edit, or remove shipping addresses',
             onTap: () => context.push(AppRoute.marketplaceAddresses.path),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           merchantsAsync.when(
             data: (merchants) {
               if (merchants.isEmpty) {
@@ -45,7 +61,9 @@ class AccountTab extends ConsumerWidget {
               return _ListTile(
                 icon: LucideIcons.store,
                 title: 'My Businesses',
-                subtitle: merchants.length == 1 ? merchants.first.businessName : '${merchants.length} businesses',
+                subtitle: merchants.length == 1
+                    ? merchants.first.businessName
+                    : '${merchants.length} businesses',
                 onTap: () => context.push(AppRoute.merchantApply.path),
               );
             },
@@ -57,7 +75,7 @@ class AccountTab extends ConsumerWidget {
               onTap: () => context.push(AppRoute.merchantApply.path),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Spacing.sm),
           _ListTile(
             icon: LucideIcons.store,
             title: 'About Campus Market',
@@ -88,8 +106,11 @@ class _ListTile extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: Icon(icon),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
+        title: Text(title, style: const TextStyle(fontWeight: .w600)),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(fontSize: FontSizeToken.sm),
+        ),
         trailing: const Icon(LucideIcons.chevronRight, size: 18),
         onTap: onTap,
       ),

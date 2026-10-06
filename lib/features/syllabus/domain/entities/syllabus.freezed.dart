@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'syllabus.dart';
@@ -9,6 +9,7 @@ part of 'syllabus.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $SyllabusCopyWith<Syllabus> get copyWith => _$SyllabusCopyWithImpl<Syllabus>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Syllabus&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl)&&(identical(other.uploaderName, uploaderName) || other.uploaderName == uploaderName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.batches, batches)&&const DeepCollectionEquality().equals(other.years, years)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+  final _this = this as Syllabus;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Syllabus&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.courseCode, _this.courseCode) || other.courseCode == _this.courseCode)&&(identical(other.courseTitle, _this.courseTitle) || other.courseTitle == _this.courseTitle)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.fileUrl, _this.fileUrl) || other.fileUrl == _this.fileUrl)&&(identical(other.uploaderName, _this.uploaderName) || other.uploaderName == _this.uploaderName)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&const DeepCollectionEquality().equals(other.batches, _this.batches)&&const DeepCollectionEquality().equals(other.years, _this.years)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,courseCode,courseTitle,description,fileUrl,uploaderName,createdAt,const DeepCollectionEquality().hash(batches),const DeepCollectionEquality().hash(years),universityId,departmentId);
+int get hashCode {
+  final _this = this as Syllabus;
+  return Object.hash(runtimeType,_this.id,_this.title,_this.courseCode,_this.courseTitle,_this.description,_this.fileUrl,_this.uploaderName,_this.createdAt,const DeepCollectionEquality().hash(_this.batches),const DeepCollectionEquality().hash(_this.years),_this.universityId,_this.departmentId);
+}
 
 @override
 String toString() {
-  return 'Syllabus(id: $id, title: $title, courseCode: $courseCode, courseTitle: $courseTitle, description: $description, fileUrl: $fileUrl, uploaderName: $uploaderName, createdAt: $createdAt, batches: $batches, years: $years, universityId: $universityId, departmentId: $departmentId)';
+  final _this = this as Syllabus;
+  return 'Syllabus(id: ${_this.id}, title: ${_this.title}, courseCode: ${_this.courseCode}, courseTitle: ${_this.courseTitle}, description: ${_this.description}, fileUrl: ${_this.fileUrl}, uploaderName: ${_this.uploaderName}, createdAt: ${_this.createdAt}, batches: ${_this.batches}, years: ${_this.years}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId})';
 }
 
 
@@ -63,7 +69,7 @@ class _$SyllabusCopyWithImpl<$Res>
 /// Create a copy of Syllabus
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? courseCode = null,Object? courseTitle = null,Object? description = null,Object? fileUrl = null,Object? uploaderName = null,Object? createdAt = freezed,Object? batches = null,Object? years = null,Object? universityId = null,Object? departmentId = null,}) {
-  return _then(_self.copyWith(
+  return _then(Syllabus(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,courseCode: null == courseCode ? _self.courseCode : courseCode // ignore: cast_nullable_to_non_nullable
@@ -217,7 +223,7 @@ return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.de
 
 
 class _Syllabus implements Syllabus {
-  const _Syllabus({required this.id, required this.title, required this.courseCode, required this.courseTitle, required this.description, required this.fileUrl, required this.uploaderName, this.createdAt, required final  List<String> batches, required final  List<String> years, required this.universityId, required this.departmentId}): _batches = batches,_years = years;
+  const _Syllabus({required this.id, required this.title, required this.courseCode, required this.courseTitle, required this.description, required this.fileUrl, required this.uploaderName, this.createdAt, required  List<String> batches, required  List<String> years, required this.universityId, required this.departmentId}): _batches = batches,_years = years;
   
 
 @override final  String id;
@@ -255,16 +261,18 @@ _$SyllabusCopyWith<_Syllabus> get copyWith => __$SyllabusCopyWithImpl<_Syllabus>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Syllabus&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl)&&(identical(other.uploaderName, uploaderName) || other.uploaderName == uploaderName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._batches, _batches)&&const DeepCollectionEquality().equals(other._years, _years)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Syllabus&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&(identical(other.description, description) || other.description == description)&&(identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl)&&(identical(other.uploaderName, uploaderName) || other.uploaderName == uploaderName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.batches, _batches)&&const DeepCollectionEquality().equals(other.years, _years)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,courseCode,courseTitle,description,fileUrl,uploaderName,createdAt,const DeepCollectionEquality().hash(_batches),const DeepCollectionEquality().hash(_years),universityId,departmentId);
+int get hashCode {
+    return Object.hash(runtimeType,id,title,courseCode,courseTitle,description,fileUrl,uploaderName,createdAt,const DeepCollectionEquality().hash(_batches),const DeepCollectionEquality().hash(_years),universityId,departmentId);
+}
 
 @override
 String toString() {
-  return 'Syllabus(id: $id, title: $title, courseCode: $courseCode, courseTitle: $courseTitle, description: $description, fileUrl: $fileUrl, uploaderName: $uploaderName, createdAt: $createdAt, batches: $batches, years: $years, universityId: $universityId, departmentId: $departmentId)';
+    return 'Syllabus(id: $id, title: $title, courseCode: $courseCode, courseTitle: $courseTitle, description: $description, fileUrl: $fileUrl, uploaderName: $uploaderName, createdAt: $createdAt, batches: $batches, years: $years, universityId: $universityId, departmentId: $departmentId)';
 }
 
 

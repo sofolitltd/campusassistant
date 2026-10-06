@@ -13,6 +13,9 @@ import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class DepartmentPage extends ConsumerWidget {
   const DepartmentPage({super.key});
@@ -35,7 +38,7 @@ class DepartmentPage extends ConsumerWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 700),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: .stretch,
                 children: [
                   // 🔹 Hero Image
                   Stack(
@@ -50,11 +53,11 @@ class DepartmentPage extends ConsumerWidget {
                         height: imageHeight,
                         memCacheHeight: heroCacheHeight,
                         maxHeightDiskCache: heroCacheHeight,
-                        fit: BoxFit.cover,
+                        fit: .cover,
                         placeholder: (context, _) =>
                             const Center(child: CupertinoActivityIndicator()),
                         errorWidget: (_, _, _) => Container(
-                          color: Colors.grey.shade200,
+                          color: context.colors.border,
                           height: imageHeight,
                           alignment: Alignment.center,
                           child: const Icon(Icons.image_not_supported),
@@ -62,9 +65,12 @@ class DepartmentPage extends ConsumerWidget {
                       ),
                       Container(
                         height: imageHeight,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.black54, Colors.transparent],
+                            colors: [
+                              context.colors.textMuted,
+                              Colors.transparent,
+                            ],
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                           ),
@@ -74,17 +80,17 @@ class DepartmentPage extends ConsumerWidget {
                         bottom: 24,
                         left: 24,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Text(
                               department.name,
                               style: Theme.of(context).textTheme.titleLarge
                                   ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                    color: context.colors.onPrimary,
+                                    fontWeight: .bold,
                                   ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: Spacing.md),
                             ElevatedButton.icon(
                               onPressed: () {
                                 if (kIsWeb) {
@@ -96,25 +102,17 @@ class DepartmentPage extends ConsumerWidget {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withValues(
-                                  alpha: 0.8,
-                                ),
-                                foregroundColor: Colors.black,
-                                minimumSize: const Size(0, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                visualDensity: const VisualDensity(
-                                  vertical: -4,
-                                  horizontal: -4,
-                                ),
+                                backgroundColor: context.colors.surface
+                                    .withValues(alpha: 0.8),
+                                foregroundColor: context.colors.text,
+                                minimumSize: const Size(0, ControlToken.height),
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
+                                  horizontal: Spacing.sm,
                                   vertical: 0,
                                 ),
                               ),
                               icon: const Icon(Icons.public, size: 16),
-                              label: const Text('Visit Website'),
+                              label: const Text('Visit website'),
                             ),
                           ],
                         ),
@@ -123,18 +121,16 @@ class DepartmentPage extends ConsumerWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Spacing.xxl),
 
                   // 🔹 Stats Table (Teachers & Staff)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(RadiusToken.md),
-                        border: Border.all(
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        border: Border.all(color: context.colors.border),
                       ),
                       child: Column(
                         children: [
@@ -176,38 +172,36 @@ class DepartmentPage extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Spacing.xxl),
 
                   // 🔹 About Section (full width)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Text(
                           'About',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontWeight: .bold,
+                                fontSize: FontSizeToken.xl,
                               ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Spacing.sm),
                         Text(
                           department.about,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: isDark
-                                    ? Colors.white70
-                                    : Colors.grey.shade800,
+                                color: context.colors.text,
                                 height: 1.5,
                               ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: Spacing.xxxl),
                 ],
               ),
             ),
@@ -236,34 +230,29 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.md,
+      ),
       decoration: BoxDecoration(
         border: border
-            ? Border(
-                bottom: BorderSide(
-                  color: isDark ? Colors.white10 : Colors.grey.shade200,
-                ),
-              )
+            ? Border(bottom: BorderSide(color: context.colors.border))
             : null,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Row(
             children: [
-              Icon(
-                LucideIcons.user,
-                size: 16,
-                color: Theme.of(context).appColors.primaryColor,
-              ),
+              Icon(LucideIcons.user, size: 16, color: context.colors.primary),
 
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text(
                 label,
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : Colors.grey.shade700,
+                  fontWeight: .w500,
+                  fontSize: FontSizeToken.base,
+                  color: context.colors.textMuted,
                 ),
               ),
             ],
@@ -271,9 +260,9 @@ class _StatTile extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: isDark ? Colors.white : Colors.black87,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.base,
+              color: context.colors.text,
             ),
           ),
         ],

@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '/features/subscription/presentation/providers/subscription_provider.dart'
     show userSubscriptionProvider;
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class SubscriptionCard extends ConsumerWidget {
   final String uid;
@@ -29,43 +31,43 @@ class SubscriptionCard extends ConsumerWidget {
         final end = _formatDate(subscription.endDate);
 
         return Container(
-          margin: const EdgeInsets.only(top: 32),
+          margin: const EdgeInsets.only(top: Spacing.xxxl),
           decoration: BoxDecoration(
-            color: Colors.orange.shade50,
+            color: context.colors.warning,
             borderRadius: BorderRadius.circular(RadiusToken.sm),
-            border: Border.all(color: Colors.orange.shade100),
+            border: Border.all(color: context.colors.warning),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(Spacing.sm),
             child: Row(
               children: [
                 Container(
                   height: 40,
                   width: 40,
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade300,
+                    color: context.colors.warning,
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.diamond_outlined,
-                    color: Colors.white,
+                    color: context.colors.onPrimary,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: Spacing.md),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
                         "Pro User (${subscription.plan})",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                        style: TextStyle(
+                          fontWeight: .bold,
+                          color: context.colors.text,
                         ),
                       ),
                       Text(
                         end.isEmpty ? '$start - Life Time' : '$start - $end',
-                        style: const TextStyle(color: Colors.black),
+                        style: TextStyle(color: context.colors.text),
                       ),
                     ],
                   ),

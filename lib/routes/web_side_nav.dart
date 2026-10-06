@@ -9,6 +9,9 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/notification/presentation/providers/notification_provider.dart';
 import '/widgets/custom_drawer.dart';
 import 'app_route.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// Collapsible left sidebar shown instead of a NavigationRail on large/web
 /// screens — styled to match the admin dashboard's sidebar (components/sidebar.tsx):
@@ -47,7 +50,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
       PageRouteBuilder(
         opaque: false,
         barrierDismissible: true,
-        barrierColor: Colors.black38,
+        barrierColor: context.colors.textSubtle,
         pageBuilder: (_, _, _) => const CustomDrawer(),
         transitionsBuilder: (_, anim, _, child) {
           final offset = Tween<Offset>(
@@ -70,8 +73,8 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final primaryColor = theme.appColors.primaryColor;
-    final borderColor = isDark ? Colors.white10 : Colors.grey.shade200;
+    final primaryColor = theme.appColors.primary;
+    final borderColor = context.colors.border;
     final userAsync = ref.watch(userProvider);
     final unreadCount = ref.watch(unreadCountProvider);
     final userName = userAsync.value?.name ?? '';
@@ -85,7 +88,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
     return SizedBox(
       width: width + 12, // room for the floating toggle to overflow
       child: Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: .none,
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 220),
@@ -108,28 +111,28 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                     border: Border(bottom: BorderSide(color: borderColor)),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .center,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(RadiusToken.md),
                         child: Image.asset(
                           'assets/images/logo.png',
                           width: 32,
                           height: 32,
-                          fit: BoxFit.contain,
+                          fit: .contain,
                         ),
                       ),
                       if (!_collapsed) ...[
-                        const SizedBox(width: 10),
+                        const SizedBox(width: Spacing.md),
                         Flexible(
                           child: Text(
                             'Campus Assistant',
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: isDark ? Colors.white : Colors.black87,
+                              fontWeight: .bold,
+                              fontSize: FontSizeToken.lg,
+                              color: context.colors.text,
                             ),
                           ),
                         ),
@@ -141,12 +144,12 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                 // Nav items
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(Spacing.md),
                     children: List.generate(_items.length, (index) {
                       final item = _items[index];
                       final selected = widget.currentIndex == index;
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
+                        padding: const EdgeInsets.only(bottom: Spacing.xs),
                         child: _SideNavTile(
                           icon: item.icon,
                           label: item.label,
@@ -163,7 +166,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
 
                 // Bottom: notifications, more, profile
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(Spacing.md),
                   decoration: BoxDecoration(
                     border: Border(top: BorderSide(color: borderColor)),
                   ),
@@ -188,11 +191,11 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                         isDark: isDark,
                         onTap: () => _openMenu(context),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Spacing.xs),
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
                           onTap: () => context.goNamed(AppRoute.profile.name),
                           child: Padding(
                             padding: EdgeInsets.symmetric(
@@ -200,8 +203,8 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                               vertical: 8,
                             ),
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: .min,
+                              mainAxisAlignment: .center,
                               children: [
                                 CircleAvatar(
                                   radius: 16,
@@ -220,26 +223,24 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                                           initial,
                                           style: TextStyle(
                                             color: primaryColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
+                                            fontWeight: .bold,
+                                            fontSize: FontSizeToken.sm,
                                           ),
                                         )
                                       : null,
                                 ),
                                 if (!_collapsed) ...[
-                                  const SizedBox(width: 10),
+                                  const SizedBox(width: Spacing.md),
                                   Flexible(
                                     child: Text(
                                       userName.isNotEmpty
                                           ? userName
                                           : 'Profile',
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: .ellipsis,
                                       style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.black87,
+                                        fontSize: FontSizeToken.md,
+                                        fontWeight: .w600,
+                                        color: context.colors.text,
                                       ),
                                     ),
                                   ),
@@ -270,10 +271,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                   color: theme.cardColor,
                   border: Border.all(color: borderColor),
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 4,
-                    ),
+                    BoxShadow(color: context.colors.shadow, blurRadius: 4),
                   ],
                 ),
                 child: Icon(
@@ -281,7 +279,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                       ? LucideIcons.chevronRight
                       : LucideIcons.chevronLeft,
                   size: 14,
-                  color: isDark ? Colors.white70 : Colors.grey.shade700,
+                  color: context.colors.textMuted,
                 ),
               ),
             ),
@@ -316,11 +314,11 @@ class _SideNavTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconColor = selected
-        ? Colors.white
-        : (isDark ? Colors.white70 : Colors.grey.shade600);
+        ? context.colors.onPrimary
+        : (context.colors.textMuted);
     final textColor = selected
-        ? Colors.white
-        : (isDark ? Colors.white70 : Colors.grey.shade700);
+        ? context.colors.onPrimary
+        : (context.colors.textMuted);
 
     return Tooltip(
       message: collapsed ? label : '',
@@ -328,7 +326,7 @@ class _SideNavTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: collapsed ? 0 : 12,
@@ -336,14 +334,14 @@ class _SideNavTile extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: selected ? activeColor : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
               children: [
                 Stack(
-                  clipBehavior: Clip.none,
+                  clipBehavior: .none,
                   children: [
                     Icon(icon, size: 20, color: iconColor),
                     if (badgeCount > 0)
@@ -355,18 +353,20 @@ class _SideNavTile extends StatelessWidget {
                             minWidth: 14,
                             minHeight: 14,
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Spacing.xs,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.danger,
                             shape: BoxShape.circle,
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             badgeCount > 9 ? '9+' : '$badgeCount',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
+                            style: TextStyle(
+                              color: context.colors.onPrimary,
+                              fontSize: FontSizeToken.xxs,
+                              fontWeight: .bold,
                               height: 1,
                             ),
                           ),
@@ -375,7 +375,7 @@ class _SideNavTile extends StatelessWidget {
                   ],
                 ),
                 if (!collapsed) ...[
-                  const SizedBox(width: 12),
+                  const SizedBox(width: Spacing.md),
                   Expanded(
                     child: Text(
                       label,
@@ -383,7 +383,7 @@ class _SideNavTile extends StatelessWidget {
                         fontWeight: selected
                             ? FontWeight.w600
                             : FontWeight.w500,
-                        fontSize: 14,
+                        fontSize: FontSizeToken.base,
                         color: textColor,
                       ),
                     ),

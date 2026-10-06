@@ -16,6 +16,9 @@ import '/routes/app_route.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({
@@ -91,7 +94,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               vertical: 16,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Card(
                   elevation: 6,
@@ -100,24 +103,27 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.lg,
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: .stretch,
                       children: [
                         Text(
-                          'Create Account'.toUpperCase(),
+                          'Create account',
                           style: Theme.of(context).textTheme.titleLarge!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: .2,
-                              ),
+                              .copyWith(fontWeight: .bold, letterSpacing: .2),
                         ),
                         Text(
                           'with email and password',
-                          style: Theme.of(context).textTheme.labelLarge!
-                              .copyWith(fontWeight: FontWeight.w100),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelLarge!.copyWith(fontWeight: .w100),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: Spacing.xxl),
                         Row(
                           children: [
                             _pickedMobileImage == null
@@ -128,13 +134,13 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                       borderRadius: BorderRadius.circular(
                                         RadiusToken.sm,
                                       ),
-                                      color: Colors.grey.shade200,
+                                      color: context.colors.border,
                                     ),
-                                    padding: const EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(Spacing.sm),
                                     alignment: Alignment.center,
                                     child: const Text(
                                       'No image selected',
-                                      textAlign: TextAlign.center,
+                                      textAlign: .center,
                                     ),
                                   )
                                 : Container(
@@ -145,27 +151,27 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                         RadiusToken.sm,
                                       ),
                                       border: Border.all(
-                                        color: Colors.blueGrey.shade100,
+                                        color: context.colors.surfaceAlt,
                                       ),
                                       image: kIsWeb
                                           ? DecorationImage(
-                                              fit: BoxFit.fitHeight,
+                                              fit: .fitHeight,
                                               image: MemoryImage(_webImage),
                                             )
                                           : DecorationImage(
-                                              fit: BoxFit.fitHeight,
+                                              fit: .fitHeight,
                                               image: FileImage(
                                                 _pickedMobileImage!,
                                               ),
                                             ),
                                     ),
                                   ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: Spacing.lg),
                             Expanded(
                               child: SizedBox(
                                 height: 116,
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: .start,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
@@ -176,23 +182,23 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                           .bodySmall!
                                           .copyWith(
                                             height: 1.2,
-                                            color: Colors.red,
+                                            color: context.colors.danger,
                                           ),
                                     ),
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             _pickedMobileImage == null
-                                            ? Colors.grey
-                                            : Colors.red.shade400,
+                                            ? context.colors.textSubtle
+                                            : context.colors.danger,
                                       ),
                                       onPressed: () async {
                                         await pickImage(context);
                                       },
                                       child: Text(
                                         _pickedMobileImage == null
-                                            ? 'Choose your Photo'.toUpperCase()
-                                            : 'Change your Photo'.toUpperCase(),
+                                            ? 'Choose your photo'
+                                            : 'Change your photo',
                                       ),
                                     ),
                                   ],
@@ -201,12 +207,12 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: Spacing.xxl),
                         CommonTextFieldWidget(
                           controller: _emailController,
                           heading: 'Email',
                           hintText: 'Enter email',
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: .emailAddress,
                           validator: (val) {
                             if (val!.isEmpty) {
                               return 'Enter your email';
@@ -216,12 +222,12 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: Spacing.md),
                         CommonTextFieldWidget(
                           heading: 'Password',
                           controller: _passwordController,
                           hintText: 'Enter new password',
-                          keyboardType: TextInputType.visiblePassword,
+                          keyboardType: .visiblePassword,
                           obscureText: true,
                           validator: (val) {
                             if (val!.isEmpty) {
@@ -232,20 +238,18 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: Spacing.md),
                         const Text(
                           '* Please remember this email and password for further login.',
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: Spacing.xxl),
                         const Divider(),
                         const SizedBox(height: Spacing.lg),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 54),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                RadiusToken.md,
-                              ),
+                            minimumSize: const Size(
+                              double.infinity,
+                              ControlToken.height,
                             ),
                             elevation: 2,
                           ),
@@ -281,7 +285,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                           Fluttertoast.showToast(
                                             msg:
                                                 'Registration error: ${failure.message}',
-                                            backgroundColor: Colors.red,
+                                            backgroundColor:
+                                                context.colors.danger,
                                           );
                                           setState(() => _isLoading = false);
                                         },
@@ -306,7 +311,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                             Fluttertoast.showToast(
                                               msg:
                                                   'Welcome to Campus Assistant!',
-                                              backgroundColor: Colors.green,
+                                              backgroundColor: Colors
+                                                  .green, // toast: no BuildContext after the await above
                                             );
 
                                             // Force refresh current user to trigger router redirect
@@ -318,7 +324,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                             Fluttertoast.showToast(
                                               msg:
                                                   'Profile setup failed: $claimError',
-                                              backgroundColor: Colors.orange,
+                                              backgroundColor:
+                                                  context.colors.warning,
                                             );
                                             setState(() => _isLoading = false);
                                           }
@@ -333,23 +340,23 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                   }
                                 },
                           child: _isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   height: 24,
                                   width: 24,
                                   child: CupertinoActivityIndicator(
-                                    color: Colors.white,
+                                    color: context.colors.onPrimary,
                                   ),
                                 )
                               : Text(
-                                  'Complete Registration'.toUpperCase(),
+                                  'Complete registration',
                                   style: const TextStyle(
                                     letterSpacing: 1.2,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontWeight: .bold,
+                                    fontSize: FontSizeToken.lg,
                                   ),
                                 ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: Spacing.xs),
                       ],
                     ),
                   ),
@@ -375,7 +382,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         AndroidUiSettings(
           toolbarTitle: 'Image Customization',
           toolbarColor: ThemeData().cardColor,
-          toolbarWidgetColor: Colors.deepOrange,
+          toolbarWidgetColor: context.colors.warning,
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: false,
           cropStyle: CropStyle.rectangle,

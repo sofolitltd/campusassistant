@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'resource.dart';
@@ -9,13 +9,13 @@ part of 'resource.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Resource {
 
- String get id; String get type; String get title; String get description; String get courseCode; String get fileUrl; String get thumbnailUrl; int get lessonNo; String get status; String get accessLevel; String get rejectedNote; String get reviewedBy; DateTime? get reviewedAt; String get uploaderId; String get uploaderUid; String get uploaderName; String get universityId; String get departmentId; int get fileSizeBytes; int get pageCount; int get downloadCount; int get viewCount; double get ratingAvg; int get ratingCount; bool get isVerified; List<String> get tags; bool get isPublic; Map<String, dynamic> get metadata;// Legacy support fields
- String get courseTitle; List<String> get years; List<String> get batches; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String get type; String get title; String get description; String get courseCode; String get fileUrl; String get thumbnailUrl; int get lessonNo; String get status; String get accessLevel; String get rejectedNote; String get reviewedBy; DateTime? get reviewedAt; String? get creatorId; String? get creator; String get universityId; String get departmentId; int get fileSizeBytes; int get pageCount; int get downloadCount; int get viewCount; double get ratingAvg; int get ratingCount; bool get isVerified; List<String> get tags; bool get isPublic; Map<String, dynamic> get metadata; String get courseTitle; List<String> get years; List<String> get batches; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of Resource
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,21 @@ $ResourceCopyWith<Resource> get copyWith => _$ResourceCopyWithImpl<Resource>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Resource&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.lessonNo, lessonNo) || other.lessonNo == lessonNo)&&(identical(other.status, status) || other.status == status)&&(identical(other.accessLevel, accessLevel) || other.accessLevel == accessLevel)&&(identical(other.rejectedNote, rejectedNote) || other.rejectedNote == rejectedNote)&&(identical(other.reviewedBy, reviewedBy) || other.reviewedBy == reviewedBy)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt)&&(identical(other.uploaderId, uploaderId) || other.uploaderId == uploaderId)&&(identical(other.uploaderUid, uploaderUid) || other.uploaderUid == uploaderUid)&&(identical(other.uploaderName, uploaderName) || other.uploaderName == uploaderName)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.fileSizeBytes, fileSizeBytes) || other.fileSizeBytes == fileSizeBytes)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.downloadCount, downloadCount) || other.downloadCount == downloadCount)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.ratingAvg, ratingAvg) || other.ratingAvg == ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.isPublic, isPublic) || other.isPublic == isPublic)&&const DeepCollectionEquality().equals(other.metadata, metadata)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&const DeepCollectionEquality().equals(other.years, years)&&const DeepCollectionEquality().equals(other.batches, batches)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  final _this = this as Resource;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Resource&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.courseCode, _this.courseCode) || other.courseCode == _this.courseCode)&&(identical(other.fileUrl, _this.fileUrl) || other.fileUrl == _this.fileUrl)&&(identical(other.thumbnailUrl, _this.thumbnailUrl) || other.thumbnailUrl == _this.thumbnailUrl)&&(identical(other.lessonNo, _this.lessonNo) || other.lessonNo == _this.lessonNo)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.accessLevel, _this.accessLevel) || other.accessLevel == _this.accessLevel)&&(identical(other.rejectedNote, _this.rejectedNote) || other.rejectedNote == _this.rejectedNote)&&(identical(other.reviewedBy, _this.reviewedBy) || other.reviewedBy == _this.reviewedBy)&&(identical(other.reviewedAt, _this.reviewedAt) || other.reviewedAt == _this.reviewedAt)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.creator, _this.creator) || other.creator == _this.creator)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.fileSizeBytes, _this.fileSizeBytes) || other.fileSizeBytes == _this.fileSizeBytes)&&(identical(other.pageCount, _this.pageCount) || other.pageCount == _this.pageCount)&&(identical(other.downloadCount, _this.downloadCount) || other.downloadCount == _this.downloadCount)&&(identical(other.viewCount, _this.viewCount) || other.viewCount == _this.viewCount)&&(identical(other.ratingAvg, _this.ratingAvg) || other.ratingAvg == _this.ratingAvg)&&(identical(other.ratingCount, _this.ratingCount) || other.ratingCount == _this.ratingCount)&&(identical(other.isVerified, _this.isVerified) || other.isVerified == _this.isVerified)&&const DeepCollectionEquality().equals(other.tags, _this.tags)&&(identical(other.isPublic, _this.isPublic) || other.isPublic == _this.isPublic)&&const DeepCollectionEquality().equals(other.metadata, _this.metadata)&&(identical(other.courseTitle, _this.courseTitle) || other.courseTitle == _this.courseTitle)&&const DeepCollectionEquality().equals(other.years, _this.years)&&const DeepCollectionEquality().equals(other.batches, _this.batches)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,type,title,description,courseCode,fileUrl,thumbnailUrl,lessonNo,status,accessLevel,rejectedNote,reviewedBy,reviewedAt,uploaderId,uploaderUid,uploaderName,universityId,departmentId,fileSizeBytes,pageCount,downloadCount,viewCount,ratingAvg,ratingCount,isVerified,const DeepCollectionEquality().hash(tags),isPublic,const DeepCollectionEquality().hash(metadata),courseTitle,const DeepCollectionEquality().hash(years),const DeepCollectionEquality().hash(batches),createdAt,updatedAt]);
+int get hashCode {
+  final _this = this as Resource;
+  return Object.hashAll([runtimeType,_this.id,_this.type,_this.title,_this.description,_this.courseCode,_this.fileUrl,_this.thumbnailUrl,_this.lessonNo,_this.status,_this.accessLevel,_this.rejectedNote,_this.reviewedBy,_this.reviewedAt,_this.creatorId,_this.creator,_this.universityId,_this.departmentId,_this.fileSizeBytes,_this.pageCount,_this.downloadCount,_this.viewCount,_this.ratingAvg,_this.ratingCount,_this.isVerified,const DeepCollectionEquality().hash(_this.tags),_this.isPublic,const DeepCollectionEquality().hash(_this.metadata),_this.courseTitle,const DeepCollectionEquality().hash(_this.years),const DeepCollectionEquality().hash(_this.batches),_this.createdAt,_this.updatedAt]);
+}
 
 @override
 String toString() {
-  return 'Resource(id: $id, type: $type, title: $title, description: $description, courseCode: $courseCode, fileUrl: $fileUrl, thumbnailUrl: $thumbnailUrl, lessonNo: $lessonNo, status: $status, accessLevel: $accessLevel, rejectedNote: $rejectedNote, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, uploaderId: $uploaderId, uploaderUid: $uploaderUid, uploaderName: $uploaderName, universityId: $universityId, departmentId: $departmentId, fileSizeBytes: $fileSizeBytes, pageCount: $pageCount, downloadCount: $downloadCount, viewCount: $viewCount, ratingAvg: $ratingAvg, ratingCount: $ratingCount, isVerified: $isVerified, tags: $tags, isPublic: $isPublic, metadata: $metadata, courseTitle: $courseTitle, years: $years, batches: $batches, createdAt: $createdAt, updatedAt: $updatedAt)';
+  final _this = this as Resource;
+  return 'Resource(id: ${_this.id}, type: ${_this.type}, title: ${_this.title}, description: ${_this.description}, courseCode: ${_this.courseCode}, fileUrl: ${_this.fileUrl}, thumbnailUrl: ${_this.thumbnailUrl}, lessonNo: ${_this.lessonNo}, status: ${_this.status}, accessLevel: ${_this.accessLevel}, rejectedNote: ${_this.rejectedNote}, reviewedBy: ${_this.reviewedBy}, reviewedAt: ${_this.reviewedAt}, creatorId: ${_this.creatorId}, creator: ${_this.creator}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, fileSizeBytes: ${_this.fileSizeBytes}, pageCount: ${_this.pageCount}, downloadCount: ${_this.downloadCount}, viewCount: ${_this.viewCount}, ratingAvg: ${_this.ratingAvg}, ratingCount: ${_this.ratingCount}, isVerified: ${_this.isVerified}, tags: ${_this.tags}, isPublic: ${_this.isPublic}, metadata: ${_this.metadata}, courseTitle: ${_this.courseTitle}, years: ${_this.years}, batches: ${_this.batches}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -46,7 +51,7 @@ abstract mixin class $ResourceCopyWith<$Res>  {
   factory $ResourceCopyWith(Resource value, $Res Function(Resource) _then) = _$ResourceCopyWithImpl;
 @useResult
 $Res call({
- String id, String type, String title, String description, String courseCode, String fileUrl, String thumbnailUrl, int lessonNo, String status, String accessLevel, String rejectedNote, String reviewedBy, DateTime? reviewedAt, String uploaderId, String uploaderUid, String uploaderName, String universityId, String departmentId, int fileSizeBytes, int pageCount, int downloadCount, int viewCount, double ratingAvg, int ratingCount, bool isVerified, List<String> tags, bool isPublic, Map<String, dynamic> metadata, String courseTitle, List<String> years, List<String> batches, DateTime? createdAt, DateTime? updatedAt
+ String id, String type, String title, String description, String courseCode, String fileUrl, String thumbnailUrl, int lessonNo, String status, String accessLevel, String rejectedNote, String reviewedBy, DateTime? reviewedAt, String? creatorId, String? creator, String universityId, String departmentId, int fileSizeBytes, int pageCount, int downloadCount, int viewCount, double ratingAvg, int ratingCount, bool isVerified, List<String> tags, bool isPublic, Map<String, dynamic> metadata, String courseTitle, List<String> years, List<String> batches, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -63,8 +68,8 @@ class _$ResourceCopyWithImpl<$Res>
 
 /// Create a copy of Resource
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = null,Object? reviewedBy = null,Object? reviewedAt = freezed,Object? uploaderId = null,Object? uploaderUid = null,Object? uploaderName = null,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = null,Object? courseTitle = null,Object? years = null,Object? batches = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
-  return _then(_self.copyWith(
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = null,Object? reviewedBy = null,Object? reviewedAt = freezed,Object? creatorId = freezed,Object? creator = freezed,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = null,Object? courseTitle = null,Object? years = null,Object? batches = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+  return _then(Resource(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -78,10 +83,9 @@ as String,accessLevel: null == accessLevel ? _self.accessLevel : accessLevel // 
 as String,rejectedNote: null == rejectedNote ? _self.rejectedNote : rejectedNote // ignore: cast_nullable_to_non_nullable
 as String,reviewedBy: null == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
 as String,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,uploaderId: null == uploaderId ? _self.uploaderId : uploaderId // ignore: cast_nullable_to_non_nullable
-as String,uploaderUid: null == uploaderUid ? _self.uploaderUid : uploaderUid // ignore: cast_nullable_to_non_nullable
-as String,uploaderName: null == uploaderName ? _self.uploaderName : uploaderName // ignore: cast_nullable_to_non_nullable
-as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
+as DateTime?,creatorId: freezed == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as String?,creator: freezed == creator ? _self.creator : creator // ignore: cast_nullable_to_non_nullable
+as String?,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String,fileSizeBytes: null == fileSizeBytes ? _self.fileSizeBytes : fileSizeBytes // ignore: cast_nullable_to_non_nullable
 as int,pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
@@ -183,10 +187,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description,  String courseCode,  String fileUrl,  String thumbnailUrl,  int lessonNo,  String status,  String accessLevel,  String rejectedNote,  String reviewedBy,  DateTime? reviewedAt,  String uploaderId,  String uploaderUid,  String uploaderName,  String universityId,  String departmentId,  int fileSizeBytes,  int pageCount,  int downloadCount,  int viewCount,  double ratingAvg,  int ratingCount,  bool isVerified,  List<String> tags,  bool isPublic,  Map<String, dynamic> metadata,  String courseTitle,  List<String> years,  List<String> batches,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description,  String courseCode,  String fileUrl,  String thumbnailUrl,  int lessonNo,  String status,  String accessLevel,  String rejectedNote,  String reviewedBy,  DateTime? reviewedAt,  String? creatorId,  String? creator,  String universityId,  String departmentId,  int fileSizeBytes,  int pageCount,  int downloadCount,  int viewCount,  double ratingAvg,  int ratingCount,  bool isVerified,  List<String> tags,  bool isPublic,  Map<String, dynamic> metadata,  String courseTitle,  List<String> years,  List<String> batches,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Resource() when $default != null:
-return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.uploaderId,_that.uploaderUid,_that.uploaderName,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.creatorId,_that.creator,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -204,10 +208,10 @@ return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description,  String courseCode,  String fileUrl,  String thumbnailUrl,  int lessonNo,  String status,  String accessLevel,  String rejectedNote,  String reviewedBy,  DateTime? reviewedAt,  String uploaderId,  String uploaderUid,  String uploaderName,  String universityId,  String departmentId,  int fileSizeBytes,  int pageCount,  int downloadCount,  int viewCount,  double ratingAvg,  int ratingCount,  bool isVerified,  List<String> tags,  bool isPublic,  Map<String, dynamic> metadata,  String courseTitle,  List<String> years,  List<String> batches,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String type,  String title,  String description,  String courseCode,  String fileUrl,  String thumbnailUrl,  int lessonNo,  String status,  String accessLevel,  String rejectedNote,  String reviewedBy,  DateTime? reviewedAt,  String? creatorId,  String? creator,  String universityId,  String departmentId,  int fileSizeBytes,  int pageCount,  int downloadCount,  int viewCount,  double ratingAvg,  int ratingCount,  bool isVerified,  List<String> tags,  bool isPublic,  Map<String, dynamic> metadata,  String courseTitle,  List<String> years,  List<String> batches,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Resource():
-return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.uploaderId,_that.uploaderUid,_that.uploaderName,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.creatorId,_that.creator,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +228,10 @@ return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String type,  String title,  String description,  String courseCode,  String fileUrl,  String thumbnailUrl,  int lessonNo,  String status,  String accessLevel,  String rejectedNote,  String reviewedBy,  DateTime? reviewedAt,  String uploaderId,  String uploaderUid,  String uploaderName,  String universityId,  String departmentId,  int fileSizeBytes,  int pageCount,  int downloadCount,  int viewCount,  double ratingAvg,  int ratingCount,  bool isVerified,  List<String> tags,  bool isPublic,  Map<String, dynamic> metadata,  String courseTitle,  List<String> years,  List<String> batches,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String type,  String title,  String description,  String courseCode,  String fileUrl,  String thumbnailUrl,  int lessonNo,  String status,  String accessLevel,  String rejectedNote,  String reviewedBy,  DateTime? reviewedAt,  String? creatorId,  String? creator,  String universityId,  String departmentId,  int fileSizeBytes,  int pageCount,  int downloadCount,  int viewCount,  double ratingAvg,  int ratingCount,  bool isVerified,  List<String> tags,  bool isPublic,  Map<String, dynamic> metadata,  String courseTitle,  List<String> years,  List<String> batches,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Resource() when $default != null:
-return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.uploaderId,_that.uploaderUid,_that.uploaderName,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCode,_that.fileUrl,_that.thumbnailUrl,_that.lessonNo,_that.status,_that.accessLevel,_that.rejectedNote,_that.reviewedBy,_that.reviewedAt,_that.creatorId,_that.creator,_that.universityId,_that.departmentId,_that.fileSizeBytes,_that.pageCount,_that.downloadCount,_that.viewCount,_that.ratingAvg,_that.ratingCount,_that.isVerified,_that.tags,_that.isPublic,_that.metadata,_that.courseTitle,_that.years,_that.batches,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -239,7 +243,7 @@ return $default(_that.id,_that.type,_that.title,_that.description,_that.courseCo
 
 
 class _Resource implements Resource {
-  const _Resource({required this.id, required this.type, required this.title, required this.description, required this.courseCode, required this.fileUrl, required this.thumbnailUrl, required this.lessonNo, required this.status, required this.accessLevel, required this.rejectedNote, required this.reviewedBy, this.reviewedAt, required this.uploaderId, required this.uploaderUid, required this.uploaderName, required this.universityId, required this.departmentId, required this.fileSizeBytes, required this.pageCount, required this.downloadCount, required this.viewCount, required this.ratingAvg, required this.ratingCount, required this.isVerified, required final  List<String> tags, required this.isPublic, required final  Map<String, dynamic> metadata, required this.courseTitle, required final  List<String> years, required final  List<String> batches, this.createdAt, this.updatedAt}): _tags = tags,_metadata = metadata,_years = years,_batches = batches;
+  const _Resource({required this.id, required this.type, required this.title, required this.description, required this.courseCode, required this.fileUrl, required this.thumbnailUrl, required this.lessonNo, required this.status, required this.accessLevel, required this.rejectedNote, required this.reviewedBy, this.reviewedAt, this.creatorId, this.creator, required this.universityId, required this.departmentId, required this.fileSizeBytes, required this.pageCount, required this.downloadCount, required this.viewCount, required this.ratingAvg, required this.ratingCount, required this.isVerified, required  List<String> tags, required this.isPublic, required  Map<String, dynamic> metadata, required this.courseTitle, required  List<String> years, required  List<String> batches, this.createdAt, this.updatedAt}): _tags = tags,_metadata = metadata,_years = years,_batches = batches;
   
 
 @override final  String id;
@@ -255,9 +259,8 @@ class _Resource implements Resource {
 @override final  String rejectedNote;
 @override final  String reviewedBy;
 @override final  DateTime? reviewedAt;
-@override final  String uploaderId;
-@override final  String uploaderUid;
-@override final  String uploaderName;
+@override final  String? creatorId;
+@override final  String? creator;
 @override final  String universityId;
 @override final  String departmentId;
 @override final  int fileSizeBytes;
@@ -282,7 +285,6 @@ class _Resource implements Resource {
   return EqualUnmodifiableMapView(_metadata);
 }
 
-// Legacy support fields
 @override final  String courseTitle;
  final  List<String> _years;
 @override List<String> get years {
@@ -311,16 +313,18 @@ _$ResourceCopyWith<_Resource> get copyWith => __$ResourceCopyWithImpl<_Resource>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Resource&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.lessonNo, lessonNo) || other.lessonNo == lessonNo)&&(identical(other.status, status) || other.status == status)&&(identical(other.accessLevel, accessLevel) || other.accessLevel == accessLevel)&&(identical(other.rejectedNote, rejectedNote) || other.rejectedNote == rejectedNote)&&(identical(other.reviewedBy, reviewedBy) || other.reviewedBy == reviewedBy)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt)&&(identical(other.uploaderId, uploaderId) || other.uploaderId == uploaderId)&&(identical(other.uploaderUid, uploaderUid) || other.uploaderUid == uploaderUid)&&(identical(other.uploaderName, uploaderName) || other.uploaderName == uploaderName)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.fileSizeBytes, fileSizeBytes) || other.fileSizeBytes == fileSizeBytes)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.downloadCount, downloadCount) || other.downloadCount == downloadCount)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.ratingAvg, ratingAvg) || other.ratingAvg == ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.isPublic, isPublic) || other.isPublic == isPublic)&&const DeepCollectionEquality().equals(other._metadata, _metadata)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&const DeepCollectionEquality().equals(other._years, _years)&&const DeepCollectionEquality().equals(other._batches, _batches)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Resource&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.courseCode, courseCode) || other.courseCode == courseCode)&&(identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.lessonNo, lessonNo) || other.lessonNo == lessonNo)&&(identical(other.status, status) || other.status == status)&&(identical(other.accessLevel, accessLevel) || other.accessLevel == accessLevel)&&(identical(other.rejectedNote, rejectedNote) || other.rejectedNote == rejectedNote)&&(identical(other.reviewedBy, reviewedBy) || other.reviewedBy == reviewedBy)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.creator, creator) || other.creator == creator)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.fileSizeBytes, fileSizeBytes) || other.fileSizeBytes == fileSizeBytes)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.downloadCount, downloadCount) || other.downloadCount == downloadCount)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.ratingAvg, ratingAvg) || other.ratingAvg == ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&const DeepCollectionEquality().equals(other.tags, _tags)&&(identical(other.isPublic, isPublic) || other.isPublic == isPublic)&&const DeepCollectionEquality().equals(other.metadata, _metadata)&&(identical(other.courseTitle, courseTitle) || other.courseTitle == courseTitle)&&const DeepCollectionEquality().equals(other.years, _years)&&const DeepCollectionEquality().equals(other.batches, _batches)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,type,title,description,courseCode,fileUrl,thumbnailUrl,lessonNo,status,accessLevel,rejectedNote,reviewedBy,reviewedAt,uploaderId,uploaderUid,uploaderName,universityId,departmentId,fileSizeBytes,pageCount,downloadCount,viewCount,ratingAvg,ratingCount,isVerified,const DeepCollectionEquality().hash(_tags),isPublic,const DeepCollectionEquality().hash(_metadata),courseTitle,const DeepCollectionEquality().hash(_years),const DeepCollectionEquality().hash(_batches),createdAt,updatedAt]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,type,title,description,courseCode,fileUrl,thumbnailUrl,lessonNo,status,accessLevel,rejectedNote,reviewedBy,reviewedAt,creatorId,creator,universityId,departmentId,fileSizeBytes,pageCount,downloadCount,viewCount,ratingAvg,ratingCount,isVerified,const DeepCollectionEquality().hash(_tags),isPublic,const DeepCollectionEquality().hash(_metadata),courseTitle,const DeepCollectionEquality().hash(_years),const DeepCollectionEquality().hash(_batches),createdAt,updatedAt]);
+}
 
 @override
 String toString() {
-  return 'Resource(id: $id, type: $type, title: $title, description: $description, courseCode: $courseCode, fileUrl: $fileUrl, thumbnailUrl: $thumbnailUrl, lessonNo: $lessonNo, status: $status, accessLevel: $accessLevel, rejectedNote: $rejectedNote, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, uploaderId: $uploaderId, uploaderUid: $uploaderUid, uploaderName: $uploaderName, universityId: $universityId, departmentId: $departmentId, fileSizeBytes: $fileSizeBytes, pageCount: $pageCount, downloadCount: $downloadCount, viewCount: $viewCount, ratingAvg: $ratingAvg, ratingCount: $ratingCount, isVerified: $isVerified, tags: $tags, isPublic: $isPublic, metadata: $metadata, courseTitle: $courseTitle, years: $years, batches: $batches, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Resource(id: $id, type: $type, title: $title, description: $description, courseCode: $courseCode, fileUrl: $fileUrl, thumbnailUrl: $thumbnailUrl, lessonNo: $lessonNo, status: $status, accessLevel: $accessLevel, rejectedNote: $rejectedNote, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, creatorId: $creatorId, creator: $creator, universityId: $universityId, departmentId: $departmentId, fileSizeBytes: $fileSizeBytes, pageCount: $pageCount, downloadCount: $downloadCount, viewCount: $viewCount, ratingAvg: $ratingAvg, ratingCount: $ratingCount, isVerified: $isVerified, tags: $tags, isPublic: $isPublic, metadata: $metadata, courseTitle: $courseTitle, years: $years, batches: $batches, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -331,7 +335,7 @@ abstract mixin class _$ResourceCopyWith<$Res> implements $ResourceCopyWith<$Res>
   factory _$ResourceCopyWith(_Resource value, $Res Function(_Resource) _then) = __$ResourceCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String type, String title, String description, String courseCode, String fileUrl, String thumbnailUrl, int lessonNo, String status, String accessLevel, String rejectedNote, String reviewedBy, DateTime? reviewedAt, String uploaderId, String uploaderUid, String uploaderName, String universityId, String departmentId, int fileSizeBytes, int pageCount, int downloadCount, int viewCount, double ratingAvg, int ratingCount, bool isVerified, List<String> tags, bool isPublic, Map<String, dynamic> metadata, String courseTitle, List<String> years, List<String> batches, DateTime? createdAt, DateTime? updatedAt
+ String id, String type, String title, String description, String courseCode, String fileUrl, String thumbnailUrl, int lessonNo, String status, String accessLevel, String rejectedNote, String reviewedBy, DateTime? reviewedAt, String? creatorId, String? creator, String universityId, String departmentId, int fileSizeBytes, int pageCount, int downloadCount, int viewCount, double ratingAvg, int ratingCount, bool isVerified, List<String> tags, bool isPublic, Map<String, dynamic> metadata, String courseTitle, List<String> years, List<String> batches, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -348,7 +352,7 @@ class __$ResourceCopyWithImpl<$Res>
 
 /// Create a copy of Resource
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = null,Object? reviewedBy = null,Object? reviewedAt = freezed,Object? uploaderId = null,Object? uploaderUid = null,Object? uploaderName = null,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = null,Object? courseTitle = null,Object? years = null,Object? batches = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? title = null,Object? description = null,Object? courseCode = null,Object? fileUrl = null,Object? thumbnailUrl = null,Object? lessonNo = null,Object? status = null,Object? accessLevel = null,Object? rejectedNote = null,Object? reviewedBy = null,Object? reviewedAt = freezed,Object? creatorId = freezed,Object? creator = freezed,Object? universityId = null,Object? departmentId = null,Object? fileSizeBytes = null,Object? pageCount = null,Object? downloadCount = null,Object? viewCount = null,Object? ratingAvg = null,Object? ratingCount = null,Object? isVerified = null,Object? tags = null,Object? isPublic = null,Object? metadata = null,Object? courseTitle = null,Object? years = null,Object? batches = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_Resource(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -363,10 +367,9 @@ as String,accessLevel: null == accessLevel ? _self.accessLevel : accessLevel // 
 as String,rejectedNote: null == rejectedNote ? _self.rejectedNote : rejectedNote // ignore: cast_nullable_to_non_nullable
 as String,reviewedBy: null == reviewedBy ? _self.reviewedBy : reviewedBy // ignore: cast_nullable_to_non_nullable
 as String,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,uploaderId: null == uploaderId ? _self.uploaderId : uploaderId // ignore: cast_nullable_to_non_nullable
-as String,uploaderUid: null == uploaderUid ? _self.uploaderUid : uploaderUid // ignore: cast_nullable_to_non_nullable
-as String,uploaderName: null == uploaderName ? _self.uploaderName : uploaderName // ignore: cast_nullable_to_non_nullable
-as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
+as DateTime?,creatorId: freezed == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as String?,creator: freezed == creator ? _self.creator : creator // ignore: cast_nullable_to_non_nullable
+as String?,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String,fileSizeBytes: null == fileSizeBytes ? _self.fileSizeBytes : fileSizeBytes // ignore: cast_nullable_to_non_nullable
 as int,pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable

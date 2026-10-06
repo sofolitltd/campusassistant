@@ -50,3 +50,7 @@ app.*.map.json
 
 # Service account credentials
 assets/data/campusassistantbd.json
+
+# Android signing
+/android/key.properties
+*.jks

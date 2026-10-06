@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/lost_found_provider.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 /// Bottom sheet for "This is mine" / "I found this" — submits a claim on an
 /// item the current user does not own.
-Future<bool?> showClaimBottomSheet(BuildContext context, WidgetRef ref, String itemId) {
+Future<bool?> showClaimBottomSheet(
+  BuildContext context,
+  WidgetRef ref,
+  String itemId,
+) {
   final controller = TextEditingController();
   return showModalBottomSheet<bool>(
     context: context,
@@ -28,7 +33,11 @@ class _ClaimForm extends StatefulWidget {
   final String itemId;
   final WidgetRef ref;
 
-  const _ClaimForm({required this.controller, required this.itemId, required this.ref});
+  const _ClaimForm({
+    required this.controller,
+    required this.itemId,
+    required this.ref,
+  });
 
   @override
   State<_ClaimForm> createState() => _ClaimFormState();
@@ -46,9 +55,9 @@ class _ClaimFormState extends State<_ClaimForm> {
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to submit claim: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to submit claim: $e')));
         setState(() => _submitting = false);
       }
     }
@@ -57,34 +66,36 @@ class _ClaimFormState extends State<_ClaimForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
       children: [
         Text('Claim this item', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 4),
+        const SizedBox(height: Spacing.xs),
         Text(
           'Describe the item or how you can prove it\'s yours (or how/where you found it). '
           'The poster will review your message and, if accepted, a private chat opens automatically.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Spacing.md),
         TextField(
           controller: widget.controller,
           maxLines: 3,
           decoration: const InputDecoration(
             hintText: 'e.g. It has a scratch on the back cover...',
-            border: OutlineInputBorder(),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Spacing.md),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _submitting ? null : _submit,
             child: _submitting
                 ? const SizedBox(
-                    height: 18, width: 18, child: CupertinoActivityIndicator())
-                : const Text('Submit Claim'),
+                    height: 18,
+                    width: 18,
+                    child: CupertinoActivityIndicator(),
+                  )
+                : const Text('Submit claim'),
           ),
         ),
       ],

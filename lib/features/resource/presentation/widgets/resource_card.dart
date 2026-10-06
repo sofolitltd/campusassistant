@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,7 +18,10 @@ import 'package:uuid/uuid.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/core/ads/download_ad_gate.dart';
+import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
+import '/features/reward/data/repositories/reward_repository.dart';
+import '/features/reward/presentation/providers/reward_providers.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/core/cache/cache_manager.dart';
 import '/core/network/api_endpoints.dart';
@@ -28,7 +32,12 @@ import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/features/resource/presentation/providers/downloads_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
+import '/features/reward/presentation/widgets/reward_cost_indicator.dart';
+import '/routes/app_route.dart';
 import 'resource_info_sheet.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class ResourceCard extends ConsumerStatefulWidget {
   final Resource resource;
@@ -99,7 +108,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final profileAsync = ref.watch(userProvider);
     final profileData = profileAsync.value;
 
@@ -158,12 +166,10 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(RadiusToken.md),
         color: theme.cardColor,
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -176,6 +182,15 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             onTap: () async {
               if (isProContent && !isProUser) {
                 _showProDialog(context);
+              } else if (!isProUser && !kIsWeb) {
+                final canAccess = await _checkRewardGate();
+                if (canAccess) {
+                  // Coins (or Pro) already granted access above — skip the
+                  // separate ad gate inside _downloadIfNeeded, otherwise a
+                  // user who just paid with coins gets shown the ad prompt
+                  // too.
+                  await _handleOpenContent(gateAlreadyChecked: true);
+                }
               } else {
                 await _handleOpenContent();
               }
@@ -183,14 +198,14 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             child: Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(Spacing.md),
                   child: Row(
                     children: [
                       GestureDetector(
                         onTap: _showInfoBottomSheet,
                         child: _buildThumbnail(isProContent),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: Spacing.md),
                       _buildDetails(context),
                     ],
                   ),
@@ -202,10 +217,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   child: _isLoading || _isPaused
                       ? _buildDownloadStatusAction()
                       : Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: .min,
                           children: [
                             _buildBookmark(),
-                            const SizedBox(width: 2),
+                            const SizedBox(width: Spacing.xxs),
+                            if (!isProUser)
+                              RewardCostIndicator(
+                                resourceId: widget.resource.id,
+                                fileSizeBytes: widget.resource.fileSizeBytes,
+                              ),
+                            const SizedBox(width: Spacing.xxs),
                             _buildDownloadStatusAction(),
                           ],
                         ),
@@ -228,16 +249,13 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           width: 80,
           height: 90,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(RadiusToken.sm),
             color: isDark
                 ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                : Colors.blueAccent.shade100.withValues(alpha: 0.1),
-            border: Border.all(
-              color: isDark ? Colors.white24 : Colors.grey.shade300,
-              width: 1,
-            ),
+                : AccentToken.blue.withValues(alpha: 0.1),
+            border: Border.all(color: context.colors.borderStrong, width: 1),
           ),
-          clipBehavior: Clip.antiAlias,
+          clipBehavior: .antiAlias,
           child: widget.resource.thumbnailUrl.isEmpty
               ? Icon(
                   LucideIcons.fileText,
@@ -248,7 +266,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   imageUrl: ApiEndpoints.resolveImageUrl(
                     widget.resource.thumbnailUrl,
                   ),
-                  fit: BoxFit.cover,
+                  fit: .cover,
                   placeholder: (context, _) => Icon(
                     LucideIcons.fileText,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
@@ -268,12 +286,12 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             child: Container(
               padding: const EdgeInsets.all(2.5),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.orange.withValues(alpha: .8),
+                borderRadius: BorderRadius.circular(RadiusToken.xs),
+                color: context.colors.warning.withValues(alpha: .8),
               ),
-              child: const Icon(
+              child: Icon(
                 LucideIcons.crown,
-                color: Colors.white,
+                color: context.colors.onPrimary,
                 size: 15,
               ),
             ),
@@ -287,47 +305,49 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       child: SizedBox(
         height: 95,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: .start,
+          mainAxisAlignment: .start,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.xs,
+                vertical: Spacing.xxs,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(
                   context,
-                ).appColors.primaryColor.withValues(alpha: .5),
+                ).appColors.primary.withValues(alpha: .5),
                 borderRadius: BorderRadius.circular(2.5),
               ),
               child: Text(
                 '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
-                style: const TextStyle(
+                style: TextStyle(
                   height: 1,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  fontSize: FontSizeToken.xxs,
+                  fontWeight: .bold,
+                  color: context.colors.onPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Spacing.xs),
             Text(
               widget.resource.title,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                height: 1.2,
-              ),
+              overflow: .ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: .bold, height: 1.2),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Spacing.xs),
             Text(
               widget.resource.description,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: .ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: .w500,
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white70
-                    : Colors.grey.shade600,
+                    ? context.colors.textMuted
+                    : context.colors.textMuted,
                 height: 1,
               ),
             ),
@@ -339,7 +359,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   LucideIcons.hardDrive,
                   _getFileSizeStr(widget.resource.fileSizeBytes),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Spacing.sm),
                 _buildMiniInfoTile(
                   context,
                   LucideIcons.layers,
@@ -363,25 +383,18 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         switch (value) {
           case 'download':
             await _handleOpenContent();
-            break;
           case 'cancel':
             _handleCancelDownload();
-            break;
           case 'save':
             await _saveToPublicDownloads();
-            break;
           case 'share':
             await _handleShare();
-            break;
           case 'open_with':
             await _handleOpenWith();
-            break;
           case 'delete_local':
             await _handleDeleteLocally();
-            break;
           case 'info':
             _showInfoBottomSheet();
-            break;
         }
       },
       itemBuilder: (context) => [
@@ -401,7 +414,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             child: _PopupItem(
               icon: LucideIcons.circleX,
               text: 'Cancel Download',
-              errorColor: theme.appColors.destructiveColor,
+              errorColor: theme.appColors.danger,
             ),
           ),
         if (_isDownloaded)
@@ -434,7 +447,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             child: _PopupItem(
               icon: LucideIcons.trash2,
               text: 'Delete Locally',
-              errorColor: theme.appColors.destructiveColor,
+              errorColor: theme.appColors.danger,
             ),
           ),
         const PopupMenuItem(
@@ -448,31 +461,23 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
   Widget _buildDownloadStatusAction() {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     if (_isLoading || _isPaused) {
       return Container(
-        padding: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.only(right: Spacing.md),
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(RadiusToken.sm),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.blueGrey.shade50,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-            ),
-          ],
+          border: Border.all(color: context.colors.surfaceAlt),
+          boxShadow: [BoxShadow(color: context.colors.shadow, blurRadius: 8)],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             IconButton(
               icon: Icon(
                 LucideIcons.circleX,
                 size: 18,
-                color: theme.appColors.destructiveColor,
+                color: theme.appColors.danger,
               ),
               onPressed: _handleCancelDownload,
             ),
@@ -480,7 +485,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               icon: Icon(
                 _isPaused ? LucideIcons.play : LucideIcons.pause,
                 size: 18,
-                color: theme.appColors.primaryColor,
+                color: theme.appColors.primary,
               ),
               onPressed: () => _isPaused ? _resumeDownload() : _pauseDownload(),
             ),
@@ -490,7 +495,11 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       );
     }
     if (_isDownloaded) {
-      return Icon(LucideIcons.circleCheck, color: Colors.green, size: 20);
+      return Icon(
+        LucideIcons.circleCheck,
+        color: context.colors.success,
+        size: 20,
+      );
     }
     return GestureDetector(
       onTap: _handleOpenContent,
@@ -519,7 +528,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         ),
         Text(
           '${(_downloadProgress * 100).toInt()}%',
-          style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 8, fontWeight: .bold),
         ),
       ],
     );
@@ -534,7 +543,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       icon: Icon(
         _isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
         color: _isBookmarked
-            ? Colors.teal
+            ? context.colors.primary
             : theme.colorScheme.onSurface.withValues(alpha: 0.4),
         size: 20,
       ),
@@ -545,31 +554,28 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.sm,
+        vertical: Spacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: isDark
             ? theme.colorScheme.surface.withValues(alpha: 0.5)
-            : Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade100,
-        ),
+            : context.colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(RadiusToken.xs),
+        border: Border.all(color: context.colors.surfaceAlt),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
-          Icon(
-            icon,
-            size: 10,
-            color: isDark ? Colors.white70 : Colors.grey.shade600,
-          ),
-          const SizedBox(width: 4),
+          Icon(icon, size: 10, color: context.colors.textMuted),
+          const SizedBox(width: Spacing.xs),
           Text(
             value,
             style: TextStyle(
-              fontSize: 9,
+              fontSize: FontSizeToken.xxs,
               color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
             ),
           ),
         ],
@@ -592,7 +598,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xl),
+        ),
       ),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.8,
@@ -612,18 +620,104 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Pro Feature'),
-        content: const Text('This content is for Pro subscribers only.'),
+        content: const Text(
+          'This content is for Pro subscribers only. Upgrade to Pro for unlimited access to all resources.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.push(AppRoute.subscription.path);
+            },
+            child: const Text('Go Pro'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _handleOpenContent() async {
+  Future<bool> _checkRewardGate() async {
+    final isPro = ref.read(isProUserProvider);
+    if (isPro || kIsWeb) return true;
+
+    final rewardRepo = ref.read(rewardRepositoryProvider);
+
+    final result = await rewardRepo.spend(widget.resource.id);
+
+    return result.fold((_) => true, (r) {
+      if (r['insufficient'] == true) {
+        if (!mounted) return false;
+        final cost = r['required'] as int? ?? 1;
+        final balance = r['balance'] as int? ?? 0;
+        _showUnlockDialog(rewardRepo, cost, balance);
+        return false;
+      }
+      return r['spent'] != null || r['is_pro'] == true;
+    });
+  }
+
+  Future<void> _showUnlockDialog(
+    RewardRepository rewardRepo,
+    int cost,
+    int balance,
+  ) async {
+    final manager = ref.read(rewardedAdManagerProvider);
+    manager.preload();
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Unlock to download'),
+        content: Text(
+          'This file costs $cost coin${cost > 1 ? 's' : ''}. '
+          'You have $balance coin${balance != 1 ? 's' : ''}. '
+          'Watch a short ad to earn 1 coin, or upgrade to Pro for unlimited access.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop(false);
+              context.push(AppRoute.subscription.path);
+            },
+            child: const Text('Go Pro'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Watch ad'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != true) return;
+
+    final earned = await manager.show();
+    if (!earned || !mounted) return;
+
+    ref.invalidate(rewardBalanceProvider);
+    await ref.read(rewardEarnProvider.future);
+
+    final retryResult = await rewardRepo.spend(widget.resource.id);
+    retryResult.fold((_) {}, (r) {
+      if (r['insufficient'] != true &&
+          (r['spent'] != null || r['is_pro'] == true)) {
+        // Coin was just spent via the ad-earned reward above — skip the
+        // separate ad gate inside _downloadIfNeeded.
+        _handleOpenContent(gateAlreadyChecked: true);
+      }
+    });
+  }
+
+  Future<void> _handleOpenContent({bool gateAlreadyChecked = false}) async {
     // Web streams the PDF straight from the URL (see PdfViewerPage) — no
     // local download step needed or possible.
     if (kIsWeb) {
@@ -642,7 +736,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       return;
     }
 
-    if (!_isDownloaded) await _downloadIfNeeded();
+    if (!_isDownloaded) {
+      await _downloadIfNeeded(gateAlreadyChecked: gateAlreadyChecked);
+    }
     if (_isDownloaded && _localPath.isNotEmpty) {
       if (mounted) {
         ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
@@ -659,13 +755,18 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
   }
 
-  Future<void> _downloadIfNeeded() async {
+  Future<void> _downloadIfNeeded({bool gateAlreadyChecked = false}) async {
     // No local filesystem on web — nothing to download to, and the ad gate
     // below relies on google_mobile_ads, which has no web implementation.
     if (kIsWeb) return;
     if (_isDownloaded || _isLoading) return;
 
-    final shouldDownload = await showDownloadAdGate(context, ref);
+    // If a coin (or Pro) already granted access — e.g. via _checkRewardGate
+    // in onTap, or after a successful reward-ad in _showUnlockDialog — don't
+    // show the separate ad-only gate on top of it.
+    final shouldDownload = gateAlreadyChecked
+        ? true
+        : await showDownloadAdGate(context, ref);
     if (!shouldDownload || !mounted) return;
 
     setState(() {
@@ -835,9 +936,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
                 'Remove',
-                style: TextStyle(
-                  color: Theme.of(context).appColors.destructiveColor,
-                ),
+                style: TextStyle(color: context.colors.danger),
               ),
             ),
           ],
@@ -895,8 +994,11 @@ class _PopupItem extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     children: [
       Icon(icon, size: 16, color: errorColor),
-      const SizedBox(width: 8),
-      Text(text, style: TextStyle(fontSize: 13, color: errorColor)),
+      const SizedBox(width: Spacing.sm),
+      Text(
+        text,
+        style: TextStyle(fontSize: FontSizeToken.md, color: errorColor),
+      ),
     ],
   );
 }

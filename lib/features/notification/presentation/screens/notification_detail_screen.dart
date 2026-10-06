@@ -9,6 +9,10 @@ import '../../domain/enums/notification_type.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class NotificationDetailScreen extends ConsumerWidget {
   final dynamic notification;
@@ -18,27 +22,27 @@ class NotificationDetailScreen extends ConsumerWidget {
   (IconData, Color) _iconForType(NotificationType type) {
     switch (type) {
       case NotificationType.routineUpdate:
-        return (LucideIcons.calendarClock, const Color(0xFF6C7BFF));
+        return (LucideIcons.calendarClock, AccentToken.periwinkle);
       case NotificationType.studyMaterial:
-        return (LucideIcons.bookOpenText, const Color(0xFF22C55E));
+        return (LucideIcons.bookOpenText, AccentToken.green);
       case NotificationType.communityPost:
-        return (LucideIcons.messageSquare, const Color(0xFF3B82F6));
+        return (LucideIcons.messageSquare, AccentToken.blue);
       case NotificationType.communityReply:
-        return (LucideIcons.reply, const Color(0xFF8B5CF6));
+        return (LucideIcons.reply, AccentToken.violet);
       case NotificationType.subscription:
-        return (LucideIcons.crown, const Color(0xFFF59E0B));
+        return (LucideIcons.crown, AccentToken.amber);
       case NotificationType.emergency:
-        return (LucideIcons.alertTriangle, const Color(0xFFEF4444));
+        return (LucideIcons.alertTriangle, AccentToken.red);
       case NotificationType.bloodRequest:
-        return (LucideIcons.droplets, const Color(0xFFE11D48));
+        return (LucideIcons.droplets, AccentToken.rose);
       case NotificationType.alumni:
-        return (LucideIcons.graduationCap, const Color(0xFF14B8A6));
+        return (LucideIcons.graduationCap, AccentToken.teal);
       case NotificationType.notice:
-        return (LucideIcons.megaphone, const Color(0xFFF97316));
+        return (LucideIcons.megaphone, AccentToken.orange);
       case NotificationType.achievement:
-        return (LucideIcons.trophy, const Color(0xFFFACC15));
+        return (LucideIcons.trophy, AccentToken.yellow);
       case NotificationType.club:
-        return (LucideIcons.users, const Color(0xFFEC4899));
+        return (LucideIcons.users, AccentToken.pink);
     }
   }
 
@@ -85,7 +89,6 @@ class NotificationDetailScreen extends ConsumerWidget {
       );
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final (icon, color) = _iconForType(notif.type);
     final formattedDate = _formatDateTime(notif.timestamp);
 
@@ -99,7 +102,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                 expandedHeight: 200,
                 pinned: true,
                 backgroundColor: color,
-                foregroundColor: Colors.white,
+                foregroundColor: context.colors.onPrimary,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Stack(
                     fit: StackFit.expand,
@@ -107,7 +110,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                       if (notif.imageUrl != null)
                         Image.network(
                           ApiEndpoints.resolveImageUrl(notif.imageUrl),
-                          fit: BoxFit.cover,
+                          fit: .cover,
                           errorBuilder: (_, _, _) => _gradientBg(color),
                         )
                       else
@@ -119,7 +122,9 @@ class NotificationDetailScreen extends ConsumerWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withValues(alpha: 0.6),
+                              context.colors.surfaceInverse.withValues(
+                                alpha: 0.6,
+                              ),
                             ],
                           ),
                         ),
@@ -134,48 +139,58 @@ class NotificationDetailScreen extends ConsumerWidget {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(14),
+                                color: context.colors.surface.withValues(
+                                  alpha: 0.2,
+                                ),
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.lg,
+                                ),
                               ),
-                              child: Icon(icon, color: Colors.white, size: 24),
+                              child: Icon(
+                                icon,
+                                color: context.colors.onPrimary,
+                                size: 24,
+                              ),
                             ),
-                            const SizedBox(width: 14),
+                            const SizedBox(width: Spacing.lg),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: .start,
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 3,
+                                      horizontal: Spacing.sm,
+                                      vertical: Spacing.xs,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
+                                      color: context.colors.surface.withValues(
                                         alpha: 0.15,
                                       ),
-                                      borderRadius: BorderRadius.circular(6),
+                                      borderRadius: BorderRadius.circular(
+                                        RadiusToken.sm,
+                                      ),
                                     ),
                                     child: Text(
                                       notif.type.label,
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                      style: TextStyle(
+                                        fontSize: FontSizeToken.xs,
+                                        fontWeight: .bold,
+                                        color: context.colors.onPrimary,
                                         letterSpacing: 0.5,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: Spacing.sm),
                                   Text(
                                     notif.title,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      fontSize: FontSizeToken.xxl,
+                                      fontWeight: .bold,
+                                      color: context.colors.onPrimary,
                                       height: 1.2,
                                     ),
                                     maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: .ellipsis,
                                   ),
                                 ],
                               ),
@@ -191,65 +206,62 @@ class NotificationDetailScreen extends ConsumerWidget {
                     icon: const Icon(LucideIcons.share2),
                     onPressed: () => _shareNotification(notif),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: Spacing.xs),
                 ],
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.xl,
+                    Spacing.xxl,
+                    Spacing.xl,
+                    Spacing.xxxl,
+                  ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Row(
                         children: [
                           Icon(
                             LucideIcons.clock,
                             size: 14,
-                            color: isDark
-                                ? Colors.grey.shade500
-                                : Colors.grey.shade400,
+                            color: context.colors.textSubtle,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: Spacing.sm),
                           Text(
                             formattedDate,
                             style: TextStyle(
-                              fontSize: 13,
-                              color: isDark
-                                  ? Colors.grey.shade400
-                                  : Colors.grey.shade500,
+                              fontSize: FontSizeToken.md,
+                              color: context.colors.textSubtle,
                             ),
                           ),
                           const Spacer(),
                           if (notif.isRead)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
+                                horizontal: Spacing.sm,
+                                vertical: Spacing.xs,
                               ),
                               decoration: BoxDecoration(
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.05)
-                                    : Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(6),
+                                color: context.colors.surfaceAlt,
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.sm,
+                                ),
                               ),
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                                mainAxisSize: .min,
                                 children: [
                                   Icon(
                                     LucideIcons.checkCheck,
                                     size: 12,
-                                    color: isDark
-                                        ? Colors.grey.shade500
-                                        : Colors.grey.shade400,
+                                    color: context.colors.textSubtle,
                                   ),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(width: Spacing.xs),
                                   Text(
                                     'Read',
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      color: isDark
-                                          ? Colors.grey.shade500
-                                          : Colors.grey.shade400,
+                                      fontSize: FontSizeToken.xs,
+                                      color: context.colors.textSubtle,
                                     ),
                                   ),
                                 ],
@@ -257,32 +269,24 @@ class NotificationDetailScreen extends ConsumerWidget {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: Spacing.xl),
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(Spacing.lg),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.03)
-                              : Colors.grey.shade50,
+                          color: context.colors.surfaceAlt,
                           borderRadius: BorderRadius.circular(RadiusToken.md),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white10
-                                : Colors.grey.shade200,
-                          ),
+                          border: Border.all(color: context.colors.border),
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Text(
                               notif.title,
                               style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: isDark
-                                    ? Colors.white
-                                    : Colors.grey.shade900,
+                                fontSize: FontSizeToken.xl,
+                                fontWeight: .bold,
+                                color: context.colors.text,
                                 height: 1.3,
                               ),
                             ),
@@ -290,10 +294,8 @@ class NotificationDetailScreen extends ConsumerWidget {
                             Text(
                               notif.body,
                               style: TextStyle(
-                                fontSize: 15,
-                                color: isDark
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
+                                fontSize: FontSizeToken.lg,
+                                color: context.colors.textMuted,
                                 height: 1.6,
                               ),
                             ),
@@ -301,10 +303,10 @@ class NotificationDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       if (notif.actionRoute != null) ...[
-                        const SizedBox(height: 24),
+                        const SizedBox(height: Spacing.xxl),
                         SizedBox(
                           width: double.infinity,
-                          height: 48,
+                          height: ControlToken.height,
                           child: ElevatedButton.icon(
                             onPressed: () => _navigateToSource(context, notif),
                             icon: const Icon(
@@ -313,17 +315,10 @@ class NotificationDetailScreen extends ConsumerWidget {
                             ),
                             label: Text(
                               'Go to ${_sourceLabel(notif.type)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: const TextStyle(fontWeight: .bold),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: color,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  RadiusToken.md,
-                                ),
-                              ),
                             ),
                           ),
                         ),
@@ -331,24 +326,17 @@ class NotificationDetailScreen extends ConsumerWidget {
                       const SizedBox(height: Spacing.lg),
                       SizedBox(
                         width: double.infinity,
-                        height: 48,
+                        height: ControlToken.height,
                         child: OutlinedButton.icon(
                           onPressed: () => _shareNotification(notif),
                           icon: const Icon(LucideIcons.share2, size: 18),
                           label: const Text(
                             'Share Notification',
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: TextStyle(fontWeight: .w600),
                           ),
                           style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                RadiusToken.md,
-                              ),
-                            ),
                             side: BorderSide(
-                              color: isDark
-                                  ? Colors.white24
-                                  : Colors.grey.shade300,
+                              color: context.colors.borderStrong,
                             ),
                           ),
                         ),

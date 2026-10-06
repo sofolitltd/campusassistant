@@ -14,6 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../syllabus/domain/entities/syllabus.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class SyllabusCard extends StatefulWidget {
   const SyllabusCard({super.key, required this.syllabus});
@@ -55,11 +59,11 @@ class _SyllabusCardState extends State<SyllabusCard> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.sm),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.05),
+              color: context.colors.textSubtle.withValues(alpha: 0.05),
               blurRadius: 8,
               spreadRadius: 4,
               offset: const Offset(0, 8),
@@ -67,11 +71,16 @@ class _SyllabusCardState extends State<SyllabusCard> {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 10, 0),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.md,
+            Spacing.md,
+            Spacing.md,
+            0,
+          ),
           child: Column(
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: .stretch,
                 children: [
                   Text(
                     'Syllabus',
@@ -79,32 +88,37 @@ class _SyllabusCardState extends State<SyllabusCard> {
                   ),
                   Text(
                     widget.syllabus.title,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge!.copyWith(fontWeight: .bold),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.fromLTRB(6, 4, 10, 4),
-                    margin: const EdgeInsets.only(bottom: 6),
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.sm,
+                      Spacing.xs,
+                      Spacing.md,
+                      Spacing.xs,
+                    ),
+                    margin: const EdgeInsets.only(bottom: Spacing.sm),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(4),
+                      color: context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           LucideIcons.clock,
-                          color: Colors.black,
+                          color: context.colors.text,
                           size: 16,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: Spacing.xs),
                         Text(
                           widget.syllabus.createdAt != null
                               ? '${widget.syllabus.createdAt!.year}-${widget.syllabus.createdAt!.month.toString().padLeft(2, '0')}-${widget.syllabus.createdAt!.day.toString().padLeft(2, '0')}'
@@ -135,7 +149,7 @@ class _SyllabusCardState extends State<SyllabusCard> {
                           },
                           icon: const Icon(
                             LucideIcons.externalLink,
-                            color: Colors.blueAccent,
+                            color: AccentToken.blue,
                           ),
                         )
                       else if (File(
@@ -148,9 +162,9 @@ class _SyllabusCardState extends State<SyllabusCard> {
                               url: fileUrl,
                             );
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             LucideIcons.circleCheck,
-                            color: Colors.green,
+                            color: context.colors.success,
                           ),
                         )
                       else if (!_isLoading)
@@ -163,9 +177,9 @@ class _SyllabusCardState extends State<SyllabusCard> {
                             );
                             setState(() => _isLoading = false);
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             LucideIcons.circleArrowDown,
-                            color: Colors.red,
+                            color: context.colors.danger,
                           ),
                         )
                       else
@@ -173,10 +187,12 @@ class _SyllabusCardState extends State<SyllabusCard> {
                           alignment: Alignment.center,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(Spacing.lg),
                               child: Text(
                                 (_downloadProgress! * 100).toStringAsFixed(0),
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(
+                                  fontSize: FontSizeToken.sm,
+                                ),
                               ),
                             ),
                             SizedBox(

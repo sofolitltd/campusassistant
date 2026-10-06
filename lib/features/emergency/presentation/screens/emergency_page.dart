@@ -6,6 +6,7 @@ import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/emergency/presentation/providers/emergency_provider.dart';
 import '/features/emergency/presentation/widgets/contact_card.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 class EmergencyPage extends ConsumerStatefulWidget {
   const EmergencyPage({super.key});
@@ -52,7 +53,12 @@ class _EmergencyPageState extends ConsumerState<EmergencyPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: tabs.map((t) => Tab(text: t)).toList(),
@@ -124,13 +130,18 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
         return ListView.separated(
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.lg,
+            Spacing.sm,
+            Spacing.lg,
+            100,
+          ),
           itemCount: state.contacts.length + (state.hasMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index == state.contacts.length) {
               return const Center(
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(Spacing.lg),
                   child: CupertinoActivityIndicator(),
                 ),
               );
@@ -139,7 +150,7 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
             final contact = state.contacts[index];
             return ContactCard(contact: contact);
           },
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
         );
       },
       loading: () => const Center(child: CupertinoActivityIndicator()),

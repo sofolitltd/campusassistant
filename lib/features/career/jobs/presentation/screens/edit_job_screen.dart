@@ -15,6 +15,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// Ported "same to same" from personalassistant's EditJobScreen: same
 /// sectioned layout as Add Job, plus an "Application Status" dropdown card
@@ -32,14 +33,22 @@ class EditJobScreen extends ConsumerStatefulWidget {
 class _EditJobScreenState extends ConsumerState<EditJobScreen> {
   final _formKey = GlobalKey<FormState>();
   late final _titleController = TextEditingController(text: widget.job.title);
-  late final _orgController = TextEditingController(text: widget.job.organization);
-  late final _resourceLinkController = TextEditingController(text: widget.job.resourceLink);
-  late final _postLinkController = TextEditingController(text: widget.job.postLink);
+  late final _orgController = TextEditingController(
+    text: widget.job.organization,
+  );
+  late final _resourceLinkController = TextEditingController(
+    text: widget.job.resourceLink,
+  );
+  late final _postLinkController = TextEditingController(
+    text: widget.job.postLink,
+  );
 
   late DateTime? _publishDate = widget.job.publishDate;
   late DateTime? _deadlineDate = widget.job.deadlineDate;
   late CareerJobStatus _status = widget.job.status;
-  late final List<String> _existingAttachmentUrls = List.of(widget.job.attachmentUrls);
+  late final List<String> _existingAttachmentUrls = List.of(
+    widget.job.attachmentUrls,
+  );
   final List<PlatformFile> _newFiles = [];
   bool _isUploading = false;
   double _uploadProgress = 0;
@@ -54,14 +63,12 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
   }
 
   Future<void> _pickFiles() async {
-    final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-      withData: kIsWeb,
     );
-    if (result != null) {
-      setState(() => _newFiles.addAll(result.files));
+    if (result.isNotEmpty) {
+      setState(() => _newFiles.addAll(result));
     }
   }
 
@@ -87,13 +94,18 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
     if (pickedDate == null || !mounted) return;
     final pickedTime = await showTimePicker(
       context: context,
-      initialTime: _deadlineDate != null ? TimeOfDay.fromDateTime(_deadlineDate!) : const TimeOfDay(hour: 23, minute: 59),
+      initialTime: _deadlineDate != null
+          ? TimeOfDay.fromDateTime(_deadlineDate!)
+          : const TimeOfDay(hour: 23, minute: 59),
     );
     if (pickedTime != null && mounted) {
       setState(() {
         _deadlineDate = DateTime(
-          pickedDate.year, pickedDate.month, pickedDate.day,
-          pickedTime.hour, pickedTime.minute,
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
         );
       });
     }
@@ -102,7 +114,10 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
   Future<void> _saveChanges() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() { _isUploading = true; _uploadProgress = 0; });
+    setState(() {
+      _isUploading = true;
+      _uploadProgress = 0;
+    });
     try {
       final apiClient = ref.read(apiClientProvider);
       final uploadedUrls = <String>[];
@@ -114,7 +129,9 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
           fieldName: 'image',
           data: {'folder': 'career'},
         );
-        uploadedUrls.add((response.data['file_url'] ?? response.data['url']) as String);
+        uploadedUrls.add(
+          (response.data['file_url'] ?? response.data['url']) as String,
+        );
         setState(() => _uploadProgress = (i + 1) / _newFiles.length);
       }
 
@@ -137,7 +154,9 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -151,81 +170,126 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text('Edit Job Entry')),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(Spacing.xxl),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildSectionTitle(context, 'Job Identity'),
-                  buildCustomField(context, 'Job Title *', _titleController, LucideIcons.briefcase,
-                    (v) => v!.isEmpty ? 'Required' : null,
-                  ),
-                  buildCustomField(context, 'Organization *', _orgController, LucideIcons.building,
-                    (v) => v!.isEmpty ? 'Required' : null,
-                  ),
-                  _buildStatusSelector(),
-
-                  const SizedBox(height: Spacing.xl),
-                  buildSectionTitle(context, 'Connections'),
-                  buildCustomField(context, 'Resource Link (URL)', _resourceLinkController, LucideIcons.link),
-                  buildCustomField(context, 'Job Post Link (URL)', _postLinkController, LucideIcons.externalLink),
-
-                  const SizedBox(height: Spacing.xl),
-                  buildSectionTitle(context, 'Important Dates'),
-                  buildModernDateTile(context, 'Publish Date', _publishDate, LucideIcons.calendar, _selectPublishDate),
-                  buildModernDateTile(context, 'Deadline Date & Time', _deadlineDate, LucideIcons.clock, _selectDeadline, isUrgent: true),
-
-                  const SizedBox(height: Spacing.xl),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          appBar: AppBar(
+            centerTitle: true,
+            title: const Text('Edit Job Entry'),
+          ),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(Spacing.xxl),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: .start,
                     children: [
-                      buildSectionTitle(context, 'Attachments'),
-                      TextButton.icon(
-                        onPressed: _pickFiles,
-                        icon: const Icon(LucideIcons.filePlus, size: 16),
-                        label: const Text('Add Files'),
+                      buildSectionTitle(context, 'Job Identity'),
+                      buildCustomField(
+                        context,
+                        'Job Title *',
+                        _titleController,
+                        LucideIcons.briefcase,
+                        (v) => v!.isEmpty ? 'Required' : null,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: Spacing.xs),
-                  if (_existingAttachmentUrls.isNotEmpty || _newFiles.isNotEmpty)
-                    SizedBox(
-                      height: 160,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
+                      buildCustomField(
+                        context,
+                        'Organization *',
+                        _orgController,
+                        LucideIcons.building,
+                        (v) => v!.isEmpty ? 'Required' : null,
+                      ),
+                      _buildStatusSelector(),
+
+                      const SizedBox(height: Spacing.xl),
+                      buildSectionTitle(context, 'Connections'),
+                      buildCustomField(
+                        context,
+                        'Resource Link (URL)',
+                        _resourceLinkController,
+                        LucideIcons.link,
+                      ),
+                      buildCustomField(
+                        context,
+                        'Job Post Link (URL)',
+                        _postLinkController,
+                        LucideIcons.externalLink,
+                      ),
+
+                      const SizedBox(height: Spacing.xl),
+                      buildSectionTitle(context, 'Important Dates'),
+                      buildModernDateTile(
+                        context,
+                        'Publish Date',
+                        _publishDate,
+                        LucideIcons.calendar,
+                        _selectPublishDate,
+                      ),
+                      buildModernDateTile(
+                        context,
+                        'Deadline Date & Time',
+                        _deadlineDate,
+                        LucideIcons.clock,
+                        _selectDeadline,
+                        isUrgent: true,
+                      ),
+
+                      const SizedBox(height: Spacing.xl),
+                      Row(
+                        mainAxisAlignment: .spaceBetween,
                         children: [
-                          for (var i = 0; i < _existingAttachmentUrls.length; i++)
-                            _buildExistingFileCard(_existingAttachmentUrls[i], i),
-                          for (var i = 0; i < _newFiles.length; i++)
-                            _buildNewFileCard(_newFiles[i], i),
+                          buildSectionTitle(context, 'Attachments'),
+                          TextButton.icon(
+                            onPressed: _pickFiles,
+                            icon: const Icon(LucideIcons.filePlus, size: 16),
+                            label: const Text('Add files'),
+                          ),
                         ],
                       ),
-                    )
-                  else
-                    buildEmptyAttachmentPlaceholder(context),
+                      const SizedBox(height: Spacing.xs),
+                      if (_existingAttachmentUrls.isNotEmpty ||
+                          _newFiles.isNotEmpty)
+                        SizedBox(
+                          height: 160,
+                          child: ListView(
+                            scrollDirection: .horizontal,
+                            children: [
+                              for (
+                                var i = 0;
+                                i < _existingAttachmentUrls.length;
+                                i++
+                              )
+                                _buildExistingFileCard(
+                                  _existingAttachmentUrls[i],
+                                  i,
+                                ),
+                              for (var i = 0; i < _newFiles.length; i++)
+                                _buildNewFileCard(_newFiles[i], i),
+                            ],
+                          ),
+                        )
+                      else
+                        buildEmptyAttachmentPlaceholder(context),
 
-                  const SizedBox(height: Spacing.xxl),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isUploading ? null : _saveChanges,
-                      style: ElevatedButton.styleFrom(backgroundColor: cs.primary, foregroundColor: cs.onPrimary),
-                      child: const Text('Save Changes'),
-                    ),
+                      const SizedBox(height: Spacing.xxl),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isUploading ? null : _saveChanges,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: cs.primary,
+                            foregroundColor: cs.onPrimary,
+                          ),
+                          child: const Text('Save changes'),
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.lg),
+                    ],
                   ),
-                  const SizedBox(height: Spacing.lg),
-                ],
+                ),
               ),
-            ),
+              if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
+            ],
           ),
-          if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
-        ],
-      ),
         ),
       ),
     );
@@ -236,14 +300,19 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: Spacing.md),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
-          Text('Application Status', style: Theme.of(context).textTheme.labelMedium),
+          Text(
+            'Application Status',
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
           const SizedBox(height: Spacing.xs),
           Card(
             elevation: 0,
             color: cs.surface,
-            shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+            shape: RoundedRectangleBorder(
+              borderRadius: RadiusToken.circular(RadiusToken.sm),
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
               child: DropdownButtonHideUnderline(
@@ -251,7 +320,14 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
                   value: _status,
                   isExpanded: true,
                   items: CareerJobStatus.values
-                      .map((s) => DropdownMenuItem(value: s, child: Text(s.name[0].toUpperCase() + s.name.substring(1))))
+                      .map(
+                        (s) => DropdownMenuItem(
+                          value: s,
+                          child: Text(
+                            s.name[0].toUpperCase() + s.name.substring(1),
+                          ),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _status = v!),
                 ),
@@ -281,7 +357,7 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
               imageUrl: ApiEndpoints.resolveImageUrl(url),
               width: 120,
               height: 160,
-              fit: BoxFit.cover,
+              fit: .cover,
               errorWidget: (context, url, error) => Container(
                 width: 120,
                 height: 160,
@@ -291,9 +367,11 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
             ),
           ),
           Positioned(
-            top: 4, right: 4,
+            top: 4,
+            right: 4,
             child: GestureDetector(
-              onTap: () => setState(() => _existingAttachmentUrls.removeAt(index)),
+              onTap: () =>
+                  setState(() => _existingAttachmentUrls.removeAt(index)),
               child: CircleAvatar(
                 radius: 12,
                 backgroundColor: cs.surfaceContainerHighest,
@@ -309,7 +387,10 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
   Widget _buildNewFileCard(PlatformFile file, int index) {
     final cs = Theme.of(context).colorScheme;
     final name = file.name.toLowerCase();
-    final isImage = name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png');
+    final isImage =
+        name.endsWith('.jpg') ||
+        name.endsWith('.jpeg') ||
+        name.endsWith('.png');
     final isPdf = name.endsWith('.pdf');
     return Container(
       key: ValueKey('new_$index'),
@@ -324,24 +405,44 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
           ClipRRect(
             borderRadius: RadiusToken.circular(RadiusToken.sm),
             child: (!kIsWeb && isImage && file.path != null)
-                ? Image.file(File(file.path!), width: 120, height: 160, fit: BoxFit.cover)
+                ? Image.file(
+                    File(file.path!),
+                    width: 120,
+                    height: 160,
+                    fit: .cover,
+                  )
                 : Container(
                     width: 120,
                     height: 160,
                     color: cs.surfaceContainerHighest,
-                    child: Icon(isPdf ? LucideIcons.fileText : LucideIcons.image, color: cs.outline, size: 32),
+                    child: Icon(
+                      isPdf ? LucideIcons.fileText : LucideIcons.image,
+                      color: cs.outline,
+                      size: 32,
+                    ),
                   ),
           ),
           Positioned(
-            top: 4, left: 4,
+            top: 4,
+            left: 4,
             child: Container(
               padding: const EdgeInsets.all(Spacing.xxs),
-              decoration: BoxDecoration(color: cs.primary, borderRadius: RadiusToken.circular(RadiusToken.xs)),
-              child: Text('NEW', style: TextStyle(color: cs.onPrimary, fontSize: 10)),
+              decoration: BoxDecoration(
+                color: cs.primary,
+                borderRadius: RadiusToken.circular(RadiusToken.xs),
+              ),
+              child: Text(
+                'NEW',
+                style: TextStyle(
+                  color: cs.onPrimary,
+                  fontSize: FontSizeToken.xxs,
+                ),
+              ),
             ),
           ),
           Positioned(
-            top: 4, right: 4,
+            top: 4,
+            right: 4,
             child: GestureDetector(
               onTap: () => setState(() => _newFiles.removeAt(index)),
               child: CircleAvatar(

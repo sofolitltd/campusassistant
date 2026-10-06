@@ -7,6 +7,9 @@ import '../../data/models/notice_model.dart';
 import '../providers/notice_provider.dart';
 import '../widgets/notice_card.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class DepartmentNoticesPage extends ConsumerWidget {
   const DepartmentNoticesPage({super.key});
@@ -25,7 +28,6 @@ class DepartmentNoticesPage extends ConsumerWidget {
         },
         child: noticesAsync.when(
           data: (notices) {
-            final isDark = Theme.of(context).brightness == Brightness.dark;
             if (notices.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(
@@ -36,24 +38,20 @@ class DepartmentNoticesPage extends ConsumerWidget {
                     height: MediaQuery.sizeOf(context).height * 0.7,
                     child: Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           Icon(
                             LucideIcons.megaphone,
                             size: 64,
-                            color: isDark
-                                ? Colors.white10
-                                : Colors.grey.shade300,
+                            color: context.colors.borderStrong,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Spacing.lg),
                           Text(
                             'No notices yet',
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? Colors.white38
-                                  : Colors.grey.shade500,
+                              fontSize: FontSizeToken.xl,
+                              fontWeight: .w500,
+                              color: context.colors.textSubtle,
                             ),
                           ),
                         ],
@@ -68,7 +66,7 @@ class DepartmentNoticesPage extends ConsumerWidget {
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
               ),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Spacing.lg),
               itemCount: notices.length,
               itemBuilder: (context, index) {
                 final notice = notices[index];
@@ -134,7 +132,7 @@ class _FallbackNoticeList extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(
         parent: BouncingScrollPhysics(),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       itemCount: fallbackNotices.length,
       itemBuilder: (context, index) {
         return NoticeCard(notice: fallbackNotices[index]);

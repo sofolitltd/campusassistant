@@ -8,6 +8,7 @@ import '/widgets/headline.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard({
@@ -28,16 +29,19 @@ class CourseCard extends StatelessWidget {
     if (courses.isEmpty) return const SizedBox();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 0),
+          padding: const EdgeInsets.only(left: Spacing.sm, bottom: 0),
           child: Headline(title: courseCategory),
         ),
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          padding: const EdgeInsets.symmetric(
+            vertical: Spacing.sm,
+            horizontal: Spacing.sm,
+          ),
           itemCount: courses.length,
           separatorBuilder: (_, _) => const SizedBox(height: Spacing.lg),
           itemBuilder: (context, index) {
@@ -57,7 +61,7 @@ class CourseCard extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: Spacing.xl),
       ],
     );
   }
@@ -78,16 +82,14 @@ class CourseCardContent extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-        ),
+        border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -100,11 +102,9 @@ class CourseCardContent extends StatelessWidget {
             decoration: BoxDecoration(
               color: isDark
                   ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                  : Colors.teal.shade50,
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.grey.shade200,
-              ),
-              borderRadius: BorderRadius.circular(6),
+                  : context.colors.primary,
+              border: Border.all(color: context.colors.border),
+              borderRadius: BorderRadius.circular(RadiusToken.sm),
             ),
             width: 80,
             height: 90,
@@ -114,12 +114,9 @@ class CourseCardContent extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isDark
                       ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                      : Colors.teal.shade50,
-                  borderRadius: BorderRadius.circular(6),
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
+                      : context.colors.primary,
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
+                  image: DecorationImage(image: imageProvider, fit: .cover),
                 ),
               ),
               progressIndicatorBuilder: (context, url, downloadProgress) =>
@@ -128,10 +125,10 @@ class CourseCardContent extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isDark
                       ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                      : Colors.teal.shade100,
-                  borderRadius: BorderRadius.circular(6),
+                      : context.colors.primary,
+                  borderRadius: BorderRadius.circular(RadiusToken.sm),
                   image: const DecorationImage(
-                    fit: BoxFit.cover,
+                    fit: .cover,
                     image: AssetImage('assets/images/placeholder.png'),
                   ),
                 ),
@@ -143,19 +140,19 @@ class CourseCardContent extends StatelessWidget {
             child: SizedBox(
               height: 90,
               child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: .max,
+                crossAxisAlignment: .start,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
                         courseModel.courseTitle,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                           height: 1.3,
                         ),
                       ),
@@ -163,15 +160,20 @@ class CourseCardContent extends StatelessWidget {
                   ),
 
                   Container(
-                    padding: const EdgeInsets.fromLTRB(8, 3, 8, 5),
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.sm,
+                      Spacing.xs,
+                      Spacing.sm,
+                      Spacing.xs,
+                    ),
                     decoration: BoxDecoration(
                       color: isDark
                           ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                          : Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(6),
+                          : context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         courseInfo(
                           context,
@@ -211,7 +213,6 @@ Column courseInfo(
   bool alignRight = false,
 }) {
   final theme = Theme.of(context);
-  final isDark = theme.brightness == Brightness.dark;
 
   return Column(
     crossAxisAlignment: alignRight
@@ -221,13 +222,13 @@ Column courseInfo(
       Text(
         title,
         style: theme.textTheme.labelSmall!.copyWith(
-          color: isDark ? Colors.white70 : Colors.grey,
+          color: context.colors.textSubtle,
         ),
       ),
       Text(
         value,
         style: theme.textTheme.bodyMedium!.copyWith(
-          fontWeight: FontWeight.bold,
+          fontWeight: .bold,
           color: theme.colorScheme.onSurface,
         ),
       ),

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/chapter/domain/entities/chapter.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ChapterTile extends StatelessWidget {
   final Chapter chapter;
@@ -18,50 +21,51 @@ class ChapterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = Theme.of(context).appColors.primaryColor;
-    final selectedBg = primary.withValues(alpha: isDark ? 0.22 : 0.12);
+    final primary = context.colors.primary;
+    final selectedBg = context.colors.primarySubtle;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.symmetric(
+          vertical: Spacing.xxs,
+          horizontal: Spacing.sm,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.lg,
+          vertical: Spacing.md,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? selectedBg : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     'Chapter ${chapter.chapterNo}',
                     style: TextStyle(
-                      fontSize: 12,
-                      color: isSelected
-                          ? primary
-                          : (isDark ? Colors.white54 : Colors.grey.shade600),
-                      fontWeight: FontWeight.w500,
+                      fontSize: FontSizeToken.sm,
+                      color: isSelected ? primary : (context.colors.textMuted),
+                      fontWeight: .w500,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Spacing.xxs),
                   Text(
                     chapter.chapterTitle,
                     style: TextStyle(
-                      fontSize: 15,
-                      color: isSelected
-                          ? primary
-                          : (isDark ? Colors.white : Colors.black87),
+                      fontSize: FontSizeToken.lg,
+                      color: isSelected ? primary : (context.colors.text),
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.normal,
                     ),
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
                 ],
               ),

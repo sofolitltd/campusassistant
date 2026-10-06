@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '/routes/app_route.dart';
 import '/core/providers/is_pro_provider.dart';
 import 'rewarded_ad_manager.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 /// Shows a "watch an ad to download" prompt before a resource's first
 /// download for Basic users. Returns true if the download should proceed.
@@ -31,9 +32,14 @@ Future<bool> showDownloadAdGate(BuildContext context, WidgetRef ref) async {
   final wantsToWatch = await showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      titlePadding: const EdgeInsets.fromLTRB(24, 16, 8, 0),
+      titlePadding: const EdgeInsets.fromLTRB(
+        Spacing.xxl,
+        Spacing.lg,
+        Spacing.sm,
+        0,
+      ),
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             'Unlock this download',
@@ -64,11 +70,11 @@ Future<bool> showDownloadAdGate(BuildContext context, WidgetRef ref) async {
                 child: const Text('Go Pro'),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Spacing.sm),
             Expanded(
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: const Text('Watch Ad'),
+                child: const Text('Watch ad'),
               ),
             ),
           ],

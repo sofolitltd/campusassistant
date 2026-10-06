@@ -19,6 +19,9 @@ import '/features/community/presentation/widgets/interaction_button.dart';
 import '/features/community/presentation/providers/community_posts_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class DiscussionCard extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -65,22 +68,18 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Stack(
       children: [
         Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: Spacing.md),
+          padding: const EdgeInsets.all(Spacing.md),
           decoration: BoxDecoration(
-            color: isDark ? Theme.of(context).cardColor : Colors.white,
+            color: context.colors.surface,
             borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-            ),
+            border: Border.all(color: context.colors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: context.colors.shadow,
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -89,7 +88,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
           child: Stack(
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   GestureDetector(
                     onTap: () => _showAuthorDialog(context),
@@ -112,29 +111,29 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                                   widget.post.authorName[0],
                                   style: TextStyle(
                                     color: Theme.of(context).primaryColor,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: FontSizeToken.sm,
+                                    fontWeight: .bold,
                                   ),
                                 )
                               : null,
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: Spacing.md),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Text(
                               widget.post.authorName,
                               style: GoogleFonts.outfit(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                color: isDark ? Colors.white : Colors.black87,
+                                fontWeight: .w600,
+                                fontSize: FontSizeToken.md,
+                                color: context.colors.text,
                               ),
                             ),
                             Text(
                               '${timeago.format(widget.post.createdAt)} • ${widget.scope}',
                               style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                color: Colors.grey,
+                                fontSize: FontSizeToken.xs,
+                                color: context.colors.textSubtle,
                               ),
                             ),
                           ],
@@ -142,19 +141,19 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: Spacing.md),
                   Text(
                     _displayContent,
                     style: GoogleFonts.outfit(
-                      fontSize: 13,
+                      fontSize: FontSizeToken.md,
                       height: 1.4,
-                      color: isDark ? Colors.white70 : Colors.black87,
+                      color: context.colors.text,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   if (widget.post.imageUrls.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.only(bottom: Spacing.md),
                       child: GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -172,12 +171,9 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: CachedNetworkImage(
                               imageUrl: ApiEndpoints.resolveImageUrl(url),
-                              fit: BoxFit.cover,
-                              placeholder: (_, _) => Container(
-                                color: isDark
-                                    ? Colors.white10
-                                    : Colors.grey.shade200,
-                              ),
+                              fit: .cover,
+                              placeholder: (_, _) =>
+                                  Container(color: context.colors.border),
                               errorWidget: (_, _, _) =>
                                   const Icon(Icons.broken_image),
                             ),
@@ -192,10 +188,10 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                         label: '$_commentCount',
                         onTap: () => _showCommentsSheet(context),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: Spacing.lg),
                       InteractionButton(
                         icon: _isLiked ? Icons.favorite : LucideIcons.heart,
-                        iconColor: _isLiked ? Colors.red : null,
+                        iconColor: _isLiked ? context.colors.danger : null,
                         label: '$_likeCount',
                         onTap: () async {
                           final oldIsLiked = _isLiked;
@@ -232,10 +228,12 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                           }
                         },
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: Spacing.lg),
                       InteractionButton(
                         icon: LucideIcons.bookmark,
-                        iconColor: _isBookmarked ? Colors.teal : null,
+                        iconColor: _isBookmarked
+                            ? context.colors.primary
+                            : null,
                         label: _isBookmarked ? 'Saved' : 'Save',
                         onTap: () async {
                           final oldIsBookmarked = _isBookmarked;
@@ -300,7 +298,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
             child: IconButton(
               icon: const Icon(LucideIcons.ellipsisVertical, size: 16),
               onPressed: () => _showOptionsMenu(context),
-              padding: EdgeInsets.all(2),
+              padding: EdgeInsets.all(Spacing.xxs),
               constraints: const BoxConstraints(),
             ),
           ),
@@ -310,7 +308,6 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
 
   void _showAuthorDialog(BuildContext context) {
     final post = widget.post;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final rows = [
       if (post.authorUniversity != null) ('University', post.authorUniversity!),
       if (post.authorDepartment != null) ('Department', post.authorDepartment!),
@@ -323,11 +320,11 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
-        backgroundColor: isDark ? Theme.of(context).cardColor : Colors.white,
+        backgroundColor: context.colors.surface,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(Spacing.xl),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               CircleAvatar(
                 radius: 36,
@@ -345,34 +342,37 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       )
                     : null,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               Text(
                 post.authorName,
                 style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17,
-                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: .w700,
+                  fontSize: FontSizeToken.xl,
+                  color: context.colors.text,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: Spacing.xs),
               Text(
                 '@${post.authorId.substring(0, 8)}',
-                style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
+                style: GoogleFonts.outfit(
+                  fontSize: FontSizeToken.sm,
+                  color: context.colors.textSubtle,
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               const Divider(height: 1),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               if (rows.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
                   child: Text(
                     'No profile details available.',
-                    style: GoogleFonts.outfit(color: Colors.grey),
+                    style: GoogleFonts.outfit(color: context.colors.textSubtle),
                   ),
                 )
               else
@@ -384,27 +384,27 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                         Text(
                           '${r.$1}:',
                           style: GoogleFonts.outfit(
-                            fontSize: 13,
-                            color: Colors.grey,
+                            fontSize: FontSizeToken.md,
+                            color: context.colors.textSubtle,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Spacing.sm),
                         Expanded(
                           child: Text(
                             r.$2,
                             style: GoogleFonts.outfit(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : Colors.black87,
+                              fontSize: FontSizeToken.md,
+                              fontWeight: .w600,
+                              color: context.colors.text,
                             ),
-                            textAlign: TextAlign.right,
+                            textAlign: .right,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -420,7 +420,6 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
   }
 
   void _showOptionsMenu(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentUser = ref.watch(currentUserProvider).value;
     final isOwner =
         currentUser != null && currentUser.id == widget.post.authorId;
@@ -430,40 +429,48 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: isDark ? Theme.of(context).cardColor : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          color: context.colors.surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(RadiusToken.xl),
+          ),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             Container(
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
+                color: context.colors.borderStrong,
+                borderRadius: BorderRadius.circular(RadiusToken.xs),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.sm),
             if (isOwner) ...[
               ListTile(
                 leading: const Icon(LucideIcons.pencil, size: 20),
-                title: const Text('Edit Post', style: TextStyle(fontSize: 14)),
+                title: const Text(
+                  'Edit Post',
+                  style: TextStyle(fontSize: FontSizeToken.base),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _showEditSheet(context);
                 },
               ),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   LucideIcons.trash2,
                   size: 20,
-                  color: Colors.red,
+                  color: context.colors.danger,
                 ),
-                title: const Text(
+                title: Text(
                   'Delete Post',
-                  style: TextStyle(fontSize: 14, color: Colors.red),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.base,
+                    color: context.colors.danger,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -471,7 +478,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                 },
               ),
             ],
-            const SizedBox(height: 20),
+            const SizedBox(height: Spacing.xl),
           ],
         ),
       ),
@@ -523,7 +530,10 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                 );
               }
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: context.colors.danger),
+            ),
           ),
         ],
       ),
@@ -532,7 +542,6 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
 
   void _showEditSheet(BuildContext context) {
     final controller = TextEditingController(text: widget.post.content);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isSaving = false;
 
     showModalBottomSheet(
@@ -542,8 +551,10 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
       builder: (sheetContext) => StatefulBuilder(
         builder: (sheetContext, setSheetState) => Container(
           decoration: BoxDecoration(
-            color: isDark ? Theme.of(context).cardColor : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            color: context.colors.surface,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxl),
+            ),
           ),
           padding: EdgeInsets.only(
             left: 16,
@@ -552,40 +563,36 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: .min,
+            crossAxisAlignment: .start,
             children: [
               Text(
                 'Edit Post',
                 style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.lg,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               TextField(
                 controller: controller,
                 maxLines: 5,
                 minLines: 3,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: isDark ? Colors.white10 : Colors.grey.shade100,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
+                  fillColor: context.colors.surfaceAlt,
                   hintText: 'Write something...',
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: .end,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(sheetContext),
                     child: const Text('Cancel'),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: Spacing.sm),
                   ElevatedButton(
                     onPressed: isSaving
                         ? null
@@ -632,21 +639,21 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: context.colors.onPrimary,
                     ),
                     child: isSaving
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 16,
                             height: 16,
                             child: CupertinoActivityIndicator(
-                              color: Colors.white,
+                              color: context.colors.onPrimary,
                             ),
                           )
                         : const Text('Save'),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Spacing.sm),
             ],
           ),
         ),

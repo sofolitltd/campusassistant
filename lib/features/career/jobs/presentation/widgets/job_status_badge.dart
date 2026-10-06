@@ -7,6 +7,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import 'job_detail_helpers.dart';
+import '/core/theme/app_colors.dart';
 
 /// Ported from personalassistant's StatusBadge/status_picker.dart — tapping
 /// the pill opens a bottom sheet to change status, instead of an inline
@@ -17,14 +18,14 @@ class JobStatusBadge extends ConsumerWidget {
 
   JobStatusBadge({super.key, required this.job});
 
-  Color _dotColor(ColorScheme cs) {
+  Color _dotColor(BuildContext context, ColorScheme cs) {
     switch (job.status) {
       case CareerJobStatus.applied:
-        return Colors.blue;
+        return context.colors.info;
       case CareerJobStatus.completed:
-        return Colors.green;
+        return context.colors.success;
       case CareerJobStatus.pending:
-        return Colors.amber.shade700;
+        return context.colors.warning;
     }
   }
 
@@ -57,17 +58,32 @@ class JobStatusBadge extends ConsumerWidget {
       key: _badgeKey,
       onTap: () => _showStatusPicker(context, ref),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.md,
+          vertical: Spacing.sm,
+        ),
         decoration: BoxDecoration(
           color: cs.secondaryContainer,
           borderRadius: RadiusToken.circular(RadiusToken.sm),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
-            Container(width: 7, height: 7, decoration: BoxDecoration(color: _dotColor(cs), shape: BoxShape.circle)),
+            Container(
+              width: 7,
+              height: 7,
+              decoration: BoxDecoration(
+                color: _dotColor(context, cs),
+                shape: BoxShape.circle,
+              ),
+            ),
             const SizedBox(width: Spacing.sm),
-            Text(_label(job.status), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              _label(job.status),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: .bold),
+            ),
             const SizedBox(width: Spacing.xxs),
             Icon(LucideIcons.chevronDown, size: 14, color: cs.onSurfaceVariant),
           ],
@@ -78,7 +94,8 @@ class JobStatusBadge extends ConsumerWidget {
 
   void _showStatusPicker(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final renderBox = _badgeKey.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox =
+        _badgeKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero);
@@ -92,7 +109,9 @@ class JobStatusBadge extends ConsumerWidget {
         position.dx + size.width,
         position.dy + size.height + 4,
       ),
-      shape: RoundedRectangleBorder(borderRadius: RadiusToken.circular(RadiusToken.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: RadiusToken.circular(RadiusToken.sm),
+      ),
       color: cs.surfaceContainerHighest,
       items: CareerJobStatus.values.map((status) {
         final isSelected = job.status == status;
@@ -110,12 +129,15 @@ class JobStatusBadge extends ConsumerWidget {
                 child: Text(
                   _label(status),
                   style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     color: isSelected ? cs.primary : cs.onSurface,
                   ),
                 ),
               ),
-              if (isSelected) Icon(LucideIcons.check, size: 16, color: cs.primary),
+              if (isSelected)
+                Icon(LucideIcons.check, size: 16, color: cs.primary),
             ],
           ),
         );

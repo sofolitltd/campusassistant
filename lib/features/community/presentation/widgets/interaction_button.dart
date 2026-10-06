@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class InteractionButton extends StatelessWidget {
   final IconData icon;
@@ -19,18 +23,21 @@ class InteractionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(RadiusToken.xs),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        padding: const EdgeInsets.symmetric(
+          vertical: Spacing.xs,
+          horizontal: Spacing.xxs,
+        ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: iconColor ?? Colors.grey.shade600),
-            const SizedBox(width: 6),
+            Icon(icon, size: 18, color: iconColor ?? context.colors.textMuted),
+            const SizedBox(width: Spacing.sm),
             Text(
               label,
               style: GoogleFonts.outfit(
-                color: iconColor ?? Colors.grey.shade600,
-                fontSize: 12,
+                color: iconColor ?? context.colors.textMuted,
+                fontSize: FontSizeToken.sm,
                 fontWeight: iconColor != null
                     ? FontWeight.w600
                     : FontWeight.w400,

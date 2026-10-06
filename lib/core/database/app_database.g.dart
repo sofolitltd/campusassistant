@@ -1206,7 +1206,16 @@ class $$CacheEntriesTableTableManager
                 expiresAt: expiresAt,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<$CacheEntriesTable, CacheEntry>(table),
+                  BaseReferences<
+                    _$OfflineDatabase,
+                    $CacheEntriesTable,
+                    CacheEntry
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
         ),
@@ -1499,7 +1508,16 @@ class $$SyncQueueTableTableManager
                 retryCount: retryCount,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<$SyncQueueTable, SyncQueueData>(table),
+                  BaseReferences<
+                    _$OfflineDatabase,
+                    $SyncQueueTable,
+                    SyncQueueData
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
         ),

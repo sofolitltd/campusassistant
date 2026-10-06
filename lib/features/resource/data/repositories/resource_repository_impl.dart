@@ -34,7 +34,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
     String? batch,
     String? batchId,
     int? lessonNo,
-    String? uploaderUid,
+    String? createdById,
     String? status,
     int? limit,
     int? offset,
@@ -52,7 +52,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
       limit: limit,
       offset: offset,
       batchId: batchId,
-      uploaderUid: uploaderUid,
+      createdById: createdById,
       status: status,
       year: year,
     );
@@ -113,7 +113,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
         if (batch != null) queryParams['batch'] = batch;
         if (batchId != null) queryParams['batch_id'] = batchId;
         if (lessonNo != null) queryParams['lesson_no'] = lessonNo.toString();
-        if (uploaderUid != null) queryParams['uploader_uid'] = uploaderUid;
+        if (createdById != null) queryParams['created_by_id'] = createdById;
         if (status != null) queryParams['status'] = status;
         if (limit != null) queryParams['limit'] = limit.toString();
         if (offset != null) queryParams['offset'] = offset.toString();
@@ -192,6 +192,41 @@ class ResourceRepositoryImpl implements ResourceRepository {
     return Left(
       NetworkFailure('Delete operation requires internet connection'),
     );
+  }
+
+  @override
+  Future<Either<Failure, Resource>> getResourceById(String id) async {
+    if (connectivity.isConnected) {
+      try {
+        final response = await apiClient.get('/resources/$id');
+        return Right(
+          ResourceModel.fromJson(
+            response.data as Map<String, dynamic>,
+          ).toEntity(),
+        );
+      } catch (e) {
+        debugPrint('[ResourceRepo] Remote getResourceById failed: $e');
+      }
+    }
+
+    return Left(
+      NetworkFailure('Fetching resource requires internet connection'),
+    );
+  }
+
+  @override
+  Future<Either<Failure, int?>> getMyRating(String id) async {
+    if (connectivity.isConnected) {
+      try {
+        final response = await apiClient.get('/resources/$id/rating');
+        final data = response.data as Map<String, dynamic>;
+        return Right(data['your_rating'] as int?);
+      } catch (e) {
+        debugPrint('[ResourceRepo] Remote getMyRating failed: $e');
+      }
+    }
+
+    return Left(NetworkFailure('Fetching rating requires internet connection'));
   }
 
   @override
@@ -316,7 +351,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
     int? limit,
     int? offset,
     String? batchId,
-    String? uploaderUid,
+    String? createdById,
     String? status,
     String? year,
   }) {
@@ -331,7 +366,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
       if (limit != null) 'lim_$limit',
       if (offset != null) 'off_$offset',
       if (batchId != null) 'batchId_$batchId',
-      if (uploaderUid != null) 'uploader_$uploaderUid',
+      if (createdById != null) 'creator_$createdById',
       if (status != null) 'status_$status',
       if (year != null) 'year_$year',
     ];

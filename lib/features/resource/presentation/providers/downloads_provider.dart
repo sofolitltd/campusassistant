@@ -12,7 +12,13 @@ import '../../domain/entities/resource.dart';
 part 'downloads_provider.g.dart';
 
 const _metadataEntityType = 'downloaded_resource_metadata';
-const _validResourceTypes = {'note', 'book', 'question', 'syllabus', 'research'};
+const _validResourceTypes = {
+  'note',
+  'book',
+  'question',
+  'syllabus',
+  'research',
+};
 
 /// Caches the resource metadata after a successful download.
 Future<void> cacheDownloadedResourceMetadata({
@@ -98,9 +104,6 @@ Resource _inferResourceFromFileName(String fileName, FileStat stat) {
     accessLevel: '',
     rejectedNote: '',
     reviewedBy: '',
-    uploaderId: '',
-    uploaderUid: '',
-    uploaderName: '',
     universityId: '',
     departmentId: '',
     fileSizeBytes: stat.size,

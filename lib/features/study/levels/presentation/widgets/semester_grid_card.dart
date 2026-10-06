@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/semester.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/app_colors.dart';
 
 class SemesterGridCard extends StatelessWidget {
   final Semester semester;
@@ -16,35 +17,33 @@ class SemesterGridCard extends StatelessWidget {
 
     Widget infoRow(String label, String value) {
       return Container(
-        padding: const EdgeInsets.only(left: 8),
+        padding: const EdgeInsets.only(left: Spacing.sm),
         decoration: BoxDecoration(
           color: isDark
               ? theme.colorScheme.surface.withValues(alpha: 0.5)
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(6),
+              : context.colors.surfaceAlt,
+          borderRadius: BorderRadius.circular(RadiusToken.sm),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Text(
               '$label:',
               style: TextStyle(color: theme.colorScheme.onSurface),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Spacing.sm),
             Container(
               constraints: const BoxConstraints(minWidth: 48),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
                 color: theme.cardColor,
                 border: Border.all(color: theme.dividerColor),
               ),
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(Spacing.xxs),
               child: Text(
                 value,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: theme.textTheme.titleSmall!.copyWith(fontWeight: .bold),
               ),
             ),
           ],
@@ -53,39 +52,37 @@ class SemesterGridCard extends StatelessWidget {
     }
 
     return Stack(
-      clipBehavior: Clip.none,
+      clipBehavior: .none,
       alignment: Alignment.centerRight,
       children: [
         Container(
           decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(
-              color: isDark ? Colors.white10 : Colors.grey.shade200,
-            ),
+            border: Border.all(color: context.colors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: context.colors.shadow,
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(Spacing.md),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: .start,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 Text(
                   semester.name,
                   style: theme.textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
                 const SizedBox(height: Spacing.lg),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: .start,
                   spacing: 8,
                   children: [
                     infoRow('Courses', semester.totalCourses.toString()),

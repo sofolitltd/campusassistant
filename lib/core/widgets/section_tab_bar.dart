@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 /// A reusable styled tab bar with a pill-shaped indicator and rounded container.
 ///
@@ -43,13 +46,13 @@ class SectionTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.colors;
 
     return Container(
       height: 40,
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(Spacing.xs),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white10 : Colors.grey.shade200,
+        color: colors.surfaceAlt,
         borderRadius: BorderRadius.circular(RadiusToken.md),
       ),
       child: TabBar(
@@ -59,24 +62,23 @@ class SectionTabBar extends StatelessWidget {
         indicatorSize: TabBarIndicatorSize.tab,
         indicator: BoxDecoration(
           borderRadius: BorderRadius.circular(RadiusToken.sm),
-          color: isDark ? Colors.grey.shade800 : Colors.white,
+          color: colors.surface,
           boxShadow: [
-            if (!isDark)
-              BoxShadow(
-                color: Colors.black.withAlpha(12),
-                blurRadius: 2,
-                offset: const Offset(0, 1),
-              ),
+            BoxShadow(
+              color: colors.shadow,
+              blurRadius: 2,
+              offset: const Offset(0, 1),
+            ),
           ],
         ),
-        labelColor: isDark ? Colors.white : Colors.black87,
-        unselectedLabelColor: isDark ? Colors.white54 : Colors.grey.shade600,
+        labelColor: colors.text,
+        unselectedLabelColor: colors.textMuted,
         labelStyle:
             labelStyle ??
-            const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            const TextStyle(fontWeight: .bold, fontSize: FontSizeToken.md),
         unselectedLabelStyle:
             unselectedLabelStyle ??
-            const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+            const TextStyle(fontWeight: .w500, fontSize: FontSizeToken.md),
         dividerColor: Colors.transparent,
         tabs: tabs,
       ),

@@ -10,8 +10,6 @@ class Env {
     defaultValue: 'http://10.0.2.2:8080/api/v1',
   );
 
-  static const String apiKey = String.fromEnvironment('API_KEY');
-
   static const String fcmVapidKey = String.fromEnvironment('FCM_VAPID_KEY');
 
   static const String admobAndroidAppId = String.fromEnvironment(

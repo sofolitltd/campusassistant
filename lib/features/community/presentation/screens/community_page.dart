@@ -11,6 +11,9 @@ import '/routes/scaffold_with_navbar.dart';
 import '/features/community/presentation/widgets/create_post_sheet.dart';
 import '/features/community/presentation/widgets/discussion_card.dart';
 import '/features/community/presentation/providers/community_posts_provider.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class CommunityPage extends ConsumerStatefulWidget {
   const CommunityPage({super.key});
@@ -39,7 +42,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final primaryColor = theme.appColors.primaryColor;
+    final primaryColor = theme.appColors.primary;
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -48,18 +51,21 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        title: const Text(
+        title: Text(
           'Community',
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+            color: context.colors.onPrimary,
+            fontWeight: .bold,
+            fontSize: FontSizeToken.xxl,
           ),
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(LucideIcons.moreVertical, color: Colors.white),
-            color: isDark ? theme.cardColor : Colors.white,
+            icon: Icon(
+              LucideIcons.moreVertical,
+              color: context.colors.onPrimary,
+            ),
+            color: isDark ? theme.cardColor : context.colors.onPrimary,
             onSelected: (value) {
               if (value == 'liked') {
                 Navigator.push(
@@ -89,7 +95,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
                 child: Row(
                   children: [
                     Icon(LucideIcons.heart, size: 18),
-                    SizedBox(width: 12),
+                    SizedBox(width: Spacing.md),
                     Text('Liked Posts'),
                   ],
                 ),
@@ -99,7 +105,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
                 child: Row(
                   children: [
                     Icon(LucideIcons.bookmark, size: 18),
-                    SizedBox(width: 12),
+                    SizedBox(width: Spacing.md),
                     Text('Saved Posts'),
                   ],
                 ),
@@ -107,7 +113,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: Spacing.sm),
             child: GestureDetector(
               onTap: () =>
                   ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
@@ -115,16 +121,13 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: context.colors.surface.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(Spacing.xs),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                  borderRadius: BorderRadius.circular(RadiusToken.lg),
+                  child: Image.asset('assets/images/logo.png', fit: .contain),
                 ),
               ),
             ),
@@ -136,15 +139,24 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
         decoration: BoxDecoration(
           color: isDark
               ? theme.scaffoldBackgroundColor
-              : const Color(0xFFF8F9FA),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              : context.colors.surfaceAlt,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(RadiusToken.xxxl),
+          ),
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(RadiusToken.xxxl),
+          ),
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.lg,
+                  Spacing.lg,
+                  Spacing.sm,
+                ),
                 child: SectionTabBar(
                   controller: _tabController,
                   tabs: const [
@@ -171,7 +183,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreatePostDialog,
         backgroundColor: primaryColor,
-        child: const Icon(LucideIcons.plus, color: Colors.white),
+        child: Icon(LucideIcons.plus, color: context.colors.onPrimary),
       ),
     );
   }
@@ -231,13 +243,15 @@ class _CommunityFeedState extends ConsumerState<_CommunityFeed> {
                 ? Center(
                     child: Text(
                       'No discussions in ${widget.scope} yet.',
-                      style: GoogleFonts.outfit(color: Colors.grey),
+                      style: GoogleFonts.outfit(
+                        color: context.colors.textSubtle,
+                      ),
                     ),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                      horizontal: Spacing.md,
+                      vertical: Spacing.sm,
                     ),
                     itemCount: posts.length,
                     itemBuilder: (context, index) {
@@ -296,13 +310,13 @@ class _CommunityListScreenState extends ConsumerState<_CommunityListScreen> {
             ? Center(
                 child: Text(
                   'No ${widget.scope} posts yet.',
-                  style: GoogleFonts.outfit(color: Colors.grey),
+                  style: GoogleFonts.outfit(color: context.colors.textSubtle),
                 ),
               )
             : ListView.builder(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: Spacing.md,
+                  vertical: Spacing.sm,
                 ),
                 itemCount: posts.length,
                 itemBuilder: (context, index) =>

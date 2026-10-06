@@ -9,6 +9,9 @@ import '/features/alumni/domain/entities/alumni.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_accents.dart';
 
 class AlumniCard extends StatelessWidget {
   final Alumni alumni;
@@ -71,7 +74,7 @@ class AlumniCard extends StatelessWidget {
     );
   }
 
-  Map<String, dynamic> _getStatusConfig(String status) {
+  Map<String, dynamic> _getStatusConfig(BuildContext context, String status) {
     switch (status.toLowerCase().trim()) {
       case 'job':
       case 'working':
@@ -79,7 +82,7 @@ class AlumniCard extends StatelessWidget {
         return {
           'text': 'Working',
           'icon': LucideIcons.briefcase,
-          'color': Colors.green,
+          'color': context.colors.success,
           'emoji': '💼',
         };
       case 'study':
@@ -88,7 +91,7 @@ class AlumniCard extends StatelessWidget {
         return {
           'text': 'Studying',
           'icon': LucideIcons.graduationCap,
-          'color': Colors.blue,
+          'color': context.colors.info,
           'emoji': '🎓',
         };
       case 'entrepreneur':
@@ -97,14 +100,14 @@ class AlumniCard extends StatelessWidget {
         return {
           'text': 'Entrepreneur',
           'icon': LucideIcons.rocket,
-          'color': Colors.purple,
+          'color': AccentToken.violet,
           'emoji': '🚀',
         };
       default:
         return {
           'text': 'Alumnus',
           'icon': LucideIcons.user,
-          'color': Colors.grey,
+          'color': context.colors.textSubtle,
           'emoji': '🎓',
         };
     }
@@ -117,23 +120,23 @@ class AlumniCard extends StatelessWidget {
     Color primaryColor,
     bool isDark,
   ) {
-    final statusConfig = _getStatusConfig(a.currentStatus);
+    final statusConfig = _getStatusConfig(context, a.currentStatus);
     showDialog(
       context: context,
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(RadiusToken.xxxl),
           ),
           elevation: 12,
-          backgroundColor: isDark ? Theme.of(context).cardColor : Colors.white,
-          clipBehavior: Clip.antiAlias,
+          backgroundColor: context.colors.surface,
+          clipBehavior: .antiAlias,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
             child: SingleChildScrollView(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: .min,
+                crossAxisAlignment: .stretch,
                 children: [
                   Stack(
                     children: [
@@ -155,12 +158,12 @@ class AlumniCard extends StatelessWidget {
                         right: 8,
                         child: CircleAvatar(
                           radius: 16,
-                          backgroundColor: Colors.black.withValues(alpha: 0.2),
+                          backgroundColor: context.colors.shadow,
                           child: IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.close,
                               size: 16,
-                              color: Colors.white,
+                              color: context.colors.onPrimary,
                             ),
                             padding: EdgeInsets.zero,
                             onPressed: () => Navigator.pop(context),
@@ -170,29 +173,25 @@ class AlumniCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(
                           top: 50,
-                          left: 20,
-                          right: 20,
+                          left: Spacing.xl,
+                          right: Spacing.xl,
                         ),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: .end,
                           children: [
                             Container(
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isDark
-                                    ? Theme.of(context).cardColor
-                                    : Colors.white,
+                                color: context.colors.surface,
                                 border: Border.all(
-                                  color: isDark
-                                      ? Theme.of(context).cardColor
-                                      : Colors.white,
+                                  color: context.colors.onPrimary,
                                   width: 4,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
+                                    color: context.colors.shadow,
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
@@ -205,7 +204,7 @@ class AlumniCard extends StatelessWidget {
                                         imageUrl: ApiEndpoints.resolveImageUrl(
                                           a.profileImage,
                                         ),
-                                        fit: BoxFit.cover,
+                                        fit: .cover,
                                         errorWidget: (context, url, error) {
                                           final h =
                                               (a.fullName.hashCode.abs() % 360)
@@ -233,10 +232,12 @@ class AlumniCard extends StatelessWidget {
                                             child: Center(
                                               child: Text(
                                                 initials,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 24,
+                                                style: TextStyle(
+                                                  color:
+                                                      context.colors.onPrimary,
+                                                  fontWeight: .bold,
+                                                  fontSize:
+                                                      FontSizeToken.display,
                                                 ),
                                               ),
                                             ),
@@ -272,28 +273,30 @@ class AlumniCard extends StatelessWidget {
                                         child: Center(
                                           child: Text(
                                             initials,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 24,
+                                            style: TextStyle(
+                                              color: context.colors.onPrimary,
+                                              fontWeight: .bold,
+                                              fontSize: FontSizeToken.display,
                                             ),
                                           ),
                                         ),
                                       ),
                               ),
                             ),
-                            const SizedBox(width: 14),
+                            const SizedBox(width: Spacing.lg),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
+                                padding: const EdgeInsets.only(
+                                  bottom: Spacing.xs,
+                                ),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: .start,
+                                  mainAxisSize: .min,
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 3,
+                                        horizontal: Spacing.sm,
+                                        vertical: Spacing.xs,
                                       ),
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
@@ -306,24 +309,22 @@ class AlumniCard extends StatelessWidget {
                                             ? a.batch
                                             : 'Batch ${a.batch}',
                                         style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
+                                          fontSize: FontSizeToken.xs,
+                                          fontWeight: .bold,
                                           color: primaryColor,
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: Spacing.sm),
                                     Text(
                                       a.fullName,
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.black87,
+                                        fontWeight: .bold,
+                                        fontSize: FontSizeToken.xl,
+                                        color: context.colors.text,
                                       ),
                                       maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: .ellipsis,
                                     ),
                                   ],
                                 ),
@@ -336,45 +337,44 @@ class AlumniCard extends StatelessWidget {
                   ),
 
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.xl,
+                      Spacing.xl,
+                      Spacing.xl,
+                      Spacing.xxl,
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         if (a.bio.isNotEmpty) ...[
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(Spacing.md),
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.04)
-                                  : Colors.grey.shade50,
+                              color: context.colors.surfaceAlt,
                               borderRadius: BorderRadius.circular(
                                 RadiusToken.md,
                               ),
                               border: Border.all(
-                                color: isDark
-                                    ? Colors.white10
-                                    : Colors.grey.shade100,
+                                color: context.colors.surfaceAlt,
                               ),
                             ),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: .start,
                               children: [
                                 Icon(
                                   Icons.format_quote_rounded,
                                   size: 20,
                                   color: primaryColor.withValues(alpha: 0.4),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: Spacing.sm),
                                 Expanded(
                                   child: Text(
                                     a.bio,
                                     style: TextStyle(
-                                      fontSize: 13,
-                                      fontStyle: FontStyle.italic,
-                                      color: isDark
-                                          ? Colors.grey.shade300
-                                          : Colors.grey.shade700,
+                                      fontSize: FontSizeToken.md,
+                                      fontStyle: .italic,
+                                      color: context.colors.textMuted,
                                     ),
                                   ),
                                 ),
@@ -390,16 +390,23 @@ class AlumniCard extends StatelessWidget {
                           color: primaryColor,
                           isDark: isDark,
                           content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
-                              _buildDetailRow('Batch', a.batch, isDark),
+                              _buildDetailRow(
+                                context,
+                                'Batch',
+                                a.batch,
+                                isDark,
+                              ),
                               if (a.passingYear.isNotEmpty)
                                 _buildDetailRow(
+                                  context,
                                   'Passing Year',
                                   a.passingYear,
                                   isDark,
                                 ),
                               _buildDetailRow(
+                                context,
                                 'Student ID',
                                 a.studentId,
                                 isDark,
@@ -415,19 +422,31 @@ class AlumniCard extends StatelessWidget {
                           color: statusConfig['color'] as Color,
                           isDark: isDark,
                           content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               if (a.designation.isNotEmpty)
-                                _buildDetailRow('Role', a.designation, isDark),
+                                _buildDetailRow(
+                                  context,
+                                  'Role',
+                                  a.designation,
+                                  isDark,
+                                ),
                               if (a.organization.isNotEmpty)
                                 _buildDetailRow(
+                                  context,
                                   'Organization',
                                   a.organization,
                                   isDark,
                                 ),
                               if (a.location.isNotEmpty)
-                                _buildDetailRow('Location', a.location, isDark),
+                                _buildDetailRow(
+                                  context,
+                                  'Location',
+                                  a.location,
+                                  isDark,
+                                ),
                               _buildDetailRow(
+                                context,
                                 'Current Status',
                                 statusConfig['text'] as String,
                                 isDark,
@@ -435,49 +454,36 @@ class AlumniCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: Spacing.xl),
 
-                        Divider(
-                          height: 1,
-                          color: isDark ? Colors.white10 : Colors.grey.shade200,
-                        ),
+                        Divider(height: 1, color: context.colors.border),
                         const SizedBox(height: Spacing.lg),
                         Text(
                           'Connect With Alumni',
                           style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.sm,
+                            fontWeight: .bold,
                             letterSpacing: 0.5,
-                            color: isDark
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade600,
+                            color: context.colors.textMuted,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: Spacing.md),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: .start,
                           children: [
                             if (a.phone.isNotEmpty)
                               _buildContactButton(
                                 icon: Icons.phone_rounded,
-                                backgroundColor: isDark
-                                    ? Colors.green.withValues(alpha: 0.15)
-                                    : Colors.green.shade50,
-                                iconColor: isDark
-                                    ? Colors.green.shade300
-                                    : Colors.green.shade700,
+                                backgroundColor: context.colors.success,
+                                iconColor: context.colors.success,
                                 tooltip: 'Call Phone',
                                 onTap: () => OpenApp.withNumber(a.phone),
                               ),
                             if (a.email.isNotEmpty)
                               _buildContactButton(
                                 icon: Icons.email_rounded,
-                                backgroundColor: isDark
-                                    ? Colors.blue.withValues(alpha: 0.15)
-                                    : Colors.blue.shade50,
-                                iconColor: isDark
-                                    ? Colors.blue.shade300
-                                    : Colors.blue.shade700,
+                                backgroundColor: context.colors.info,
+                                iconColor: context.colors.info,
                                 tooltip: 'Send Email',
                                 onTap: () => OpenApp.withEmail(a.email),
                               ),
@@ -488,12 +494,8 @@ class AlumniCard extends StatelessWidget {
                                     .isNotEmpty)
                               _buildContactButton(
                                 icon: Icons.facebook_rounded,
-                                backgroundColor: isDark
-                                    ? Colors.indigo.withValues(alpha: 0.15)
-                                    : Colors.indigo.shade50,
-                                iconColor: isDark
-                                    ? Colors.indigo.shade300
-                                    : Colors.indigo.shade700,
+                                backgroundColor: context.colors.info,
+                                iconColor: context.colors.info,
                                 tooltip: 'Facebook Profile',
                                 onTap: () => OpenApp.withUrl(
                                   a.socialLinks!['facebook'].toString(),
@@ -506,12 +508,8 @@ class AlumniCard extends StatelessWidget {
                                     .isNotEmpty)
                               _buildContactButton(
                                 icon: Icons.alternate_email_rounded,
-                                backgroundColor: isDark
-                                    ? Colors.cyan.withValues(alpha: 0.15)
-                                    : Colors.cyan.shade50,
-                                iconColor: isDark
-                                    ? Colors.cyan.shade300
-                                    : Colors.cyan.shade700,
+                                backgroundColor: context.colors.primary,
+                                iconColor: context.colors.primary,
                                 tooltip: 'LinkedIn Profile',
                                 onTap: () => OpenApp.withUrl(
                                   a.socialLinks!['linkedin'].toString(),
@@ -519,12 +517,8 @@ class AlumniCard extends StatelessWidget {
                               ),
                             _buildContactButton(
                               icon: Icons.share_rounded,
-                              backgroundColor: isDark
-                                  ? Colors.teal.withValues(alpha: 0.15)
-                                  : Colors.teal.shade50,
-                              iconColor: isDark
-                                  ? Colors.teal.shade300
-                                  : Colors.teal.shade700,
+                              backgroundColor: context.colors.primary,
+                              iconColor: context.colors.primary,
                               tooltip: 'Share Profile',
                               onTap: () => _shareAlumni(a),
                             ),
@@ -547,7 +541,7 @@ class AlumniCard extends StatelessWidget {
     final a = alumni;
     final primaryColor = Theme.of(context).primaryColor;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final statusConfig = _getStatusConfig(a.currentStatus);
+    final statusConfig = _getStatusConfig(context, a.currentStatus);
 
     final initials = a.fullName.isNotEmpty
         ? a.fullName
@@ -561,15 +555,12 @@ class AlumniCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-          width: 1.0,
-        ),
+        border: Border.all(color: context.colors.border, width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -586,31 +577,36 @@ class AlumniCard extends StatelessWidget {
             isDark,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.md,
+                  Spacing.lg,
+                  Spacing.sm,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
+                        horizontal: Spacing.sm,
+                        vertical: Spacing.xs,
                       ),
                       decoration: BoxDecoration(
                         color: primaryColor.withValues(
                           alpha: isDark ? 0.2 : 0.08,
                         ),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Text(
                         a.batch.startsWith('Batch')
                             ? a.batch
                             : 'Batch ${a.batch}',
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontSize: FontSizeToken.xxs,
+                          fontWeight: .bold,
                           color: isDark
                               ? Theme.of(context).colorScheme.onSurface
                               : primaryColor,
@@ -619,14 +615,14 @@ class AlumniCard extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
+                        horizontal: Spacing.sm,
+                        vertical: Spacing.xs,
                       ),
                       decoration: BoxDecoration(
                         color: (statusConfig['color'] as Color).withValues(
                           alpha: 0.08,
                         ),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(RadiusToken.sm),
                         border: Border.all(
                           color: (statusConfig['color'] as Color).withValues(
                             alpha: 0.15,
@@ -635,7 +631,7 @@ class AlumniCard extends StatelessWidget {
                         ),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           Container(
                             width: 6,
@@ -653,12 +649,12 @@ class AlumniCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          const SizedBox(width: Spacing.xs),
                           Text(
                             statusConfig['text'] as String,
                             style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
+                              fontSize: FontSizeToken.xxs,
+                              fontWeight: .bold,
                               color: statusConfig['color'] as Color,
                             ),
                           ),
@@ -670,9 +666,9 @@ class AlumniCard extends StatelessWidget {
               ),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Hero(
                       tag: 'alumni-avatar-${a.id}',
@@ -682,31 +678,27 @@ class AlumniCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isDark
-                                ? Colors.white10
-                                : Colors.grey.shade100,
+                            color: context.colors.surfaceAlt,
                             width: 2.0,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
+                              color: context.colors.shadow,
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(RadiusToken.xxxl),
                           child: a.profileImage.isNotEmpty
                               ? CachedNetworkImage(
                                   imageUrl: ApiEndpoints.resolveImageUrl(
                                     a.profileImage,
                                   ),
-                                  fit: BoxFit.cover,
+                                  fit: .cover,
                                   placeholder: (context, url) => Container(
-                                    color: isDark
-                                        ? Colors.grey.shade900
-                                        : Colors.grey.shade100,
+                                    color: context.colors.surfaceAlt,
                                     child: Center(
                                       child: SizedBox(
                                         width: 18,
@@ -741,10 +733,10 @@ class AlumniCard extends StatelessWidget {
                                       child: Center(
                                         child: Text(
                                           initials,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
+                                          style: TextStyle(
+                                            color: context.colors.onPrimary,
+                                            fontWeight: .bold,
+                                            fontSize: FontSizeToken.xl,
                                           ),
                                         ),
                                       ),
@@ -778,10 +770,10 @@ class AlumniCard extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       initials,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
+                                      style: TextStyle(
+                                        color: context.colors.onPrimary,
+                                        fontWeight: .bold,
+                                        fontSize: FontSizeToken.xl,
                                       ),
                                     ),
                                   ),
@@ -789,79 +781,75 @@ class AlumniCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: Spacing.lg),
 
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
                             a.fullName,
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: isDark ? Colors.white : Colors.black87,
+                              fontWeight: .bold,
+                              fontSize: FontSizeToken.lg,
+                              color: context.colors.text,
                               letterSpacing: 0.1,
                             ),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: Spacing.xs),
                           if (a.designation.isNotEmpty) ...[
                             Row(
                               children: [
                                 Icon(
                                   LucideIcons.briefcase,
                                   size: 12,
-                                  color: isDark
-                                      ? Colors.white60
-                                      : Colors.grey.shade600,
+                                  color: context.colors.textMuted,
                                 ),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: Spacing.xs),
                                 Expanded(
                                   child: Text(
                                     a.designation,
                                     style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.grey.shade800,
+                                      fontSize: FontSizeToken.md,
+                                      fontWeight: .w600,
+                                      color: context.colors.text,
                                     ),
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: .ellipsis,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(height: Spacing.xs),
                           ],
                           Row(
                             children: [
                               Icon(
                                 LucideIcons.building,
                                 size: 12,
-                                color: isDark
-                                    ? Colors.white38
-                                    : Colors.grey.shade400,
+                                color: context.colors.textSubtle,
                               ),
-                              const SizedBox(width: 5),
+                              const SizedBox(width: Spacing.xs),
                               if (a.organizationRef?.logoUrl != null &&
                                   a.organizationRef!.logoUrl.isNotEmpty) ...[
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(
+                                    RadiusToken.xs,
+                                  ),
                                   child: CachedNetworkImage(
                                     imageUrl: ApiEndpoints.resolveImageUrl(
                                       a.organizationRef!.logoUrl,
                                     ),
                                     width: 14,
                                     height: 14,
-                                    fit: BoxFit.cover,
+                                    fit: .cover,
                                     errorWidget: (context, url, error) =>
                                         const SizedBox.shrink(),
                                   ),
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: Spacing.xs),
                               ],
                               Expanded(
                                 child: Text(
@@ -869,40 +857,34 @@ class AlumniCard extends StatelessWidget {
                                       ? a.organization
                                       : 'Self Employed',
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: isDark
-                                        ? Colors.white54
-                                        : Colors.grey.shade600,
+                                    fontSize: FontSizeToken.sm,
+                                    color: context.colors.textMuted,
                                   ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: .ellipsis,
                                 ),
                               ),
                             ],
                           ),
                           if (a.location.isNotEmpty) ...[
-                            const SizedBox(height: 3),
+                            const SizedBox(height: Spacing.xs),
                             Row(
                               children: [
                                 Icon(
                                   LucideIcons.mapPin,
                                   size: 11,
-                                  color: isDark
-                                      ? Colors.white38
-                                      : Colors.grey.shade400,
+                                  color: context.colors.textSubtle,
                                 ),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: Spacing.xs),
                                 Expanded(
                                   child: Text(
                                     a.location,
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      color: isDark
-                                          ? Colors.white38
-                                          : Colors.grey.shade500,
+                                      fontSize: FontSizeToken.xs,
+                                      color: context.colors.textSubtle,
                                     ),
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: .ellipsis,
                                   ),
                                 ),
                               ],
@@ -917,63 +899,68 @@ class AlumniCard extends StatelessWidget {
 
               if (a.bio.isNotEmpty) ...[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.md,
+                    Spacing.lg,
+                    Spacing.xs,
+                  ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
+                      horizontal: Spacing.md,
+                      vertical: Spacing.sm,
                     ),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.02)
-                          : Colors.grey.shade50,
+                      color: context.colors.surfaceAlt,
                       borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Text(
                       a.bio,
                       style: TextStyle(
-                        fontSize: 11,
-                        fontStyle: FontStyle.italic,
-                        color: isDark ? Colors.white38 : Colors.grey.shade500,
+                        fontSize: FontSizeToken.xs,
+                        fontStyle: .italic,
+                        color: context.colors.textSubtle,
                       ),
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                     ),
                   ),
                 ),
               ],
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Divider(
-                  height: 20,
-                  color: isDark ? Colors.white10 : Colors.grey.shade200,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                child: Divider(height: 20, color: context.colors.border),
               ),
 
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  0,
+                  Spacing.lg,
+                  Spacing.md,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     Row(
                       children: [
                         if (a.phone.isNotEmpty)
                           _buildCardActionButton(
                             icon: Icons.phone_rounded,
-                            iconColor: Colors.green.shade600,
-                            backgroundColor: isDark
-                                ? Colors.green.withValues(alpha: 0.15)
-                                : Colors.green.shade50.withValues(alpha: 0.7),
+                            iconColor: context.colors.success,
+                            backgroundColor: context.colors.success.withValues(
+                              alpha: 0.7,
+                            ),
                             onTap: () => OpenApp.withNumber(a.phone),
                           ),
                         if (a.email.isNotEmpty)
                           _buildCardActionButton(
                             icon: Icons.email_rounded,
-                            iconColor: Colors.blue.shade600,
-                            backgroundColor: isDark
-                                ? Colors.blue.withValues(alpha: 0.15)
-                                : Colors.blue.shade50.withValues(alpha: 0.7),
+                            iconColor: context.colors.info,
+                            backgroundColor: context.colors.info.withValues(
+                              alpha: 0.7,
+                            ),
                             onTap: () => OpenApp.withEmail(a.email),
                           ),
                         if (a.socialLinks != null &&
@@ -981,10 +968,10 @@ class AlumniCard extends StatelessWidget {
                             a.socialLinks!['facebook'].toString().isNotEmpty)
                           _buildCardActionButton(
                             icon: Icons.facebook_rounded,
-                            iconColor: Colors.indigo.shade600,
-                            backgroundColor: isDark
-                                ? Colors.indigo.withValues(alpha: 0.15)
-                                : Colors.indigo.shade50.withValues(alpha: 0.7),
+                            iconColor: context.colors.info,
+                            backgroundColor: context.colors.info.withValues(
+                              alpha: 0.7,
+                            ),
                             onTap: () => OpenApp.withUrl(
                               a.socialLinks!['facebook'].toString(),
                             ),
@@ -994,20 +981,20 @@ class AlumniCard extends StatelessWidget {
                             a.socialLinks!['linkedin'].toString().isNotEmpty)
                           _buildCardActionButton(
                             icon: Icons.alternate_email_rounded,
-                            iconColor: Colors.cyan.shade600,
-                            backgroundColor: isDark
-                                ? Colors.cyan.withValues(alpha: 0.15)
-                                : Colors.cyan.shade50.withValues(alpha: 0.7),
+                            iconColor: context.colors.primary,
+                            backgroundColor: context.colors.primary.withValues(
+                              alpha: 0.7,
+                            ),
                             onTap: () => OpenApp.withUrl(
                               a.socialLinks!['linkedin'].toString(),
                             ),
                           ),
                         _buildCardActionButton(
                           icon: Icons.share_rounded,
-                          iconColor: Colors.teal.shade600,
-                          backgroundColor: isDark
-                              ? Colors.teal.withValues(alpha: 0.15)
-                              : Colors.teal.shade50.withValues(alpha: 0.7),
+                          iconColor: context.colors.primary,
+                          backgroundColor: context.colors.primary.withValues(
+                            alpha: 0.7,
+                          ),
                           onTap: () => _shareAlumni(a),
                         ),
                       ],
@@ -1018,12 +1005,12 @@ class AlumniCard extends StatelessWidget {
                         Text(
                           'View Profile',
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizeToken.xs,
+                            fontWeight: .bold,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
-                        const SizedBox(width: 2),
+                        const SizedBox(width: Spacing.xxs),
                         Icon(
                           Icons.chevron_right_rounded,
                           size: 16,
@@ -1049,41 +1036,49 @@ class AlumniCard extends StatelessWidget {
     required Widget content,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
             Icon(icon, size: 16, color: color),
-            const SizedBox(width: 8),
+            const SizedBox(width: Spacing.sm),
             Text(
               title,
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+                fontSize: FontSizeToken.md,
+                fontWeight: .bold,
                 color: color,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 6),
-        Padding(padding: const EdgeInsets.only(left: 24), child: content),
+        const SizedBox(height: Spacing.sm),
+        Padding(
+          padding: const EdgeInsets.only(left: Spacing.xxl),
+          child: content,
+        ),
       ],
     );
   }
 
-  Widget _buildDetailRow(String label, String value, bool isDark) {
+  Widget _buildDetailRow(
+    BuildContext context,
+    String label,
+    String value,
+    bool isDark,
+  ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      padding: const EdgeInsets.symmetric(vertical: Spacing.xxs),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           SizedBox(
             width: 100,
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 12,
-                color: isDark ? Colors.white38 : Colors.black54,
+                fontSize: FontSizeToken.sm,
+                color: context.colors.textMuted,
               ),
             ),
           ),
@@ -1091,9 +1086,9 @@ class AlumniCard extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: isDark ? Colors.white70 : Colors.black87,
+                fontSize: FontSizeToken.sm,
+                fontWeight: .w500,
+                color: context.colors.text,
               ),
             ),
           ),
@@ -1110,7 +1105,7 @@ class AlumniCard extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.only(right: Spacing.md),
       child: Tooltip(
         message: tooltip,
         child: Material(
@@ -1138,7 +1133,7 @@ class AlumniCard extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: Spacing.sm),
       child: GestureDetector(
         onTap: onTap,
         child: Container(

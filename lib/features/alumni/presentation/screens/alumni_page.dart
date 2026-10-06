@@ -12,6 +12,10 @@ import '../providers/alumni_provider.dart';
 import '../widgets/alumni_card.dart';
 import '../widgets/alumni_empty_state.dart';
 import '../widgets/organization_filter_sheet.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class AlumniPage extends ConsumerStatefulWidget {
   const AlumniPage({super.key});
@@ -71,49 +75,52 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
     final selectedOrg = ref.watch(alumniSelectedOrganizationProvider);
     return IntrinsicWidth(
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           InkWell(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(RadiusToken.xxl),
             onTap: () => showOrganizationFilterSheet(context, ref),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.xs,
+                vertical: Spacing.md,
+              ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   Icon(
                     LucideIcons.building2,
-                    color: Colors.grey.shade600,
+                    color: context.colors.textMuted,
                     size: 20,
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: Spacing.xs),
                   Text(
                     'Org.',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      color: context.colors.textMuted,
+                      fontSize: FontSizeToken.md,
+                      fontWeight: .w500,
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.grey.shade600,
-                  ),
+                  Icon(Icons.arrow_drop_down, color: context.colors.textMuted),
                 ],
               ),
             ),
           ),
           if (selectedOrg != null)
             InkWell(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(RadiusToken.xxl),
               onTap: () => ref
                   .read(alumniSelectedOrganizationProvider.notifier)
                   .update(null),
               child: Padding(
-                padding: const EdgeInsets.only(right: 12, left: 2),
+                padding: const EdgeInsets.only(
+                  right: Spacing.md,
+                  left: Spacing.xxs,
+                ),
                 child: Icon(
                   Icons.close_rounded,
-                  color: Colors.grey.shade500,
+                  color: context.colors.textSubtle,
                   size: 18,
                 ),
               ),
@@ -136,7 +143,12 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
             child: SectionTabBar(
               controller: _tabController,
               tabs: const [
@@ -148,24 +160,29 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
           ),
           if (selectedOrg != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                0,
+                Spacing.lg,
+                Spacing.sm,
+              ),
               child: Row(
                 children: [
                   Icon(
                     LucideIcons.building2,
                     size: 14,
-                    color: Colors.grey.shade500,
+                    color: context.colors.textSubtle,
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: Spacing.sm),
                   Expanded(
                     child: Text(
                       'Filtered by ${selectedOrg.name}',
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade600,
+                        fontSize: FontSizeToken.sm,
+                        fontWeight: .w500,
+                        color: context.colors.textMuted,
                       ),
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                     ),
                   ),
                 ],
@@ -182,13 +199,19 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
 
                 return ListView.separated(
                   controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.lg,
+                    100,
+                  ),
                   itemCount: alumniList.length + (state.isLoadingMore ? 1 : 0),
-                  separatorBuilder: (_, _) => const SizedBox(height: 14),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: Spacing.lg),
                   itemBuilder: (context, index) {
                     if (index == alumniList.length) {
                       return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
+                        padding: EdgeInsets.symmetric(vertical: Spacing.xxl),
                         child: Center(child: CupertinoActivityIndicator()),
                       );
                     }
@@ -199,10 +222,10 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
               loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (err, _) => Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(Spacing.xxxl),
                   child: Text(
                     'Error: $err',
-                    style: const TextStyle(color: Colors.red),
+                    style: TextStyle(color: context.colors.danger),
                   ),
                 ),
               ),

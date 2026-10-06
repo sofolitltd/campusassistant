@@ -15,6 +15,9 @@ import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class TeacherDetailsScreen extends ConsumerStatefulWidget {
   const TeacherDetailsScreen({super.key, required this.teacherId});
@@ -43,20 +46,23 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (error, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(Spacing.xl),
             child: Text(
               error.toString(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+              textAlign: .center,
+              style: TextStyle(
+                color: context.colors.danger,
+                fontSize: FontSizeToken.md,
+              ),
             ),
           ),
         ),
         data: (teacherModel) => SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Spacing.lg),
           child: Column(
             children: [
               _HeaderCard(teacher: teacherModel),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _DetailCard(
                 children: [
                   _InfoRow(
@@ -74,7 +80,7 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _AcademicSection(
                 title: 'Publications',
                 content: teacherModel.publications.isNotEmpty
@@ -82,7 +88,7 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
                     : 'No publications available.',
                 isLink: teacherModel.publications.isNotEmpty,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _AcademicSection(
                 title: 'Research Interests',
                 isInterests: true,
@@ -133,29 +139,22 @@ class _DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-          width: 1,
-        ),
+        border: Border.all(color: context.colors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ),
+      padding: const EdgeInsets.all(Spacing.lg),
+      child: Column(crossAxisAlignment: .start, children: children),
     );
   }
 }
@@ -177,38 +176,40 @@ class _AcademicSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-          width: 1,
-        ),
+        border: Border.all(color: context.colors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.lg),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: const TextStyle(
+              fontWeight: .bold,
+              fontSize: FontSizeToken.base,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Spacing.md),
           if (isInterests)
             interests.isEmpty
-                ? const Text(
+                ? Text(
                     'No research interests listed.',
-                    style: TextStyle(color: Colors.grey, fontSize: 13),
+                    style: TextStyle(
+                      color: context.colors.textSubtle,
+                      fontSize: FontSizeToken.md,
+                    ),
                   )
                 : Wrap(
                     spacing: 8,
@@ -218,19 +219,21 @@ class _AcademicSection extends StatelessWidget {
                         .map(
                           (interest) => Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
+                              horizontal: Spacing.md,
+                              vertical: Spacing.xs,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.blueGrey.shade50,
-                              borderRadius: BorderRadius.circular(6),
+                              color: context.colors.surfaceAlt,
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.sm,
+                              ),
                             ),
                             child: Text(
                               interest.trim(),
                               style: TextStyle(
-                                color: Colors.blueGrey.shade800,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                                color: context.colors.text,
+                                fontSize: FontSizeToken.xs,
+                                fontWeight: .w600,
                               ),
                             ),
                           ),
@@ -243,10 +246,12 @@ class _AcademicSection extends StatelessWidget {
               child: Text(
                 content,
                 style: TextStyle(
-                  fontSize: 13,
-                  color: isLink ? Colors.blue : Colors.grey.shade700,
+                  fontSize: FontSizeToken.md,
+                  color: isLink
+                      ? context.colors.info
+                      : context.colors.textMuted,
                   decoration: isLink ? TextDecoration.underline : null,
-                  decorationColor: isLink ? Colors.blue : null,
+                  decorationColor: isLink ? context.colors.info : null,
                 ),
               ),
             ),
@@ -263,35 +268,31 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).cardColor : Colors.white,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: isDark ? Colors.white10 : Colors.grey.shade200,
-          width: 1,
-        ),
+        border: Border.all(color: context.colors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.colors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(Spacing.md),
         child: Row(
           children: [
             Container(
               height: 80,
               width: 80,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(RadiusToken.md),
                 border: Border.all(
-                  color: isDark ? Colors.white10 : Colors.grey.shade100,
+                  color: context.colors.surfaceAlt,
                   width: 1.5,
                 ),
               ),
@@ -299,67 +300,67 @@ class _HeaderCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
                 child: CachedNetworkImage(
                   imageUrl: ApiEndpoints.resolveImageUrl(teacher.imageUrl),
-                  fit: BoxFit.cover,
+                  fit: .cover,
                   placeholder: (context, url) => const Center(
                     child: CupertinoActivityIndicator(radius: 6),
                   ),
                   errorWidget: (context, url, error) => Icon(
                     LucideIcons.user,
-                    color: Colors.grey.shade300,
+                    color: context.colors.borderStrong,
                     size: 24,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: Spacing.lg),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     teacher.name,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.lg,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Spacing.xs),
                   Text(
                     teacher.post,
                     style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      color: context.colors.textMuted,
+                      fontSize: FontSizeToken.md,
+                      fontWeight: .w500,
                     ),
                   ),
                   if (teacher.phd.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.only(top: Spacing.xs),
                       child: Text(
                         teacher.phd,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
+                        style: TextStyle(
+                          fontSize: FontSizeToken.xs,
+                          color: context.colors.textSubtle,
                         ),
                       ),
                     ),
                   if (teacher.chairman)
                     Container(
-                      margin: const EdgeInsets.only(top: 8),
+                      margin: const EdgeInsets.only(top: Spacing.sm),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
+                        horizontal: Spacing.sm,
+                        vertical: Spacing.xxs,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(4),
+                        color: context.colors.primary,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
                       ),
-                      child: const Text(
+                      child: Text(
                         'CHAIRMAN',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
+                          color: context.colors.onPrimary,
+                          fontSize: FontSizeToken.xxs,
+                          fontWeight: .bold,
                         ),
                       ),
                     ),
@@ -382,16 +383,16 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         SizedBox(
           width: 60,
           child: Text(
             label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: Colors.grey,
+            style: TextStyle(
+              fontWeight: .bold,
+              fontSize: FontSizeToken.md,
+              color: context.colors.textSubtle,
             ),
           ),
         ),
@@ -406,12 +407,12 @@ class _InfoRow extends StatelessWidget {
             },
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-                decorationColor: Colors.blue,
-                color: Colors.blue,
+              style: TextStyle(
+                fontSize: FontSizeToken.md,
+                fontWeight: .w600,
+                decoration: .underline,
+                decorationColor: context.colors.info,
+                color: context.colors.info,
               ),
             ),
           ),

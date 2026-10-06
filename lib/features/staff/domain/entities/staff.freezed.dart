@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'staff.dart';
@@ -9,6 +9,7 @@ part of 'staff.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $StaffCopyWith<Staff> get copyWith => _$StaffCopyWithImpl<Staff>(this as Staff, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Staff&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.post, post) || other.post == post)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed));
+  final _this = this as Staff;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Staff&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.post, _this.post) || other.post == _this.post)&&(identical(other.mobile, _this.mobile) || other.mobile == _this.mobile)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.verificationCode, _this.verificationCode) || other.verificationCode == _this.verificationCode)&&(identical(other.isClaimed, _this.isClaimed) || other.isClaimed == _this.isClaimed));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,universityId,departmentId,name,post,mobile,imageUrl,serial,verificationCode,isClaimed);
+int get hashCode {
+  final _this = this as Staff;
+  return Object.hash(runtimeType,_this.id,_this.universityId,_this.departmentId,_this.name,_this.post,_this.mobile,_this.imageUrl,_this.serial,_this.verificationCode,_this.isClaimed);
+}
 
 @override
 String toString() {
-  return 'Staff(id: $id, universityId: $universityId, departmentId: $departmentId, name: $name, post: $post, mobile: $mobile, imageUrl: $imageUrl, serial: $serial, verificationCode: $verificationCode, isClaimed: $isClaimed)';
+  final _this = this as Staff;
+  return 'Staff(id: ${_this.id}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, name: ${_this.name}, post: ${_this.post}, mobile: ${_this.mobile}, imageUrl: ${_this.imageUrl}, serial: ${_this.serial}, verificationCode: ${_this.verificationCode}, isClaimed: ${_this.isClaimed})';
 }
 
 
@@ -63,7 +69,7 @@ class _$StaffCopyWithImpl<$Res>
 /// Create a copy of Staff
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? universityId = null,Object? departmentId = null,Object? name = null,Object? post = null,Object? mobile = null,Object? imageUrl = null,Object? serial = null,Object? verificationCode = null,Object? isClaimed = null,}) {
-  return _then(_self.copyWith(
+  return _then(Staff(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
@@ -239,16 +245,18 @@ _$StaffCopyWith<_Staff> get copyWith => __$StaffCopyWithImpl<_Staff>(this, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Staff&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.post, post) || other.post == post)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Staff&&(identical(other.id, id) || other.id == id)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.post, post) || other.post == post)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.verificationCode, verificationCode) || other.verificationCode == verificationCode)&&(identical(other.isClaimed, isClaimed) || other.isClaimed == isClaimed));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,universityId,departmentId,name,post,mobile,imageUrl,serial,verificationCode,isClaimed);
+int get hashCode {
+    return Object.hash(runtimeType,id,universityId,departmentId,name,post,mobile,imageUrl,serial,verificationCode,isClaimed);
+}
 
 @override
 String toString() {
-  return 'Staff(id: $id, universityId: $universityId, departmentId: $departmentId, name: $name, post: $post, mobile: $mobile, imageUrl: $imageUrl, serial: $serial, verificationCode: $verificationCode, isClaimed: $isClaimed)';
+    return 'Staff(id: $id, universityId: $universityId, departmentId: $departmentId, name: $name, post: $post, mobile: $mobile, imageUrl: $imageUrl, serial: $serial, verificationCode: $verificationCode, isClaimed: $isClaimed)';
 }
 
 

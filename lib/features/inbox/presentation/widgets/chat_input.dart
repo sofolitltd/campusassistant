@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class ChatInput extends StatelessWidget {
   final TextEditingController controller;
@@ -23,20 +27,21 @@ class ChatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final canSend = hasText && !isSending;
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.md,
+        Spacing.xs,
+        Spacing.md,
+        Spacing.md,
+      ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
         decoration: BoxDecoration(
-          color: isDark ? Colors.transparent : Colors.white,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: isDark ? Colors.white12 : Colors.grey.shade300,
-          ),
+          color: isDark ? Colors.transparent : context.colors.surface,
+          borderRadius: BorderRadius.circular(RadiusToken.xxxl),
+          border: Border.all(color: context.colors.borderStrong),
           boxShadow: [
             BoxShadow(
-              color: isDark
-                  ? Colors.black26
-                  : Colors.black.withValues(alpha: 0.08),
+              color: context.colors.shadow.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -54,7 +59,7 @@ class ChatInput extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   Icons.add_circle_outline,
-                  color: isDark ? Colors.white54 : Colors.grey.shade600,
+                  color: context.colors.textMuted,
                   size: 22,
                 ),
                 onPressed: () {},
@@ -63,22 +68,24 @@ class ChatInput extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: controller,
-                textInputAction: TextInputAction.newline,
+                textInputAction: .newline,
                 minLines: 1,
                 maxLines: 5,
-                keyboardType: TextInputType.multiline,
+                keyboardType: .multiline,
                 style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontSize: 15,
+                  color: context.colors.text,
+                  fontSize: FontSizeToken.lg,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Type a message',
                   hintStyle: TextStyle(
-                    color: isDark ? Colors.white38 : Colors.grey.shade500,
-                    fontSize: 15,
+                    color: context.colors.textSubtle,
+                    fontSize: FontSizeToken.lg,
                   ),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: Spacing.md,
+                  ),
                 ),
               ),
             ),
@@ -89,24 +96,26 @@ class ChatInput extends StatelessWidget {
               child: Container(
                 width: 28,
                 height: 28,
-                margin: const EdgeInsets.only(right: 4),
+                margin: const EdgeInsets.only(right: Spacing.xs),
                 decoration: BoxDecoration(
-                  color: canSend ? Colors.teal : Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(20),
+                  color: canSend
+                      ? context.colors.primary
+                      : context.colors.textSubtle,
+                  borderRadius: BorderRadius.circular(RadiusToken.xxl),
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: isSending
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 14,
                           height: 14,
                           child: CupertinoActivityIndicator(
-                            color: Colors.white,
+                            color: context.colors.onPrimary,
                           ),
                         )
-                      : const Icon(
+                      : Icon(
                           Icons.arrow_upward_rounded,
-                          color: Colors.white,
+                          color: context.colors.onPrimary,
                           size: 16,
                         ),
                   onPressed: canSend ? onSend : null,

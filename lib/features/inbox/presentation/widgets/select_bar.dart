@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_control.dart';
 
 class SelectBar extends StatelessWidget {
   final int count;
@@ -17,38 +21,39 @@ class SelectBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.md,
+        Spacing.sm,
+        Spacing.md,
+        Spacing.md,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1F2C33) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.white10 : Colors.grey.shade300,
-          ),
-        ),
+        color: context.colors.surface,
+        border: Border(top: BorderSide(color: context.colors.borderStrong)),
       ),
       child: SafeArea(
         top: false,
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline,
-                color: Colors.red,
+                color: context.colors.danger,
                 size: 22,
               ),
               onPressed: onDelete,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: Spacing.xs),
             Text(
               count == 1 ? '1 message' : '$count messages',
               style: TextStyle(
-                color: isDark ? Colors.white70 : Colors.black87,
-                fontSize: 14,
+                color: context.colors.text,
+                fontSize: FontSizeToken.base,
               ),
             ),
             const Spacer(),
             SizedBox(
-              height: 34,
+              height: ControlToken.height,
               child: TextButton(
                 onPressed: onCancel,
                 child: const Text('Cancel'),

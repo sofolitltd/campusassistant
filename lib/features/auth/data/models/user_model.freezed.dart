@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'user_model.dart';
@@ -9,6 +9,7 @@ part of 'user_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.role, role) || other.role == role)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.profession, profession) || other.profession == profession)&&(identical(other.session, session) || other.session == session)&&(identical(other.hall, hall) || other.hall == hall)&&(identical(other.blood, blood) || other.blood == blood)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.isPhonePublic, isPhonePublic) || other.isPhonePublic == isPhonePublic)&&(identical(other.isEmailPublic, isEmailPublic) || other.isEmailPublic == isEmailPublic)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.isModerator, isModerator) || other.isModerator == isModerator)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.isCr, isCr) || other.isCr == isCr)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+  final _this = this as UserModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.firstName, _this.firstName) || other.firstName == _this.firstName)&&(identical(other.lastName, _this.lastName) || other.lastName == _this.lastName)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.profileImage, _this.profileImage) || other.profileImage == _this.profileImage)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.batchId, _this.batchId) || other.batchId == _this.batchId)&&(identical(other.profession, _this.profession) || other.profession == _this.profession)&&(identical(other.session, _this.session) || other.session == _this.session)&&(identical(other.hall, _this.hall) || other.hall == _this.hall)&&(identical(other.blood, _this.blood) || other.blood == _this.blood)&&(identical(other.isActive, _this.isActive) || other.isActive == _this.isActive)&&(identical(other.isVerified, _this.isVerified) || other.isVerified == _this.isVerified)&&(identical(other.isPhonePublic, _this.isPhonePublic) || other.isPhonePublic == _this.isPhonePublic)&&(identical(other.isEmailPublic, _this.isEmailPublic) || other.isEmailPublic == _this.isEmailPublic)&&(identical(other.subscriptionStatus, _this.subscriptionStatus) || other.subscriptionStatus == _this.subscriptionStatus)&&(identical(other.isModerator, _this.isModerator) || other.isModerator == _this.isModerator)&&(identical(other.isAdmin, _this.isAdmin) || other.isAdmin == _this.isAdmin)&&(identical(other.isCr, _this.isCr) || other.isCr == _this.isCr)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,email,firstName,lastName,role,profileImage,phone,gender,batch,batchId,profession,session,hall,blood,isActive,isVerified,isPhonePublic,isEmailPublic,subscriptionStatus,isModerator,isAdmin,isCr,universityId,departmentId]);
+int get hashCode {
+  final _this = this as UserModel;
+  return Object.hashAll([runtimeType,_this.id,_this.email,_this.firstName,_this.lastName,_this.role,_this.profileImage,_this.phone,_this.gender,_this.batch,_this.batchId,_this.profession,_this.session,_this.hall,_this.blood,_this.isActive,_this.isVerified,_this.isPhonePublic,_this.isEmailPublic,_this.subscriptionStatus,_this.isModerator,_this.isAdmin,_this.isCr,_this.universityId,_this.departmentId]);
+}
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, role: $role, profileImage: $profileImage, phone: $phone, gender: $gender, batch: $batch, batchId: $batchId, profession: $profession, session: $session, hall: $hall, blood: $blood, isActive: $isActive, isVerified: $isVerified, isPhonePublic: $isPhonePublic, isEmailPublic: $isEmailPublic, subscriptionStatus: $subscriptionStatus, isModerator: $isModerator, isAdmin: $isAdmin, isCr: $isCr, universityId: $universityId, departmentId: $departmentId)';
+  final _this = this as UserModel;
+  return 'UserModel(id: ${_this.id}, email: ${_this.email}, firstName: ${_this.firstName}, lastName: ${_this.lastName}, role: ${_this.role}, profileImage: ${_this.profileImage}, phone: ${_this.phone}, gender: ${_this.gender}, batch: ${_this.batch}, batchId: ${_this.batchId}, profession: ${_this.profession}, session: ${_this.session}, hall: ${_this.hall}, blood: ${_this.blood}, isActive: ${_this.isActive}, isVerified: ${_this.isVerified}, isPhonePublic: ${_this.isPhonePublic}, isEmailPublic: ${_this.isEmailPublic}, subscriptionStatus: ${_this.subscriptionStatus}, isModerator: ${_this.isModerator}, isAdmin: ${_this.isAdmin}, isCr: ${_this.isCr}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId})';
 }
 
 
@@ -66,7 +72,7 @@ class _$UserModelCopyWithImpl<$Res>
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? firstName = null,Object? lastName = null,Object? role = null,Object? profileImage = freezed,Object? phone = freezed,Object? gender = freezed,Object? batch = freezed,Object? batchId = freezed,Object? profession = freezed,Object? session = freezed,Object? hall = freezed,Object? blood = freezed,Object? isActive = null,Object? isVerified = null,Object? isPhonePublic = null,Object? isEmailPublic = null,Object? subscriptionStatus = freezed,Object? isModerator = null,Object? isAdmin = null,Object? isCr = null,Object? universityId = freezed,Object? departmentId = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(UserModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
@@ -273,16 +279,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.role, role) || other.role == role)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.profession, profession) || other.profession == profession)&&(identical(other.session, session) || other.session == session)&&(identical(other.hall, hall) || other.hall == hall)&&(identical(other.blood, blood) || other.blood == blood)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.isPhonePublic, isPhonePublic) || other.isPhonePublic == isPhonePublic)&&(identical(other.isEmailPublic, isEmailPublic) || other.isEmailPublic == isEmailPublic)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.isModerator, isModerator) || other.isModerator == isModerator)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.isCr, isCr) || other.isCr == isCr)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.role, role) || other.role == role)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.profession, profession) || other.profession == profession)&&(identical(other.session, session) || other.session == session)&&(identical(other.hall, hall) || other.hall == hall)&&(identical(other.blood, blood) || other.blood == blood)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.isPhonePublic, isPhonePublic) || other.isPhonePublic == isPhonePublic)&&(identical(other.isEmailPublic, isEmailPublic) || other.isEmailPublic == isEmailPublic)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.isModerator, isModerator) || other.isModerator == isModerator)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.isCr, isCr) || other.isCr == isCr)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,email,firstName,lastName,role,profileImage,phone,gender,batch,batchId,profession,session,hall,blood,isActive,isVerified,isPhonePublic,isEmailPublic,subscriptionStatus,isModerator,isAdmin,isCr,universityId,departmentId]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,email,firstName,lastName,role,profileImage,phone,gender,batch,batchId,profession,session,hall,blood,isActive,isVerified,isPhonePublic,isEmailPublic,subscriptionStatus,isModerator,isAdmin,isCr,universityId,departmentId]);
+}
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, role: $role, profileImage: $profileImage, phone: $phone, gender: $gender, batch: $batch, batchId: $batchId, profession: $profession, session: $session, hall: $hall, blood: $blood, isActive: $isActive, isVerified: $isVerified, isPhonePublic: $isPhonePublic, isEmailPublic: $isEmailPublic, subscriptionStatus: $subscriptionStatus, isModerator: $isModerator, isAdmin: $isAdmin, isCr: $isCr, universityId: $universityId, departmentId: $departmentId)';
+    return 'UserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, role: $role, profileImage: $profileImage, phone: $phone, gender: $gender, batch: $batch, batchId: $batchId, profession: $profession, session: $session, hall: $hall, blood: $blood, isActive: $isActive, isVerified: $isVerified, isPhonePublic: $isPhonePublic, isEmailPublic: $isEmailPublic, subscriptionStatus: $subscriptionStatus, isModerator: $isModerator, isAdmin: $isAdmin, isCr: $isCr, universityId: $universityId, departmentId: $departmentId)';
 }
 
 

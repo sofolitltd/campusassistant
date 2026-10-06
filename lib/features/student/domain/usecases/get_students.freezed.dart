@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'get_students.dart';
@@ -9,6 +9,7 @@ part of 'get_students.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $GetStudentsParamsCopyWith<GetStudentsParams> get copyWith => _$GetStudentsParam
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetStudentsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.search, search) || other.search == search)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
+  final _this = this as GetStudentsParams;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetStudentsParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.bloodGroup, _this.bloodGroup) || other.bloodGroup == _this.bloodGroup)&&(identical(other.limit, _this.limit) || other.limit == _this.limit)&&(identical(other.offset, _this.offset) || other.offset == _this.offset));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId,batch,search,bloodGroup,limit,offset);
+int get hashCode {
+  final _this = this as GetStudentsParams;
+  return Object.hash(runtimeType,_this.universityId,_this.departmentId,_this.batch,_this.search,_this.bloodGroup,_this.limit,_this.offset);
+}
 
 @override
 String toString() {
-  return 'GetStudentsParams(universityId: $universityId, departmentId: $departmentId, batch: $batch, search: $search, bloodGroup: $bloodGroup, limit: $limit, offset: $offset)';
+  final _this = this as GetStudentsParams;
+  return 'GetStudentsParams(universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, batch: ${_this.batch}, search: ${_this.search}, bloodGroup: ${_this.bloodGroup}, limit: ${_this.limit}, offset: ${_this.offset})';
 }
 
 
@@ -63,7 +69,7 @@ class _$GetStudentsParamsCopyWithImpl<$Res>
 /// Create a copy of GetStudentsParams
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? universityId = freezed,Object? departmentId = freezed,Object? batch = freezed,Object? search = freezed,Object? bloodGroup = freezed,Object? limit = freezed,Object? offset = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(GetStudentsParams(
 universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String?,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,batch: freezed == batch ? _self.batch : batch // ignore: cast_nullable_to_non_nullable
@@ -233,16 +239,18 @@ _$GetStudentsParamsCopyWith<_GetStudentsParams> get copyWith => __$GetStudentsPa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetStudentsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.search, search) || other.search == search)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetStudentsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.search, search) || other.search == search)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,universityId,departmentId,batch,search,bloodGroup,limit,offset);
+int get hashCode {
+    return Object.hash(runtimeType,universityId,departmentId,batch,search,bloodGroup,limit,offset);
+}
 
 @override
 String toString() {
-  return 'GetStudentsParams(universityId: $universityId, departmentId: $departmentId, batch: $batch, search: $search, bloodGroup: $bloodGroup, limit: $limit, offset: $offset)';
+    return 'GetStudentsParams(universityId: $universityId, departmentId: $departmentId, batch: $batch, search: $search, bloodGroup: $bloodGroup, limit: $limit, offset: $offset)';
 }
 
 

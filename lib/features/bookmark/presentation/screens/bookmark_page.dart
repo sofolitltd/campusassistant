@@ -11,6 +11,8 @@ import '/features/resource/data/models/resource_model.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class BookmarkPage extends ConsumerStatefulWidget {
   const BookmarkPage({super.key});
@@ -22,8 +24,6 @@ class BookmarkPage extends ConsumerStatefulWidget {
 class _BookmarkPageState extends ConsumerState<BookmarkPage> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final userAsync = ref.watch(userProvider);
     final userId = userAsync.value?.uid ?? '';
 
@@ -36,11 +36,15 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
-              Icon(LucideIcons.alertCircle, size: 48, color: Colors.red[300]),
+              Icon(
+                LucideIcons.alertCircle,
+                size: 48,
+                color: context.colors.danger,
+              ),
               const SizedBox(height: Spacing.lg),
-              Text('Error: $e', textAlign: TextAlign.center),
+              Text('Error: $e', textAlign: .center),
               const SizedBox(height: Spacing.lg),
               ElevatedButton.icon(
                 onPressed: () => ref.invalidate(userBookmarksProvider(userId)),
@@ -54,27 +58,27 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
           if (bookmarks.isEmpty) {
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Icon(
                     LucideIcons.bookmark,
                     size: 64,
-                    color: isDark ? Colors.white24 : Colors.grey.shade300,
+                    color: context.colors.borderStrong,
                   ),
                   const SizedBox(height: Spacing.lg),
                   Text(
                     'No bookmarks yet',
                     style: TextStyle(
-                      fontSize: 16,
-                      color: isDark ? Colors.white70 : Colors.grey.shade600,
+                      fontSize: FontSizeToken.lg,
+                      color: context.colors.textMuted,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Spacing.sm),
                   Text(
                     'Bookmark notes, videos, and other resources',
                     style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.white38 : Colors.grey.shade500,
+                      fontSize: FontSizeToken.md,
+                      color: context.colors.textSubtle,
                     ),
                   ),
                 ],
@@ -83,9 +87,9 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.lg),
             itemCount: bookmarks.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
             itemBuilder: (context, index) {
               final bookmark = bookmarks[index];
               return _BookmarkResourceItem(bookmark: bookmark);
@@ -127,16 +131,20 @@ class _BookmarkResourceItemState extends ConsumerState<_BookmarkResourceItem> {
           borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
-                : Colors.grey.shade200,
+                ? context.colors.border
+                : context.colors.border,
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
-              Icon(LucideIcons.alertCircle, size: 20, color: Colors.red),
-              SizedBox(width: 8),
+              Icon(
+                LucideIcons.alertCircle,
+                size: 20,
+                color: context.colors.danger,
+              ),
+              SizedBox(width: Spacing.sm),
               Text('Couldn\'t load this bookmark'),
             ],
           ),

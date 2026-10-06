@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_spacing.dart';
 
 /// How long to wait for the bKash page to finish loading before offering a
 /// retry — a safety net on top of the backend's own request timeouts, for
@@ -30,7 +32,7 @@ class BkashWebView extends StatefulWidget {
 }
 
 class _BkashWebViewState extends State<BkashWebView> {
-  InAppWebViewController? webViewController;
+  late final WebViewController webViewController;
   bool isLoading = true;
   bool hasError = false;
   String errorMessage = 'Something went wrong while loading bKash.';
@@ -54,15 +56,63 @@ class _BkashWebViewState extends State<BkashWebView> {
       hasError = false;
     });
     _startTimeoutTimer();
-    webViewController?.loadUrl(
-      urlRequest: URLRequest(url: WebUri(widget.url)),
-    );
+    webViewController.loadRequest(Uri.parse(widget.url));
   }
 
   @override
   void initState() {
     super.initState();
+    webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: _onPageStarted,
+          onPageFinished: _onPageFinished,
+          onWebResourceError: (error) {
+            if (error.isForMainFrame == false) return;
+            _showLoadError();
+          },
+          onHttpError: (error) {
+            if (error.request?.uri == null || !mounted) return;
+            // Only the page we asked for matters; sub-resource 4xx/5xx is noise.
+            if (error.request!.uri.toString() != widget.url) return;
+            _showLoadError();
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
     _startTimeoutTimer();
+  }
+
+  void _onPageStarted(String urlStr) {
+    if (urlStr.startsWith(widget.successURL)) {
+      Fluttertoast.showToast(msg: "Payment Successful!");
+      context.pop("success");
+    } else if (urlStr.startsWith(widget.failureURL)) {
+      Fluttertoast.showToast(msg: "Payment Failed!");
+      context.pop("failure");
+    } else if (urlStr.startsWith(widget.cancelURL)) {
+      Fluttertoast.showToast(msg: "Payment Cancelled!");
+      context.pop("cancel");
+    }
+  }
+
+  void _onPageFinished(String url) {
+    _timeoutTimer?.cancel();
+    if (!mounted) return;
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void _showLoadError() {
+    if (!mounted) return;
+    _timeoutTimer?.cancel();
+    setState(() {
+      isLoading = false;
+      hasError = true;
+      errorMessage = 'Could not load the bKash payment page.';
+    });
   }
 
   @override
@@ -74,84 +124,37 @@ class _BkashWebViewState extends State<BkashWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.surface,
       appBar: AppBar(centerTitle: true, title: const Text("Payment")),
       body: Stack(
         children: [
           /// WebView Full Screen
-          SizedBox.expand(
-            child: InAppWebView(
-              initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-              onWebViewCreated: (controller) {
-                webViewController = controller;
-              },
-              onLoadStart: (controller, url) {
-                if (url == null) return;
-                String urlStr = url.toString();
-
-                if (urlStr.startsWith(widget.successURL)) {
-                  Fluttertoast.showToast(msg: "Payment Successful!");
-                  context.pop("success");
-                } else if (urlStr.startsWith(widget.failureURL)) {
-                  Fluttertoast.showToast(msg: "Payment Failed!");
-                  context.pop("failure");
-                } else if (urlStr.startsWith(widget.cancelURL)) {
-                  Fluttertoast.showToast(msg: "Payment Cancelled!");
-                  context.pop("cancel");
-                }
-              },
-              onLoadStop: (controller, url) {
-                _timeoutTimer?.cancel();
-                if (!mounted) return;
-                setState(() {
-                  isLoading = false;
-                });
-              },
-              onReceivedError: (controller, request, error) {
-                if (!(request.isForMainFrame ?? true) || !mounted) return;
-                _timeoutTimer?.cancel();
-                setState(() {
-                  isLoading = false;
-                  hasError = true;
-                  errorMessage = 'Could not load the bKash payment page.';
-                });
-              },
-              onReceivedHttpError: (controller, request, errorResponse) {
-                if (!(request.isForMainFrame ?? true) || !mounted) return;
-                _timeoutTimer?.cancel();
-                setState(() {
-                  isLoading = false;
-                  hasError = true;
-                  errorMessage = 'Could not load the bKash payment page.';
-                });
-              },
-            ),
-          ),
+          SizedBox.expand(child: WebViewWidget(controller: webViewController)),
 
           /// Loading Overlay
           if (isLoading)
             Container(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: context.colors.surface.withValues(alpha: 0.8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: .stretch,
+                mainAxisAlignment: .center,
                 children: [
                   Text(
                     'Please Wait',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    textAlign: .center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge!.copyWith(fontWeight: .bold),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Spacing.xxl),
                   const CupertinoActivityIndicator(radius: 20),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Spacing.md),
                   Text(
                     'Redirecting....',
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      fontWeight: .bold,
+                      color: context.colors.textSubtle,
                     ),
                   ),
                 ],
@@ -161,33 +164,33 @@ class _BkashWebViewState extends State<BkashWebView> {
           /// Error Overlay
           if (hasError)
             Container(
-              color: Colors.white,
+              color: context.colors.surface,
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(Spacing.xxl),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.wifi_off_rounded,
                         size: 56,
-                        color: Colors.grey,
+                        color: context.colors.textSubtle,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: Spacing.lg),
                       Text(
                         errorMessage,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: Spacing.xxl),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           OutlinedButton(
                             onPressed: () => context.pop('cancel'),
                             child: const Text('Cancel'),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: Spacing.md),
                           ElevatedButton(
                             onPressed: _retry,
                             child: const Text('Retry'),

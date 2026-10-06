@@ -1,108 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/section_card.dart';
 import '/routes/app_route.dart';
+import '../widgets/home_section.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
-class MarketplaceSection extends ConsumerWidget {
+class MarketplaceSection extends StatelessWidget {
   const MarketplaceSection({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).appColors.primaryColor;
+  static const _benefits = [
+    'Buy & sell with campus sellers',
+    'Fast pickup on campus',
+    'Secure payment via bKash',
+  ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-      child: GestureDetector(
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return HomeSection(
+      child: SectionCard(
+        margin: const EdgeInsets.symmetric(horizontal: homeInset),
+        radius: homeCardRadius,
+        gradient: LinearGradient(
+          colors: [colors.primarySubtle, colors.surface],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderColor: colors.primary.withValues(alpha: .25),
+        shadow: false,
         onTap: () => context.push(AppRoute.marketplace.path),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isDark
-                  ? [primaryColor.withValues(alpha: 0.2), primaryColor.withValues(alpha: 0.05)]
-                  : [primaryColor.withValues(alpha: 0.1), primaryColor.withValues(alpha: 0.02)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            const HomeSectionHeader(
+              'Campus Marketplace',
+              padding: EdgeInsets.zero,
             ),
-            borderRadius: BorderRadius.circular(RadiusToken.lg),
-            border: Border.all(
-              color: primaryColor.withValues(alpha: isDark ? 0.3 : 0.15),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(Spacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Campus Marketplace',
+            const SizedBox(height: Spacing.md),
+            for (final b in _benefits) ...[
+              Row(
+                children: [
+                  Icon(LucideIcons.check, size: 14, color: colors.primary),
+                  const SizedBox(width: Spacing.sm),
+                  Expanded(
+                    child: Text(
+                      b,
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _benefitRow('Buy & sell with campus sellers'),
-                const SizedBox(height: 6),
-                _benefitRow('Fast pickup on campus'),
-                const SizedBox(height: 6),
-                _benefitRow('Secure payment via bKash'),
-                const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      'Explore Marketplace',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: FontSizeToken.md,
+                        color: colors.textMuted,
                       ),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: Spacing.xs + 2),
+            ],
+            const SizedBox(height: Spacing.sm),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+              decoration: BoxDecoration(
+                color: colors.primary,
+                borderRadius: BorderRadius.circular(RadiusToken.md),
+              ),
+              child: Text(
+                'Explore Marketplace',
+                textAlign: .center,
+                style: TextStyle(
+                  color: colors.onPrimary,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.base,
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _benefitRow(String text) {
-    return Row(
-      children: [
-        Container(
-          width: 5,
-          height: 5,
-          decoration: const BoxDecoration(
-            color: Colors.grey,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
-          ),
-        ),
-      ],
     );
   }
 }

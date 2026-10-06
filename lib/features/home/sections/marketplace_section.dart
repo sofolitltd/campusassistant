@@ -21,62 +21,127 @@ class MarketplaceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
+    // The market's own orange palette (same hero look as the market home), so
+    // the card stands out from the teal home page.
+    final m = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.marketDark
+        : AppColors.marketLight;
 
     return HomeSection(
       child: SectionCard(
-        margin: const EdgeInsets.symmetric(horizontal: homeInset),
+        margin: const EdgeInsets.fromLTRB(homeInset, Spacing.lg, homeInset, 0),
         radius: homeCardRadius,
+        padding: EdgeInsets.zero,
         gradient: LinearGradient(
-          colors: [colors.primarySubtle, colors.surface],
+          colors: [m.primary, m.primaryPressed],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderColor: colors.primary.withValues(alpha: .25),
+        borderColor: Colors.transparent,
         shadow: false,
         onTap: () => context.push(AppRoute.marketplace.path),
-        child: Column(
-          crossAxisAlignment: .start,
+        child: Stack(
           children: [
-            const HomeSectionHeader(
-              'Campus Marketplace',
-              padding: EdgeInsets.zero,
+            Positioned(
+              right: -36,
+              top: -36,
+              child: _Ring(
+                size: 150,
+                color: m.onPrimary.withValues(alpha: .08),
+              ),
             ),
-            const SizedBox(height: Spacing.md),
-            for (final b in _benefits) ...[
-              Row(
+            Positioned(
+              right: 24,
+              bottom: -52,
+              child: _Ring(
+                size: 110,
+                color: m.onPrimary.withValues(alpha: .06),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(Spacing.lg),
+              child: Column(
+                crossAxisAlignment: .start,
                 children: [
-                  Icon(LucideIcons.check, size: 14, color: colors.primary),
-                  const SizedBox(width: Spacing.sm),
-                  Expanded(
-                    child: Text(
-                      b,
-                      style: TextStyle(
-                        fontSize: FontSizeToken.md,
-                        color: colors.textMuted,
+                  Row(
+                    children: [
+                      Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: m.onPrimary.withValues(alpha: .18),
+                          borderRadius: BorderRadius.circular(RadiusToken.md),
+                        ),
+                        child: Icon(
+                          LucideIcons.store,
+                          size: 18,
+                          color: m.onPrimary,
+                        ),
                       ),
+                      const SizedBox(width: Spacing.md),
+                      Expanded(
+                        child: Text(
+                          'Campus Marketplace',
+                          style: TextStyle(
+                            fontSize: FontSizeToken.display,
+                            fontWeight: .w800,
+                            letterSpacing: -0.2,
+                            color: m.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  for (final b in _benefits) ...[
+                    Row(
+                      children: [
+                        Icon(LucideIcons.check, size: 14, color: m.onPrimary),
+                        const SizedBox(width: Spacing.sm),
+                        Expanded(
+                          child: Text(
+                            b,
+                            style: TextStyle(
+                              fontSize: FontSizeToken.md,
+                              color: m.onPrimary.withValues(alpha: .88),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Spacing.xs + 2),
+                  ],
+                  const SizedBox(height: Spacing.md),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.xl,
+                      vertical: Spacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: m.onPrimary,
+                      borderRadius: BorderRadius.circular(RadiusToken.full),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Explore Marketplace',
+                          style: TextStyle(
+                            color: m.primary,
+                            fontWeight: .w700,
+                            fontSize: FontSizeToken.base,
+                          ),
+                        ),
+                        const SizedBox(width: Spacing.sm),
+                        Icon(
+                          LucideIcons.arrowRight,
+                          size: 16,
+                          color: m.primary,
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: Spacing.xs + 2),
-            ],
-            const SizedBox(height: Spacing.sm),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: Spacing.md),
-              decoration: BoxDecoration(
-                color: colors.primary,
-                borderRadius: BorderRadius.circular(RadiusToken.md),
-              ),
-              child: Text(
-                'Explore Marketplace',
-                textAlign: .center,
-                style: TextStyle(
-                  color: colors.onPrimary,
-                  fontWeight: .bold,
-                  fontSize: FontSizeToken.base,
-                ),
               ),
             ),
           ],
@@ -84,4 +149,18 @@ class MarketplaceSection extends StatelessWidget {
       ),
     );
   }
+}
+
+class _Ring extends StatelessWidget {
+  const _Ring({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+  );
 }

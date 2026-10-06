@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/core/di.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/address.dart';
 import '../../data/models/category.dart';
 import '../../data/models/merchant.dart';
@@ -89,6 +90,22 @@ final categoriesListProvider = FutureProvider<List<Category>>((ref) async {
       .toList();
 });
 
+/// Approved merchants for the Merchants tab (redacted public view).
+final merchantsListProvider = FutureProvider<List<Merchant>>((ref) async {
+  final apiClient = ref.watch(apiClientProvider);
+  final response = await apiClient.get('/merchants/public');
+  final rawData = response.data;
+  final items = rawData is List
+      ? rawData
+      : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
+  final merchants = items
+      .map((e) => Merchant.fromJson(e as Map<String, dynamic>))
+      .toList();
+  // Campus Assistant's own store first, then everyone else in server order.
+  merchants.sort((a, b) => (b.isPlatform ? 1 : 0) - (a.isPlatform ? 1 : 0));
+  return merchants;
+});
+
 final merchantByIdProvider = FutureProvider.family<Merchant, String>((
   ref,
   merchantId,
@@ -98,23 +115,24 @@ final merchantByIdProvider = FutureProvider.family<Merchant, String>((
   return Merchant.fromJson(response.data as Map<String, dynamic>);
 });
 
+/// Public storefront view of one merchant: published products visible to this
+/// student's university/department (same endpoint the market home uses).
 final merchantProductsProvider = FutureProvider.family<List<Product>, String>((
   ref,
   merchantId,
 ) async {
   final apiClient = ref.watch(apiClientProvider);
+  final user = await ref.watch(userProvider.future);
   final response = await apiClient.get(
-    '/products',
-    queryParameters: {'merchant_id': merchantId},
+    '/products-by-location',
+    queryParameters: {
+      'merchant_id': merchantId,
+      'university_id': user.university,
+      'department_id': user.department,
+    },
   );
-  final rawData = response.data;
-  final items = rawData is List
-      ? rawData
-      : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
-  return items
-      .map((e) => Product.fromJson(e as Map<String, dynamic>))
-      .where((p) => p.isPublished)
-      .toList();
+  final data = response.data as List;
+  return data.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
 });
 
 /// The owner's own view of their business's products — unlike

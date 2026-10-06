@@ -28,7 +28,7 @@ class _DepartmentNoticesPageState extends ConsumerState<DepartmentNoticesPage> {
 
     return CustomHeaderLayout(
       title: 'Notices',
-      searchAtBottom: true,
+      glassSearch: true,
       searchHint: 'Search notices...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),
       body: RefreshIndicator(

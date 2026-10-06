@@ -75,6 +75,7 @@ import '/features/lost_found/presentation/screens/lost_found_detail_screen.dart'
 import '/features/lost_found/presentation/screens/lost_found_page.dart';
 import '/features/marketplace/data/models/product.dart';
 import '/features/marketplace/presentation/widgets/marketplace_shell.dart';
+import '/features/marketplace/presentation/widgets/market_theme.dart';
 import '/features/marketplace/presentation/screens/product_detail_screen.dart';
 import '/features/marketplace/data/models/merchant.dart';
 import '/features/marketplace/presentation/screens/merchant_apply_screen.dart';
@@ -1060,7 +1061,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.merchantApply.name,
         path: AppRoute.merchantApply.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const MerchantApplyScreen(),
+        builder: (context, state) =>
+            MarketTheme(child: const MerchantApplyScreen()),
       ),
       GoRoute(
         name: AppRoute.merchantManage.name,
@@ -1068,10 +1070,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final extra = state.extra;
-          if (extra is Merchant) return MerchantManageScreen(merchant: extra);
+          if (extra is Merchant)
+            return MarketTheme(child: MerchantManageScreen(merchant: extra));
           // Opened from a push notification: only the id is known.
-          return MerchantManageLoader(
-            merchantId: state.pathParameters['merchantId'] ?? '',
+          return MarketTheme(
+            child: MerchantManageLoader(
+              merchantId: state.pathParameters['merchantId'] ?? '',
+            ),
           );
         },
       ),
@@ -1083,20 +1088,26 @@ final routerProvider = Provider<GoRouter>((ref) {
           final extra = state.extra as Map<String, dynamic>?;
           final category = extra?['category'] as Category?;
           final categoryId = state.pathParameters['categoryId'] ?? category?.id;
-          return ProductListScreen(category: category, categoryId: categoryId);
+          return MarketTheme(
+            child: ProductListScreen(
+              category: category,
+              categoryId: categoryId,
+            ),
+          );
         },
       ),
       GoRoute(
         name: AppRoute.marketplaceInfo.name,
         path: AppRoute.marketplaceInfo.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const MarketplaceInfoScreen(),
+        builder: (context, state) =>
+            MarketTheme(child: const MarketplaceInfoScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceCart.name,
         path: AppRoute.marketplaceCart.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const CartScreen(),
+        builder: (context, state) => MarketTheme(child: const CartScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceMerchantProfile.name,
@@ -1104,20 +1115,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final merchantId = state.pathParameters['merchantId'] ?? '';
-          return MerchantProfileScreen(merchantId: merchantId);
+          return MarketTheme(
+            child: MerchantProfileScreen(merchantId: merchantId),
+          );
         },
       ),
       GoRoute(
         name: AppRoute.marketplaceCheckout.name,
         path: AppRoute.marketplaceCheckout.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const CheckoutScreen(),
+        builder: (context, state) => MarketTheme(child: const CheckoutScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceOrders.name,
         path: AppRoute.marketplaceOrders.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const OrderHistoryScreen(),
+        builder: (context, state) =>
+            MarketTheme(child: const OrderHistoryScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceOrderDetails.name,
@@ -1125,20 +1139,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final orderId = state.pathParameters['orderId'] ?? '';
-          return OrderDetailScreen(orderId: orderId);
+          return MarketTheme(child: OrderDetailScreen(orderId: orderId));
         },
       ),
       GoRoute(
         name: AppRoute.marketplaceAddresses.name,
         path: AppRoute.marketplaceAddresses.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const AddressListScreen(),
+        builder: (context, state) =>
+            MarketTheme(child: const AddressListScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceAddressForm.name,
         path: AppRoute.marketplaceAddressForm.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const AddressFormScreen(),
+        builder: (context, state) =>
+            MarketTheme(child: const AddressFormScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceAddressEdit.name,
@@ -1146,7 +1162,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final addressId = state.pathParameters['addressId'] ?? '';
-          return AddressFormScreen(addressId: addressId);
+          return MarketTheme(child: AddressFormScreen(addressId: addressId));
         },
       ),
       // Static /campusmarket/<word> routes must come before the :productId one.
@@ -1154,19 +1170,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.marketplaceSearch.name,
         path: AppRoute.marketplaceSearch.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const MarketSearchScreen(),
+        builder: (context, state) =>
+            MarketTheme(child: const MarketSearchScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceWishlist.name,
         path: AppRoute.marketplaceWishlist.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const WishlistScreen(),
+        builder: (context, state) => MarketTheme(child: const WishlistScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceInvoices.name,
         path: AppRoute.marketplaceInvoices.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const InvoicesScreen(),
+        builder: (context, state) => MarketTheme(child: const InvoicesScreen()),
       ),
       GoRoute(
         name: AppRoute.marketplaceProductDetails.name,
@@ -1175,12 +1192,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           final extra = state.extra;
           if (extra is Product) {
-            return NoTransitionPage(child: ProductDetailScreen(product: extra));
+            return NoTransitionPage(
+              child: MarketTheme(child: ProductDetailScreen(product: extra)),
+            );
           }
           // Opened from a push notification: only the id is known.
           return NoTransitionPage(
-            child: ProductDetailLoader(
-              productId: state.pathParameters['productId'] ?? '',
+            child: MarketTheme(
+              child: ProductDetailLoader(
+                productId: state.pathParameters['productId'] ?? '',
+              ),
             ),
           );
         },

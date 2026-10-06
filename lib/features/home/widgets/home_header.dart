@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -36,7 +37,9 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final name = ref.watch(userProvider).value?.name.trim() ?? '';
+    final profile = ref.watch(userProvider).value;
+    final name = profile?.name.trim() ?? '';
+    final imageUrl = ApiEndpoints.resolveImageUrl(profile?.image);
 
     return SliverAppBar(
       pinned: true,
@@ -53,6 +56,7 @@ class HomeHeader extends ConsumerWidget {
         alignment: Alignment.centerLeft,
         child: _Avatar(
           initial: name.isEmpty ? null : name[0].toUpperCase(),
+          imageUrl: imageUrl.isEmpty ? null : imageUrl,
           onTap: () => context.goNamed(AppRoute.profile.name),
         ),
       ),
@@ -159,14 +163,31 @@ class HomeHeader extends ConsumerWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.initial, required this.onTap});
+  const _Avatar({
+    required this.initial,
+    required this.imageUrl,
+    required this.onTap,
+  });
 
   final String? initial;
+  final String? imageUrl;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final fallback = Center(
+      child: initial == null
+          ? Icon(LucideIcons.user, size: 20, color: colors.onPrimary)
+          : Text(
+              initial!,
+              style: TextStyle(
+                color: colors.onPrimary,
+                fontSize: FontSizeToken.xl,
+                fontWeight: .bold,
+              ),
+            ),
+    );
     return Semantics(
       button: true,
       label: 'Profile',
@@ -179,18 +200,13 @@ class _Avatar extends StatelessWidget {
           child: SizedBox(
             width: 40,
             height: 40,
-            child: Center(
-              child: initial == null
-                  ? Icon(LucideIcons.user, size: 20, color: colors.onPrimary)
-                  : Text(
-                      initial!,
-                      style: TextStyle(
-                        color: colors.onPrimary,
-                        fontSize: FontSizeToken.xl,
-                        fontWeight: .bold,
-                      ),
-                    ),
-            ),
+            child: imageUrl != null
+                ? Image.network(
+                    imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => fallback,
+                  )
+                : fallback,
           ),
         ),
       ),

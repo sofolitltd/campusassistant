@@ -8,6 +8,8 @@ import '../../data/models/category.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/product_grid_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '../widgets/market_theme.dart';
+import '/core/theme/app_colors.dart';
 
 class ProductListScreen extends ConsumerWidget {
   final String? categoryId;
@@ -37,41 +39,44 @@ class ProductListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(category?.name ?? 'Products')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: productsAsync.when(
-            data: (products) {
-              if (products.isEmpty) {
-                return const Center(
-                  child: Text('No products in this category.'),
-                );
-              }
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth;
-                  final crossAxisCount = width >= 640
-                      ? 4
-                      : width >= 480
-                      ? 3
-                      : 2;
-                  return MasonryGridView.builder(
-                    padding: const EdgeInsets.all(Spacing.lg),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    gridDelegate:
-                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                        ),
-                    itemCount: products.length,
-                    itemBuilder: (context, i) =>
-                        ProductGridCard(product: products[i]),
+      backgroundColor: context.colors.primary,
+      body: MarketBody(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: productsAsync.when(
+              data: (products) {
+                if (products.isEmpty) {
+                  return const Center(
+                    child: Text('No products in this category.'),
                   );
-                },
-              );
-            },
-            loading: () => const Center(child: CupertinoActivityIndicator()),
-            error: (e, _) => Center(child: Text('Could not load products.')),
+                }
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+                    final crossAxisCount = width >= 640
+                        ? 4
+                        : width >= 480
+                        ? 3
+                        : 2;
+                    return MasonryGridView.builder(
+                      padding: const EdgeInsets.all(Spacing.lg),
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      gridDelegate:
+                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                          ),
+                      itemCount: products.length,
+                      itemBuilder: (context, i) =>
+                          ProductGridCard(product: products[i]),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CupertinoActivityIndicator()),
+              error: (e, _) => Center(child: Text('Could not load products.')),
+            ),
           ),
         ),
       ),

@@ -8,7 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../presentation/providers/questions_provider.dart';
-import '/core/widgets/inline_search_bar.dart';
+import '/core/widgets/glass_search_bar.dart';
+import '/features/study/widgets/batch_tile.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -23,6 +24,7 @@ class QuestionsPage extends ConsumerStatefulWidget {
 
 class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
 
   @override
@@ -36,6 +38,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     _debounceTimer?.cancel();
     super.dispose();
   }
@@ -59,9 +62,9 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       barrierColor: context.colors.surfaceInverse.withValues(alpha: 0.5),
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.3,
-          maxChildSize: 0.6,
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
           expand: false,
           builder: (context, scrollController) {
             return Container(
@@ -120,43 +123,29 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                   ),
                   const SizedBox(height: Spacing.md),
                   Expanded(
-                    child: ListView.separated(
+                    child: GridView.builder(
                       controller: scrollController,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.xl,
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.xl,
+                        0,
+                        Spacing.xl,
+                        Spacing.xl,
                       ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: Spacing.sm,
+                            crossAxisSpacing: Spacing.sm,
+                            childAspectRatio: 4.2,
+                          ),
                       itemCount: years.length + 1,
-                      separatorBuilder: (_, _) =>
-                          const Divider(height: 1, indent: 16, endIndent: 16),
                       itemBuilder: (context, index) {
                         final isAll = index == 0;
                         final year = isAll ? null : years[index - 1];
-                        final isSelected = selectedYear == year;
-                        final primary = Theme.of(context).appColors.primary;
-                        final selectedColor = primary;
-                        final selectedBg = context.colors.primarySubtle;
-
-                        return ListTile(
-                          selected: isSelected,
-                          selectedTileColor: selectedBg,
-                          title: Text(
-                            isAll ? 'All Years' : year!,
-                            style: TextStyle(
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: isSelected
-                                  ? selectedColor
-                                  : (context.colors.text),
-                            ),
-                          ),
-                          trailing: isSelected
-                              ? Icon(
-                                  LucideIcons.check,
-                                  color: selectedColor,
-                                  size: 20,
-                                )
-                              : null,
+                        return BatchTile(
+                          grid: true,
+                          title: isAll ? 'All Years' : year!,
+                          isSelected: selectedYear == year,
                           onTap: () {
                             ref
                                     .read(
@@ -328,7 +317,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.md,
-          vertical: Spacing.sm,
+          vertical: Spacing.xs,
         ),
         decoration: BoxDecoration(
           color: context.colors.surface.withValues(alpha: 0.15),
@@ -373,6 +362,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: HeaderGradientBackdrop(
+          extraHeight: 44, // filter row
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
@@ -385,40 +375,18 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                 style: TextStyle(
                   color: context.colors.onPrimary,
                   fontWeight: .bold,
-                  fontSize: FontSizeToken.xxl,
+                  fontSize: FontSizeToken.xl,
                 ),
               ),
               centerTitle: true,
             ),
             body: Column(
               children: [
-                // ── Search bar ─────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    Spacing.lg,
-                    Spacing.sm,
-                    Spacing.lg,
-                    Spacing.md,
-                  ),
-                  child: InlineSearchBar(
-                    hintText: searchHint,
-                    onChanged: _onSearchChanged,
-                  ),
-                ),
-
                 // ── Filter row ────────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                   child: Row(
                     children: [
-                      Text(
-                        'Filter:',
-                        style: TextStyle(
-                          color: context.colors.onPrimary,
-                          fontWeight: .w500,
-                        ),
-                      ),
-                      const Spacer(),
                       _buildFilterChip(
                         label: selectedCourse ?? 'Course',
                         isActive: selectedCourse != null,
@@ -434,8 +402,6 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                   ),
                 ),
 
-                const SizedBox(height: Spacing.lg),
-
                 // ── White body area ───────────────────────────────────────
                 Expanded(
                   child: Container(
@@ -450,119 +416,141 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(RadiusToken.xxxl),
                       ),
-                      child: questionsAsync.when(
-                        data: (state) {
-                          if (state.docs.isEmpty && !state.isLoadingMore) {
-                            return const Center(
-                              child: Text(
-                                'No questions found for your department.',
-                              ),
-                            );
-                          }
+                      child: Column(
+                        children: [
+                          GlassSearchBar(
+                            atTop: true,
+                            controller: _searchController,
+                            hint: searchHint,
+                            onChanged: _onSearchChanged,
+                            onClear: () => _onSearchChanged(''),
+                          ),
+                          Expanded(
+                            child: questionsAsync.when(
+                              data: (state) {
+                                if (state.docs.isEmpty &&
+                                    !state.isLoadingMore) {
+                                  return const Center(
+                                    child: Text(
+                                      'No questions found for your department.',
+                                    ),
+                                  );
+                                }
 
-                          return Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: Spacing.lg,
-                                  vertical: Spacing.sm,
-                                ),
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  'Showing ${state.docs.length} / ${state.totalCount}',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    fontWeight: .bold,
-                                    color: context.colors.textMuted,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ListView.separated(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    Spacing.lg,
-                                    0,
-                                    Spacing.lg,
-                                    Spacing.lg,
-                                  ),
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(height: Spacing.md),
-                                  controller: _scrollController,
-                                  itemCount:
-                                      state.docs.length +
-                                      (state.hasMore ? 1 : 0),
-                                  itemBuilder: (context, index) {
-                                    if (index >= state.docs.length - 5 &&
-                                        state.hasMore &&
-                                        !state.isLoadingMore) {
-                                      Future.microtask(() {
-                                        ref
-                                            .read(
-                                              questionsPaginationProvider
-                                                  .notifier,
-                                            )
-                                            .loadNextPage();
-                                      });
-                                    }
-
-                                    if (index < state.docs.length) {
-                                      final doc = state.docs[index];
-                                      return ContentCard(contentModel: doc);
-                                    } else {
-                                      return const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: Spacing.lg,
+                                return Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: Spacing.lg,
+                                        vertical: Spacing.sm,
+                                      ),
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        'Showing ${state.docs.length} / ${state.totalCount}',
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: .bold,
+                                              color: context.colors.textMuted,
+                                            ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ListView.separated(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          Spacing.lg,
+                                          0,
+                                          Spacing.lg,
+                                          Spacing.lg,
                                         ),
-                                        child: Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: 14,
-                                                height: 14,
-                                                child:
-                                                    CupertinoActivityIndicator(),
+                                        separatorBuilder: (context, index) =>
+                                            const SizedBox(height: Spacing.md),
+                                        controller: _scrollController,
+                                        itemCount:
+                                            state.docs.length +
+                                            (state.hasMore ? 1 : 0),
+                                        itemBuilder: (context, index) {
+                                          if (index >= state.docs.length - 5 &&
+                                              state.hasMore &&
+                                              !state.isLoadingMore) {
+                                            Future.microtask(() {
+                                              ref
+                                                  .read(
+                                                    questionsPaginationProvider
+                                                        .notifier,
+                                                  )
+                                                  .loadNextPage();
+                                            });
+                                          }
+
+                                          if (index < state.docs.length) {
+                                            final doc = state.docs[index];
+                                            return ContentCard(
+                                              contentModel: doc,
+                                            );
+                                          } else {
+                                            return const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: Spacing.lg,
                                               ),
-                                              SizedBox(width: Spacing.sm),
-                                              Text(
-                                                'Loading more questions...',
-                                                style: TextStyle(
-                                                  fontSize: FontSizeToken.sm,
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 14,
+                                                      height: 14,
+                                                      child:
+                                                          CupertinoActivityIndicator(),
+                                                    ),
+                                                    SizedBox(width: Spacing.sm),
+                                                    Text(
+                                                      'Loading more questions...',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            FontSizeToken.sm,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                              loading: () => const Center(
+                                child: CupertinoActivityIndicator(),
+                              ),
+                              error: (e, st) => Center(
+                                child: Column(
+                                  mainAxisAlignment: .center,
+                                  children: [
+                                    Icon(
+                                      LucideIcons.circleAlert,
+                                      color: context.colors.danger,
+                                      size: 48,
+                                    ),
+                                    const SizedBox(height: Spacing.lg),
+                                    Text('Error: $e'),
+                                    TextButton(
+                                      onPressed: () => ref
+                                          .read(
+                                            questionsPaginationProvider
+                                                .notifier,
+                                          )
+                                          .refresh(),
+                                      child: const Text('Try Again'),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          );
-                        },
-                        loading: () =>
-                            const Center(child: CupertinoActivityIndicator()),
-                        error: (e, st) => Center(
-                          child: Column(
-                            mainAxisAlignment: .center,
-                            children: [
-                              Icon(
-                                LucideIcons.circleAlert,
-                                color: context.colors.danger,
-                                size: 48,
-                              ),
-                              const SizedBox(height: Spacing.lg),
-                              Text('Error: $e'),
-                              TextButton(
-                                onPressed: () => ref
-                                    .read(questionsPaginationProvider.notifier)
-                                    .refresh(),
-                                child: const Text('Try Again'),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),

@@ -26,6 +26,12 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 
+/// Same metrics as [ResourceCard], so downloaded files look like every other
+/// content card.
+const double _kTopRowHeight = 18;
+const double _kContentHeight = 99;
+const double _kMenuTapSize = 40;
+
 class DownloadedResourceCard extends ConsumerWidget {
   final DownloadedFile downloadedFile;
   final VoidCallback onDeleted;
@@ -57,7 +63,7 @@ class DownloadedResourceCard extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.md + 2),
         color: theme.cardColor,
         border: Border.all(color: context.colors.border),
         boxShadow: [
@@ -71,7 +77,7 @@ class DownloadedResourceCard extends ConsumerWidget {
       child: Column(
         children: [
           InkWell(
-            borderRadius: BorderRadius.circular(RadiusToken.sm),
+            borderRadius: BorderRadius.circular(RadiusToken.md + 2),
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
@@ -99,8 +105,8 @@ class DownloadedResourceCard extends ConsumerWidget {
                   ),
                 ),
                 Positioned(
-                  top: 0,
-                  right: -6,
+                  top: Spacing.md + (_kTopRowHeight - _kMenuTapSize) / 2,
+                  right: 0,
                   child: _buildPopupMenu(context, ref, isBookmarked),
                 ),
                 Positioned(
@@ -152,13 +158,16 @@ class DownloadedResourceCard extends ConsumerWidget {
       alignment: Alignment.topLeft,
       children: [
         Container(
-          width: 80,
-          height: 90,
+          width: 84,
+          height: _kContentHeight,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(RadiusToken.sm),
+            borderRadius: BorderRadius.circular(RadiusToken.xs),
             color: isDark
                 ? theme.colorScheme.surface.withValues(alpha: 0.5)
                 : AccentToken.blue.withValues(alpha: 0.1),
+          ),
+          foregroundDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(RadiusToken.xs),
             border: Border.all(color: context.colors.borderStrong, width: 1),
           ),
           clipBehavior: .antiAlias,
@@ -195,28 +204,38 @@ class DownloadedResourceCard extends ConsumerWidget {
 
     return Expanded(
       child: SizedBox(
-        height: 95,
+        height: _kContentHeight,
         child: Column(
           crossAxisAlignment: .start,
           mainAxisAlignment: .start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Spacing.xs,
-                vertical: Spacing.xxs,
-              ),
-              decoration: BoxDecoration(
-                color: context.colors.primary.withValues(alpha: .5),
-                borderRadius: BorderRadius.circular(2.5),
-              ),
-              child: Text(
-                '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
-                style: TextStyle(
-                  height: 1,
-                  fontSize: FontSizeToken.xxs,
-                  fontWeight: .bold,
-                  color: context.colors.onPrimary,
-                ),
+            SizedBox(
+              height: _kTopRowHeight,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.xs,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                          : context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      border: Border.all(color: context.colors.surfaceAlt),
+                    ),
+                    child: Text(
+                      '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: FontSizeToken.xxs,
+                        fontWeight: .bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: Spacing.xs),
@@ -314,7 +333,12 @@ class DownloadedResourceCard extends ConsumerWidget {
     return PopupMenuButton<String>(
       padding: EdgeInsets.zero,
       color: theme.cardColor,
-      icon: const Icon(LucideIcons.ellipsisVertical, size: 16),
+      tooltip: 'More options',
+      child: const SizedBox(
+        width: _kMenuTapSize,
+        height: _kMenuTapSize,
+        child: Center(child: Icon(LucideIcons.ellipsisVertical, size: 18)),
+      ),
       onSelected: (value) async {
         switch (value) {
           case 'open':
@@ -495,15 +519,25 @@ class DownloadedResourceCard extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete File?'),
+        titlePadding: const EdgeInsets.fromLTRB(24, 16, 8, 0),
+        title: Row(
+          children: [
+            const Expanded(child: Text('Delete File?')),
+            IconButton(
+              tooltip: 'Close',
+              onPressed: () => Navigator.pop(ctx, false),
+              icon: Icon(
+                LucideIcons.x,
+                size: 20,
+                color: context.colors.textMuted,
+              ),
+            ),
+          ],
+        ),
         content: const Text(
           'This will permanently remove the file from your local storage.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: destructiveColor),
             onPressed: () => Navigator.pop(ctx, true),

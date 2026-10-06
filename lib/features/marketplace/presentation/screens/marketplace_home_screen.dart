@@ -12,6 +12,7 @@ import '/routes/app_route.dart';
 import '../../data/models/category.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/market_product_card.dart';
+import '../widgets/market_theme.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
@@ -35,6 +36,7 @@ class MarketplaceHomeScreen extends ConsumerWidget {
     );
 
     return Scaffold(
+      backgroundColor: context.colors.primary,
       appBar: AppBar(
         title: const Text('Campus Market'),
         actions: [
@@ -46,199 +48,202 @@ class MarketplaceHomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(categoriesListProvider);
-              ref.invalidate(featuredProductsProvider);
-              ref.invalidate(productsListProvider);
-              await ref.read(
-                productsListProvider((
-                  universityId: user.university,
-                  departmentId: user.department,
-                )).future,
-              );
-            },
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                const SliverToBoxAdapter(child: _SearchBar()),
-                const SliverToBoxAdapter(child: _HeroBanner()),
-                const SliverToBoxAdapter(child: _TrustStrip()),
+      body: MarketBody(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(categoriesListProvider);
+                ref.invalidate(featuredProductsProvider);
+                ref.invalidate(productsListProvider);
+                await ref.read(
+                  productsListProvider((
+                    universityId: user.university,
+                    departmentId: user.department,
+                  )).future,
+                );
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  const SliverToBoxAdapter(child: _SearchBar()),
+                  const SliverToBoxAdapter(child: _HeroBanner()),
+                  const SliverToBoxAdapter(child: _TrustStrip()),
 
-                // Featured
-                SliverToBoxAdapter(
-                  child: ref
-                      .watch(
-                        featuredProductsProvider((
-                          universityId: user.university,
-                          departmentId: user.department,
-                        )),
-                      )
-                      .maybeWhen(
-                        data: (featured) {
-                          if (featured.isEmpty) return const SizedBox.shrink();
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const _SectionHeader(
-                                title: 'Featured',
-                                subtitle: 'Hand-picked on campus',
-                              ),
-                              SizedBox(
-                                height: 236,
-                                child: ListView.separated(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: featured.length,
-                                  separatorBuilder: (_, _) =>
-                                      const SizedBox(width: 12),
-                                  itemBuilder: (context, i) => SizedBox(
-                                    width: 156,
-                                    child: MarketProductCard(
-                                      product: featured[i],
-                                      imageHeight: 132,
+                  // Featured
+                  SliverToBoxAdapter(
+                    child: ref
+                        .watch(
+                          featuredProductsProvider((
+                            universityId: user.university,
+                            departmentId: user.department,
+                          )),
+                        )
+                        .maybeWhen(
+                          data: (featured) {
+                            if (featured.isEmpty)
+                              return const SizedBox.shrink();
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const _SectionHeader(
+                                  title: 'Featured',
+                                  subtitle: 'Hand-picked on campus',
+                                ),
+                                SizedBox(
+                                  height: 236,
+                                  child: ListView.separated(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: featured.length,
+                                    separatorBuilder: (_, _) =>
+                                        const SizedBox(width: 12),
+                                    itemBuilder: (context, i) => SizedBox(
+                                      width: 156,
+                                      child: MarketProductCard(
+                                        product: featured[i],
+                                        imageHeight: 132,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                        orElse: () => const SizedBox.shrink(),
-                      ),
-                ),
+                              ],
+                            );
+                          },
+                          orElse: () => const SizedBox.shrink(),
+                        ),
+                  ),
 
-                // Categories
-                SliverToBoxAdapter(
-                  child: categoriesAsync.when(
-                    data: (categories) {
-                      if (categories.isEmpty) return const SizedBox.shrink();
-                      return Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          const _SectionHeader(title: 'Shop by category'),
-                          SizedBox(
-                            height: 92,
-                            child: ListView.separated(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Spacing.lg,
+                  // Categories
+                  SliverToBoxAdapter(
+                    child: categoriesAsync.when(
+                      data: (categories) {
+                        if (categories.isEmpty) return const SizedBox.shrink();
+                        return Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            const _SectionHeader(title: 'Shop by category'),
+                            SizedBox(
+                              height: 92,
+                              child: ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Spacing.lg,
+                                ),
+                                scrollDirection: .horizontal,
+                                itemCount: categories.length,
+                                separatorBuilder: (_, _) =>
+                                    const SizedBox(width: Spacing.lg),
+                                itemBuilder: (context, i) => _CategoryItem(
+                                  category: categories[i],
+                                  onTap: () => context.push(
+                                    '/campusmarket/category/${categories[i].id}',
+                                    extra: {
+                                      'category': categories[i],
+                                      'universityId': user.university,
+                                      'departmentId': user.department,
+                                    },
+                                  ),
+                                ),
                               ),
-                              scrollDirection: .horizontal,
-                              itemCount: categories.length,
-                              separatorBuilder: (_, _) =>
-                                  const SizedBox(width: Spacing.lg),
-                              itemBuilder: (context, i) => _CategoryItem(
-                                category: categories[i],
-                                onTap: () => context.push(
-                                  '/campusmarket/category/${categories[i].id}',
-                                  extra: {
-                                    'category': categories[i],
-                                    'universityId': user.university,
-                                    'departmentId': user.department,
-                                  },
+                            ),
+                          ],
+                        );
+                      },
+                      loading: () => const SizedBox(
+                        height: 92,
+                        child: Center(child: CupertinoActivityIndicator()),
+                      ),
+                      error: (e, _) => const SizedBox.shrink(),
+                    ),
+                  ),
+
+                  ...productsAsync.when(
+                    data: (products) {
+                      if (products.isEmpty) {
+                        return [const SliverToBoxAdapter(child: _EmptyState())];
+                      }
+                      final fresh = products.take(8).toList();
+                      return [
+                        if (products.length > 3) ...[
+                          const SliverToBoxAdapter(
+                            child: _SectionHeader(
+                              title: 'Just added',
+                              subtitle: 'Fresh listings from campus sellers',
+                            ),
+                          ),
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 236,
+                              child: ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Spacing.lg,
+                                ),
+                                scrollDirection: .horizontal,
+                                itemCount: fresh.length,
+                                separatorBuilder: (_, _) =>
+                                    const SizedBox(width: Spacing.md),
+                                itemBuilder: (context, i) => SizedBox(
+                                  width: 156,
+                                  child: MarketProductCard(
+                                    product: fresh[i],
+                                    imageHeight: 132,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ],
-                      );
-                    },
-                    loading: () => const SizedBox(
-                      height: 92,
-                      child: Center(child: CupertinoActivityIndicator()),
-                    ),
-                    error: (e, _) => const SizedBox.shrink(),
-                  ),
-                ),
-
-                ...productsAsync.when(
-                  data: (products) {
-                    if (products.isEmpty) {
-                      return [const SliverToBoxAdapter(child: _EmptyState())];
-                    }
-                    final fresh = products.take(8).toList();
-                    return [
-                      if (products.length > 3) ...[
-                        const SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: _SectionHeader(
-                            title: 'Just added',
-                            subtitle: 'Fresh listings from campus sellers',
+                            title: 'All products',
+                            subtitle: '${products.length} items on campus',
                           ),
                         ),
-                        SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 236,
-                            child: ListView.separated(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Spacing.lg,
-                              ),
-                              scrollDirection: .horizontal,
-                              itemCount: fresh.length,
-                              separatorBuilder: (_, _) =>
-                                  const SizedBox(width: Spacing.md),
-                              itemBuilder: (context, i) => SizedBox(
-                                width: 156,
-                                child: MarketProductCard(
-                                  product: fresh[i],
-                                  imageHeight: 132,
-                                ),
-                              ),
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(
+                            Spacing.lg,
+                            0,
+                            Spacing.lg,
+                            Spacing.xxxl,
+                          ),
+                          sliver: SliverMasonryGrid.extent(
+                            maxCrossAxisExtent: 180,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childCount: products.length,
+                            itemBuilder: (context, i) =>
+                                MarketProductCard(product: products[i]),
+                          ),
+                        ),
+                      ];
+                    },
+                    loading: () => [
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 200,
+                          child: Center(child: CupertinoActivityIndicator()),
+                        ),
+                      ),
+                    ],
+                    error: (e, _) => [
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: Text(
+                              'Could not load products.',
+                              style: TextStyle(color: context.colors.textMuted),
                             ),
                           ),
                         ),
-                      ],
-                      SliverToBoxAdapter(
-                        child: _SectionHeader(
-                          title: 'All products',
-                          subtitle: '${products.length} items on campus',
-                        ),
                       ),
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(
-                          Spacing.lg,
-                          0,
-                          Spacing.lg,
-                          Spacing.xxxl,
-                        ),
-                        sliver: SliverMasonryGrid.extent(
-                          maxCrossAxisExtent: 180,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childCount: products.length,
-                          itemBuilder: (context, i) =>
-                              MarketProductCard(product: products[i]),
-                        ),
-                      ),
-                    ];
-                  },
-                  loading: () => [
-                    const SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 200,
-                        child: Center(child: CupertinoActivityIndicator()),
-                      ),
-                    ),
-                  ],
-                  error: (e, _) => [
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: Text(
-                            'Could not load products.',
-                            style: TextStyle(color: context.colors.textMuted),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -256,27 +261,45 @@ class _SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.sm, Spacing.lg, 0),
+      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
       child: GestureDetector(
         onTap: () => context.pushNamed(AppRoute.marketplaceSearch.name),
         child: Container(
-          height: 46,
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+          height: 50,
+          padding: const EdgeInsets.only(left: Spacing.lg, right: 5),
           decoration: BoxDecoration(
-            color: c.surfaceAlt,
-            borderRadius: BorderRadius.circular(RadiusToken.xxl),
-            border: Border.all(color: c.borderStrong),
+            color: c.surface,
+            borderRadius: BorderRadius.circular(RadiusToken.full),
+            border: Border.all(color: c.primary.withValues(alpha: 0.35)),
+            boxShadow: [
+              BoxShadow(
+                color: c.shadow,
+                blurRadius: 14,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             children: [
-              Icon(LucideIcons.search, size: 18, color: c.textSubtle),
-              const SizedBox(width: Spacing.md),
-              Text(
-                'Search books, gadgets, services…',
-                style: TextStyle(
-                  fontSize: FontSizeToken.base,
-                  color: c.textSubtle,
+              Expanded(
+                child: Text(
+                  'Search books, gadgets, services…',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: FontSizeToken.base,
+                    color: c.textSubtle,
+                  ),
                 ),
+              ),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: c.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(LucideIcons.search, size: 18, color: c.onPrimary),
               ),
             ],
           ),
@@ -288,11 +311,19 @@ class _SearchBar extends StatelessWidget {
 
 // ─── Hero ────────────────────────────────────────────────────────────────
 
-class _HeroBanner extends StatelessWidget {
+class _HeroBanner extends StatefulWidget {
   const _HeroBanner();
 
   @override
+  State<_HeroBanner> createState() => _HeroBannerState();
+}
+
+class _HeroBannerState extends State<_HeroBanner> {
+  bool _visible = true;
+
+  @override
   Widget build(BuildContext context) {
+    if (!_visible) return const SizedBox.shrink();
     final c = context.colors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
@@ -323,6 +354,24 @@ class _HeroBanner extends StatelessWidget {
                 child: _Ring(
                   size: 110,
                   color: c.onPrimary.withValues(alpha: 0.06),
+                ),
+              ),
+              Positioned(
+                right: Spacing.sm,
+                top: Spacing.sm,
+                child: _HeroIconButton(
+                  icon: LucideIcons.x,
+                  tooltip: 'Close',
+                  onTap: () => setState(() => _visible = false),
+                ),
+              ),
+              Positioned(
+                right: Spacing.md,
+                bottom: Spacing.md,
+                child: _HeroIconButton(
+                  icon: LucideIcons.arrowRight,
+                  tooltip: 'How it works',
+                  onTap: () => context.pushNamed(AppRoute.marketplaceInfo.name),
                 ),
               ),
               Padding(
@@ -379,27 +428,43 @@ class _HeroBanner extends StatelessWidget {
                         color: c.onPrimary.withValues(alpha: 0.85),
                       ),
                     ),
-                    const SizedBox(height: Spacing.lg),
-                    FilledButton.icon(
-                      onPressed: () =>
-                          context.pushNamed(AppRoute.marketplaceInfo.name),
-                      icon: const Icon(LucideIcons.arrowRight, size: 14),
-                      iconAlignment: IconAlignment.end,
-                      label: const Text('How It Works'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: c.onPrimary,
-                        foregroundColor: c.primary,
-                        textStyle: const TextStyle(
-                          fontSize: FontSizeToken.sm,
-                          fontWeight: .w700,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroIconButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+  const _HeroIconButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: c.onPrimary.withValues(alpha: 0.18),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 16, color: c.onPrimary),
         ),
       ),
     );
@@ -421,11 +486,19 @@ class _Ring extends StatelessWidget {
 
 // ─── Trust strip ─────────────────────────────────────────────────────────
 
-class _TrustStrip extends StatelessWidget {
+class _TrustStrip extends StatefulWidget {
   const _TrustStrip();
 
   @override
+  State<_TrustStrip> createState() => _TrustStripState();
+}
+
+class _TrustStripState extends State<_TrustStrip> {
+  bool _visible = true;
+
+  @override
   Widget build(BuildContext context) {
+    if (!_visible) return const SizedBox.shrink();
     const items = [
       (LucideIcons.badgeCheck, 'Verified sellers'),
       (LucideIcons.shieldCheck, 'Secure payment'),
@@ -433,33 +506,53 @@ class _TrustStrip extends StatelessWidget {
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
-      child: Row(
+      child: Stack(
         children: [
-          for (final (icon, label) in items)
-            Expanded(
-              child: Column(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: context.colors.primarySubtle,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(icon, size: 18, color: context.colors.primary),
+          Row(
+            children: [
+              for (final (icon, label) in items)
+                Expanded(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: context.colors.primarySubtle,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          icon,
+                          size: 18,
+                          color: context.colors.primary,
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.sm),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: FontSizeToken.xs,
+                          fontWeight: .w600,
+                          color: context.colors.textMuted,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: Spacing.sm),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: FontSizeToken.xs,
-                      fontWeight: .w600,
-                      color: context.colors.textMuted,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+            ],
+          ),
+          Positioned(
+            right: -6,
+            top: -10,
+            child: IconButton(
+              tooltip: 'Close',
+              visualDensity: VisualDensity.compact,
+              iconSize: 14,
+              color: context.colors.textSubtle,
+              icon: const Icon(LucideIcons.x),
+              onPressed: () => setState(() => _visible = false),
             ),
+          ),
         ],
       ),
     );

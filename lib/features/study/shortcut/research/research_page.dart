@@ -50,6 +50,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
     return CustomHeaderLayout(
       title: 'Research Archive',
       showSearchBar: true,
+      glassSearch: true,
       searchHint: 'Search research...',
       onSearchChanged: (val) {
         ref.read(researchSearchQueryProvider.notifier).state = val;

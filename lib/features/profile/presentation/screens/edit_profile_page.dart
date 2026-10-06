@@ -195,315 +195,321 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                   //
                   ButtonTheme(
                     alignedDropdown: true,
-                    child: Container(
-                      padding: const EdgeInsets.all(Spacing.lg),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Theme.of(context).cardColor
-                            : context.colors.surface,
-                        borderRadius: BorderRadius.circular(RadiusToken.md),
-                        border: Border.all(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? context.colors.border
-                              : context.colors.border,
+                    child: Column(
+                      crossAxisAlignment: .stretch,
+                      children: [
+                        /// ---- SECTION 1: PROFILE IMAGE ----
+                        _buildSectionCard(
+                          context,
+                          children: [
+                            Row(
+                              children: [
+                                _buildProfileImage(context),
+                                const SizedBox(width: Spacing.lg),
+                                Expanded(
+                                  child: _buildPhotoInstruction(context),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: context.colors.shadow,
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: .stretch,
-                        children: [
-                          /// ---- PROFILE IMAGE ----
-                          Row(
-                            children: [
-                              _buildProfileImage(context),
-                              const SizedBox(width: Spacing.lg),
-                              Expanded(child: _buildPhotoInstruction(context)),
-                            ],
-                          ),
 
-                          const SizedBox(height: Spacing.xxl),
+                        const SizedBox(height: Spacing.lg),
 
-                          /// ---- NAME ----
-                          const Text('Name'),
-                          const SizedBox(height: Spacing.sm),
-                          TextFormField(
-                            controller: _nameController,
-                            textCapitalization: .words,
-                            decoration: const InputDecoration(hintText: 'Name'),
-                            validator: (val) =>
-                                val!.isEmpty ? 'Enter your name' : null,
-                          ),
-
-                          const SizedBox(height: Spacing.lg),
-
-                          /// ---- GENDER ----
-                          const Text('Gender'),
-                          const SizedBox(height: Spacing.sm),
-                          DropdownButtonFormField<String>(
-                            initialValue: _selectedGender,
-                            decoration: const InputDecoration(
-                              hintText: 'Select gender',
+                        /// ---- SECTION 2: PERSONAL INFO ----
+                        _buildSectionCard(
+                          context,
+                          children: [
+                            /// ---- NAME ----
+                            const Text('Name'),
+                            const SizedBox(height: Spacing.sm),
+                            TextFormField(
+                              controller: _nameController,
+                              textCapitalization: .words,
+                              decoration: const InputDecoration(
+                                hintText: 'Name',
+                              ),
+                              validator: (val) =>
+                                  val!.isEmpty ? 'Enter your name' : null,
                             ),
-                            isDense: true,
-                            onChanged: (val) =>
-                                setState(() => _selectedGender = val),
-                            dropdownColor: Theme.of(context).cardColor,
-                            items: kGenderOptions
-                                .map(
-                                  (g) => DropdownMenuItem(
-                                    value: g,
-                                    child: Text(g),
+
+                            const SizedBox(height: Spacing.lg),
+
+                            /// ---- MOBILE ----
+                            const Text('Mobile Number'),
+                            const SizedBox(height: Spacing.sm),
+                            TextFormField(
+                              controller: _mobileController,
+                              keyboardType: .phone,
+                              validator: (val) {
+                                if (val!.isEmpty) {
+                                  return 'Enter mobile no';
+                                }
+                                if (val.length != 11) {
+                                  return 'Mobile no must be 11 digits';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Mobile No',
+                              ),
+                            ),
+
+                            const SizedBox(height: Spacing.lg),
+
+                            /// ---- GENDER + BLOOD ----
+                            Row(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      const Text('Gender'),
+                                      const SizedBox(height: Spacing.sm),
+                                      DropdownButtonFormField<String>(
+                                        initialValue: _selectedGender,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Select gender',
+                                        ),
+                                        isDense: true,
+                                        onChanged: (val) => setState(
+                                          () => _selectedGender = val,
+                                        ),
+                                        dropdownColor: Theme.of(
+                                          context,
+                                        ).cardColor,
+                                        items: kGenderOptions
+                                            .map(
+                                              (g) => DropdownMenuItem(
+                                                value: g,
+                                                child: Text(g),
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ],
                                   ),
-                                )
-                                .toList(),
-                          ),
-
-                          const SizedBox(height: Spacing.lg),
-
-                          /// ---- MOBILE + BLOOD ----
-                          Row(
-                            crossAxisAlignment: .start,
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Column(
-                                  crossAxisAlignment: .start,
-                                  children: [
-                                    const Text('Mobile Number'),
-                                    const SizedBox(height: Spacing.sm),
-                                    TextFormField(
-                                      controller: _mobileController,
-                                      keyboardType: .phone,
-                                      validator: (val) {
-                                        if (val!.isEmpty) {
-                                          return 'Enter mobile no';
-                                        }
-                                        if (val.length != 11) {
-                                          return 'Mobile no must be 11 digits';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: const InputDecoration(
-                                        hintText: 'Mobile No',
-                                      ),
-                                    ),
-                                  ],
                                 ),
-                              ),
-                              const SizedBox(width: Spacing.lg),
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  crossAxisAlignment: .start,
-                                  children: [
-                                    const Text('Blood Group'),
-                                    const SizedBox(height: Spacing.sm),
-                                    DropdownButtonFormField<String>(
-                                      initialValue: _selectedBloodGroup,
-                                      decoration: const InputDecoration(
-                                        hintText: 'Blood',
+                                const SizedBox(width: Spacing.lg),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      const Text('Blood Group'),
+                                      const SizedBox(height: Spacing.sm),
+                                      DropdownButtonFormField<String>(
+                                        initialValue: _selectedBloodGroup,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Blood',
+                                        ),
+                                        isDense: true,
+                                        onChanged: (val) => setState(
+                                          () => _selectedBloodGroup = val,
+                                        ),
+                                        validator: (val) => val == null
+                                            ? 'Select your blood group'
+                                            : null,
+                                        dropdownColor: Theme.of(
+                                          context,
+                                        ).cardColor,
+                                        items: kBloodGroup
+                                            .map(
+                                              (bg) => DropdownMenuItem(
+                                                value: bg,
+                                                child: Text(bg),
+                                              ),
+                                            )
+                                            .toList(),
                                       ),
-                                      isDense: true,
-                                      onChanged: (val) => setState(
-                                        () => _selectedBloodGroup = val,
-                                      ),
-                                      validator: (val) => val == null
-                                          ? 'Select your blood group'
-                                          : null,
-                                      dropdownColor: Theme.of(
-                                        context,
-                                      ).cardColor,
-                                      items: kBloodGroup
-                                          .map(
-                                            (bg) => DropdownMenuItem(
-                                              value: bg,
-                                              child: Text(bg),
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: Spacing.lg),
-
-                          /// ---- HALL ----
-                          const Text('Hall Name'),
-                          const SizedBox(height: Spacing.sm),
-
-                          hallsAsync.when(
-                            data: (hallList) {
-                              final validHall = hallList.contains(_selectedHall)
-                                  ? _selectedHall
-                                  : null;
-                              return DropdownButtonFormField<String>(
-                                initialValue: validHall,
-                                isExpanded: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'Hall Name',
-                                ),
-                                isDense: true,
-                                onChanged: (val) =>
-                                    setState(() => _selectedHall = val),
-                                validator: (val) =>
-                                    val == null ? 'Select your hall' : null,
-                                dropdownColor: Theme.of(context).cardColor,
-                                items: hallList
-                                    .map(
-                                      (hall) => DropdownMenuItem(
-                                        value: hall,
-                                        child: Text(hall, overflow: .ellipsis),
-                                      ),
-                                    )
-                                    .toList(),
-                              );
-                            },
-                            loading: () => const Padding(
-                              padding: EdgeInsets.all(Spacing.sm),
-                              child: CupertinoActivityIndicator(),
+                              ],
                             ),
-                            error: (e, _) => Text('Error loading halls: $e'),
-                          ),
 
-                          const SizedBox(height: Spacing.lg),
+                            const SizedBox(height: Spacing.lg),
 
-                          /// ---- PRESENT ADDRESS ----
-                          const Text(
-                            'Present Address',
-                            style: TextStyle(fontWeight: .bold),
-                          ),
-                          const SizedBox(height: Spacing.sm),
-                          DistrictSubDistrictPicker(
-                            districtId: _presentDistrictId,
-                            subDistrictId: _presentSubDistrictId,
-                            onDistrictChanged: (d) => setState(() {
-                              _presentDistrictId = d?.id;
-                              _presentDistrictName = d?.name;
-                              _addressDirty = true;
-                              if (_permanentSameAsPresent) {
-                                _permanentDistrictId = d?.id;
-                                _permanentDistrictName = d?.name;
-                              }
-                            }),
-                            onSubDistrictChanged: (s) => setState(() {
-                              _presentSubDistrictId = s?.id;
-                              _presentSubDistrictName = s?.name;
-                              _addressDirty = true;
-                              if (_permanentSameAsPresent) {
-                                _permanentSubDistrictId = s?.id;
-                                _permanentSubDistrictName = s?.name;
-                              }
-                            }),
-                          ),
-                          const SizedBox(height: Spacing.sm),
-                          TextFormField(
-                            controller: _presentAddressLineController,
-                            decoration: const InputDecoration(
-                              hintText: 'House/road/hall name',
-                            ),
-                            onChanged: (v) {
-                              _addressDirty = true;
-                              if (_permanentSameAsPresent) {
-                                setState(
-                                  () =>
-                                      _permanentAddressLineController.text = v,
+                            /// ---- HALL ----
+                            const Text('Hall Name'),
+                            const SizedBox(height: Spacing.sm),
+
+                            hallsAsync.when(
+                              data: (hallList) {
+                                final validHall =
+                                    hallList.contains(_selectedHall)
+                                    ? _selectedHall
+                                    : null;
+                                return DropdownButtonFormField<String>(
+                                  initialValue: validHall,
+                                  isExpanded: true,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Hall Name',
+                                  ),
+                                  isDense: true,
+                                  onChanged: (val) =>
+                                      setState(() => _selectedHall = val),
+                                  validator: (val) =>
+                                      val == null ? 'Select your hall' : null,
+                                  dropdownColor: Theme.of(context).cardColor,
+                                  items: hallList
+                                      .map(
+                                        (hall) => DropdownMenuItem(
+                                          value: hall,
+                                          child: Text(
+                                            hall,
+                                            overflow: .ellipsis,
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                                 );
-                              }
-                            },
-                          ),
-
-                          const SizedBox(height: Spacing.lg),
-
-                          /// ---- PERMANENT ADDRESS ----
-                          Row(
-                            children: [
-                              const Expanded(
-                                child: Text(
-                                  'Permanent Address',
-                                  style: TextStyle(fontWeight: .bold),
-                                ),
+                              },
+                              loading: () => const Padding(
+                                padding: EdgeInsets.all(Spacing.sm),
+                                child: CupertinoActivityIndicator(),
                               ),
-                              Row(
-                                mainAxisSize: .min,
-                                children: [
-                                  const Text(
-                                    'Same as present',
-                                    style: TextStyle(
-                                      fontSize: FontSizeToken.sm,
-                                    ),
-                                  ),
-                                  Checkbox(
-                                    value: _permanentSameAsPresent,
-                                    onChanged: (checked) => setState(() {
-                                      _permanentSameAsPresent =
-                                          checked ?? false;
-                                      _addressDirty = true;
-                                      if (_permanentSameAsPresent) {
-                                        _permanentDistrictId =
-                                            _presentDistrictId;
-                                        _permanentDistrictName =
-                                            _presentDistrictName;
-                                        _permanentSubDistrictId =
-                                            _presentSubDistrictId;
-                                        _permanentSubDistrictName =
-                                            _presentSubDistrictName;
-                                        _permanentAddressLineController.text =
-                                            _presentAddressLineController.text;
-                                      }
-                                    }),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          if (!_permanentSameAsPresent) ...[
+                              error: (e, _) => Text('Error loading halls: $e'),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: Spacing.lg),
+
+                        /// ---- SECTION 3: ADDRESS ----
+                        _buildSectionCard(
+                          context,
+                          children: [
+                            /// ---- PRESENT ADDRESS ----
+                            const Text(
+                              'Present Address',
+                              style: TextStyle(fontWeight: .bold),
+                            ),
                             const SizedBox(height: Spacing.sm),
                             DistrictSubDistrictPicker(
-                              districtId: _permanentDistrictId,
-                              subDistrictId: _permanentSubDistrictId,
+                              districtId: _presentDistrictId,
+                              subDistrictId: _presentSubDistrictId,
                               onDistrictChanged: (d) => setState(() {
-                                _permanentDistrictId = d?.id;
-                                _permanentDistrictName = d?.name;
+                                _presentDistrictId = d?.id;
+                                _presentDistrictName = d?.name;
                                 _addressDirty = true;
+                                if (_permanentSameAsPresent) {
+                                  _permanentDistrictId = d?.id;
+                                  _permanentDistrictName = d?.name;
+                                }
                               }),
                               onSubDistrictChanged: (s) => setState(() {
-                                _permanentSubDistrictId = s?.id;
-                                _permanentSubDistrictName = s?.name;
+                                _presentSubDistrictId = s?.id;
+                                _presentSubDistrictName = s?.name;
                                 _addressDirty = true;
+                                if (_permanentSameAsPresent) {
+                                  _permanentSubDistrictId = s?.id;
+                                  _permanentSubDistrictName = s?.name;
+                                }
                               }),
                             ),
                             const SizedBox(height: Spacing.sm),
                             TextFormField(
-                              controller: _permanentAddressLineController,
+                              controller: _presentAddressLineController,
                               decoration: const InputDecoration(
-                                hintText: 'House/road/village name',
+                                hintText: 'House/road/hall name',
                               ),
-                              onChanged: (_) => _addressDirty = true,
+                              onChanged: (v) {
+                                _addressDirty = true;
+                                if (_permanentSameAsPresent) {
+                                  setState(
+                                    () => _permanentAddressLineController.text =
+                                        v,
+                                  );
+                                }
+                              },
                             ),
+
+                            const SizedBox(height: Spacing.lg),
+
+                            /// ---- PERMANENT ADDRESS ----
+                            Row(
+                              children: [
+                                const Expanded(
+                                  child: Text(
+                                    'Permanent Address',
+                                    style: TextStyle(fontWeight: .bold),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: .min,
+                                  children: [
+                                    const Text(
+                                      'Same as present',
+                                      style: TextStyle(
+                                        fontSize: FontSizeToken.sm,
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      value: _permanentSameAsPresent,
+                                      onChanged: (checked) => setState(() {
+                                        _permanentSameAsPresent =
+                                            checked ?? false;
+                                        _addressDirty = true;
+                                        if (_permanentSameAsPresent) {
+                                          _permanentDistrictId =
+                                              _presentDistrictId;
+                                          _permanentDistrictName =
+                                              _presentDistrictName;
+                                          _permanentSubDistrictId =
+                                              _presentSubDistrictId;
+                                          _permanentSubDistrictName =
+                                              _presentSubDistrictName;
+                                          _permanentAddressLineController.text =
+                                              _presentAddressLineController
+                                                  .text;
+                                        }
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            if (!_permanentSameAsPresent) ...[
+                              const SizedBox(height: Spacing.sm),
+                              DistrictSubDistrictPicker(
+                                districtId: _permanentDistrictId,
+                                subDistrictId: _permanentSubDistrictId,
+                                onDistrictChanged: (d) => setState(() {
+                                  _permanentDistrictId = d?.id;
+                                  _permanentDistrictName = d?.name;
+                                  _addressDirty = true;
+                                }),
+                                onSubDistrictChanged: (s) => setState(() {
+                                  _permanentSubDistrictId = s?.id;
+                                  _permanentSubDistrictName = s?.name;
+                                  _addressDirty = true;
+                                }),
+                              ),
+                              const SizedBox(height: Spacing.sm),
+                              TextFormField(
+                                controller: _permanentAddressLineController,
+                                decoration: const InputDecoration(
+                                  hintText: 'House/road/village name',
+                                ),
+                                onChanged: (_) => _addressDirty = true,
+                              ),
+                            ],
                           ],
+                        ),
 
-                          const SizedBox(height: Spacing.xxl),
+                        const SizedBox(height: Spacing.xxl),
 
-                          /// ---- SAVE BUTTON ----
-                          ElevatedButton(
-                            onPressed: _isLoading || !_hasChanged()
-                                ? null
-                                : _updateProfile,
-                            child: _isLoading
-                                ? const CupertinoActivityIndicator()
-                                : const Text('UPDATE'),
-                          ),
-                        ],
-                      ),
+                        /// ---- SAVE BUTTON ----
+                        ElevatedButton(
+                          onPressed: _isLoading || !_hasChanged()
+                              ? null
+                              : _updateProfile,
+                          child: _isLoading
+                              ? const CupertinoActivityIndicator()
+                              : const Text('UPDATE'),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -516,6 +522,30 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   }
 
   // --- Helper widgets ---
+  Widget _buildSectionCard(
+    BuildContext context, {
+    required List<Widget> children,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(Spacing.lg),
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).cardColor
+            : context.colors.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+        border: Border.all(color: context.colors.border),
+        boxShadow: [
+          BoxShadow(
+            color: context.colors.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(crossAxisAlignment: .stretch, children: children),
+    );
+  }
+
   Widget _buildProfileImage(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ImageProvider? imageProvider;
@@ -587,10 +617,18 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
           ),
           ElevatedButton(
             onPressed: _pickImage,
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.md,
+                vertical: Spacing.sm,
+              ),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
             child: Text(
               _pickedMobileImage == null
-                  ? 'CHANGE PHOTO'
-                  : 'NEW PHOTO SELECTED',
+                  ? 'Change Photo'
+                  : 'New Photo Selected',
             ),
           ),
         ],

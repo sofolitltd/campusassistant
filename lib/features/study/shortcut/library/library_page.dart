@@ -59,6 +59,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
     return CustomHeaderLayout(
       title: 'Academic Library',
       showSearchBar: true,
+      searchAtBottom: true,
       searchHint: 'Search by book, author or course...',
       onSearchChanged: _onSearchChanged,
       body: Column(

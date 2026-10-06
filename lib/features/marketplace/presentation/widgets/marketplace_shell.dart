@@ -6,9 +6,11 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/core/theme/app_colors.dart';
 import '../../data/models/cart_item.dart';
 import '../providers/cart_provider.dart';
+import 'market_theme.dart';
 import '../screens/marketplace_home_screen.dart';
 import '../screens/category_grid_screen.dart';
 import '../screens/cart_screen.dart';
+import '../screens/merchants_tab.dart';
 import '../screens/account_tab.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -32,25 +34,28 @@ class _MarketplaceShellState extends ConsumerState<MarketplaceShell> {
       (int sum, CartItem item) => sum + item.quantity,
     );
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          body: IndexedStack(
-            index: _currentIndex,
-            children: [
-              _buildTab(0, const MarketplaceHomeScreen()),
-              _buildTab(1, const CategoryGridScreen()),
-              _buildTab(2, const CartScreen()),
-              _buildTab(3, const AccountTab()),
-            ],
-          ),
-          bottomNavigationBar: _BlurryMarketplaceNavBar(
-            currentIndex: _currentIndex,
-            cartCount: cartCount,
-            onDestinationSelected: (index) {
-              setState(() => _currentIndex = index);
-            },
+    return MarketTheme(
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Scaffold(
+            body: IndexedStack(
+              index: _currentIndex,
+              children: [
+                _buildTab(0, const MarketplaceHomeScreen()),
+                _buildTab(1, const CategoryGridScreen()),
+                _buildTab(2, const MerchantsTab()),
+                _buildTab(3, const CartScreen()),
+                _buildTab(4, const AccountTab()),
+              ],
+            ),
+            bottomNavigationBar: _BlurryMarketplaceNavBar(
+              currentIndex: _currentIndex,
+              cartCount: cartCount,
+              onDestinationSelected: (index) {
+                setState(() => _currentIndex = index);
+              },
+            ),
           ),
         ),
       ),
@@ -83,6 +88,7 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
   static const _tabs = [
     _TabItem(icon: LucideIcons.house, label: 'Home'),
     _TabItem(icon: LucideIcons.layers, label: 'Categories'),
+    _TabItem(icon: LucideIcons.store, label: 'Merchants'),
     _TabItem(icon: LucideIcons.shoppingCart, label: 'Cart'),
     _TabItem(icon: LucideIcons.userRound, label: 'Account'),
   ];
@@ -160,7 +166,7 @@ class _BlurryMarketplaceNavBar extends StatelessWidget {
                                       ? primaryColor
                                       : context.colors.textSubtle,
                                 ),
-                                if (index == 2 && cartCount > 0)
+                                if (index == 3 && cartCount > 0)
                                   Positioned(
                                     right: -10,
                                     top: -4,

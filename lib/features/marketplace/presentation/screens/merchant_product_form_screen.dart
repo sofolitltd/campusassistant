@@ -16,6 +16,7 @@ import '../../data/models/product.dart';
 import '../providers/marketplace_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '../widgets/market_theme.dart';
 
 /// Create or edit a single product for one of the current user's own
 /// businesses. Pass `product` to edit an existing one, or omit it to create
@@ -194,197 +195,204 @@ class _MerchantProductFormScreenState
             ),
         ],
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(Spacing.lg),
-              children: [
-                SizedBox(
-                  height: 104,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (var i = 0; i < _existingImages.length; i++)
-                        _PhotoTile(
-                          image: Image.network(
-                            ApiEndpoints.resolveImageUrl(_existingImages[i]),
-                            fit: BoxFit.cover,
-                          ),
-                          isCover: i == 0,
-                          onRemove: () =>
-                              setState(() => _existingImages.removeAt(i)),
-                        ),
-                      for (var i = 0; i < _newImages.length; i++)
-                        _PhotoTile(
-                          image: Image.file(_newImages[i], fit: BoxFit.cover),
-                          isCover: _existingImages.isEmpty && i == 0,
-                          onRemove: () =>
-                              setState(() => _newImages.removeAt(i)),
-                        ),
-                      if (_imageCount < _maxImages)
-                        GestureDetector(
-                          onTap: _pickImages,
-                          child: Container(
-                            width: 104,
-                            decoration: BoxDecoration(
-                              borderRadius: RadiusToken.circular(
-                                RadiusToken.md,
-                              ),
-                              color: context.colors.surfaceAlt,
-                              border: Border.all(
-                                color: context.colors.borderStrong,
-                              ),
+      backgroundColor: context.colors.primary,
+      body: MarketBody(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(Spacing.lg),
+                children: [
+                  SizedBox(
+                    height: 104,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        for (var i = 0; i < _existingImages.length; i++)
+                          _PhotoTile(
+                            image: Image.network(
+                              ApiEndpoints.resolveImageUrl(_existingImages[i]),
+                              fit: BoxFit.cover,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  LucideIcons.imagePlus,
-                                  color: context.colors.textSubtle,
+                            isCover: i == 0,
+                            onRemove: () =>
+                                setState(() => _existingImages.removeAt(i)),
+                          ),
+                        for (var i = 0; i < _newImages.length; i++)
+                          _PhotoTile(
+                            image: Image.file(_newImages[i], fit: BoxFit.cover),
+                            isCover: _existingImages.isEmpty && i == 0,
+                            onRemove: () =>
+                                setState(() => _newImages.removeAt(i)),
+                          ),
+                        if (_imageCount < _maxImages)
+                          GestureDetector(
+                            onTap: _pickImages,
+                            child: Container(
+                              width: 104,
+                              decoration: BoxDecoration(
+                                borderRadius: RadiusToken.circular(
+                                  RadiusToken.md,
                                 ),
-                                const SizedBox(height: Spacing.xs),
-                                Text(
-                                  'Add photos',
-                                  style: TextStyle(
-                                    fontSize: FontSizeToken.sm,
+                                color: context.colors.surfaceAlt,
+                                border: Border.all(
+                                  color: context.colors.borderStrong,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LucideIcons.imagePlus,
                                     color: context.colors.textSubtle,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: Spacing.xs),
+                                  Text(
+                                    'Add photos',
+                                    style: TextStyle(
+                                      fontSize: FontSizeToken.sm,
+                                      color: context.colors.textSubtle,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.xs),
+                  Text(
+                    'Up to $_maxImages photos. The first one is the cover. Listings with clear photos sell faster.',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: context.colors.textSubtle,
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Product Title',
+                    ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      alignLabelWithHint: true,
+                    ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _priceController,
+                          keyboardType: .number,
+                          decoration: const InputDecoration(
+                            labelText: 'Price (৳)',
+                          ),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty)
+                              return 'Required';
+                            if (int.tryParse(v.trim()) == null) {
+                              return 'Invalid number';
+                            }
+                            return null;
+                          },
                         ),
+                      ),
+                      const SizedBox(width: Spacing.md),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _stockController,
+                          keyboardType: .number,
+                          decoration: const InputDecoration(labelText: 'Stock'),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty)
+                              return 'Required';
+                            if (int.tryParse(v.trim()) == null) {
+                              return 'Invalid number';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(height: Spacing.xs),
-                Text(
-                  'Up to $_maxImages photos. The first one is the cover. Listings with clear photos sell faster.',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: context.colors.textSubtle,
-                  ),
-                ),
-                const SizedBox(height: Spacing.lg),
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Product Title'),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    alignLabelWithHint: true,
-                  ),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _priceController,
-                        keyboardType: .number,
-                        decoration: const InputDecoration(
-                          labelText: 'Price (৳)',
-                        ),
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return 'Required';
-                          if (int.tryParse(v.trim()) == null) {
-                            return 'Invalid number';
-                          }
-                          return null;
-                        },
-                      ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () =>
+                          setState(() => _stockController.text = '0'),
+                      icon: const Icon(LucideIcons.packageX, size: 16),
+                      label: const Text('Mark As Sold Out'),
                     ),
-                    const SizedBox(width: Spacing.md),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _stockController,
-                        keyboardType: .number,
-                        decoration: const InputDecoration(labelText: 'Stock'),
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return 'Required';
-                          if (int.tryParse(v.trim()) == null) {
-                            return 'Invalid number';
-                          }
-                          return null;
-                        },
-                      ),
+                  ),
+                  if (categories.isNotEmpty) ...[
+                    const SizedBox(height: Spacing.sm),
+                    DropdownButtonFormField<String?>(
+                      initialValue: categories.any((c) => c.id == _categoryId)
+                          ? _categoryId
+                          : null,
+                      decoration: const InputDecoration(labelText: 'Category'),
+                      items: [
+                        const DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text('No category'),
+                        ),
+                        for (final c in categories)
+                          DropdownMenuItem<String?>(
+                            value: c.id,
+                            child: Text(c.name),
+                          ),
+                      ],
+                      onChanged: (v) => setState(() => _categoryId = v),
                     ),
                   ],
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () =>
-                        setState(() => _stockController.text = '0'),
-                    icon: const Icon(LucideIcons.packageX, size: 16),
-                    label: const Text('Mark As Sold Out'),
+                  const SizedBox(height: Spacing.md),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Published',
+                      style: TextStyle(fontWeight: .w600),
+                    ),
+                    subtitle: const Text(
+                      'Visible to buyers on the marketplace',
+                      style: TextStyle(fontSize: FontSizeToken.sm),
+                    ),
+                    value: _isPublished,
+                    onChanged: (v) => setState(() => _isPublished = v),
                   ),
-                ),
-                if (categories.isNotEmpty) ...[
-                  const SizedBox(height: Spacing.sm),
-                  DropdownButtonFormField<String?>(
-                    initialValue: categories.any((c) => c.id == _categoryId)
-                        ? _categoryId
-                        : null,
-                    decoration: const InputDecoration(labelText: 'Category'),
-                    items: [
-                      const DropdownMenuItem<String?>(
-                        value: null,
-                        child: Text('No category'),
-                      ),
-                      for (final c in categories)
-                        DropdownMenuItem<String?>(
-                          value: c.id,
-                          child: Text(c.name),
-                        ),
-                    ],
-                    onChanged: (v) => setState(() => _categoryId = v),
+                  const SizedBox(height: Spacing.xxl),
+                  ElevatedButton.icon(
+                    onPressed: _saving ? null : _save,
+                    icon: _saving
+                        ? SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CupertinoActivityIndicator(
+                              color: context.colors.onPrimary,
+                            ),
+                          )
+                        : const Icon(LucideIcons.save, size: 18),
+                    label: Text(
+                      _saving
+                          ? 'Saving...'
+                          : (_isEditing ? 'Save Changes' : 'Add Product'),
+                    ),
                   ),
                 ],
-                const SizedBox(height: Spacing.md),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text(
-                    'Published',
-                    style: TextStyle(fontWeight: .w600),
-                  ),
-                  subtitle: const Text(
-                    'Visible to buyers on the marketplace',
-                    style: TextStyle(fontSize: FontSizeToken.sm),
-                  ),
-                  value: _isPublished,
-                  onChanged: (v) => setState(() => _isPublished = v),
-                ),
-                const SizedBox(height: Spacing.xxl),
-                ElevatedButton.icon(
-                  onPressed: _saving ? null : _save,
-                  icon: _saving
-                      ? SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CupertinoActivityIndicator(
-                            color: context.colors.onPrimary,
-                          ),
-                        )
-                      : const Icon(LucideIcons.save, size: 18),
-                  label: Text(
-                    _saving
-                        ? 'Saving...'
-                        : (_isEditing ? 'Save Changes' : 'Add Product'),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),

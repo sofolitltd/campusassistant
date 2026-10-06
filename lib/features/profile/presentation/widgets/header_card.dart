@@ -10,6 +10,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 
 import '../../../../core/theme/tokens/app_spacing.dart';
+import 'account_info_dialog.dart';
 import 'profile_completion_card.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
@@ -62,30 +63,39 @@ class HeaderCard extends StatelessWidget {
                 const SizedBox(height: Spacing.md),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.md,
-                        vertical: Spacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: context.colors.surface,
-                        border: Border.all(color: context.colors.borderStrong),
-                        borderRadius: BorderRadius.circular(RadiusToken.xxl),
-                      ),
-                      child: Row(
-                        mainAxisSize: .min,
-                        children: [
-                          Icon(LucideIcons.trophy, size: 14, color: planColor),
-                          const SizedBox(width: Spacing.sm),
-                          Text(
-                            planLabel,
-                            style: TextStyle(
-                              fontSize: FontSizeToken.sm,
-                              fontWeight: .w600,
+                    GestureDetector(
+                      onTap: () => showAccountInfoDialog(context, user),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.md,
+                          vertical: Spacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.colors.surface,
+                          border: Border.all(
+                            color: context.colors.borderStrong,
+                          ),
+                          borderRadius: BorderRadius.circular(RadiusToken.xxl),
+                        ),
+                        child: Row(
+                          mainAxisSize: .min,
+                          children: [
+                            Icon(
+                              LucideIcons.trophy,
+                              size: 14,
                               color: planColor,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: Spacing.sm),
+                            Text(
+                              planLabel,
+                              style: TextStyle(
+                                fontSize: FontSizeToken.sm,
+                                fontWeight: .w600,
+                                color: planColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     if (isProfileComplete) ...[

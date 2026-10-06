@@ -9,6 +9,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '../widgets/market_theme.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
@@ -57,88 +58,94 @@ class OrderHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Orders')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: ordersAsync.when(
-            data: (orders) {
-              if (orders.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: .center,
-                    children: [
-                      Icon(
-                        LucideIcons.shoppingBag,
-                        size: 64,
-                        color: context.colors.borderStrong,
-                      ),
-                      const SizedBox(height: Spacing.lg),
-                      const Text(
-                        'No orders yet',
-                        style: TextStyle(
-                          fontSize: FontSizeToken.xl,
-                          fontWeight: .bold,
+      backgroundColor: context.colors.primary,
+      body: MarketBody(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: ordersAsync.when(
+              data: (orders) {
+                if (orders.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Icon(
+                          LucideIcons.shoppingBag,
+                          size: 64,
+                          color: context.colors.borderStrong,
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return ListView.builder(
-                padding: const EdgeInsets.all(Spacing.lg),
-                itemCount: orders.length,
-                itemBuilder: (context, i) {
-                  final order = orders[i];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: Spacing.md),
-                    child: ListTile(
-                      title: Text(
-                        'Order #${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
-                        style: const TextStyle(fontWeight: .w600),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          Text(
-                            '৳${order.totalAmount}',
-                            style: const TextStyle(fontWeight: .bold),
+                        const SizedBox(height: Spacing.lg),
+                        const Text(
+                          'No orders yet',
+                          style: TextStyle(
+                            fontSize: FontSizeToken.xl,
+                            fontWeight: .bold,
                           ),
-                          const SizedBox(height: Spacing.xs),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: Spacing.sm,
-                              vertical: Spacing.xxs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _statusColor(
-                                context,
-                                order.status,
-                              ).withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(
-                                RadiusToken.lg,
-                              ),
-                            ),
-                            child: Text(
-                              _statusLabel(order.status),
-                              style: TextStyle(
-                                fontSize: FontSizeToken.xs,
-                                fontWeight: .w600,
-                                color: _statusColor(context, order.status),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      trailing: const Icon(LucideIcons.chevronRight, size: 18),
-                      onTap: () =>
-                          context.push('/campusmarket/orders/${order.id}'),
+                        ),
+                      ],
                     ),
                   );
-                },
-              );
-            },
-            loading: () => const Center(child: CupertinoActivityIndicator()),
-            error: (e, _) => Center(child: Text('Could not load orders: $e')),
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.all(Spacing.lg),
+                  itemCount: orders.length,
+                  itemBuilder: (context, i) {
+                    final order = orders[i];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: Spacing.md),
+                      child: ListTile(
+                        title: Text(
+                          'Order #${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
+                          style: const TextStyle(fontWeight: .w600),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              '৳${order.totalAmount}',
+                              style: const TextStyle(fontWeight: .bold),
+                            ),
+                            const SizedBox(height: Spacing.xs),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Spacing.sm,
+                                vertical: Spacing.xxs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _statusColor(
+                                  context,
+                                  order.status,
+                                ).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(
+                                  RadiusToken.lg,
+                                ),
+                              ),
+                              child: Text(
+                                _statusLabel(order.status),
+                                style: TextStyle(
+                                  fontSize: FontSizeToken.xs,
+                                  fontWeight: .w600,
+                                  color: _statusColor(context, order.status),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: const Icon(
+                          LucideIcons.chevronRight,
+                          size: 18,
+                        ),
+                        onTap: () =>
+                            context.push('/campusmarket/orders/${order.id}'),
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CupertinoActivityIndicator()),
+              error: (e, _) => Center(child: Text('Could not load orders: $e')),
+            ),
           ),
         ),
       ),

@@ -22,6 +22,8 @@ class BookmarkPage extends ConsumerStatefulWidget {
 }
 
 class _BookmarkPageState extends ConsumerState<BookmarkPage> {
+  String _query = '';
+
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userProvider);
@@ -31,7 +33,10 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
 
     return CustomHeaderLayout(
       title: 'Saved Bookmarks',
-      showSearchBar: false,
+      showSearchBar: true,
+      glassSearch: true,
+      searchHint: 'Search bookmarks...',
+      onSearchChanged: (v) => setState(() => _query = v),
       body: bookmarksAsync.when(
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (e, _) => Center(
@@ -86,6 +91,10 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
             );
           }
 
+          if (_query.trim().isNotEmpty) {
+            return _BookmarkSearchResults(userId: userId, query: _query);
+          }
+
           return ListView.separated(
             padding: const EdgeInsets.all(Spacing.lg),
             itemCount: bookmarks.length,
@@ -97,6 +106,57 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
           );
         },
       ),
+    );
+  }
+}
+
+/// Matches the query against each bookmarked resource's details, which are
+/// only available once fetched (a bookmark itself is just a resource id).
+class _BookmarkSearchResults extends ConsumerWidget {
+  const _BookmarkSearchResults({required this.userId, required this.query});
+
+  final String userId;
+  final String query;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(
+      scopedBookmarkResourcesProvider((
+        userId: userId,
+        courseCode: null,
+        lessonNo: null,
+      )),
+    );
+    final q = query.trim().toLowerCase();
+
+    return async.when(
+      loading: () => const Center(child: CupertinoActivityIndicator()),
+      error: (_, _) => const Center(child: Text("Couldn't load bookmarks")),
+      data: (resources) {
+        final matches = resources
+            .where(
+              (r) =>
+                  r.title.toLowerCase().contains(q) ||
+                  r.courseCode.toLowerCase().contains(q) ||
+                  r.courseTitle.toLowerCase().contains(q) ||
+                  r.description.toLowerCase().contains(q),
+            )
+            .toList();
+        if (matches.isEmpty) {
+          return Center(
+            child: Text(
+              'No bookmarks match your search',
+              style: TextStyle(color: context.colors.textMuted),
+            ),
+          );
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.all(Spacing.lg),
+          itemCount: matches.length,
+          separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
+          itemBuilder: (_, i) => ResourceCard(resource: matches[i]),
+        );
+      },
     );
   }
 }

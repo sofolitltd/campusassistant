@@ -237,6 +237,47 @@ class AppColors extends ThemeExtension<AppColors> {
     shadow: Color(0x40000000),
   );
 
+  /// Campus Market palette — a warm orange so the shop reads as a different
+  /// place from the teal study app. Applied only under `MarketTheme`.
+  /// Flutter-only: the admin panel has no counterpart for these.
+  static final marketLight =
+      light.copyWith(
+            primary: const Color(0xFFD9480F),
+            primaryPressed: const Color(0xFF9A3412),
+            primarySubtle: const Color(0xFFFFEDD5),
+            onPrimary: const Color(0xFFFFFFFF),
+            text: const Color(0xFF231A14),
+            textMuted: const Color(0xFF6B5B50),
+            textSubtle: const Color(0xFF9A8A7E),
+            textInverse: const Color(0xFFF1EBE6),
+            bg: const Color(0xFFFAF7F4),
+            surface: const Color(0xFFFFFFFF),
+            surfaceAlt: const Color(0xFFF3EDE8),
+            surfaceInverse: const Color(0xFF231A14),
+            border: const Color(0xFFE8DFD8),
+            borderStrong: const Color(0xFFD4C7BC),
+          )
+          as AppColors;
+
+  static final marketDark =
+      dark.copyWith(
+            primary: const Color(0xFFFB923C),
+            primaryPressed: const Color(0xFFEA7A1F),
+            primarySubtle: const Color(0xFF3A2314),
+            onPrimary: const Color(0xFF2A1205),
+            text: const Color(0xFFF1EBE6),
+            textMuted: const Color(0xFFB0A298),
+            textSubtle: const Color(0xFF85776D),
+            textInverse: const Color(0xFF231A14),
+            bg: const Color(0xFF141110),
+            surface: const Color(0xFF1E1A18),
+            surfaceAlt: const Color(0xFF28231F),
+            surfaceInverse: const Color(0xFFF1EBE6),
+            border: const Color(0xFF332D29),
+            borderStrong: const Color(0xFF463E38),
+          )
+          as AppColors;
+
   @override
   ThemeExtension<AppColors> copyWith({
     Color? primary,

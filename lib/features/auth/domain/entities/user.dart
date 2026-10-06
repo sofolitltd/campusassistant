@@ -31,6 +31,7 @@ abstract class User with _$User {
     @Default(false) bool isCr,
     String? universityId,
     String? departmentId,
+    DateTime? createdAt,
   }) = _User;
 
   String get fullName => '$firstName $lastName';

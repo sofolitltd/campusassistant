@@ -11,6 +11,7 @@ import '../../data/models/address.dart';
 import '../providers/marketplace_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '../widgets/market_theme.dart';
 
 const _labelOptions = ['Home', 'Hall', 'Other'];
 
@@ -187,97 +188,101 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
       appBar: AppBar(
         title: Text(widget.address != null ? 'Edit Address' : 'Add Address'),
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(Spacing.lg),
-              children: [
-                _buildQuickFillChips(),
-                DropdownButtonFormField<String>(
-                  initialValue: _labelOption,
-                  decoration: const InputDecoration(labelText: 'Label'),
-                  items: _labelOptions
-                      .map((l) => DropdownMenuItem(value: l, child: Text(l)))
-                      .toList(),
-                  onChanged: (v) => setState(() => _labelOption = v ?? 'Home'),
-                ),
-                if (_labelOption == 'Other') ...[
+      backgroundColor: context.colors.primary,
+      body: MarketBody(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(Spacing.lg),
+                children: [
+                  _buildQuickFillChips(),
+                  DropdownButtonFormField<String>(
+                    initialValue: _labelOption,
+                    decoration: const InputDecoration(labelText: 'Label'),
+                    items: _labelOptions
+                        .map((l) => DropdownMenuItem(value: l, child: Text(l)))
+                        .toList(),
+                    onChanged: (v) =>
+                        setState(() => _labelOption = v ?? 'Home'),
+                  ),
+                  if (_labelOption == 'Other') ...[
+                    const SizedBox(height: Spacing.md),
+                    TextFormField(
+                      controller: _customLabelController,
+                      decoration: const InputDecoration(
+                        labelText: 'Custom Label',
+                        hintText: 'e.g. Dorm',
+                      ),
+                      validator: (v) =>
+                          (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    ),
+                  ],
                   const SizedBox(height: Spacing.md),
                   TextFormField(
-                    controller: _customLabelController,
+                    controller: _recipientController,
                     decoration: const InputDecoration(
-                      labelText: 'Custom Label',
-                      hintText: 'e.g. Dorm',
+                      labelText: 'Recipient Name',
                     ),
                     validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: const InputDecoration(labelText: 'Phone'),
+                    keyboardType: .phone,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  TextFormField(
+                    controller: _addressController,
+                    decoration: const InputDecoration(labelText: 'Address'),
+                    maxLines: 2,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  DistrictSubDistrictPicker(
+                    districtId: _districtId,
+                    subDistrictId: _subDistrictId,
+                    onDistrictChanged: (d) => setState(() {
+                      _districtId = d?.id;
+                      _districtName = d?.name;
+                      _subDistrictId = null;
+                      _subDistrictName = null;
+                    }),
+                    onSubDistrictChanged: (s) => setState(() {
+                      _subDistrictId = s?.id;
+                      _subDistrictName = s?.name;
+                    }),
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  CheckboxListTile(
+                    title: const Text('Set as default address'),
+                    value: _isDefault,
+                    onChanged: (v) => setState(() => _isDefault = v ?? false),
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                  const SizedBox(height: Spacing.xxl),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isSaving ? null : _save,
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CupertinoActivityIndicator(),
+                            )
+                          : Text(widget.address != null ? 'Update' : 'Save'),
+                    ),
                   ),
                 ],
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _recipientController,
-                  decoration: const InputDecoration(
-                    labelText: 'Recipient Name',
-                  ),
-                  validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(labelText: 'Phone'),
-                  keyboardType: .phone,
-                  validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: const InputDecoration(labelText: 'Address'),
-                  maxLines: 2,
-                  validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                DistrictSubDistrictPicker(
-                  districtId: _districtId,
-                  subDistrictId: _subDistrictId,
-                  onDistrictChanged: (d) => setState(() {
-                    _districtId = d?.id;
-                    _districtName = d?.name;
-                    _subDistrictId = null;
-                    _subDistrictName = null;
-                  }),
-                  onSubDistrictChanged: (s) => setState(() {
-                    _subDistrictId = s?.id;
-                    _subDistrictName = s?.name;
-                  }),
-                ),
-                const SizedBox(height: Spacing.md),
-                CheckboxListTile(
-                  title: const Text('Set as default address'),
-                  value: _isDefault,
-                  onChanged: (v) => setState(() => _isDefault = v ?? false),
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                const SizedBox(height: Spacing.xxl),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isSaving ? null : _save,
-                    child: _isSaving
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CupertinoActivityIndicator(),
-                          )
-                        : Text(widget.address != null ? 'Update' : 'Save'),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),

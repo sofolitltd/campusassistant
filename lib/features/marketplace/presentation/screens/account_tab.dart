@@ -7,6 +7,8 @@ import '/routes/app_route.dart';
 import '../providers/marketplace_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '../widgets/market_theme.dart';
+import '/core/theme/app_colors.dart';
 
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
@@ -16,73 +18,76 @@ class AccountTab extends ConsumerWidget {
     final merchantsAsync = ref.watch(myMerchantsProvider);
 
     return Scaffold(
+      backgroundColor: context.colors.primary,
       appBar: AppBar(title: const Text('Account')),
-      body: ListView(
-        padding: const EdgeInsets.all(Spacing.lg),
-        children: [
-          _ListTile(
-            icon: LucideIcons.shoppingBag,
-            title: 'My Orders',
-            subtitle: 'View your order history and tracking',
-            onTap: () => context.push(AppRoute.marketplaceOrders.path),
-          ),
-          const SizedBox(height: Spacing.sm),
-          _ListTile(
-            icon: LucideIcons.heart,
-            title: 'Saved Items',
-            subtitle: 'Products you saved for later',
-            onTap: () => context.push(AppRoute.marketplaceWishlist.path),
-          ),
-          const SizedBox(height: Spacing.sm),
-          _ListTile(
-            icon: LucideIcons.receipt,
-            title: 'Invoices & Receipts',
-            subtitle: 'Your payments and refunds',
-            onTap: () => context.push(AppRoute.marketplaceInvoices.path),
-          ),
-          const SizedBox(height: Spacing.sm),
-          _ListTile(
-            icon: LucideIcons.mapPin,
-            title: 'Manage Addresses',
-            subtitle: 'Add, edit, or remove shipping addresses',
-            onTap: () => context.push(AppRoute.marketplaceAddresses.path),
-          ),
-          const SizedBox(height: Spacing.sm),
-          merchantsAsync.when(
-            data: (merchants) {
-              if (merchants.isEmpty) {
+      body: MarketBody(
+        child: ListView(
+          padding: const EdgeInsets.all(Spacing.lg),
+          children: [
+            _ListTile(
+              icon: LucideIcons.shoppingBag,
+              title: 'My Orders',
+              subtitle: 'View your order history and tracking',
+              onTap: () => context.push(AppRoute.marketplaceOrders.path),
+            ),
+            const SizedBox(height: Spacing.sm),
+            _ListTile(
+              icon: LucideIcons.heart,
+              title: 'Saved Items',
+              subtitle: 'Products you saved for later',
+              onTap: () => context.push(AppRoute.marketplaceWishlist.path),
+            ),
+            const SizedBox(height: Spacing.sm),
+            _ListTile(
+              icon: LucideIcons.receipt,
+              title: 'Invoices & Receipts',
+              subtitle: 'Your payments and refunds',
+              onTap: () => context.push(AppRoute.marketplaceInvoices.path),
+            ),
+            const SizedBox(height: Spacing.sm),
+            _ListTile(
+              icon: LucideIcons.mapPin,
+              title: 'Manage Addresses',
+              subtitle: 'Add, edit, or remove shipping addresses',
+              onTap: () => context.push(AppRoute.marketplaceAddresses.path),
+            ),
+            const SizedBox(height: Spacing.sm),
+            merchantsAsync.when(
+              data: (merchants) {
+                if (merchants.isEmpty) {
+                  return _ListTile(
+                    icon: LucideIcons.store,
+                    title: 'Become a Merchant',
+                    subtitle: 'Sell your products on campus',
+                    onTap: () => context.push(AppRoute.merchantApply.path),
+                  );
+                }
                 return _ListTile(
                   icon: LucideIcons.store,
-                  title: 'Become a Merchant',
-                  subtitle: 'Sell your products on campus',
+                  title: 'My Businesses',
+                  subtitle: merchants.length == 1
+                      ? merchants.first.businessName
+                      : '${merchants.length} businesses',
                   onTap: () => context.push(AppRoute.merchantApply.path),
                 );
-              }
-              return _ListTile(
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (e, _) => _ListTile(
                 icon: LucideIcons.store,
-                title: 'My Businesses',
-                subtitle: merchants.length == 1
-                    ? merchants.first.businessName
-                    : '${merchants.length} businesses',
+                title: 'Become a Merchant',
+                subtitle: 'Sell your products on campus',
                 onTap: () => context.push(AppRoute.merchantApply.path),
-              );
-            },
-            loading: () => const SizedBox.shrink(),
-            error: (e, _) => _ListTile(
-              icon: LucideIcons.store,
-              title: 'Become a Merchant',
-              subtitle: 'Sell your products on campus',
-              onTap: () => context.push(AppRoute.merchantApply.path),
+              ),
             ),
-          ),
-          const SizedBox(height: Spacing.sm),
-          _ListTile(
-            icon: LucideIcons.store,
-            title: 'About Campus Market',
-            subtitle: 'Learn how it works, payments, and more',
-            onTap: () => context.pushNamed(AppRoute.marketplaceInfo.name),
-          ),
-        ],
+            const SizedBox(height: Spacing.sm),
+            _ListTile(
+              icon: LucideIcons.store,
+              title: 'About Campus Market',
+              subtitle: 'Learn how it works, payments, and more',
+              onTap: () => context.pushNamed(AppRoute.marketplaceInfo.name),
+            ),
+          ],
+        ),
       ),
     );
   }

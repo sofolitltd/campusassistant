@@ -58,6 +58,7 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
     return CustomHeaderLayout(
       title: 'Full Syllabus',
       showSearchBar: true,
+      glassSearch: true,
       searchHint: 'Search syllabus...',
       onSearchChanged: _onSearchChanged,
       body: syllabusAsync.when(

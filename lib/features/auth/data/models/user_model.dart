@@ -40,6 +40,7 @@ abstract class UserModel with _$UserModel {
     @Default(false) bool isCr,
     String? universityId,
     String? departmentId,
+    DateTime? createdAt,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -70,6 +71,7 @@ abstract class UserModel with _$UserModel {
     isCr: isCr,
     universityId: universityId,
     departmentId: departmentId,
+    createdAt: createdAt,
   );
 
   factory UserModel.fromEntity(User user) => UserModel(
@@ -97,5 +99,6 @@ abstract class UserModel with _$UserModel {
     isCr: user.isCr,
     universityId: user.universityId,
     departmentId: user.departmentId,
+    createdAt: user.createdAt,
   );
 }

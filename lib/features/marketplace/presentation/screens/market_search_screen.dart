@@ -1,20 +1,21 @@
 import 'dart:async';
+import 'dart:ui';
 
 import '/core/widgets/app_choice_chip.dart';
-import '/core/widgets/search_outline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/widgets/search_clear_suffix.dart';
 import '/core/di.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/product.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/market_product_card.dart';
+import '../widgets/market_theme.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
@@ -231,99 +232,105 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
     final categories = ref.watch(categoriesListProvider).value ?? const [];
     final hasFilters = _inStock || _price != null || _categoryId != null;
 
+    const chipDense = VisualDensity.compact;
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Padding(
-          padding: const EdgeInsets.only(right: Spacing.lg),
-          child: TextField(
-            controller: _controller,
-            autofocus: true,
-            textInputAction: TextInputAction.search,
-            onChanged: _onQueryChanged,
-            onSubmitted: (_) => _load(),
-            decoration: InputDecoration(
-              hintText: 'Search the campus market',
-              enabledBorder: searchOutline(context),
-              prefixIcon: Icon(
-                LucideIcons.search,
-                size: 18,
-                color: c.textSubtle,
-              ),
-              suffixIcon: SearchClearSuffix(
-                visible: _controller.text.isNotEmpty,
-                onClear: () {
-                  _controller.clear();
-                  _load();
-                },
-              ),
-              suffixIconConstraints: SearchClearSuffix.constraints(),
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: c.primary,
+      appBar: AppBar(title: const Text('Search')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
           child: Column(
             children: [
-              SizedBox(
-                height: 48,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.lg,
-                    vertical: Spacing.sm,
-                  ),
-                  children: [
-                    ActionChip(
-                      avatar: const Icon(LucideIcons.arrowUpDown, size: 14),
-                      label: Text(_sort.label),
-                      onPressed: _openSortSheet,
-                    ),
-                    const SizedBox(width: Spacing.sm),
-                    ActionChip(
-                      avatar: const Icon(LucideIcons.banknote, size: 14),
-                      label: Text(
-                        _price == null
-                            ? 'Price'
-                            : '৳${_price!.start.round()}–${_price!.end >= _maxPrice ? '${_maxPrice.round()}+' : _price!.end.round()}',
-                      ),
-                      onPressed: _openPriceSheet,
-                    ),
-                    const SizedBox(width: Spacing.sm),
-                    AppChoiceChip(
-                      label: 'In stock',
-                      selected: _inStock,
-                      onTap: () => _apply(() => _inStock = !_inStock),
-                    ),
-                    for (final cat in categories) ...[
-                      const SizedBox(width: Spacing.sm),
-                      AppChoiceChip(
-                        label: cat.name,
-                        selected: _categoryId == cat.id,
-                        onTap: () => _apply(
-                          () => _categoryId = _categoryId == cat.id
-                              ? null
-                              : cat.id,
+              _GlassSearchField(
+                controller: _controller,
+                onChanged: _onQueryChanged,
+                onSubmitted: () => _load(),
+                onClear: () {
+                  _controller.clear();
+                  _load();
+                },
+              ),
+              Expanded(
+                child: MarketBody(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: Spacing.md),
+                      SizedBox(
+                        height: 40,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Spacing.lg,
+                          ),
+                          children: [
+                            ActionChip(
+                              visualDensity: chipDense,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              avatar: const Icon(
+                                LucideIcons.arrowUpDown,
+                                size: 14,
+                              ),
+                              label: Text(_sort.label),
+                              onPressed: _openSortSheet,
+                            ),
+                            const SizedBox(width: Spacing.sm),
+                            ActionChip(
+                              visualDensity: chipDense,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              avatar: const Icon(
+                                LucideIcons.banknote,
+                                size: 14,
+                              ),
+                              label: Text(
+                                _price == null
+                                    ? 'Price'
+                                    : '৳${_price!.start.round()}–${_price!.end >= _maxPrice ? '${_maxPrice.round()}+' : _price!.end.round()}',
+                              ),
+                              onPressed: _openPriceSheet,
+                            ),
+                            const SizedBox(width: Spacing.sm),
+                            AppChoiceChip(
+                              label: 'In stock',
+                              selected: _inStock,
+                              onTap: () => _apply(() => _inStock = !_inStock),
+                            ),
+                            for (final cat in categories) ...[
+                              const SizedBox(width: Spacing.sm),
+                              AppChoiceChip(
+                                label: cat.name,
+                                selected: _categoryId == cat.id,
+                                onTap: () => _apply(
+                                  () => _categoryId = _categoryId == cat.id
+                                      ? null
+                                      : cat.id,
+                                ),
+                              ),
+                            ],
+                            if (hasFilters) ...[
+                              const SizedBox(width: Spacing.sm),
+                              ActionChip(
+                                visualDensity: chipDense,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                label: const Text('Clear'),
+                                onPressed: () => _apply(() {
+                                  _inStock = false;
+                                  _price = null;
+                                  _categoryId = null;
+                                }),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
+                      const SizedBox(height: Spacing.sm),
+                      Expanded(child: _body(c)),
                     ],
-                    if (hasFilters) ...[
-                      const SizedBox(width: Spacing.sm),
-                      ActionChip(
-                        label: const Text('Clear'),
-                        onPressed: () => _apply(() {
-                          _inStock = false;
-                          _price = null;
-                          _categoryId = null;
-                        }),
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
-              Expanded(child: _body(c)),
             ],
           ),
         ),
@@ -406,6 +413,93 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Frosted-glass search field that sits on the coloured header.
+class _GlassSearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onSubmitted;
+  final VoidCallback onClear;
+
+  const _GlassSearchField({
+    required this.controller,
+    required this.onChanged,
+    required this.onSubmitted,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.xs,
+        Spacing.lg,
+        Spacing.lg,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(RadiusToken.full),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+          child: Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+            decoration: BoxDecoration(
+              color: c.onPrimary.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(RadiusToken.full),
+              border: Border.all(color: c.onPrimary.withValues(alpha: 0.4)),
+            ),
+            child: Row(
+              children: [
+                Icon(LucideIcons.search, size: 18, color: c.onPrimary),
+                const SizedBox(width: Spacing.md),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    autofocus: true,
+                    textInputAction: TextInputAction.search,
+                    onChanged: onChanged,
+                    onSubmitted: (_) => onSubmitted(),
+                    cursorColor: c.onPrimary,
+                    style: TextStyle(
+                      color: c.onPrimary,
+                      fontSize: FontSizeToken.base,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search the campus market',
+                      hintStyle: TextStyle(
+                        color: c.onPrimary.withValues(alpha: 0.7),
+                      ),
+                      filled: false,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      isCollapsed: true,
+                    ),
+                  ),
+                ),
+                ListenableBuilder(
+                  listenable: controller,
+                  builder: (context, _) => controller.text.isEmpty
+                      ? const SizedBox.shrink()
+                      : GestureDetector(
+                          onTap: onClear,
+                          child: Icon(
+                            LucideIcons.circleX,
+                            size: 18,
+                            color: c.onPrimary,
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

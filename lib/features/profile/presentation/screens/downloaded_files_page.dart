@@ -10,19 +10,41 @@ import '/features/resource/presentation/providers/downloads_provider.dart';
 import '/features/resource/presentation/widgets/downloaded_resource_card.dart';
 import '/core/theme/app_colors.dart';
 
-class DownloadedFilesPage extends ConsumerWidget {
+class DownloadedFilesPage extends ConsumerStatefulWidget {
   const DownloadedFilesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DownloadedFilesPage> createState() =>
+      _DownloadedFilesPageState();
+}
+
+class _DownloadedFilesPageState extends ConsumerState<DownloadedFilesPage> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
     final downloadsAsync = ref.watch(downloadedFilesProvider);
+    final q = _query.trim().toLowerCase();
 
     return CustomHeaderLayout(
       title: 'Downloaded Files',
-      showSearchBar: false,
+      showSearchBar: true,
+      glassSearch: true,
+      searchHint: 'Search downloaded files...',
+      onSearchChanged: (v) => setState(() => _query = v),
       body: downloadsAsync.when(
-        data: (files) {
-          if (files.isEmpty) return _buildEmptyState(context);
+        data: (allFiles) {
+          if (allFiles.isEmpty) return _buildEmptyState(context);
+          final files = q.isEmpty
+              ? allFiles
+              : allFiles.where((f) {
+                  final r = f.resource;
+                  return r.title.toLowerCase().contains(q) ||
+                      r.courseCode.toLowerCase().contains(q) ||
+                      r.courseTitle.toLowerCase().contains(q) ||
+                      r.description.toLowerCase().contains(q);
+                }).toList();
+          if (files.isEmpty) return _buildNoMatches(context);
           return RefreshIndicator(
             onRefresh: () =>
                 ref.read(downloadedFilesProvider.notifier).refresh(),
@@ -45,6 +67,15 @@ class DownloadedFilesPage extends ConsumerWidget {
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
+      ),
+    );
+  }
+
+  Widget _buildNoMatches(BuildContext context) {
+    return Center(
+      child: Text(
+        'No files match your search',
+        style: TextStyle(color: context.colors.textMuted),
       ),
     );
   }

@@ -15,6 +15,32 @@ ThemeData buildLightTheme() => _buildTheme(AppColors.light, Brightness.light);
 
 ThemeData buildDarkTheme() => _buildTheme(AppColors.dark, Brightness.dark);
 
+ThemeData buildMarketLightTheme() =>
+    _withMarketCards(_buildTheme(AppColors.marketLight, Brightness.light));
+
+ThemeData buildMarketDarkTheme() =>
+    _withMarketCards(_buildTheme(AppColors.marketDark, Brightness.dark));
+
+/// Gives every Material `Card` in the market the same chrome as the main
+/// app's section cards: large radius, hairline outline and a soft shadow.
+ThemeData _withMarketCards(ThemeData base) {
+  final c = base.extension<AppColors>()!;
+  return base.copyWith(
+    cardTheme: CardThemeData(
+      color: c.surface,
+      elevation: 3,
+      shadowColor: c.shadow,
+      surfaceTintColor: Colors.transparent,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        side: BorderSide(color: c.border),
+      ),
+    ),
+  );
+}
+
 /// Builds a [ColorScheme] by hand from [AppColors].
 ///
 /// Deliberately NOT `ColorScheme.fromSeed`. Seeding hands Material's tonal

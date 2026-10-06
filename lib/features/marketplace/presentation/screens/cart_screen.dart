@@ -10,6 +10,7 @@ import '../providers/cart_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '../widgets/market_theme.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -24,30 +25,33 @@ class CartScreen extends ConsumerWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 700),
           child: Scaffold(
+            backgroundColor: context.colors.primary,
             appBar: AppBar(title: const Text('Cart')),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: .center,
-                children: [
-                  Icon(
-                    LucideIcons.shoppingCart,
-                    size: 64,
-                    color: context.colors.borderStrong,
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  const Text(
-                    'Your cart is empty',
-                    style: TextStyle(
-                      fontSize: FontSizeToken.xl,
-                      fontWeight: .bold,
+            body: MarketBody(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Icon(
+                      LucideIcons.shoppingCart,
+                      size: 64,
+                      color: context.colors.borderStrong,
                     ),
-                  ),
-                  const SizedBox(height: Spacing.sm),
-                  Text(
-                    'Add some products to get started!',
-                    style: TextStyle(color: context.colors.textSubtle),
-                  ),
-                ],
+                    const SizedBox(height: Spacing.lg),
+                    const Text(
+                      'Your cart is empty',
+                      style: TextStyle(
+                        fontSize: FontSizeToken.xl,
+                        fontWeight: .bold,
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.sm),
+                    Text(
+                      'Add some products to get started!',
+                      style: TextStyle(color: context.colors.textSubtle),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -66,21 +70,24 @@ class CartScreen extends ConsumerWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
         child: Scaffold(
+          backgroundColor: context.colors.primary,
           appBar: AppBar(title: const Text('Cart')),
-          body: ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(Spacing.lg),
-            children: groupedByMerchant.entries.map((entry) {
-              final merchant = entry.value.first.product.merchant;
-              return _MerchantGroup(
-                merchantId: entry.key,
-                merchantName: merchant?.businessName ?? 'Campus Assistant',
-                logoUrl: merchant?.logoUrl,
-                isPlatform: merchant?.isPlatform ?? true,
-                items: entry.value,
-                ref: ref,
-              );
-            }).toList(),
+          body: MarketBody(
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(Spacing.lg),
+              children: groupedByMerchant.entries.map((entry) {
+                final merchant = entry.value.first.product.merchant;
+                return _MerchantGroup(
+                  merchantId: entry.key,
+                  merchantName: merchant?.businessName ?? 'Campus Assistant',
+                  logoUrl: merchant?.logoUrl,
+                  isPlatform: merchant?.isPlatform ?? true,
+                  items: entry.value,
+                  ref: ref,
+                );
+              }).toList(),
+            ),
           ),
           bottomNavigationBar: DecoratedBox(
             decoration: BoxDecoration(

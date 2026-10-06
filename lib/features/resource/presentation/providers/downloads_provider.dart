@@ -76,20 +76,25 @@ String? extractShortIdFromFileName(String fileName) {
 Resource _inferResourceFromFileName(String fileName, FileStat stat) {
   final name = fileName.replaceAll('.pdf', '');
   final parts = name.split('_');
-  // First part is "{courseCode}-{lessonNo}"
-  final codePart = parts.isNotEmpty ? parts.first : '';
-  final dashIndex = codePart.indexOf('-');
+  // The first part is "{courseCode}-{lessonNo} {title}" — the title has been
+  // stripped of underscores when the file was named, so it is all of it after
+  // the first space. The course code can itself contain a dash (PSY-503), so
+  // the lesson number is whatever follows the *last* dash of the head token.
+  final head = parts.isNotEmpty ? parts.first : '';
+  final spaceIndex = head.indexOf(' ');
+  final codePart = spaceIndex > 0 ? head.substring(0, spaceIndex) : head;
+  final title = spaceIndex > 0
+      ? head.substring(spaceIndex + 1).trim()
+      : fileName.replaceAll('.pdf', '');
+  final dashIndex = codePart.lastIndexOf('-');
   final courseCode = dashIndex > 0
       ? codePart.substring(0, dashIndex)
       : codePart;
-  final lessonNoStr = dashIndex > 0 ? codePart.substring(dashIndex + 1) : '0';
-  final lessonNo = int.tryParse(lessonNoStr) ?? 0;
+  final lessonNo = dashIndex > 0
+      ? int.tryParse(codePart.substring(dashIndex + 1)) ?? 0
+      : 0;
   // Type is the second-to-last part
   final type = parts.length >= 2 ? parts[parts.length - 2] : '';
-  // Title is everything between courseCode-lessonNo and type
-  final title = parts.length > 2
-      ? parts.sublist(1, parts.length - 2).join(' ')
-      : fileName;
 
   return Resource(
     id: '',

@@ -5,6 +5,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '../widgets/market_theme.dart';
 
 class MarketplaceInfoScreen extends StatelessWidget {
   const MarketplaceInfoScreen({super.key});
@@ -13,72 +14,75 @@ class MarketplaceInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('About Campus Market')),
-      body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: ListView(
-            padding: const EdgeInsets.all(Spacing.lg),
-            children: [
-              _HeroSection(),
-              const SizedBox(height: Spacing.xxl),
-              _SectionCard(
-                icon: LucideIcons.info,
-                title: 'What is Campus Market?',
-                children: [
-                  'Campus Market is a campus-exclusive marketplace built for students, faculty, and staff. '
-                      'It allows members of the university community to buy and sell items within the campus — '
-                      'from used textbooks and electronics to handmade crafts, services, and more.',
-                  'Think of it as your local campus canteen for everything you need, run by the people you trust — '
-                      'your fellow students and campus community members.',
-                ],
-              ),
-              const SizedBox(height: Spacing.lg),
-              _SectionCard(
-                icon: LucideIcons.badgeCheck,
-                title: 'Who Can Buy?',
-                children: [
-                  'Any registered student, faculty, or staff member of the university can browse and purchase items '
-                      'on Campus Market. Simply log in with your campus credentials and start shopping.',
-                  'No special approval needed — just find what you need and place your order.',
-                ],
-              ),
-              const SizedBox(height: Spacing.lg),
-              _SectionCard(
-                icon: LucideIcons.store,
-                title: 'Who Can Sell?',
-                children: [
-                  'Currently, selling is open to verified campus community members who have applied and been approved as merchants.',
-                  'Merchants must be associated with the university (students, faculty, or staff) and agree to '
-                      'our terms of service to ensure a safe and trusted marketplace for everyone.',
-                ],
-              ),
-              const SizedBox(height: Spacing.lg),
-              _SectionCard(
-                icon: LucideIcons.userRoundPlus,
-                title: 'How to Become a Merchant?',
-                children: [
-                  '1. Go to the Account tab in the marketplace bottom navigation.',
-                  '2. Tap on "Become a Merchant" and fill out the application form.',
-                  '3. Provide your details including your name, student/faculty ID, and contact information.',
-                  '4. Submit your application for review.',
-                  '5. Once approved, you can start listing your products for sale immediately.',
-                ],
-              ),
-              const SizedBox(height: Spacing.lg),
-              _SectionCard(
-                icon: LucideIcons.creditCard,
-                title: 'Payment System',
-                children: [
-                  'Payments are processed securely through bKash, Bangladesh\'s leading mobile financial service.',
-                  'When you place an order, you will receive payment instructions via the app. '
-                      'Simply complete the payment through your bKash account and the merchant will be notified to process your order.',
-                  'All transactions are tracked within the app for your reference and records.',
-                ],
-              ),
-              const SizedBox(height: Spacing.xxl),
-              _TermsPrivacyCard(),
-              const SizedBox(height: Spacing.xxxl),
-            ],
+      backgroundColor: context.colors.primary,
+      body: MarketBody(
+        child: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: ListView(
+              padding: const EdgeInsets.all(Spacing.lg),
+              children: [
+                _HeroSection(),
+                const SizedBox(height: Spacing.xxl),
+                _SectionCard(
+                  icon: LucideIcons.info,
+                  title: 'What is Campus Market?',
+                  children: [
+                    'Campus Market is a campus-exclusive marketplace built for students, faculty, and staff. '
+                        'It allows members of the university community to buy and sell items within the campus — '
+                        'from used textbooks and electronics to handmade crafts, services, and more.',
+                    'Think of it as your local campus canteen for everything you need, run by the people you trust — '
+                        'your fellow students and campus community members.',
+                  ],
+                ),
+                const SizedBox(height: Spacing.lg),
+                _SectionCard(
+                  icon: LucideIcons.badgeCheck,
+                  title: 'Who Can Buy?',
+                  children: [
+                    'Any registered student, faculty, or staff member of the university can browse and purchase items '
+                        'on Campus Market. Simply log in with your campus credentials and start shopping.',
+                    'No special approval needed — just find what you need and place your order.',
+                  ],
+                ),
+                const SizedBox(height: Spacing.lg),
+                _SectionCard(
+                  icon: LucideIcons.store,
+                  title: 'Who Can Sell?',
+                  children: [
+                    'Currently, selling is open to verified campus community members who have applied and been approved as merchants.',
+                    'Merchants must be associated with the university (students, faculty, or staff) and agree to '
+                        'our terms of service to ensure a safe and trusted marketplace for everyone.',
+                  ],
+                ),
+                const SizedBox(height: Spacing.lg),
+                _SectionCard(
+                  icon: LucideIcons.userRoundPlus,
+                  title: 'How to Become a Merchant?',
+                  children: [
+                    '1. Go to the Account tab in the marketplace bottom navigation.',
+                    '2. Tap on "Become a Merchant" and fill out the application form.',
+                    '3. Provide your details including your name, student/faculty ID, and contact information.',
+                    '4. Submit your application for review.',
+                    '5. Once approved, you can start listing your products for sale immediately.',
+                  ],
+                ),
+                const SizedBox(height: Spacing.lg),
+                _SectionCard(
+                  icon: LucideIcons.creditCard,
+                  title: 'Payment System',
+                  children: [
+                    'Payments are processed securely through bKash, Bangladesh\'s leading mobile financial service.',
+                    'When you place an order, you will receive payment instructions via the app. '
+                        'Simply complete the payment through your bKash account and the merchant will be notified to process your order.',
+                    'All transactions are tracked within the app for your reference and records.',
+                  ],
+                ),
+                const SizedBox(height: Spacing.xxl),
+                _TermsPrivacyCard(),
+                const SizedBox(height: Spacing.xxxl),
+              ],
+            ),
           ),
         ),
       ),
@@ -155,9 +159,16 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(Spacing.xl),
       decoration: BoxDecoration(
-        color: context.colors.surfaceAlt,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         border: Border.all(color: context.colors.border),
+        boxShadow: [
+          BoxShadow(
+            color: context.colors.shadow,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: .start,

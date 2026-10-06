@@ -20,10 +20,7 @@ class FeedbackPage extends ConsumerWidget {
     final feedbacksAsync = ref.watch(myFeedbacksProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Feedback'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('My Feedback'), centerTitle: true),
       body: feedbacksAsync.when(
         data: (feedbacks) {
           if (feedbacks.isEmpty) {
@@ -61,7 +58,7 @@ class FeedbackPage extends ConsumerWidget {
                       onPressed: () =>
                           context.push(AppRoute.createFeedback.path),
                       icon: const Icon(LucideIcons.plus),
-                      label: const Text('Send feedback'),
+                      label: const Text('Send Feedback'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(200, ControlToken.height),
                       ),
@@ -77,7 +74,12 @@ class FeedbackPage extends ConsumerWidget {
               ref.invalidate(myFeedbacksProvider);
             },
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, Spacing.xxxl),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.xxxl,
+              ),
               children: [
                 Row(
                   children: [
@@ -99,9 +101,7 @@ class FeedbackPage extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: Spacing.sm),
-                ...feedbacks.map(
-                  (f) => FeedbackCard(feedback: f),
-                ),
+                ...feedbacks.map((f) => FeedbackCard(feedback: f)),
               ],
             ),
           );
@@ -113,8 +113,11 @@ class FeedbackPage extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: .center,
               children: [
-                Icon(LucideIcons.alertCircle,
-                    size: 48, color: context.colors.danger),
+                Icon(
+                  LucideIcons.alertCircle,
+                  size: 48,
+                  color: context.colors.danger,
+                ),
                 const SizedBox(height: Spacing.lg),
                 Text(
                   'Could not load feedback',

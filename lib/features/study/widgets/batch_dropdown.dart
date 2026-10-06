@@ -7,6 +7,7 @@ import '/features/batch/domain/entities/batch.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import 'batch_tile.dart';
+import '/core/widgets/inline_search_bar.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -14,7 +15,10 @@ import '/core/theme/tokens/app_font_size.dart';
 
 class BatchDropdown extends ConsumerWidget {
   final bool redBg;
-  const BatchDropdown({super.key, this.redBg = false});
+
+  /// Fixed height, for rows where it has to line up with neighbouring controls.
+  final double? height;
+  const BatchDropdown({super.key, this.redBg = false, this.height});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,14 +43,16 @@ class BatchDropdown extends ConsumerWidget {
         return GestureDetector(
           onTap: () => _showBatchBottomSheet(context, ref, batches, batch),
           child: Container(
+            height: height,
+            alignment: height == null ? null : Alignment.center,
             padding: const EdgeInsets.symmetric(
               horizontal: Spacing.sm,
-              vertical: Spacing.sm,
+              vertical: Spacing.xs,
             ),
             decoration: BoxDecoration(
               color: redBg
                   ? context.colors.surface.withValues(alpha: 0.15)
-                  : null,
+                  : context.colors.surface,
               border: Border.all(color: borderColor),
               borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
@@ -158,43 +164,28 @@ class BatchDropdown extends ConsumerWidget {
                   const SizedBox(height: Spacing.lg),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(RadiusToken.lg),
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => searchText = v),
-                        decoration: InputDecoration(
-                          hintText: 'Search batch...',
-                          hintStyle: TextStyle(
-                            color: context.colors.textSubtle,
-                            fontSize: FontSizeToken.base,
-                          ),
-                          prefixIcon: Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: context.colors.textSubtle,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: Spacing.md,
-                          ),
-                        ),
-                      ),
+                    child: InlineSearchBar(
+                      hintText: 'Search batch...',
+                      onChanged: (v) => setState(() => searchText = v),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),
                   Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.md,
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: Spacing.sm,
+                      crossAxisSpacing: Spacing.sm,
+                      childAspectRatio: 4.2,
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.xl,
+                        0,
+                        Spacing.xl,
+                        Spacing.xl,
                       ),
                       children: [
                         if (searchText.isEmpty)
                           BatchTile(
+                            grid: true,
                             title: 'All Batches',
                             isSelected: currentBatch == null,
                             onTap: () {
@@ -206,6 +197,7 @@ class BatchDropdown extends ConsumerWidget {
                           ),
                         ...filteredBatches.map(
                           (b) => BatchTile(
+                            grid: true,
                             title: b.name,
                             isSelected: currentBatch?.id == b.id,
                             onTap: () {

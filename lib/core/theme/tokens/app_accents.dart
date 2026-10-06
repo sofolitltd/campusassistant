@@ -16,6 +16,10 @@ abstract final class AccentToken {
   static const Color green = Color(0xFF22C55E);
   static const Color yellow = Color(0xFFFACC15);
   static const Color amber = Color(0xFFF59E0B);
+  static const Color gold = Color(0xFFD4AF37);
+  static const Color goldLight = Color(0xFFF5D76E);
+  static const Color goldDeep = Color(0xFF9A7B0A);
+  static const Color onGold = Color(0xFF3B2A00);
   static const Color orange = Color(0xFFF97316);
   static const Color red = Color(0xFFEF4444);
   static const Color rose = Color(0xFFE11D48);

@@ -31,7 +31,7 @@ class SemesterFilterButton extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.sm,
-          vertical: Spacing.sm,
+          vertical: Spacing.xs,
         ),
         decoration: BoxDecoration(
           color: redBg ? context.colors.surface.withValues(alpha: 0.15) : null,
@@ -63,21 +63,14 @@ class SemesterFilterButton extends ConsumerWidget {
                     : theme.colorScheme.onSurface,
               ),
             ),
-            if (selectedSemester != null) ...[
-              const SizedBox(width: Spacing.xs),
-              GestureDetector(
-                onTap: () {
-                  ref.read(selectedSemesterNotifierProvider.notifier).clear();
-                },
-                child: Icon(
-                  LucideIcons.circleX,
-                  size: 12,
-                  color: redBg
-                      ? context.colors.textMuted
-                      : context.colors.danger,
-                ),
-              ),
-            ],
+            const SizedBox(width: Spacing.xs),
+            Icon(
+              Icons.keyboard_arrow_down,
+              size: 16,
+              color: redBg
+                  ? context.colors.onPrimary
+                  : theme.colorScheme.onSurface,
+            ),
           ],
         ),
       ),

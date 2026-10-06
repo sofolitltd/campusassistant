@@ -111,6 +111,12 @@ ThemeData _buildTheme(AppColors colors, Brightness brightness) {
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         borderSide: BorderSide(color: colors.border, width: 0.5),
       ),
+      // Without this a disabled field falls back to `border` (none) and
+      // loses its outline.
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderSide: BorderSide(color: colors.border, width: 0.5),
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(RadiusToken.lg),
         borderSide: BorderSide(color: colors.primary, width: 1.5),

@@ -124,10 +124,12 @@ Stream<PaginatedStudents> studentsWithTotalByBatchPaginated(
   required String batchId,
   required int limit,
   required int offset,
+  String? search,
 }) async* {
   final repository = ref.watch(studentRepositoryProvider);
   await for (final paginated in repository.watchStudents(
     batchId: batchId,
+    search: search,
     limit: limit,
     offset: offset,
   )) {
@@ -353,11 +355,13 @@ Stream<PaginatedStudents> studentsWithTotalAllPaginated(
   required String? departmentId,
   required int limit,
   required int offset,
+  String? search,
 }) async* {
   final repository = ref.watch(studentRepositoryProvider);
   await for (final paginated in repository.watchStudents(
     universityId: universityId,
     departmentId: departmentId,
+    search: search,
     limit: limit,
     offset: offset,
   )) {

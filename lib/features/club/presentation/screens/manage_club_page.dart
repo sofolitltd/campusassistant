@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '/core/widgets/custom_header_layout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -54,55 +55,47 @@ class _ManageClubPageState extends ConsumerState<ManageClubPage>
   Widget build(BuildContext context) {
     final clubAsync = ref.watch(clubByIdProvider(widget.clubId));
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              clubAsync.maybeWhen(data: (c) => c.name, orElse: () => null) ??
-                  'Manage Club',
-              overflow: .ellipsis,
+    return CustomHeaderLayout(
+      title:
+          clubAsync.maybeWhen(data: (c) => c.name, orElse: () => null) ??
+          'Manage Club',
+      showSearchBar: false,
+      body: clubAsync.when(
+        data: (club) => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.md,
+                Spacing.lg,
+                Spacing.sm,
+              ),
+              child: SectionTabBar(
+                controller: _tabController,
+                isScrollable: true,
+                tabs: const [
+                  Tab(text: 'Info'),
+                  Tab(text: 'Events'),
+                  Tab(text: 'Posts'),
+                  Tab(text: 'Managers'),
+                ],
+              ),
             ),
-          ),
-          body: clubAsync.when(
-            data: (club) => Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    Spacing.lg,
-                    Spacing.md,
-                    Spacing.lg,
-                    Spacing.sm,
-                  ),
-                  child: SectionTabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    tabs: const [
-                      Tab(text: 'Info'),
-                      Tab(text: 'Events'),
-                      Tab(text: 'Posts'),
-                      Tab(text: 'Managers'),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _InfoTab(club: club),
-                      _EventsTab(clubId: club.id),
-                      _PostsTab(clubId: club.id),
-                      _ManagersTab(clubId: club.id),
-                    ],
-                  ),
-                ),
-              ],
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _InfoTab(club: club),
+                  _EventsTab(clubId: club.id),
+                  _PostsTab(clubId: club.id),
+                  _ManagersTab(clubId: club.id),
+                ],
+              ),
             ),
-            loading: () => const Center(child: CupertinoActivityIndicator()),
-            error: (err, _) => Center(child: Text('Error: $err')),
-          ),
+          ],
         ),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );
   }

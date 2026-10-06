@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import '../widgets/profile_card.dart';
 import '../widgets/profile_completion_card.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
@@ -22,71 +24,71 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
-    final primaryColor = context.colors.primary;
 
-    return Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: false,
-        actions: [
-          _AppBarRewardBadge(),
-          Padding(
-            padding: const EdgeInsets.only(right: Spacing.sm),
-            child: GestureDetector(
-              onTap: () =>
-                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: context.colors.surface.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(Spacing.xs),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                  child: Image.asset('assets/images/logo.png', fit: .contain),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: false,
+          actions: [
+            _AppBarRewardBadge(),
+            Padding(
+              padding: const EdgeInsets.only(right: Spacing.md),
+              child: GestureDetector(
+                onTap: () =>
+                    ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(Spacing.xs),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    child: Image.asset('assets/images/logo.png', fit: .contain),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-        title: Text(
-          'Profile',
-          style: TextStyle(
-            color: context.colors.onPrimary,
-            fontWeight: .bold,
-            fontSize: FontSizeToken.xxl,
+          ],
+          title: Text(
+            'Profile',
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.xxl,
+            ),
           ),
         ),
-      ),
-      body: userAsync.when(
-        data: (user) {
-          if (user == null) {
-            return const Center(child: Text('User not found'));
-          }
-          final isProfileComplete = profileCompletionPercent(user) == 100;
-          return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Theme.of(context).scaffoldBackgroundColor
-                        : context.colors.surfaceAlt,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(RadiusToken.xxxl),
-                    ),
+        body: userAsync.when(
+          data: (user) {
+            if (user == null) {
+              return const Center(child: Text('User not found'));
+            }
+            final isProfileComplete = profileCompletionPercent(user) == 100;
+            // The rounded sheet is fixed to the body area; only its content
+            // scrolls.
+            return SizedBox.expand(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Theme.of(context).scaffoldBackgroundColor
+                      : context.colors.surfaceAlt,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
                   ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(RadiusToken.xxxl),
-                    ),
+                ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
                         const SizedBox(height: Spacing.lg),
@@ -112,12 +114,13 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
-        error: (error, _) => Center(child: Text('Error: ${error.toString()}')),
+              ),
+            );
+          },
+          loading: () => const Center(child: CupertinoActivityIndicator()),
+          error: (error, _) =>
+              Center(child: Text('Error: ${error.toString()}')),
+        ),
       ),
     );
   }
@@ -139,22 +142,18 @@ class _AppBarRewardBadge extends ConsumerWidget {
               vertical: Spacing.xs,
             ),
             decoration: BoxDecoration(
-              color: context.colors.warning,
+              color: AccentToken.gold,
               borderRadius: BorderRadius.circular(RadiusToken.full),
             ),
             child: Row(
               mainAxisSize: .min,
               children: [
-                Icon(
-                  LucideIcons.coins,
-                  size: 14,
-                  color: context.colors.onPrimary,
-                ),
+                Icon(LucideIcons.trophy, size: 14, color: AccentToken.onGold),
                 const SizedBox(width: Spacing.xs),
                 Text(
                   '${balance.balance}',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: context.colors.onPrimary,
+                    color: AccentToken.onGold,
                     fontWeight: .w600,
                   ),
                 ),

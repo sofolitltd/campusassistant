@@ -1,14 +1,16 @@
 import 'dart:async';
 
+import '/core/widgets/app_choice_chip.dart';
+import '/core/widgets/search_outline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/search_clear_suffix.dart';
 import '/core/di.dart';
 import '/core/theme/app_colors.dart';
-import '/core/theme/tokens/app_radius.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/product.dart';
 import '../providers/marketplace_provider.dart';
@@ -61,7 +63,8 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
   void initState() {
     super.initState();
     _scroll.addListener(() {
-      if (_scroll.position.pixels > _scroll.position.maxScrollExtent - 400) _load(more: true);
+      if (_scroll.position.pixels > _scroll.position.maxScrollExtent - 400)
+        _load(more: true);
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
@@ -93,27 +96,35 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
       }
     });
     try {
-      final response = await ref.read(apiClientProvider).get(
-        '/products-by-location',
-        queryParameters: {
-          'university_id': user.university,
-          'department_id': user.department,
-          if (_controller.text.trim().isNotEmpty) 'q': _controller.text.trim(),
-          if (_categoryId != null) 'category_id': _categoryId,
-          if (_inStock) 'in_stock': 'true',
-          if (_price != null) 'min_price': _price!.start.round(),
-          if (_price != null && _price!.end < _maxPrice) 'max_price': _price!.end.round(),
-          'sort': _sort.api,
-          'limit': _pageSize,
-          'offset': more ? _results.length : 0,
-        },
-      );
+      final response = await ref
+          .read(apiClientProvider)
+          .get(
+            '/products-by-location',
+            queryParameters: {
+              'university_id': user.university,
+              'department_id': user.department,
+              if (_controller.text.trim().isNotEmpty)
+                'q': _controller.text.trim(),
+              if (_categoryId != null) 'category_id': _categoryId,
+              if (_inStock) 'in_stock': 'true',
+              if (_price != null) 'min_price': _price!.start.round(),
+              if (_price != null && _price!.end < _maxPrice)
+                'max_price': _price!.end.round(),
+              'sort': _sort.api,
+              'limit': _pageSize,
+              'offset': more ? _results.length : 0,
+            },
+          );
       if (!mounted || gen != _generation) return;
       final raw = response.data as List;
-      final page = raw.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
+      final page = raw
+          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList();
       setState(() {
         _results.addAll(page);
-        _total = int.tryParse(response.headers.value('x-total-count') ?? '') ?? _results.length;
+        _total =
+            int.tryParse(response.headers.value('x-total-count') ?? '') ??
+            _results.length;
         _hasMore = page.length == _pageSize;
         _loading = false;
       });
@@ -138,12 +149,24 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
       showDragHandle: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
-          padding: const EdgeInsets.fromLTRB(Spacing.xl, 0, Spacing.xl, Spacing.xxl),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.xl,
+            0,
+            Spacing.xl,
+            Spacing.xxl,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Price range', style: TextStyle(fontSize: FontSizeToken.xl, fontWeight: FontWeight.w800, color: ctx.colors.text)),
+              Text(
+                'Price range',
+                style: TextStyle(
+                  fontSize: FontSizeToken.xl,
+                  fontWeight: FontWeight.w800,
+                  color: ctx.colors.text,
+                ),
+              ),
               const SizedBox(height: Spacing.xs),
               Text(
                 '৳${range.start.round()} – ${range.end >= _maxPrice ? '৳${_maxPrice.round()}+' : '৳${range.end.round()}'}',
@@ -158,9 +181,16 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
               ),
               Row(
                 children: [
-                  TextButton(onPressed: () => Navigator.pop(ctx, const RangeValues(-1, -1)), child: const Text('Clear')),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.pop(ctx, const RangeValues(-1, -1)),
+                    child: const Text('Clear'),
+                  ),
                   const Spacer(),
-                  FilledButton(onPressed: () => Navigator.pop(ctx, range), child: const Text('Apply')),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(ctx, range),
+                    child: const Text('Apply'),
+                  ),
                 ],
               ),
             ],
@@ -183,7 +213,9 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
             for (final s in _Sort.values)
               ListTile(
                 title: Text(s.label),
-                trailing: s == _sort ? Icon(LucideIcons.check, color: ctx.colors.primary) : null,
+                trailing: s == _sort
+                    ? Icon(LucideIcons.check, color: ctx.colors.primary)
+                    : null,
                 onTap: () => Navigator.pop(ctx, s),
               ),
           ],
@@ -202,14 +234,8 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        title: Container(
-          height: 42,
-          margin: const EdgeInsets.only(right: Spacing.lg),
-          decoration: BoxDecoration(
-            color: c.surfaceAlt,
-            borderRadius: BorderRadius.circular(RadiusToken.xxl),
-            border: Border.all(color: c.border),
-          ),
+        title: Padding(
+          padding: const EdgeInsets.only(right: Spacing.lg),
           child: TextField(
             controller: _controller,
             autofocus: true,
@@ -218,20 +244,20 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
             onSubmitted: (_) => _load(),
             decoration: InputDecoration(
               hintText: 'Search the campus market',
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              filled: false,
-              prefixIcon: Icon(LucideIcons.search, size: 18, color: c.textSubtle),
-              suffixIcon: _controller.text.isEmpty
-                  ? null
-                  : IconButton(
-                      icon: Icon(LucideIcons.x, size: 16, color: c.textSubtle),
-                      onPressed: () {
-                        _controller.clear();
-                        _load();
-                      },
-                    ),
+              enabledBorder: searchOutline(context),
+              prefixIcon: Icon(
+                LucideIcons.search,
+                size: 18,
+                color: c.textSubtle,
+              ),
+              suffixIcon: SearchClearSuffix(
+                visible: _controller.text.isNotEmpty,
+                onClear: () {
+                  _controller.clear();
+                  _load();
+                },
+              ),
+              suffixIconConstraints: SearchClearSuffix.constraints(),
             ),
           ),
         ),
@@ -245,7 +271,10 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
                 height: 48,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.sm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Spacing.lg,
+                    vertical: Spacing.sm,
+                  ),
                   children: [
                     ActionChip(
                       avatar: const Icon(LucideIcons.arrowUpDown, size: 14),
@@ -255,23 +284,29 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
                     const SizedBox(width: Spacing.sm),
                     ActionChip(
                       avatar: const Icon(LucideIcons.banknote, size: 14),
-                      label: Text(_price == null
-                          ? 'Price'
-                          : '৳${_price!.start.round()}–${_price!.end >= _maxPrice ? '${_maxPrice.round()}+' : _price!.end.round()}'),
+                      label: Text(
+                        _price == null
+                            ? 'Price'
+                            : '৳${_price!.start.round()}–${_price!.end >= _maxPrice ? '${_maxPrice.round()}+' : _price!.end.round()}',
+                      ),
                       onPressed: _openPriceSheet,
                     ),
                     const SizedBox(width: Spacing.sm),
-                    FilterChip(
-                      label: const Text('In stock'),
+                    AppChoiceChip(
+                      label: 'In stock',
                       selected: _inStock,
-                      onSelected: (v) => _apply(() => _inStock = v),
+                      onTap: () => _apply(() => _inStock = !_inStock),
                     ),
                     for (final cat in categories) ...[
                       const SizedBox(width: Spacing.sm),
-                      FilterChip(
-                        label: Text(cat.name),
+                      AppChoiceChip(
+                        label: cat.name,
                         selected: _categoryId == cat.id,
-                        onSelected: (v) => _apply(() => _categoryId = v ? cat.id : null),
+                        onTap: () => _apply(
+                          () => _categoryId = _categoryId == cat.id
+                              ? null
+                              : cat.id,
+                        ),
                       ),
                     ],
                     if (hasFilters) ...[
@@ -305,19 +340,28 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(_failed ? LucideIcons.wifiOff : LucideIcons.searchX, size: 40, color: c.textSubtle),
+              Icon(
+                _failed ? LucideIcons.wifiOff : LucideIcons.searchX,
+                size: 40,
+                color: c.textSubtle,
+              ),
               const SizedBox(height: Spacing.md),
               Text(
-                _failed ? 'Could not load results.' : 'Nothing matches your search.',
+                _failed
+                    ? 'Could not load results.'
+                    : 'Nothing matches your search.',
                 style: TextStyle(fontWeight: FontWeight.w700, color: c.text),
               ),
               const SizedBox(height: Spacing.xs),
               Text(
-                _failed ? 'Check your connection and try again.' : 'Try a different word or clear some filters.',
+                _failed
+                    ? 'Check your connection and try again.'
+                    : 'Try a different word or clear some filters.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: c.textMuted, fontSize: 12.5),
               ),
-              if (_failed) TextButton(onPressed: _load, child: const Text('Retry')),
+              if (_failed)
+                TextButton(onPressed: _load, child: const Text('Retry')),
             ],
           ),
         ),
@@ -328,8 +372,16 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.xs, Spacing.lg, Spacing.md),
-            child: Text('$_total result${_total == 1 ? '' : 's'}', style: TextStyle(fontSize: FontSizeToken.sm, color: c.textSubtle)),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.xs,
+              Spacing.lg,
+              Spacing.md,
+            ),
+            child: Text(
+              '$_total result${_total == 1 ? '' : 's'}',
+              style: TextStyle(fontSize: FontSizeToken.sm, color: c.textSubtle),
+            ),
           ),
         ),
         SliverPadding(
@@ -339,13 +391,18 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
             childCount: _results.length,
-            itemBuilder: (context, i) => MarketProductCard(product: _results[i]),
+            itemBuilder: (context, i) =>
+                MarketProductCard(product: _results[i]),
           ),
         ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(Spacing.xxl),
-            child: Center(child: _loading ? const CupertinoActivityIndicator() : const SizedBox.shrink()),
+            child: Center(
+              child: _loading
+                  ? const CupertinoActivityIndicator()
+                  : const SizedBox.shrink(),
+            ),
           ),
         ),
       ],

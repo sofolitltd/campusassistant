@@ -19,6 +19,91 @@ class StudentRepositoryImpl implements StudentRepository {
     required this.connectivity,
   });
 
+  // Each list page is one cache row ({total, items}) so the total survives a
+  // cache hit and a page is replaced atomically. Kept short: a fresh hit skips
+  // the network entirely, and every write below invalidates the whole type.
+  static const _pageType = 'student_page';
+  static const _pageTtl = Duration(minutes: 30);
+
+  bool _isSearch(String? search) => search != null && search.isNotEmpty;
+
+  Future<PaginatedStudents?> _readPage(String key) async {
+    try {
+      if (!await cacheManager.isFresh(entityType: _pageType, entityKey: key)) {
+        return null;
+      }
+      final cached = await cacheManager.getCachedSingle(
+        entityType: _pageType,
+        entityKey: key,
+      );
+      if (cached == null) return null;
+      final items = (cached['items'] as List).cast<Map<String, dynamic>>();
+      return PaginatedStudents(
+        students: items
+            .map((json) => StudentModel.fromJson(json).toEntity())
+            .toList(),
+        total: cached['total'] as int? ?? items.length,
+      );
+    } catch (e) {
+      debugPrint('[StudentRepo] Cache read failed: $e');
+      return null;
+    }
+  }
+
+  Future<PaginatedStudents> _fetchPage({
+    String? universityId,
+    String? departmentId,
+    String? batchId,
+    String? userId,
+    String? search,
+    String? bloodGroup,
+    int? limit,
+    int? offset,
+    required String cacheKey,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (universityId != null) queryParams['university_id'] = universityId;
+    if (departmentId != null) queryParams['department_id'] = departmentId;
+    if (batchId != null) queryParams['batch_id'] = batchId;
+    if (userId != null) queryParams['user_id'] = userId;
+    if (_isSearch(search)) queryParams['search'] = search;
+    if (bloodGroup != null) queryParams['blood_group'] = bloodGroup;
+    if (limit != null) queryParams['limit'] = limit.toString();
+    if (offset != null) queryParams['offset'] = offset.toString();
+    // Count-only requests (limit=1) don't need the joined user/batch/hall.
+    if (limit != 1) queryParams['preload'] = 'true';
+
+    final response = await apiClient.get(
+      ApiEndpoints.students,
+      queryParameters: queryParams,
+    );
+
+    final Map<String, dynamic> body = response.data;
+    final List<dynamic> data = body['data'] ?? [];
+    final int total = body['count'] ?? data.length;
+
+    // Every distinct search string would otherwise leave a row behind.
+    if (!_isSearch(search)) {
+      try {
+        await cacheManager.cacheSingle(
+          entityType: _pageType,
+          entityKey: cacheKey,
+          data: {'total': total, 'items': data},
+          ttl: _pageTtl,
+        );
+      } catch (e) {
+        debugPrint('[StudentRepo] Cache write failed: $e');
+      }
+    }
+
+    return PaginatedStudents(
+      students: data
+          .map((json) => StudentModel.fromJson(json).toEntity())
+          .toList(),
+      total: total,
+    );
+  }
+
   @override
   Future<PaginatedStudents> getStudents({
     String? universityId,
@@ -35,76 +120,38 @@ class StudentRepositoryImpl implements StudentRepository {
       departmentId: departmentId,
       batchId: batchId,
       userId: userId,
+      search: search,
+      bloodGroup: bloodGroup,
       limit: limit,
       offset: offset,
     );
 
-    // 1. Try remote if online
+    if (!_isSearch(search)) {
+      final hit = await _readPage(cacheKey);
+      if (hit != null) return hit;
+    }
+
     if (connectivity.isConnected) {
       try {
-        final queryParams = <String, dynamic>{};
-        if (universityId != null) queryParams['university_id'] = universityId;
-        if (departmentId != null) queryParams['department_id'] = departmentId;
-        if (batchId != null) queryParams['batch_id'] = batchId;
-        if (userId != null) queryParams['user_id'] = userId;
-        if (search != null) queryParams['search'] = search;
-        if (bloodGroup != null) queryParams['blood_group'] = bloodGroup;
-        if (limit != null) queryParams['limit'] = limit.toString();
-        if (offset != null) queryParams['offset'] = offset.toString();
-        queryParams['preload'] = 'true';
-
-        final response = await apiClient.get(
-          ApiEndpoints.students,
-          queryParameters: queryParams,
-        );
-
-        final Map<String, dynamic> body = response.data;
-        final List<dynamic> data = body['data'] ?? [];
-        final int total = body['count'] ?? data.length;
-
-        // Cache the result
-        final cacheItems = data.cast<Map<String, dynamic>>();
-        await cacheManager.cacheList(
-          entityType: 'student_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.student,
-        );
-
-        return PaginatedStudents(
-          students: data
-              .map((json) => StudentModel.fromJson(json).toEntity())
-              .toList(),
-          total: total,
+        return await _fetchPage(
+          universityId: universityId,
+          departmentId: departmentId,
+          batchId: batchId,
+          userId: userId,
+          search: search,
+          bloodGroup: bloodGroup,
+          limit: limit,
+          offset: offset,
+          cacheKey: cacheKey,
         );
       } catch (e) {
         debugPrint('[StudentRepo] Remote fetch failed: $e');
       }
     }
 
-    // 2. Try cached data
-    try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: 'student_$cacheKey',
-      );
-
-      if (cachedData.isNotEmpty) {
-        final students = cachedData
-            .map((json) => StudentModel.fromJson(json).toEntity())
-            .toList();
-        debugPrint(
-          '[StudentRepo] Returning ${students.length} cached students',
-        );
-        return PaginatedStudents(students: students, total: students.length);
-      }
-    } catch (e) {
-      debugPrint('[StudentRepo] Cache read failed: $e');
-    }
-
-    // 3. No data
     if (!connectivity.isConnected) {
       return PaginatedStudents(students: [], total: 0);
     }
-
     throw Exception('Failed to fetch students');
   }
 
@@ -119,86 +166,18 @@ class StudentRepositoryImpl implements StudentRepository {
     int? limit,
     int? offset,
   }) async* {
-    final cacheKey = _buildCacheKey(
+    // A fresh cached page is served as-is; the network is only hit once it
+    // has expired, was invalidated by a write, or for a search.
+    yield await getStudents(
       universityId: universityId,
       departmentId: departmentId,
       batchId: batchId,
       userId: userId,
+      search: search,
+      bloodGroup: bloodGroup,
       limit: limit,
       offset: offset,
     );
-    var emittedCache = false;
-
-    // 1. Emit cached data immediately if present
-    try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: 'student_$cacheKey',
-      );
-
-      if (cachedData.isNotEmpty) {
-        final students = cachedData
-            .map((json) => StudentModel.fromJson(json).toEntity())
-            .toList();
-        debugPrint(
-          '[StudentRepo] Emitting ${students.length} cached students (offline-first)',
-        );
-        yield PaginatedStudents(students: students, total: students.length);
-        emittedCache = true;
-      }
-    } catch (e) {
-      debugPrint('[StudentRepo] Cache read failed: $e');
-    }
-
-    // 2. Refresh from network in the background and emit when done
-    if (connectivity.isConnected) {
-      try {
-        final queryParams = <String, dynamic>{};
-        if (universityId != null) queryParams['university_id'] = universityId;
-        if (departmentId != null) queryParams['department_id'] = departmentId;
-        if (batchId != null) queryParams['batch_id'] = batchId;
-        if (userId != null) queryParams['user_id'] = userId;
-        if (search != null) queryParams['search'] = search;
-        if (bloodGroup != null) queryParams['blood_group'] = bloodGroup;
-        if (limit != null) queryParams['limit'] = limit.toString();
-        if (offset != null) queryParams['offset'] = offset.toString();
-        queryParams['preload'] = 'true';
-
-        final response = await apiClient.get(
-          ApiEndpoints.students,
-          queryParameters: queryParams,
-        );
-
-        final Map<String, dynamic> body = response.data;
-        final List<dynamic> data = body['data'] ?? [];
-        final int total = body['count'] ?? data.length;
-
-        final cacheItems = data.cast<Map<String, dynamic>>();
-        await cacheManager.cacheList(
-          entityType: 'student_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.student,
-        );
-
-        yield PaginatedStudents(
-          students: data
-              .map((json) => StudentModel.fromJson(json).toEntity())
-              .toList(),
-          total: total,
-        );
-        return;
-      } catch (e) {
-        debugPrint('[StudentRepo] Remote fetch failed: $e');
-      }
-    }
-
-    // 3. Nothing was ever emitted
-    if (!emittedCache) {
-      if (!connectivity.isConnected) {
-        yield PaginatedStudents(students: [], total: 0);
-      } else {
-        throw Exception('Failed to fetch students');
-      }
-    }
   }
 
   @override
@@ -257,6 +236,7 @@ class StudentRepositoryImpl implements StudentRepository {
       ApiEndpoints.students,
       data: model.toJson(),
     );
+    await cacheManager.invalidate(_pageType);
     return StudentModel.fromJson(response.data).toEntity();
   }
 
@@ -302,6 +282,7 @@ class StudentRepositoryImpl implements StudentRepository {
       '${ApiEndpoints.students}/claim-profile',
       data: data,
     );
+    await cacheManager.invalidate(_pageType);
     return StudentModel.fromJson(response.data).toEntity();
   }
 
@@ -315,6 +296,7 @@ class StudentRepositoryImpl implements StudentRepository {
       '${ApiEndpoints.students}/${student.id}',
       data: model.toJson(),
     );
+    await cacheManager.invalidate(_pageType);
     return StudentModel.fromJson(response.data).toEntity();
   }
 
@@ -324,6 +306,7 @@ class StudentRepositoryImpl implements StudentRepository {
       throw Exception('Internet connection required to delete student');
     }
     await apiClient.delete('${ApiEndpoints.students}/$id');
+    await cacheManager.invalidate(_pageType);
   }
 
   String _buildCacheKey({
@@ -331,6 +314,8 @@ class StudentRepositoryImpl implements StudentRepository {
     String? departmentId,
     String? batchId,
     String? userId,
+    String? search,
+    String? bloodGroup,
     int? limit,
     int? offset,
   }) {
@@ -339,6 +324,9 @@ class StudentRepositoryImpl implements StudentRepository {
       if (departmentId != null) 'dept_$departmentId',
       if (batchId != null) 'batch_$batchId',
       if (userId != null) 'user_$userId',
+      // Without this a search would be served the unfiltered cached page.
+      if (search != null && search.isNotEmpty) 'q_$search',
+      if (bloodGroup != null) 'blood_$bloodGroup',
       if (limit != null) 'lmt_$limit',
       if (offset != null) 'off_$offset',
     ];

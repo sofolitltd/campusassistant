@@ -147,7 +147,8 @@ class SearchResults {
 
     // The backend also sends a `total`, but recompute client-side from the
     // parsed lists defensively in case of drift between the two.
-    final computedTotal = resources.length +
+    final computedTotal =
+        resources.length +
         courses.length +
         notices.length +
         clubs.length +

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../providers/alumni_provider.dart';
+import '/core/widgets/inline_search_bar.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -117,37 +117,13 @@ class _OrgFilterSheetBodyState extends ConsumerState<_OrgFilterSheetBody> {
           const SizedBox(height: Spacing.md),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: context.colors.surfaceAlt,
-                borderRadius: BorderRadius.circular(RadiusToken.lg),
-              ),
-              child: TextField(
-                onChanged: (val) {
-                  setState(() {
-                    _searchQuery = val;
-                  });
-                },
-                style: TextStyle(color: context.colors.text),
-                decoration: InputDecoration(
-                  hintText: 'Search organizations...',
-                  hintStyle: TextStyle(
-                    color: context.colors.textSubtle,
-                    fontSize: FontSizeToken.lg,
-                  ),
-                  prefixIcon: Icon(
-                    LucideIcons.search,
-                    color: context.colors.textSubtle,
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.lg,
-                    vertical: Spacing.lg,
-                  ),
-                ),
-              ),
+            child: InlineSearchBar(
+              hintText: 'Search organizations...',
+              onChanged: (val) {
+                setState(() {
+                  _searchQuery = val;
+                });
+              },
             ),
           ),
           const SizedBox(height: Spacing.lg),

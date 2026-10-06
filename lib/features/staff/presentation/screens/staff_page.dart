@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/custom_header_layout.dart';
@@ -9,7 +7,6 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
 import 'staff_card.dart';
 import '/core/theme/app_colors.dart';
-import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
 class StaffPage extends ConsumerStatefulWidget {
@@ -29,6 +26,7 @@ class _StaffPageState extends ConsumerState<StaffPage> {
 
     return CustomHeaderLayout(
       title: 'Office Staff',
+      searchAtBottom: true,
       searchHint: 'Search staff...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),
       body: staffAsync.when(
@@ -71,24 +69,17 @@ class _StaffPageState extends ConsumerState<StaffPage> {
 
           final user = userAsync.value;
 
-          return ListView.separated(
+          return ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(
               Spacing.lg,
               Spacing.lg,
               Spacing.lg,
-              Spacing.lg,
+              Spacing.sm,
             ),
             itemCount: filteredStaff.length,
-            itemBuilder: (context, index) {
-              final staff = filteredStaff[index];
-              return InkWell(
-                borderRadius: BorderRadius.circular(RadiusToken.lg),
-                onTap: () => context.push('/staff/details?id=${staff.id}'),
-                child: StaffCard(staff: staff, user: user),
-              );
-            },
-            separatorBuilder: (_, _) => const SizedBox(height: 15),
+            itemBuilder: (context, index) =>
+                StaffCard(staff: filteredStaff[index], user: user),
           );
         },
         loading: () => const Center(child: CupertinoActivityIndicator()),

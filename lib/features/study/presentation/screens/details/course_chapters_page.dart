@@ -74,16 +74,18 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
             shrinkWrap: true,
             itemCount: filteredChapters.length,
             separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.md,
-              vertical: Spacing.md,
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.md,
+              Spacing.xs,
+              Spacing.md,
+              Spacing.md,
             ),
             itemBuilder: (context, index) {
               final chapterModel = filteredChapters[index];
 
               return Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(RadiusToken.md),
+                  borderRadius: BorderRadius.circular(RadiusToken.md + 2),
                   color: theme.cardColor,
                   border: Border.all(
                     color: context.colors.surfaceAlt,

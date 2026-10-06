@@ -328,7 +328,7 @@ class _MerchantProductFormScreenState
                     onPressed: () =>
                         setState(() => _stockController.text = '0'),
                     icon: const Icon(LucideIcons.packageX, size: 16),
-                    label: const Text('Mark as sold out'),
+                    label: const Text('Mark As Sold Out'),
                   ),
                 ),
                 if (categories.isNotEmpty) ...[

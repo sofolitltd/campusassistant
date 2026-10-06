@@ -47,7 +47,7 @@ class PaymentSuccessPage extends StatelessWidget {
                 onPressed: () {
                   GoRouter.of(context).go('/'); // Navigate to home
                 },
-                child: const Text("Go to Home"),
+                child: const Text("Go To Home"),
               ),
               const SizedBox(height: Spacing.md),
             ],

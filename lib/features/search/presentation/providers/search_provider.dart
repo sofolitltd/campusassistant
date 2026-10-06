@@ -17,12 +17,19 @@ final searchCategoryProvider = StateProvider<String>((ref) => 'all');
 /// instead of one combined "Resources" chip — the backend only knows the
 /// broad `resource` category, so these are requested as `types: ['resource']`
 /// and filtered down to the matching subtype client-side.
-const resourceSubtypes = <String>{'note', 'book', 'question', 'syllabus', 'video'};
+const resourceSubtypes = <String>{
+  'note',
+  'book',
+  'question',
+  'syllabus',
+  'video',
+};
 
 /// Fetches results for the current query + category. Returns `null` (no
 /// network call) while the trimmed query is under 2 characters.
-final searchResultsProvider =
-    FutureProvider.autoDispose<SearchResults?>((ref) async {
+final searchResultsProvider = FutureProvider.autoDispose<SearchResults?>((
+  ref,
+) async {
   final query = ref.watch(searchQueryProvider).trim();
   final category = ref.watch(searchCategoryProvider);
 

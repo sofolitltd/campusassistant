@@ -419,12 +419,12 @@ class _ActionsState extends ConsumerState<_Actions> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Keep order'),
+            child: const Text('Keep Order'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Cancel order',
+              'Cancel Order',
               style: TextStyle(color: ctx.colors.danger),
             ),
           ),
@@ -488,7 +488,7 @@ class _ActionsState extends ConsumerState<_Actions> {
             child: OutlinedButton.icon(
               onPressed: _busy ? null : _cancel,
               icon: const Icon(LucideIcons.x, size: 16),
-              label: const Text('Cancel order'),
+              label: const Text('Cancel Order'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.danger,
               ),

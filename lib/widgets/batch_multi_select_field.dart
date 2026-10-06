@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '/core/widgets/search_outline.dart';
+import '/core/widgets/search_clear_suffix.dart';
 import '/features/batch/domain/entities/batch.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -147,6 +149,7 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
             controller: _searchController,
             decoration: InputDecoration(
               hintText: 'Search batches...',
+              enabledBorder: searchOutline(context),
               prefixIcon: Padding(
                 padding: .only(left: 8),
                 child: const Icon(Icons.search, size: 20),
@@ -158,15 +161,14 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
               ),
               fillColor: context.colors.surfaceAlt,
               filled: true,
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? GestureDetector(
-                      onTap: () {
-                        _searchController.clear();
-                        setState(() => _searchQuery = '');
-                      },
-                      child: const Icon(Icons.clear),
-                    )
-                  : null,
+              suffixIcon: SearchClearSuffix(
+                visible: _searchQuery.isNotEmpty,
+                onClear: () {
+                  _searchController.clear();
+                  setState(() => _searchQuery = '');
+                },
+              ),
+              suffixIconConstraints: SearchClearSuffix.constraints(),
             ),
             onChanged: (val) => setState(() => _searchQuery = val),
           ),
@@ -184,14 +186,14 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
                     }
                   });
                 },
-                child: const Text('Select all'),
+                child: const Text('Select All'),
               ),
               const Spacer(),
               if (_selectedIds.isNotEmpty)
                 TextButton(
                   onPressed: () => setState(() => _selectedIds.clear()),
                   child: Text(
-                    'Clear all',
+                    'Clear All',
                     style: TextStyle(color: context.colors.danger),
                   ),
                 ),

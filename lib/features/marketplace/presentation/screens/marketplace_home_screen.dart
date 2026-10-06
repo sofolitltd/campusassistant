@@ -265,7 +265,7 @@ class _SearchBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: c.surfaceAlt,
             borderRadius: BorderRadius.circular(RadiusToken.xxl),
-            border: Border.all(color: c.border),
+            border: Border.all(color: c.borderStrong),
           ),
           child: Row(
             children: [
@@ -385,7 +385,7 @@ class _HeroBanner extends StatelessWidget {
                           context.pushNamed(AppRoute.marketplaceInfo.name),
                       icon: const Icon(LucideIcons.arrowRight, size: 14),
                       iconAlignment: IconAlignment.end,
-                      label: const Text('How it works'),
+                      label: const Text('How It Works'),
                       style: FilledButton.styleFrom(
                         backgroundColor: c.onPrimary,
                         foregroundColor: c.primary,

@@ -323,7 +323,7 @@ class CustomDrawer extends StatelessWidget {
                                   Navigator.pop(context);
                                   context.push('/contributors');
                                 },
-                                child: const Text('Our contributors'),
+                                child: const Text('Our Contributors'),
                               ),
                             ),
 

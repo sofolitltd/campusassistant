@@ -92,7 +92,7 @@ class JobCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: Spacing.sm,
-                            vertical: Spacing.xs,
+                            vertical: Spacing.xxs,
                           ),
                           decoration: BoxDecoration(
                             color: _statusColor(context),
@@ -111,7 +111,7 @@ class JobCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: Spacing.sm,
-                              vertical: Spacing.xs,
+                              vertical: Spacing.xxs,
                             ),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.primaryContainer,
@@ -131,7 +131,7 @@ class JobCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: Spacing.sm,
-                              vertical: Spacing.xs,
+                              vertical: Spacing.xxs,
                             ),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.secondaryContainer,
@@ -147,16 +147,11 @@ class JobCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                    if (job.deadlineDate != null) ...[
-                      const SizedBox(height: Spacing.sm),
-                      Row(
-                        children: [
+                        if (job.deadlineDate != null) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: Spacing.sm,
-                              vertical: Spacing.xs,
+                              vertical: Spacing.xxs,
                             ),
                             decoration: BoxDecoration(
                               color: job.isPastDeadline
@@ -174,11 +169,10 @@ class JobCard extends StatelessWidget {
                             ),
                           ),
                           if (!job.isPastDeadline) ...[
-                            const SizedBox(width: Spacing.sm),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: Spacing.sm,
-                                vertical: Spacing.xs,
+                                vertical: Spacing.xxs,
                               ),
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.errorContainer,
@@ -196,8 +190,8 @@ class JobCard extends StatelessWidget {
                             ),
                           ],
                         ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ],
                 ),
               ),

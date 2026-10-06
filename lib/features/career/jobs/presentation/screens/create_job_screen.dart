@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/app_choice_chip.dart';
 import '/core/di.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -331,7 +332,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                           TextButton.icon(
                             onPressed: _pickFiles,
                             icon: const Icon(LucideIcons.filePlus, size: 16),
-                            label: const Text('Add files'),
+                            label: const Text('Add Files'),
                           ),
                         ],
                       ),
@@ -375,31 +376,31 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                         spacing: Spacing.sm,
                         runSpacing: Spacing.sm,
                         children: [
-                          ChoiceChip(
-                            label: const Text('Just me'),
+                          AppChoiceChip(
+                            label: 'Just me',
                             selected: _shareScope == CareerJobScope.private_,
-                            onSelected: (_) => setState(
+                            onTap: () => setState(
                               () => _shareScope = CareerJobScope.private_,
                             ),
                           ),
-                          ChoiceChip(
-                            label: const Text('My Batch'),
+                          AppChoiceChip(
+                            label: 'My Batch',
                             selected: _shareScope == CareerJobScope.batch,
-                            onSelected: (_) => setState(
+                            onTap: () => setState(
                               () => _shareScope = CareerJobScope.batch,
                             ),
                           ),
-                          ChoiceChip(
-                            label: const Text('My Department'),
+                          AppChoiceChip(
+                            label: 'My Department',
                             selected: _shareScope == CareerJobScope.department,
-                            onSelected: (_) => setState(
+                            onTap: () => setState(
                               () => _shareScope = CareerJobScope.department,
                             ),
                           ),
-                          ChoiceChip(
-                            label: const Text('My University'),
+                          AppChoiceChip(
+                            label: 'My University',
                             selected: _shareScope == CareerJobScope.university,
-                            onSelected: (_) => setState(
+                            onTap: () => setState(
                               () => _shareScope = CareerJobScope.university,
                             ),
                           ),
@@ -411,7 +412,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: _isUploading ? null : _saveJob,
-                          child: const Text('Save job entry'),
+                          child: const Text('Save Job Entry'),
                         ),
                       ),
                       const SizedBox(height: Spacing.lg),
@@ -428,7 +429,6 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
   }
 
   Widget _buildCategoryField(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final categoriesAsync = ref.watch(circularCategoriesProvider);
     final categories = categoriesAsync.maybeWhen(
       data: (v) => v,
@@ -446,8 +446,6 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
             initialValue: _categoryId,
             decoration: InputDecoration(
               prefixIcon: const Icon(LucideIcons.tag, size: 18),
-              filled: true,
-              fillColor: cs.surface,
             ),
             items: [
               const DropdownMenuItem(value: null, child: Text('Uncategorized')),

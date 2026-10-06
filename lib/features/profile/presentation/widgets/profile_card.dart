@@ -42,7 +42,7 @@ class ProfileCard extends ConsumerWidget {
               child: PreferenceCard(
                 children: [
                   PreferenceTile(
-                    icon: LucideIcons.coins,
+                    icon: LucideIcons.trophy,
                     title: 'Rewards',
                     trailing: _BalanceChip(),
                     onTap: () => context.push(AppRoute.reward.path),

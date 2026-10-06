@@ -28,7 +28,6 @@ Widget buildCustomField(
   IconData icon, [
   String? Function(String?)? validator,
 ]) {
-  final cs = Theme.of(context).colorScheme;
   return Padding(
     padding: const EdgeInsets.only(bottom: Spacing.md),
     child: Column(
@@ -39,11 +38,7 @@ Widget buildCustomField(
         TextFormField(
           controller: controller,
           validator: validator,
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, size: 18),
-            filled: true,
-            fillColor: cs.surface,
-          ),
+          decoration: InputDecoration(prefixIcon: Icon(icon, size: 18)),
         ),
       ],
     ),

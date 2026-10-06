@@ -39,6 +39,7 @@ class _TeacherPageState extends ConsumerState<TeacherPage>
   Widget build(BuildContext context) {
     return CustomHeaderLayout(
       title: 'Faculty Members',
+      searchAtBottom: true,
       searchHint: 'Search by name, dept or designation...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),
       body: Column(

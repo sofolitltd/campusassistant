@@ -9,5 +9,6 @@ class CareerRefreshNotifier extends Notifier<int> {
   void bump() => state++;
 }
 
-final careerRefreshProvider =
-    NotifierProvider<CareerRefreshNotifier, int>(CareerRefreshNotifier.new);
+final careerRefreshProvider = NotifierProvider<CareerRefreshNotifier, int>(
+  CareerRefreshNotifier.new,
+);

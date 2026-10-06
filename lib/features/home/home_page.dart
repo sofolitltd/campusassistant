@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/ads/banner_ad_widget.dart';
 import '/core/theme/app_colors.dart';
-import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import 'sections/banner_section.dart';
 import 'sections/marketplace_section.dart';
@@ -41,41 +40,31 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
-          child: SingleChildScrollView(
+          child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                HomeHeader(
-                  onOpenMenu: () => _scaffoldKey.currentState?.openDrawer(),
-                ),
-                Transform.translate(
-                  offset: const Offset(0, -HomeHeader.overlap),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: colors.bg,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(RadiusToken.xxl),
+            slivers: [
+              HomeHeader(
+                onOpenMenu: () => _scaffoldKey.currentState?.openDrawer(),
+              ),
+              SliverToBoxAdapter(
+                child: ColoredBox(
+                  color: colors.bg,
+                  child: const Column(
+                    children: [
+                      HomeSection(child: ShortcutStrip()),
+                      SubscriptionSection(),
+                      QuickFavoritesSection(),
+                      BannerAdWidget(
+                        margin: EdgeInsets.only(bottom: Spacing.lg),
                       ),
-                    ),
-                    child: const Column(
-                      children: [
-                        SizedBox(height: Spacing.sm),
-                        HomeSection(child: ShortcutStrip()),
-                        SubscriptionSection(),
-                        QuickFavoritesSection(),
-                        BannerAdWidget(
-                          margin: EdgeInsets.only(bottom: Spacing.lg),
-                        ),
-                        BannerSection(),
-                        SkillUpSection(),
-                        MarketplaceSection(),
-                      ],
-                    ),
+                      BannerSection(),
+                      SkillUpSection(),
+                      MarketplaceSection(),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

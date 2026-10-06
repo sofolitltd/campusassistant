@@ -172,7 +172,7 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
                                       ),
                                     )
                                   : const Icon(Icons.bookmark_add_outlined),
-                              label: const Text('Save to My Jobs'),
+                              label: const Text('Save To My Jobs'),
                             ),
                           ),
                           const SizedBox(height: Spacing.sm),
@@ -190,7 +190,7 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
                                 icon: const Icon(
                                   Icons.notifications_active_outlined,
                                 ),
-                                label: const Text('Set reminder'),
+                                label: const Text('Set Reminder'),
                               ),
                             ),
                         ],

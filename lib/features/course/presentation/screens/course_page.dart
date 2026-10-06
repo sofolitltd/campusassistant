@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,6 +15,7 @@ import '../../../study/levels/domain/entities/semester.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/inline_search_bar.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import 'course_card.dart';
@@ -115,297 +118,295 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
 
     final currentSemesterName = selectedSemester?.name ?? '';
     final currentSemesterId = selectedSemester?.id;
-    final primaryColor = context.colors.primary;
 
     return userAsync.when(
       data: (user) {
-        return Scaffold(
-          backgroundColor: primaryColor,
-          appBar: AppBar(
+        return HeaderGradientBackdrop(
+          extraHeight: 44, // filter row
+          child: Scaffold(
             backgroundColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            iconTheme: IconThemeData(color: context.colors.onPrimary),
-            centerTitle: true,
-            titleSpacing: 0,
-            title: Text(
-              currentSemesterName.isNotEmpty
-                  ? 'Courses ($currentSemesterName)'
-                  : 'Courses',
-              style: TextStyle(
-                color: context.colors.onPrimary,
-                fontWeight: .bold,
-                fontSize: FontSizeToken.xl,
-              ),
-            ),
-          ),
-          body: Column(
-            crossAxisAlignment: .start,
-            children: [
-              // ── Filter row (red area) ───────────────────────────────
-              Padding(
-                padding: const .fromLTRB(16, 0, 16, 16),
-                child: Row(
-                  children: [
-                    Text(
-                      'Filter:',
-                      style: TextStyle(
-                        color: context.colors.onPrimary,
-                        fontWeight: .w500,
-                      ),
-                    ),
-                    const Spacer(),
-                    // Batch filter (first)
-                    batchesAsync.when(
-                      data: (batches) {
-                        if (batches.isEmpty) return const SizedBox();
-                        return _BatchButton(
-                          batches: batches,
-                          selectedBatch: selectedBatch,
-                        );
-                      },
-                      loading: () => SizedBox(
-                        width: 100,
-                        height: 32,
-                        child: Center(
-                          child: CupertinoActivityIndicator(
-                            color: context.colors.onPrimary,
-                          ),
-                        ),
-                      ),
-                      error: (_, _) => SizedBox(
-                        width: 100,
-                        height: 32,
-                        child: Center(
-                          child: Text(
-                            'Failed',
-                            style: TextStyle(
-                              color: context.colors.textSubtle,
-                              fontSize: FontSizeToken.sm,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: Spacing.md),
-                    // Semester/Year filter (second)
-                    if (semestersProviderState.isLoading)
-                      SizedBox(
-                        width: 100,
-                        height: 32,
-                        child: Center(
-                          child: CupertinoActivityIndicator(
-                            color: context.colors.onPrimary,
-                          ),
-                        ),
-                      )
-                    else
-                      _SemesterButton(
-                        semesters: filteredSemesters,
-                        selectedSemester: selectedSemester,
-                      ),
-                  ],
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              iconTheme: IconThemeData(color: context.colors.onPrimary),
+              centerTitle: false,
+              titleSpacing: 0,
+              actions: [const BookmarkAppBarButton()],
+              title: Text(
+                currentSemesterName.isNotEmpty
+                    ? 'Courses ($currentSemesterName)'
+                    : 'Courses',
+                style: TextStyle(
+                  color: context.colors.onPrimary,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.xl,
                 ),
               ),
-
-              // ── White rounded container ─────────────────────────────
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: theme.scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(RadiusToken.xxxl),
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(RadiusToken.xxxl),
-                    ),
-                    child: (() {
-                      final uid = user.information.universityId;
-                      final did = user.information.departmentId;
-                      if (uid == null ||
-                          uid.isEmpty ||
-                          did == null ||
-                          did.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: .center,
-                            children: [
-                              Icon(
-                                LucideIcons.userX,
-                                size: 48,
-                                color: context.colors.textSubtle,
-                              ),
-                              const SizedBox(height: Spacing.lg),
-                              const Text('User profile incomplete'),
-                              const SizedBox(height: Spacing.sm),
-                              TextButton(
-                                onPressed: () => ref.invalidate(userProvider),
-                                child: const Text('Retry'),
-                              ),
-                            ],
+            ),
+            body: Column(
+              crossAxisAlignment: .start,
+              children: [
+                // ── Filter row (red area) ───────────────────────────────
+                Padding(
+                  padding: const .fromLTRB(16, 0, 16, 12),
+                  child: Row(
+                    children: [
+                      // Batch filter (first)
+                      batchesAsync.when(
+                        data: (batches) {
+                          if (batches.isEmpty) return const SizedBox();
+                          return _BatchButton(
+                            batches: batches,
+                            selectedBatch: selectedBatch,
+                          );
+                        },
+                        loading: () => SizedBox(
+                          width: 100,
+                          height: 32,
+                          child: Center(
+                            child: CupertinoActivityIndicator(
+                              color: context.colors.onPrimary,
+                            ),
                           ),
-                        );
-                      }
-                      return ref
-                          .watch(
-                            coursesProvider(
-                              universityId: uid,
-                              departmentId: did,
-                              semesterId: currentSemesterId,
-                              batchId: isAllBatches(selectedBatch)
-                                  ? null
-                                  : selectedBatch?.id,
+                        ),
+                        error: (_, _) => SizedBox(
+                          width: 100,
+                          height: 32,
+                          child: Center(
+                            child: Text(
+                              'Failed',
+                              style: TextStyle(
+                                color: context.colors.textSubtle,
+                                fontSize: FontSizeToken.sm,
+                              ),
                             ),
-                          )
-                          .when(
-                            loading: () => const Center(
-                              child: CupertinoActivityIndicator(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: Spacing.md),
+                      // Semester/Year filter (second)
+                      if (semestersProviderState.isLoading)
+                        SizedBox(
+                          width: 100,
+                          height: 32,
+                          child: Center(
+                            child: CupertinoActivityIndicator(
+                              color: context.colors.onPrimary,
                             ),
-                            error: (e, _) => Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(Spacing.xxl),
-                                child: Column(
-                                  mainAxisAlignment: .center,
-                                  children: [
-                                    Icon(
-                                      Icons.error_outline,
-                                      size: 48,
-                                      color: context.colors.danger,
-                                    ),
-                                    const SizedBox(height: Spacing.lg),
-                                    Text('Error: $e', textAlign: .center),
-                                    const SizedBox(height: Spacing.lg),
-                                    ElevatedButton.icon(
-                                      onPressed: () => ref.invalidate(
-                                        coursesProvider(
-                                          universityId: uid,
-                                          departmentId: did,
-                                          semesterId: currentSemesterId,
-                                          batchId: isAllBatches(selectedBatch)
-                                              ? null
-                                              : selectedBatch?.id,
-                                        ),
+                          ),
+                        )
+                      else
+                        _SemesterButton(
+                          semesters: filteredSemesters,
+                          selectedSemester: selectedSemester,
+                        ),
+                    ],
+                  ),
+                ),
+
+                // ── White rounded container ─────────────────────────────
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.scaffoldBackgroundColor,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(RadiusToken.xxxl),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(RadiusToken.xxxl),
+                      ),
+                      child: (() {
+                        final uid = user.information.universityId;
+                        final did = user.information.departmentId;
+                        if (uid == null ||
+                            uid.isEmpty ||
+                            did == null ||
+                            did.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: .center,
+                              children: [
+                                Icon(
+                                  LucideIcons.userX,
+                                  size: 48,
+                                  color: context.colors.textSubtle,
+                                ),
+                                const SizedBox(height: Spacing.lg),
+                                const Text('User profile incomplete'),
+                                const SizedBox(height: Spacing.sm),
+                                TextButton(
+                                  onPressed: () => ref.invalidate(userProvider),
+                                  child: const Text('Retry'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return ref
+                            .watch(
+                              coursesProvider(
+                                universityId: uid,
+                                departmentId: did,
+                                semesterId: currentSemesterId,
+                                batchId: isAllBatches(selectedBatch)
+                                    ? null
+                                    : selectedBatch?.id,
+                              ),
+                            )
+                            .when(
+                              loading: () => const Center(
+                                child: CupertinoActivityIndicator(),
+                              ),
+                              error: (e, _) => Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(Spacing.xxl),
+                                  child: Column(
+                                    mainAxisAlignment: .center,
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: 48,
+                                        color: context.colors.danger,
                                       ),
-                                      icon: const Icon(Icons.refresh, size: 18),
-                                      label: const Text('Retry'),
-                                    ),
-                                  ],
+                                      const SizedBox(height: Spacing.lg),
+                                      Text('Error: $e', textAlign: .center),
+                                      const SizedBox(height: Spacing.lg),
+                                      ElevatedButton.icon(
+                                        onPressed: () => ref.invalidate(
+                                          coursesProvider(
+                                            universityId: uid,
+                                            departmentId: did,
+                                            semesterId: currentSemesterId,
+                                            batchId: isAllBatches(selectedBatch)
+                                                ? null
+                                                : selectedBatch?.id,
+                                          ),
+                                        ),
+                                        icon: const Icon(
+                                          Icons.refresh,
+                                          size: 18,
+                                        ),
+                                        label: const Text('Retry'),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            data: (coursesList) {
-                              Future<void> refresh() async {
-                                ref.invalidate(
-                                  coursesProvider(
-                                    universityId: uid,
-                                    departmentId: did,
-                                    semesterId: currentSemesterId,
-                                    batchId: isAllBatches(selectedBatch)
-                                        ? null
-                                        : selectedBatch?.id,
-                                  ),
-                                );
-                                await ref.read(
-                                  coursesProvider(
-                                    universityId: uid,
-                                    departmentId: did,
-                                    semesterId: currentSemesterId,
-                                    batchId: isAllBatches(selectedBatch)
-                                        ? null
-                                        : selectedBatch?.id,
-                                  ).future,
-                                );
-                              }
+                              data: (coursesList) {
+                                Future<void> refresh() async {
+                                  ref.invalidate(
+                                    coursesProvider(
+                                      universityId: uid,
+                                      departmentId: did,
+                                      semesterId: currentSemesterId,
+                                      batchId: isAllBatches(selectedBatch)
+                                          ? null
+                                          : selectedBatch?.id,
+                                    ),
+                                  );
+                                  await ref.read(
+                                    coursesProvider(
+                                      universityId: uid,
+                                      departmentId: did,
+                                      semesterId: currentSemesterId,
+                                      batchId: isAllBatches(selectedBatch)
+                                          ? null
+                                          : selectedBatch?.id,
+                                    ).future,
+                                  );
+                                }
 
-                              if (coursesList.isEmpty) {
+                                if (coursesList.isEmpty) {
+                                  return RefreshIndicator(
+                                    onRefresh: refresh,
+                                    child: ListView(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      children: [
+                                        SizedBox(
+                                          height: 200,
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  LucideIcons.bookOpen,
+                                                  size: 48,
+                                                  color:
+                                                      context.colors.textSubtle,
+                                                ),
+                                                const SizedBox(
+                                                  height: Spacing.lg,
+                                                ),
+                                                const Text(
+                                                  'No courses available',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+
+                                final Map<String, List<Course>>
+                                coursesByCategory = {};
+                                for (final course in coursesList) {
+                                  final category =
+                                      course.courseCategory?.name ??
+                                      course.courseCategoryId ??
+                                      'Unknown';
+                                  coursesByCategory
+                                      .putIfAbsent(category, () => [])
+                                      .add(course);
+                                }
+
+                                final categories =
+                                    coursesByCategory.keys.toList()..sort();
+
                                 return RefreshIndicator(
                                   onRefresh: refresh,
                                   child: ListView(
                                     physics:
                                         const AlwaysScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      Spacing.sm,
+                                      Spacing.sm,
+                                      Spacing.sm,
+                                      Spacing.lg,
+                                    ),
                                     children: [
-                                      SizedBox(
-                                        height: 200,
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                LucideIcons.bookOpen,
-                                                size: 48,
-                                                color:
-                                                    context.colors.textSubtle,
-                                              ),
-                                              const SizedBox(
-                                                height: Spacing.lg,
-                                              ),
-                                              const Text(
-                                                'No courses available',
-                                              ),
-                                            ],
-                                          ),
+                                      ...categories.map(
+                                        (cat) => CourseCard(
+                                          courseCategory: cat,
+                                          courses: coursesByCategory[cat]!,
+                                          selectedBatch:
+                                              isAllBatches(selectedBatch)
+                                              ? ''
+                                              : (selectedBatch?.slug ??
+                                                    selectedBatch?.id ??
+                                                    ''),
+                                          selectedSemester: currentSemesterName,
                                         ),
                                       ),
+                                      const BannerAdWidget(),
                                     ],
                                   ),
                                 );
-                              }
-
-                              final Map<String, List<Course>>
-                              coursesByCategory = {};
-                              for (final course in coursesList) {
-                                final category =
-                                    course.courseCategory?.name ??
-                                    course.courseCategoryId ??
-                                    'Unknown';
-                                coursesByCategory
-                                    .putIfAbsent(category, () => [])
-                                    .add(course);
-                              }
-
-                              final categories = coursesByCategory.keys.toList()
-                                ..sort();
-
-                              return RefreshIndicator(
-                                onRefresh: refresh,
-                                child: ListView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  padding: const EdgeInsets.fromLTRB(
-                                    Spacing.sm,
-                                    Spacing.sm,
-                                    Spacing.sm,
-                                    Spacing.lg,
-                                  ),
-                                  children: [
-                                    ...categories.map(
-                                      (cat) => CourseCard(
-                                        courseCategory: cat,
-                                        courses: coursesByCategory[cat]!,
-                                        selectedBatch:
-                                            isAllBatches(selectedBatch)
-                                            ? ''
-                                            : (selectedBatch?.slug ??
-                                                  selectedBatch?.id ??
-                                                  ''),
-                                        selectedSemester: currentSemesterName,
-                                      ),
-                                    ),
-                                    const BannerAdWidget(),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                    }()),
+                              },
+                            );
+                      }()),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -450,7 +451,7 @@ class _SemesterButton extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.md,
-          vertical: Spacing.sm,
+          vertical: Spacing.xs,
         ),
         decoration: BoxDecoration(
           color: context.colors.surface.withValues(alpha: 0.15),
@@ -559,32 +560,9 @@ class _SemesterButton extends ConsumerWidget {
                   const SizedBox(height: Spacing.lg),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(RadiusToken.lg),
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => searchText = v),
-                        decoration: InputDecoration(
-                          hintText: 'Search level...',
-                          hintStyle: TextStyle(
-                            color: context.colors.textSubtle,
-                            fontSize: FontSizeToken.base,
-                          ),
-                          prefixIcon: Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: context.colors.textSubtle,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: Spacing.md,
-                          ),
-                        ),
-                      ),
+                    child: InlineSearchBar(
+                      hintText: 'Search level...',
+                      onChanged: (v) => setState(() => searchText = v),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),
@@ -640,7 +618,7 @@ class _BatchButton extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.md,
-          vertical: Spacing.sm,
+          vertical: Spacing.xs,
         ),
         decoration: BoxDecoration(
           color: context.colors.surface.withValues(alpha: 0.15),
@@ -744,32 +722,9 @@ class _BatchButton extends ConsumerWidget {
                   const SizedBox(height: Spacing.lg),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(RadiusToken.lg),
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => searchText = v),
-                        decoration: InputDecoration(
-                          hintText: 'Search batch...',
-                          hintStyle: TextStyle(
-                            color: context.colors.textSubtle,
-                            fontSize: FontSizeToken.base,
-                          ),
-                          prefixIcon: Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: context.colors.textSubtle,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: Spacing.md,
-                          ),
-                        ),
-                      ),
+                    child: InlineSearchBar(
+                      hintText: 'Search batch...',
+                      onChanged: (v) => setState(() => searchText = v),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),

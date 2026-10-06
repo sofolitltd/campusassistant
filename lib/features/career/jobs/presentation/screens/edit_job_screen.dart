@@ -241,7 +241,7 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
                           TextButton.icon(
                             onPressed: _pickFiles,
                             icon: const Icon(LucideIcons.filePlus, size: 16),
-                            label: const Text('Add files'),
+                            label: const Text('Add Files'),
                           ),
                         ],
                       ),
@@ -279,7 +279,7 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
                             backgroundColor: cs.primary,
                             foregroundColor: cs.onPrimary,
                           ),
-                          child: const Text('Save changes'),
+                          child: const Text('Save Changes'),
                         ),
                       ),
                       const SizedBox(height: Spacing.lg),

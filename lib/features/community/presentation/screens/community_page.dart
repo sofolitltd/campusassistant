@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -41,149 +42,120 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final primaryColor = theme.appColors.primary;
 
-    return Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: false,
-        title: Text(
-          'Community',
-          style: TextStyle(
-            color: context.colors.onPrimary,
-            fontWeight: .bold,
-            fontSize: FontSizeToken.xxl,
-          ),
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: Icon(
-              LucideIcons.moreVertical,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: false,
+          title: Text(
+            'Community',
+            style: TextStyle(
               color: context.colors.onPrimary,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.xxl,
             ),
-            color: isDark ? theme.cardColor : context.colors.onPrimary,
-            onSelected: (value) {
-              if (value == 'liked') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const _CommunityListScreen(
-                      scope: 'liked',
-                      title: 'Liked Posts',
-                    ),
-                  ),
-                );
-              } else if (value == 'saved') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const _CommunityListScreen(
-                      scope: 'saved',
-                      title: 'Saved Posts',
-                    ),
-                  ),
-                );
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                value: 'liked',
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.heart, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text('Liked Posts'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'saved',
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.bookmark, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text('Saved Posts'),
-                  ],
-                ),
-              ),
-            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: Spacing.sm),
-            child: GestureDetector(
-              onTap: () =>
-                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: context.colors.surface.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(Spacing.xs),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                  child: Image.asset('assets/images/logo.png', fit: .contain),
+          actions: [
+            IconButton(
+              tooltip: 'Liked Posts',
+              visualDensity: VisualDensity.compact,
+              icon: Icon(LucideIcons.heart, color: context.colors.onPrimary),
+              onPressed: () => _openList('liked', 'Liked Posts'),
+            ),
+            IconButton(
+              tooltip: 'Saved Posts',
+              visualDensity: VisualDensity.compact,
+              icon: Icon(LucideIcons.bookmark, color: context.colors.onPrimary),
+              onPressed: () => _openList('saved', 'Saved Posts'),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                right: Spacing.md,
+                left: Spacing.sm,
+              ),
+              child: GestureDetector(
+                onTap: () =>
+                    ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(Spacing.xs),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    child: Image.asset('assets/images/logo.png', fit: .contain),
+                  ),
                 ),
               ),
             ),
+          ],
+        ),
+        body: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxxl),
+            ),
           ),
-        ],
-      ),
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: isDark
-              ? theme.scaffoldBackgroundColor
-              : context.colors.surfaceAlt,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(RadiusToken.xxxl),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxxl),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.sm,
+                  ),
+                  child: SectionTabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Batch'),
+                      Tab(text: 'Department'),
+                      Tab(text: 'University'),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _CommunityFeed(scope: 'Batch', tabIndex: 0),
+                      _CommunityFeed(scope: 'Department', tabIndex: 1),
+                      _CommunityFeed(scope: 'University', tabIndex: 2),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(RadiusToken.xxxl),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  Spacing.lg,
-                  Spacing.lg,
-                  Spacing.lg,
-                  Spacing.sm,
-                ),
-                child: SectionTabBar(
-                  controller: _tabController,
-                  tabs: const [
-                    Tab(text: 'Batch'),
-                    Tab(text: 'Department'),
-                    Tab(text: 'University'),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _CommunityFeed(scope: 'Batch', tabIndex: 0),
-                    _CommunityFeed(scope: 'Department', tabIndex: 1),
-                    _CommunityFeed(scope: 'University', tabIndex: 2),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showCreatePostDialog,
+          backgroundColor: primaryColor,
+          child: Icon(LucideIcons.plus, color: context.colors.onPrimary),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreatePostDialog,
-        backgroundColor: primaryColor,
-        child: Icon(LucideIcons.plus, color: context.colors.onPrimary),
+    );
+  }
+
+  void _openList(String scope, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _CommunityListScreen(scope: scope, title: title),
       ),
     );
   }

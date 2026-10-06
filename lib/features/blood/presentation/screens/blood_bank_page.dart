@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/app_choice_chip.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/numbered_pagination.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/utils/constants.dart';
@@ -43,6 +45,65 @@ class _BloodBankState extends ConsumerState<BloodBank>
     setState(() => _currentPage = 1);
   }
 
+  void _openBloodFilter() {
+    final colors = context.colors;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: colors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxxl),
+        ),
+      ),
+      builder: (sheetContext) => Consumer(
+        builder: (context, ref, _) {
+          final selected = ref.watch(bloodBankSelectedGroupProvider);
+          void pick(String? group) {
+            ref.read(bloodBankSelectedGroupProvider.notifier).update(group);
+            setState(() => _currentPage = 1);
+            Navigator.pop(sheetContext);
+          }
+
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(Spacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Blood group',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  Wrap(
+                    spacing: Spacing.sm,
+                    runSpacing: Spacing.sm,
+                    children: [
+                      AppChoiceChip(
+                        label: 'All',
+                        selected: selected == null,
+                        onTap: () => pick(null),
+                      ),
+                      for (final group in kBloodGroup)
+                        AppChoiceChip(
+                          label: group,
+                          selected: selected == group,
+                          onTap: () => pick(group),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   void _setPage(int page) => setState(() => _currentPage = page);
 
   @override
@@ -58,11 +119,15 @@ class _BloodBankState extends ConsumerState<BloodBank>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return CustomHeaderLayout(
+      searchAtBottom: true,
       title: 'Blood Bank',
       searchHint: 'Search donor name...',
       onSearchChanged: _onSearchChanged,
-      searchTrailing: _BloodGroupDropdown(
-        onChanged: () => setState(() => _currentPage = 1),
+      searchAction: GlassCircleButton(
+        icon: LucideIcons.slidersHorizontal,
+        tooltip: 'Filter by blood group',
+        active: ref.watch(bloodBankSelectedGroupProvider) != null,
+        onTap: _openBloodFilter,
       ),
       body: Column(
         children: [
@@ -98,21 +163,6 @@ class _BloodBankState extends ConsumerState<BloodBank>
 
                 return Column(
                   children: [
-                    // Count indicator
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.lg,
-                        vertical: Spacing.sm,
-                      ),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Showing ${state.students.length} / ${state.total}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: .bold,
-                          color: context.colors.textMuted,
-                        ),
-                      ),
-                    ),
                     Expanded(
                       child: ListView.separated(
                         padding: EdgeInsets.fromLTRB(
@@ -294,7 +344,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
               child: Text(
                 p.bloodGroup,
                 style: TextStyle(
-                  color: context.colors.danger,
+                  color: context.colors.onDanger,
                   fontWeight: .bold,
                   fontSize: FontSizeToken.sm,
                 ),
@@ -302,77 +352,6 @@ class _BloodBankState extends ConsumerState<BloodBank>
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Blood group filter dropdown used as trailing widget in the search bar.
-class _BloodGroupDropdown extends ConsumerWidget {
-  const _BloodGroupDropdown({required this.onChanged});
-
-  final VoidCallback onChanged;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedBlood = ref.watch(bloodBankSelectedGroupProvider);
-
-    return Theme(
-      data: Theme.of(context).copyWith(canvasColor: context.colors.onPrimary),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String?>(
-          value: selectedBlood,
-          hint: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-            child: Text(
-              'Blood',
-              style: TextStyle(
-                color: context.colors.textMuted,
-                fontSize: FontSizeToken.sm,
-                fontWeight: .w600,
-              ),
-            ),
-          ),
-          icon: const Padding(
-            padding: EdgeInsets.only(right: Spacing.md),
-            child: Icon(LucideIcons.chevronDown, size: 12),
-          ),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-                child: Text(
-                  'All',
-                  style: TextStyle(
-                    fontSize: FontSizeToken.sm,
-                    color: context.colors.text,
-                  ),
-                ),
-              ),
-            ),
-            ...kBloodGroup.map(
-              (group) => DropdownMenuItem<String?>(
-                value: group,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-                  child: Text(
-                    group,
-                    style: TextStyle(
-                      fontSize: FontSizeToken.sm,
-                      fontWeight: .bold,
-                      color: context.colors.danger,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-          onChanged: (val) {
-            ref.read(bloodBankSelectedGroupProvider.notifier).update(val);
-            onChanged();
-          },
-        ),
       ),
     );
   }

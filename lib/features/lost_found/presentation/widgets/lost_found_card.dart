@@ -30,118 +30,148 @@ class LostFoundCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      clipBehavior: .antiAlias,
+    final c = context.colors;
+    final isLost = item.type == LostFoundType.lost;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+        border: Border.all(color: c.border),
+        boxShadow: [
+          BoxShadow(
+            color: c.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: InkWell(
+        borderRadius: BorderRadius.circular(RadiusToken.md),
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: .start,
-          children: [
-            AspectRatio(
-              aspectRatio: 4 / 3,
-              child: item.imageUrls.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: ApiEndpoints.resolveImageUrl(
-                        item.imageUrls.first,
-                      ),
-                      fit: .cover,
-                      errorWidget: (context, url, error) => Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.image_not_supported_outlined),
-                      ),
-                    )
-                  : Container(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        item.type == LostFoundType.lost
-                            ? Icons.search_off
-                            : Icons.check_circle_outline,
-                        size: 36,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(Spacing.md),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Spacing.sm,
-                          vertical: Spacing.xxs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: item.type == LostFoundType.lost
-                              ? context.colors.warning
-                              : context.colors.primary,
-                          borderRadius: BorderRadius.circular(RadiusToken.xs),
-                        ),
-                        child: Text(
-                          item.type == LostFoundType.lost ? 'LOST' : 'FOUND',
-                          style: TextStyle(
-                            color: context.colors.onPrimary,
-                            fontSize: FontSizeToken.xxs,
-                            fontWeight: .bold,
+        child: Padding(
+          padding: const EdgeInsets.all(Spacing.md),
+          child: Row(
+            crossAxisAlignment: .start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(RadiusToken.sm),
+                child: SizedBox(
+                  width: 92,
+                  height: 92,
+                  child: item.imageUrls.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: ApiEndpoints.resolveImageUrl(
+                            item.imageUrls.first,
+                          ),
+                          fit: .cover,
+                          errorWidget: (context, url, error) => Container(
+                            color: c.surfaceAlt,
+                            child: Icon(
+                              Icons.image_not_supported_outlined,
+                              color: c.borderStrong,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          color: c.surfaceAlt,
+                          child: Icon(
+                            isLost
+                                ? Icons.search_off
+                                : Icons.check_circle_outline,
+                            size: 32,
+                            color: c.borderStrong,
                           ),
                         ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _statusColor(context),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: Spacing.sm),
-                  Text(
-                    item.title,
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: .bold,
-                    ),
-                  ),
-                  if (item.location.isNotEmpty) ...[
-                    const SizedBox(height: Spacing.xxs),
+                ),
+              ),
+              const SizedBox(width: Spacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 12,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: Spacing.xxs),
-                        Expanded(
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Spacing.sm,
+                            vertical: Spacing.xxs,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isLost ? c.warning : c.primary,
+                            borderRadius: BorderRadius.circular(RadiusToken.xs),
+                          ),
                           child: Text(
-                            item.location,
-                            maxLines: 1,
-                            overflow: .ellipsis,
-                            style: theme.textTheme.bodySmall,
+                            isLost ? 'LOST' : 'FOUND',
+                            style: TextStyle(
+                              color: c.onPrimary,
+                              fontSize: FontSizeToken.xxs,
+                              fontWeight: .bold,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: _statusColor(context),
+                            shape: BoxShape.circle,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                  const SizedBox(height: Spacing.xxs),
-                  Text(
-                    timeago.format(item.createdAt),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: FontSizeToken.xxs,
+                    const SizedBox(height: Spacing.sm),
+                    Text(
+                      item.title,
+                      maxLines: 1,
+                      overflow: .ellipsis,
+                      style: const TextStyle(
+                        fontWeight: .w700,
+                        fontSize: FontSizeToken.base,
+                      ),
                     ),
-                  ),
-                ],
+                    if (item.location.isNotEmpty) ...[
+                      const SizedBox(height: Spacing.xs),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 13,
+                            color: c.textMuted,
+                          ),
+                          const SizedBox(width: Spacing.xxs),
+                          Expanded(
+                            child: Text(
+                              item.location,
+                              maxLines: 1,
+                              overflow: .ellipsis,
+                              style: TextStyle(
+                                color: c.textMuted,
+                                fontSize: FontSizeToken.sm,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: Spacing.xs),
+                    Text(
+                      timeago.format(item.createdAt),
+                      style: TextStyle(
+                        color: c.textSubtle,
+                        fontSize: FontSizeToken.xs,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(top: Spacing.xs),
+                child: Icon(Icons.chevron_right, size: 18, color: c.textSubtle),
+              ),
+            ],
+          ),
         ),
       ),
     );

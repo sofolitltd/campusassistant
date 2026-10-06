@@ -8,6 +8,7 @@ import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '../providers/reward_providers.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -40,7 +41,9 @@ class _RewardPageState extends ConsumerState<RewardPage> {
       if (!watched) {
         messenger.showSnackBar(
           const SnackBar(
-            content: Text('Ad not available right now. Please try again shortly.'),
+            content: Text(
+              'Ad not available right now. Please try again shortly.',
+            ),
           ),
         );
         return;
@@ -71,9 +74,7 @@ class _RewardPageState extends ConsumerState<RewardPage> {
     final transactionsAsync = ref.watch(rewardTransactionsProvider(_offset));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rewards'),
-      ),
+      appBar: AppBar(title: const Text('Rewards')),
       body: ListView(
         padding: const EdgeInsets.all(Spacing.lg),
         children: [
@@ -94,24 +95,20 @@ class _RewardPageState extends ConsumerState<RewardPage> {
           ),
           if (!kIsWeb && !ref.watch(isProUserProvider)) ...[
             const SizedBox(height: Spacing.lg),
-            _WatchAdCard(
-              isLoading: _isClaiming,
-              onPressed: _watchAdForReward,
-            ),
+            _WatchAdCard(isLoading: _isClaiming, onPressed: _watchAdForReward),
           ],
           if (!ref.watch(isProUserProvider)) ...[
             const SizedBox(height: Spacing.md),
             _GoProCard(
-              onPressed: () =>
-                  context.pushNamed(AppRoute.subscription.name),
+              onPressed: () => context.pushNamed(AppRoute.subscription.name),
             ),
           ],
           const SizedBox(height: Spacing.xxl),
           Text(
             'Transaction History',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: .w600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: .w600),
           ),
           const SizedBox(height: Spacing.md),
           transactionsAsync.when(
@@ -130,9 +127,8 @@ class _RewardPageState extends ConsumerState<RewardPage> {
                         const SizedBox(height: Spacing.sm),
                         Text(
                           'No transactions yet',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: context.colors.textSubtle,
-                              ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: context.colors.textSubtle),
                         ),
                       ],
                     ),
@@ -151,7 +147,7 @@ class _RewardPageState extends ConsumerState<RewardPage> {
                         onPressed: () {
                           setState(() => _offset += 20);
                         },
-                        child: const Text('Load more'),
+                        child: const Text('Load More'),
                       ),
                     ),
                 ],
@@ -182,61 +178,119 @@ class _BalanceCard extends StatelessWidget {
   const _BalanceCard({required this.balance});
 
   @override
-  Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.all(Spacing.xxl),
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
-            context.colors.warning,
-            context.colors.warning.withValues(alpha: 0.7),
+            AccentToken.goldLight,
+            AccentToken.gold,
+            AccentToken.goldDeep,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        borderRadius: BorderRadius.circular(RadiusToken.xl),
+        boxShadow: [
+          BoxShadow(
+            color: AccentToken.gold.withValues(alpha: 0.35),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: Column(
+      child: Stack(
         children: [
-          Icon(
-            LucideIcons.coins,
-            size: 48,
-            color: context.colors.bg,
+          Positioned(
+            right: -24,
+            top: -16,
+            child: Icon(
+              LucideIcons.trophy,
+              size: 150,
+              color: AccentToken.onGold.withValues(alpha: 0.10),
+            ),
           ),
-          const SizedBox(height: Spacing.md),
-          Text(
-            '${balance.balance}',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: context.colors.bg,
-                  fontWeight: .bold,
+          Padding(
+            padding: const EdgeInsets.all(Spacing.xl),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(Spacing.sm),
+                      decoration: BoxDecoration(
+                        color: AccentToken.onGold.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        LucideIcons.trophy,
+                        size: 20,
+                        color: AccentToken.onGold,
+                      ),
+                    ),
+                    const SizedBox(width: Spacing.sm),
+                    Text(
+                      'Reward Balance',
+                      style: textTheme.titleSmall?.copyWith(
+                        color: AccentToken.onGold,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
-          ),
-          const SizedBox(height: Spacing.xs),
-          Text(
-            'Reward Coins',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: context.colors.bg.withValues(alpha: 0.9),
+                const SizedBox(height: Spacing.lg),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      '${balance.balance}',
+                      style: textTheme.displayMedium?.copyWith(
+                        color: AccentToken.onGold,
+                        fontWeight: FontWeight.w800,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(width: Spacing.sm),
+                    Text(
+                      'coins',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: AccentToken.onGold.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
                 ),
-          ),
-          const SizedBox(height: Spacing.lg),
-          Row(
-            mainAxisAlignment: .center,
-            children: [
-              _Stat(
-                label: 'Earned',
-                value: '${balance.lifetimeEarned}',
-                color: context.colors.bg,
-              ),
-              const SizedBox(width: Spacing.xxxl),
-              _Stat(
-                label: 'Spent',
-                value: '${balance.lifetimeSpent}',
-                color: context.colors.bg,
-              ),
-            ],
+                const SizedBox(height: Spacing.xl),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _Stat(
+                        icon: LucideIcons.arrowUp,
+                        label: 'Earned',
+                        value: '${balance.lifetimeEarned}',
+                      ),
+                    ),
+                    const SizedBox(width: Spacing.md),
+                    Expanded(
+                      child: _Stat(
+                        icon: LucideIcons.arrowDown,
+                        label: 'Spent',
+                        value: '${balance.lifetimeSpent}',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
 }
 
 class _WatchAdCard extends StatelessWidget {
@@ -247,59 +301,60 @@ class _WatchAdCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.all(Spacing.md),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(color: context.colors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(Spacing.sm),
-            decoration: BoxDecoration(
-              color: context.colors.warning.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(RadiusToken.md),
-            ),
-            child: Icon(
-              LucideIcons.circlePlay,
-              color: context.colors.warning,
-            ),
+    padding: const EdgeInsets.all(Spacing.md),
+    decoration: BoxDecoration(
+      color: context.colors.surface,
+      borderRadius: BorderRadius.circular(RadiusToken.lg),
+      border: Border.all(color: context.colors.border),
+    ),
+    child: Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(Spacing.sm),
+          decoration: BoxDecoration(
+            color: AccentToken.gold.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
           ),
-          const SizedBox(width: Spacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  'Watch an ad, earn 1 coin',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: .w600,
-                      ),
+          child: Icon(LucideIcons.circlePlay, color: AccentToken.gold),
+        ),
+        const SizedBox(width: Spacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text(
+                'Watch an ad, earn 1 coin',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
+              ),
+              Text(
+                'Watch a short video to get a free reward coin.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: context.colors.textSubtle,
                 ),
-                Text(
-                  'Watch a short video to get a free reward coin.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.colors.textSubtle,
-                      ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: Spacing.sm),
-          ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            child: isLoading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Watch'),
+        ),
+        const SizedBox(width: Spacing.sm),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(0, 36),
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
           ),
-        ],
-      ),
-    );
+          onPressed: isLoading ? null : onPressed,
+          child: isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Watch'),
+        ),
+      ],
+    ),
+  );
 }
 
 class _GoProCard extends StatelessWidget {
@@ -309,84 +364,102 @@ class _GoProCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.all(Spacing.md),
+    padding: const EdgeInsets.all(Spacing.md),
+    decoration: BoxDecoration(
+      color: context.colors.surface,
+      borderRadius: BorderRadius.circular(RadiusToken.lg),
+      border: Border.all(color: context.colors.border),
+    ),
+    child: Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(Spacing.sm),
+          decoration: BoxDecoration(
+            color: context.colors.success.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(RadiusToken.md),
+          ),
+          child: Icon(LucideIcons.crown, color: context.colors.success),
+        ),
+        const SizedBox(width: Spacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text(
+                'Skip the ads, go Pro',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
+              ),
+              Text(
+                'Unlimited ad-free downloads, no coins needed.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: context.colors.textSubtle,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: Spacing.sm),
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(0, 36),
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+          ),
+          onPressed: onPressed,
+          child: const Text('Go Pro'),
+        ),
+      ],
+    ),
+  );
+}
+
+class _Stat extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _Stat({required this.icon, required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.md,
+        vertical: Spacing.sm,
+      ),
       decoration: BoxDecoration(
-        color: context.colors.surface,
+        color: AccentToken.onGold.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(color: context.colors.border),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(Spacing.sm),
-            decoration: BoxDecoration(
-              color: context.colors.success.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(RadiusToken.md),
-            ),
-            child: Icon(
-              LucideIcons.crown,
-              color: context.colors.success,
-            ),
-          ),
-          const SizedBox(width: Spacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  'Skip the ads, go Pro',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: .w600,
-                      ),
-                ),
-                Text(
-                  'Unlimited ad-free downloads, no coins needed.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.colors.textSubtle,
-                      ),
-                ),
-              ],
-            ),
-          ),
+          Icon(icon, size: 16, color: AccentToken.onGold),
           const SizedBox(width: Spacing.sm),
-          OutlinedButton(
-            onPressed: onPressed,
-            child: const Text('Go Pro'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: textTheme.titleMedium?.copyWith(
+                  color: AccentToken.onGold,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                label,
+                style: textTheme.bodySmall?.copyWith(
+                  color: AccentToken.onGold.withValues(alpha: 0.75),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
-}
-
-class _Stat extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color color;
-
-  const _Stat({
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) => Column(
-      children: [
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: color,
-                fontWeight: .bold,
-              ),
-        ),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: color.withValues(alpha: 0.8),
-              ),
-        ),
-      ],
-    );
+  }
 }
 
 class _TransactionTile extends StatelessWidget {
@@ -415,18 +488,14 @@ class _TransactionTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(Spacing.sm),
               decoration: BoxDecoration(
-                color: (isEarn
-                        ? context.colors.success
-                        : context.colors.danger)
+                color: (isEarn ? context.colors.success : context.colors.danger)
                     .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(RadiusToken.md),
               ),
               child: Icon(
                 isEarn ? LucideIcons.arrowUp : LucideIcons.arrowDown,
                 size: 16,
-                color: isEarn
-                    ? context.colors.success
-                    : context.colors.danger,
+                color: isEarn ? context.colors.success : context.colors.danger,
               ),
             ),
             const SizedBox(width: Spacing.md),
@@ -436,9 +505,9 @@ class _TransactionTile extends StatelessWidget {
                 children: [
                   Text(
                     transaction.description ?? '',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: .w500,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(fontWeight: .w500),
                     maxLines: 1,
                     overflow: .ellipsis,
                   ),
@@ -446,8 +515,8 @@ class _TransactionTile extends StatelessWidget {
                     Text(
                       dateStr,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: context.colors.textSubtle,
-                          ),
+                        color: context.colors.textSubtle,
+                      ),
                     ),
                 ],
               ),
@@ -455,11 +524,9 @@ class _TransactionTile extends StatelessWidget {
             Text(
               '${isEarn ? '+' : '-'}${transaction.amount}',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: .bold,
-                    color: isEarn
-                        ? context.colors.success
-                        : context.colors.danger,
-                  ),
+                fontWeight: .bold,
+                color: isEarn ? context.colors.success : context.colors.danger,
+              ),
             ),
           ],
         ),

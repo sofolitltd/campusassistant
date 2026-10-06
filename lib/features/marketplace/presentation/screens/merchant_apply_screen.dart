@@ -215,7 +215,7 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
         OutlinedButton.icon(
           onPressed: () => setState(() => _addingNew = true),
           icon: const Icon(LucideIcons.plus, size: 18),
-          label: const Text('Add another business'),
+          label: const Text('Add Another Business'),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, ControlToken.height),
             side: BorderSide(color: colors.primary),

@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import '/core/widgets/search_outline.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/widgets/search_clear_suffix.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
@@ -82,6 +84,7 @@ class _InlineSearchBarState extends State<InlineSearchBar> {
       onChanged: _onSearchChanged,
       style: TextStyle(fontSize: widget.dense ? 13 : 14, color: colors.text),
       decoration: InputDecoration(
+        enabledBorder: searchOutline(context),
         hintText: widget.hintText,
         hintStyle: TextStyle(
           color: colors.textSubtle,
@@ -98,19 +101,8 @@ class _InlineSearchBarState extends State<InlineSearchBar> {
         prefixIconConstraints: widget.dense
             ? const BoxConstraints(minWidth: 32)
             : const BoxConstraints(minWidth: 40),
-        suffixIcon: _hasText
-            ? GestureDetector(
-                onTap: _onClear,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-                  child: Icon(
-                    widget.dense ? Icons.clear : LucideIcons.circleX,
-                    size: widget.dense ? 14 : 16,
-                    color: colors.textSubtle,
-                  ),
-                ),
-              )
-            : null,
+        suffixIcon: SearchClearSuffix(visible: _hasText, onClear: _onClear),
+        suffixIconConstraints: SearchClearSuffix.constraints(),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '/features/batch/domain/entities/batch.dart';
 import '/features/student/domain/entities/student.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/cache/cache_manager.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
@@ -24,13 +27,38 @@ class AllStudentsPage extends ConsumerStatefulWidget {
 
 class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
     with TickerProviderStateMixin {
+  // Sent to the server (name / student ID / phone / email). Client-side
+  // filtering only saw the 20 rows of the current page.
   String _searchQuery = '';
+  Timer? _searchDebounce;
   TabController? _tabController;
   static const int _pageSize = 20;
   final Map<String, int> _currentPage = {};
 
+  /// Pull-to-refresh: drops the cached pages (they're served without hitting
+  /// the network while fresh) and re-fetches the visible ones.
+  Future<void> _refresh() async {
+    await ref.read(cacheManagerProvider).invalidate('student_page');
+    ref.invalidate(studentsWithTotalAllPaginatedProvider);
+    ref.invalidate(studentsWithTotalByBatchPaginatedProvider);
+    ref.invalidate(studentCountAllProvider);
+    ref.invalidate(studentCountByBatchProvider);
+  }
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      setState(() {
+        _searchQuery = value.trim();
+        _currentPage.clear();
+      });
+    });
+  }
+
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _tabController?.dispose();
     super.dispose();
   }
@@ -89,8 +117,9 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
 
         return CustomHeaderLayout(
           title: 'All Students',
-          searchHint: 'Search by name, ID, or hall...',
-          onSearchChanged: (value) => setState(() => _searchQuery = value),
+          searchAtBottom: true,
+          searchHint: 'Search by name, ID or phone...',
+          onSearchChanged: _onSearchChanged,
           body: Column(
             children: [
               Padding(
@@ -163,6 +192,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         departmentId: batch.departmentId,
         limit: _pageSize,
         offset: offset,
+        search: _searchQuery.isEmpty ? null : _searchQuery,
       ),
     );
 
@@ -171,19 +201,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         final totalCount = paginated.total;
         final students = paginated.students;
 
-        final displayedStudents = _searchQuery.isEmpty
-            ? _sortByRollNumber(students)
-            : _sortByRollNumber(
-                students.where((s) {
-                  final query = _searchQuery.toLowerCase();
-                  return s.name.toLowerCase().contains(query) ||
-                      s.studentId.toLowerCase().contains(query) ||
-                      s.hall.toLowerCase().contains(query) ||
-                      s.batch.toLowerCase().contains(query) ||
-                      s.session.toLowerCase().contains(query) ||
-                      s.blood.toLowerCase().contains(query);
-                }).toList(),
-              );
+        final displayedStudents = _sortByRollNumber(students);
 
         if (displayedStudents.isEmpty && _searchQuery.isEmpty) {
           return _buildEmptyState(isDark);
@@ -226,6 +244,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         batchId: batch.id,
         limit: _pageSize,
         offset: offset,
+        search: _searchQuery.isEmpty ? null : _searchQuery,
       ),
     );
 
@@ -235,19 +254,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         final students = paginated.students;
 
         // Client-side search within current page (or fetch all for search)
-        final displayedStudents = _searchQuery.isEmpty
-            ? _sortByRollNumber(students, ascending: true)
-            : _sortByRollNumber(
-                students.where((s) {
-                  final query = _searchQuery.toLowerCase();
-                  return s.name.toLowerCase().contains(query) ||
-                      s.studentId.toLowerCase().contains(query) ||
-                      s.hall.toLowerCase().contains(query) ||
-                      s.batch.toLowerCase().contains(query) ||
-                      s.session.toLowerCase().contains(query) ||
-                      s.blood.toLowerCase().contains(query);
-                }).toList(),
-              );
+        final displayedStudents = _sortByRollNumber(students, ascending: true);
 
         if (displayedStudents.isEmpty && _searchQuery.isEmpty) {
           return _buildEmptyState(isDark);
@@ -349,32 +356,36 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
             ),
           ),
         Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, totalPages > 1 ? 0 : 8),
-            itemCount: totalPages > 1 ? students.length + 1 : students.length,
-            separatorBuilder: (_, index) {
-              if (index == students.length - 1 && totalPages > 1) {
-                return const SizedBox(height: 0);
-              }
-              return const SizedBox(height: Spacing.md);
-            },
-            itemBuilder: (_, index) {
-              if (totalPages > 1 && index == students.length) {
-                return _buildPagination(
-                  currentPage: currentPage,
-                  totalPages: totalPages,
-                  totalItems: totalItems,
-                  startIndex: startIndex,
-                  endIndex: endIndex,
-                  isDark: isDark,
-                  onPageChanged: onPageChanged,
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(16, 8, 16, totalPages > 1 ? 0 : 8),
+              itemCount: totalPages > 1 ? students.length + 1 : students.length,
+              separatorBuilder: (_, index) {
+                if (index == students.length - 1 && totalPages > 1) {
+                  return const SizedBox(height: 0);
+                }
+                return const SizedBox(height: Spacing.md);
+              },
+              itemBuilder: (_, index) {
+                if (totalPages > 1 && index == students.length) {
+                  return _buildPagination(
+                    currentPage: currentPage,
+                    totalPages: totalPages,
+                    totalItems: totalItems,
+                    startIndex: startIndex,
+                    endIndex: endIndex,
+                    isDark: isDark,
+                    onPageChanged: onPageChanged,
+                  );
+                }
+                return StudentCard(
+                  studentModel: students[index],
+                  selectedBatch: batchName,
                 );
-              }
-              return StudentCard(
-                studentModel: students[index],
-                selectedBatch: batchName,
-              );
-            },
+              },
+            ),
           ),
         ),
       ],
@@ -434,10 +445,6 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
       padding: const EdgeInsets.symmetric(
         horizontal: Spacing.lg,
         vertical: Spacing.sm,
-      ),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceAlt,
-        border: Border(top: BorderSide(color: context.colors.border)),
       ),
       child: Column(
         children: [
@@ -523,14 +530,12 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: isSelected
-              ? (context.colors.info)
-              : (context.colors.onPrimary),
+          color: isSelected ? context.colors.primary : context.colors.surface,
           borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(
             color: isSelected
-                ? context.colors.info
-                : (context.colors.borderStrong),
+                ? context.colors.primary
+                : context.colors.borderStrong,
           ),
         ),
         child: Center(

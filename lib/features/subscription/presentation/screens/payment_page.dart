@@ -229,7 +229,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                       ElevatedButton.icon(
                         onPressed: _startPaymentProcess,
                         icon: const Icon(LucideIcons.refreshCw),
-                        label: const Text('Try again'),
+                        label: const Text('Try Again'),
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(200, ControlToken.height),
                         ),

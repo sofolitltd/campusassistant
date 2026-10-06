@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../providers/alumni_provider.dart';
+import '/core/widgets/search_clear_suffix.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -92,29 +93,17 @@ class _FloatingSearchBarState extends ConsumerState<FloatingSearchBar> {
                         ),
                       ),
                       prefixIconConstraints: const BoxConstraints(minWidth: 32),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _searchController.clear();
-                                ref
-                                    .read(alumniSearchQueryProvider.notifier)
-                                    .update('');
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: Spacing.md,
-                                ),
-                                child: Icon(
-                                  LucideIcons.circleX,
-                                  size: 14,
-                                  color: context.colors.textSubtle,
-                                ),
-                              ),
-                            )
-                          : null,
-                      suffixIconConstraints: const BoxConstraints(
-                        maxHeight: 28,
+                      suffixIcon: SearchClearSuffix(
+                        visible: _searchController.text.isNotEmpty,
+                        size: 32,
+                        onClear: () {
+                          _searchController.clear();
+                          ref
+                              .read(alumniSearchQueryProvider.notifier)
+                              .update('');
+                        },
                       ),
+                      suffixIconConstraints: SearchClearSuffix.constraints(32),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(

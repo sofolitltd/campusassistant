@@ -36,27 +36,60 @@ class EarningsTab extends ConsumerWidget {
         padding: const EdgeInsets.all(Spacing.lg),
         children: [
           earnings.when(
-            loading: () => const Padding(padding: EdgeInsets.all(40), child: Center(child: CupertinoActivityIndicator())),
+            loading: () => const Padding(
+              padding: EdgeInsets.all(40),
+              child: Center(child: CupertinoActivityIndicator()),
+            ),
             error: (_, _) => Padding(
               padding: const EdgeInsets.all(Spacing.xxl),
-              child: Center(child: Text('Could not load your balance.', style: TextStyle(color: c.textSubtle))),
+              child: Center(
+                child: Text(
+                  'Could not load your balance.',
+                  style: TextStyle(color: c.textSubtle),
+                ),
+              ),
             ),
             data: (e) => _BalanceCard(earnings: e, merchantId: merchantId),
           ),
           const SizedBox(height: Spacing.md),
           _FeeCard(merchantId: merchantId),
           const SizedBox(height: Spacing.xl),
-          Text('Payouts', style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: FontWeight.w800, color: c.text)),
+          Text(
+            'Payouts',
+            style: TextStyle(
+              fontSize: FontSizeToken.lg,
+              fontWeight: FontWeight.w800,
+              color: c.text,
+            ),
+          ),
           const SizedBox(height: Spacing.sm),
           payouts.when(
-            loading: () => const Padding(padding: EdgeInsets.all(Spacing.lg), child: Center(child: CupertinoActivityIndicator())),
-            error: (_, _) => Text('Could not load payouts.', style: TextStyle(color: c.textSubtle)),
+            loading: () => const Padding(
+              padding: EdgeInsets.all(Spacing.lg),
+              child: Center(child: CupertinoActivityIndicator()),
+            ),
+            error: (_, _) => Text(
+              'Could not load payouts.',
+              style: TextStyle(color: c.textSubtle),
+            ),
             data: (list) => list.isEmpty
-                ? Text('No payouts yet. Your first request will appear here.', style: TextStyle(color: c.textSubtle))
-                : Column(children: [for (final p in list) _PayoutRow(payout: p)]),
+                ? Text(
+                    'No payouts yet. Your first request will appear here.',
+                    style: TextStyle(color: c.textSubtle),
+                  )
+                : Column(
+                    children: [for (final p in list) _PayoutRow(payout: p)],
+                  ),
           ),
           const SizedBox(height: Spacing.xl),
-          Text('Completed sales', style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: FontWeight.w800, color: c.text)),
+          Text(
+            'Completed sales',
+            style: TextStyle(
+              fontSize: FontSizeToken.lg,
+              fontWeight: FontWeight.w800,
+              color: c.text,
+            ),
+          ),
           const SizedBox(height: Spacing.sm),
           orders.when(
             loading: () => const SizedBox.shrink(),
@@ -64,7 +97,10 @@ class EarningsTab extends ConsumerWidget {
             data: (list) {
               final done = list.where((o) => o.status == 'delivered').toList();
               if (done.isEmpty) {
-                return Text('Delivered orders and what you earn from them will show here.', style: TextStyle(color: c.textSubtle));
+                return Text(
+                  'Delivered orders and what you earn from them will show here.',
+                  style: TextStyle(color: c.textSubtle),
+                );
               }
               return Column(
                 children: [
@@ -83,17 +119,30 @@ class EarningsTab extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Order #${o.id.substring(0, o.id.length < 8 ? o.id.length : 8)}',
-                                    style: TextStyle(fontWeight: FontWeight.w700, color: c.text)),
+                                Text(
+                                  'Order #${o.id.substring(0, o.id.length < 8 ? o.id.length : 8)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: c.text,
+                                  ),
+                                ),
                                 Text(
                                   '${o.items.length} item${o.items.length == 1 ? '' : 's'} · gross ৳${o.items.fold<int>(0, (s, i) => s + i.totalPrice)}',
-                                  style: TextStyle(fontSize: 11.5, color: c.textSubtle),
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    color: c.textSubtle,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          Text('৳${o.items.fold<double>(0, (s, i) => s + i.netPayout).toStringAsFixed(0)}',
-                              style: TextStyle(fontWeight: FontWeight.w800, color: c.primary)),
+                          Text(
+                            '৳${o.items.fold<double>(0, (s, i) => s + i.netPayout).toStringAsFixed(0)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: c.primary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -130,19 +179,30 @@ class _BalanceCardState extends ConsumerState<_BalanceCard> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Available ৳${e.balance} · minimum ৳${e.minPayout}',
-                style: TextStyle(color: ctx.colors.textMuted, fontSize: FontSizeToken.md)),
+            Text(
+              'Available ৳${e.balance} · minimum ৳${e.minPayout}',
+              style: TextStyle(
+                color: ctx.colors.textMuted,
+                fontSize: FontSizeToken.md,
+              ),
+            ),
             const SizedBox(height: Spacing.md),
             TextField(
               controller: controller,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(prefixText: '৳ ', labelText: 'Amount'),
+              decoration: const InputDecoration(
+                prefixText: '৳ ',
+                labelText: 'Amount',
+              ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, int.tryParse(controller.text)),
             child: const Text('Request'),
@@ -157,12 +217,18 @@ class _BalanceCardState extends ConsumerState<_BalanceCard> {
       await requestPayout(ref, merchantId: widget.merchantId, amount: amount);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payout requested. We will send it to your payout account.')),
+          const SnackBar(
+            content: Text(
+              'Payout requested. We will send it to your payout account.',
+            ),
+          ),
         );
       }
     } catch (err) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(apiErrorMessage(err))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(apiErrorMessage(err))));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -183,25 +249,46 @@ class _BalanceCardState extends ConsumerState<_BalanceCard> {
     return Container(
       padding: const EdgeInsets.all(Spacing.xl),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [c.primary, c.primaryPressed], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: LinearGradient(
+          colors: [c.primary, c.primaryPressed],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(RadiusToken.xl),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Available balance', style: TextStyle(color: c.onPrimary.withValues(alpha: 0.85), fontSize: FontSizeToken.sm, fontWeight: FontWeight.w600)),
+          Text(
+            'Available balance',
+            style: TextStyle(
+              color: c.onPrimary.withValues(alpha: 0.85),
+              fontSize: FontSizeToken.sm,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: Spacing.xs),
-          Text('৳${NumberFormat.decimalPattern().format(e.balance)}',
-              style: TextStyle(color: c.onPrimary, fontSize: 32, fontWeight: FontWeight.w800)),
+          Text(
+            '৳${NumberFormat.decimalPattern().format(e.balance)}',
+            style: TextStyle(
+              color: c.onPrimary,
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
           const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
               onPressed: canRequest ? _request : null,
               icon: _busy
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Icon(LucideIcons.banknote, size: 16),
-              label: const Text('Request payout'),
+              label: const Text('Request Payout'),
               style: FilledButton.styleFrom(
                 backgroundColor: c.onPrimary,
                 foregroundColor: c.primary,
@@ -212,7 +299,13 @@ class _BalanceCardState extends ConsumerState<_BalanceCard> {
           ),
           if (hint != null) ...[
             const SizedBox(height: Spacing.sm),
-            Text(hint, style: TextStyle(color: c.onPrimary.withValues(alpha: 0.85), fontSize: 11.5)),
+            Text(
+              hint,
+              style: TextStyle(
+                color: c.onPrimary.withValues(alpha: 0.85),
+                fontSize: 11.5,
+              ),
+            ),
           ],
         ],
       ),
@@ -240,14 +333,21 @@ class _PayoutRow extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: Spacing.sm),
       padding: const EdgeInsets.all(Spacing.md),
-      decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(RadiusToken.lg), border: Border.all(color: c.border)),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(color: c.border),
+      ),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('৳${payout.amount}', style: TextStyle(fontWeight: FontWeight.w800, color: c.text)),
+                Text(
+                  '৳${payout.amount}',
+                  style: TextStyle(fontWeight: FontWeight.w800, color: c.text),
+                ),
                 Text(
                   '${DateFormat('d MMM y').format(payout.createdAt)} · $detail',
                   maxLines: 1,
@@ -258,9 +358,22 @@ class _PayoutRow extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.xs),
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(RadiusToken.full)),
-            child: Text(label, style: TextStyle(color: fg, fontSize: FontSizeToken.xs, fontWeight: FontWeight.w700)),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.md,
+              vertical: Spacing.xs,
+            ),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(RadiusToken.full),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: fg,
+                fontSize: FontSizeToken.xs,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -281,7 +394,7 @@ class _FeeCard extends ConsumerWidget {
 
     final text = info.onPromo
         ? 'You pay ${formatPercent(info.rate)} commission for ${info.promoDaysLeft} more day${info.promoDaysLeft == 1 ? '' : 's'}, '
-            'then ${formatPercent(info.baseRate)}.'
+              'then ${formatPercent(info.baseRate)}.'
         : 'Your commission is ${formatPercent(info.baseRate)} of each delivered sale.';
     return Container(
       padding: const EdgeInsets.all(Spacing.md),
@@ -291,9 +404,18 @@ class _FeeCard extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          Icon(info.onPromo ? LucideIcons.sparkles : LucideIcons.percent, size: 18, color: info.onPromo ? c.success : c.textMuted),
+          Icon(
+            info.onPromo ? LucideIcons.sparkles : LucideIcons.percent,
+            size: 18,
+            color: info.onPromo ? c.success : c.textMuted,
+          ),
           const SizedBox(width: Spacing.sm),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 12.5, color: c.text, height: 1.35))),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12.5, color: c.text, height: 1.35),
+            ),
+          ),
         ],
       ),
     );

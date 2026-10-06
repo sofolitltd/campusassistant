@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -440,65 +441,82 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          backgroundColor: context.colors.surfaceAlt,
-          appBar: _selectMode ? _selectAppBar(isDark) : _chatAppBar(isDark),
-          body: Column(
-            children: [
-              Expanded(
-                child: s.initialLoading
-                    ? const Center(child: CupertinoActivityIndicator())
-                    : NotificationListener<ScrollNotification>(
-                        onNotification: (notification) {
-                          if (notification is ScrollEndNotification) {
-                            final max =
-                                _scrollController.position.maxScrollExtent;
-                            final current = _scrollController.position.pixels;
-                            _autoScroll = (max - current) < 100;
-                          }
-                          return false;
-                        },
-                        child: _buildMessages(
-                          userAsync.asData?.value?.id,
-                          isDark,
-                          s,
-                        ),
-                      ),
+        child: HeaderGradientBackdrop(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: _selectMode ? _selectAppBar(isDark) : _chatAppBar(isDark),
+            body: Container(
+              decoration: BoxDecoration(
+                color: context.colors.surfaceAlt,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(RadiusToken.xxxl),
+                ),
               ),
-              if (s.loadingMore)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: Spacing.xs),
-                  child: CupertinoActivityIndicator(),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(RadiusToken.xxxl),
                 ),
-              if (_selectMode)
-                SelectBar(
-                  count: _selectedMsgIds.length,
-                  onDelete: _deleteSelectedMessages,
-                  onCancel: _exitSelectMode,
-                  isDark: isDark,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: s.initialLoading
+                          ? const Center(child: CupertinoActivityIndicator())
+                          : NotificationListener<ScrollNotification>(
+                              onNotification: (notification) {
+                                if (notification is ScrollEndNotification) {
+                                  final max = _scrollController
+                                      .position
+                                      .maxScrollExtent;
+                                  final current =
+                                      _scrollController.position.pixels;
+                                  _autoScroll = (max - current) < 100;
+                                }
+                                return false;
+                              },
+                              child: _buildMessages(
+                                userAsync.asData?.value?.id,
+                                isDark,
+                                s,
+                              ),
+                            ),
+                    ),
+                    if (s.loadingMore)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: Spacing.xs),
+                        child: CupertinoActivityIndicator(),
+                      ),
+                    if (_selectMode)
+                      SelectBar(
+                        count: _selectedMsgIds.length,
+                        onDelete: _deleteSelectedMessages,
+                        onCancel: _exitSelectMode,
+                        isDark: isDark,
+                      ),
+                    if (!_selectMode && _replyingText != null)
+                      ReplyBanner(
+                        text: _replyingText!,
+                        onCancel: _cancelReply,
+                        isDark: isDark,
+                      ),
+                    if (!_selectMode && _editingMsgId != null)
+                      EditBanner(
+                        oldText: _editingOldText ?? '',
+                        onCancel: _cancelEdit,
+                        isDark: isDark,
+                      ),
+                    if (!_selectMode)
+                      ChatInput(
+                        controller: _messageController,
+                        isDark: isDark,
+                        onSend: _sendMessage,
+                        isSending: _isSending,
+                        hasText: _hasText,
+                        isMultiline: _isMultiline,
+                      ),
+                  ],
                 ),
-              if (!_selectMode && _replyingText != null)
-                ReplyBanner(
-                  text: _replyingText!,
-                  onCancel: _cancelReply,
-                  isDark: isDark,
-                ),
-              if (!_selectMode && _editingMsgId != null)
-                EditBanner(
-                  oldText: _editingOldText ?? '',
-                  onCancel: _cancelEdit,
-                  isDark: isDark,
-                ),
-              if (!_selectMode)
-                ChatInput(
-                  controller: _messageController,
-                  isDark: isDark,
-                  onSend: _sendMessage,
-                  isSending: _isSending,
-                  hasText: _hasText,
-                  isMultiline: _isMultiline,
-                ),
-            ],
+              ),
+            ),
           ),
         ),
       ),
@@ -506,7 +524,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   AppBar _selectAppBar(bool isDark) => AppBar(
-    backgroundColor: context.colors.surface,
+    backgroundColor: Colors.transparent,
+    foregroundColor: context.colors.onPrimary,
     elevation: 0,
     scrolledUnderElevation: 0,
     leading: IconButton(
@@ -515,12 +534,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     ),
     title: Text(
       '${_selectedMsgIds.length} selected',
-      style: GoogleFonts.outfit(fontWeight: .w600, fontSize: FontSizeToken.lg),
+      style: GoogleFonts.outfit(
+        fontWeight: .w600,
+        fontSize: FontSizeToken.lg,
+        color: context.colors.onPrimary,
+      ),
     ),
   );
 
   AppBar _chatAppBar(bool isDark) => AppBar(
-    backgroundColor: context.colors.surface,
+    backgroundColor: Colors.transparent,
+    foregroundColor: context.colors.onPrimary,
     elevation: 0,
     scrolledUnderElevation: 0,
     titleSpacing: 0,
@@ -532,11 +556,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       children: [
         CircleAvatar(
           radius: 16,
-          backgroundColor: context.colors.primary.withValues(alpha: 0.2),
+          backgroundColor: context.colors.onPrimary.withValues(alpha: 0.2),
           child: Text(
             widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
             style: TextStyle(
-              color: context.colors.primary,
+              color: context.colors.onPrimary,
               fontWeight: .bold,
               fontSize: FontSizeToken.base,
             ),
@@ -551,6 +575,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               style: GoogleFonts.outfit(
                 fontWeight: .w600,
                 fontSize: FontSizeToken.lg,
+                color: context.colors.onPrimary,
               ),
             ),
             if (_typingUsers.isNotEmpty)
@@ -558,7 +583,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 'typing...',
                 style: TextStyle(
                   fontSize: FontSizeToken.sm,
-                  color: context.colors.primary,
+                  color: context.colors.onPrimary.withValues(alpha: 0.85),
                   fontStyle: .italic,
                 ),
               ),

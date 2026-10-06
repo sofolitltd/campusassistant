@@ -207,7 +207,7 @@ class RequestConfirmationPage extends ConsumerWidget {
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: Text(
-                          'Not now',
+                          'Not Now',
                           style: TextStyle(color: context.colors.textSubtle),
                         ),
                       ),

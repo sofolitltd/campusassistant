@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
+import '/core/widgets/app_choice_chip.dart';
+import '/core/widgets/glass_search_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -12,7 +14,6 @@ import '../../../jobs/presentation/widgets/shared_job_card.dart';
 import '../../../presentation/models/career_feed_item.dart';
 import '../providers/circular_provider.dart';
 import 'circular_card.dart';
-import '/core/theme/tokens/app_font_size.dart';
 
 enum _DateFilter { latest, upcoming, outdated }
 
@@ -106,14 +107,14 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                           spacing: Spacing.sm,
                           runSpacing: Spacing.sm,
                           children: [
-                            _FilterChip(
+                            AppChoiceChip(
                               label: 'All',
                               selected: tempCategoryId == null,
                               onTap: () =>
                                   setSheetState(() => tempCategoryId = null),
                             ),
                             for (final category in categories)
-                              _FilterChip(
+                              AppChoiceChip(
                                 label: category.name,
                                 selected: tempCategoryId == category.id,
                                 onTap: () => setSheetState(
@@ -135,26 +136,26 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                         spacing: Spacing.sm,
                         runSpacing: Spacing.sm,
                         children: [
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'All',
                             selected: tempScope == null,
                             onTap: () => setSheetState(() => tempScope = null),
                           ),
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'Batch',
                             selected: tempScope == CareerJobScope.batch,
                             onTap: () => setSheetState(
                               () => tempScope = CareerJobScope.batch,
                             ),
                           ),
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'Department',
                             selected: tempScope == CareerJobScope.department,
                             onTap: () => setSheetState(
                               () => tempScope = CareerJobScope.department,
                             ),
                           ),
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'University',
                             selected: tempScope == CareerJobScope.university,
                             onTap: () => setSheetState(
@@ -175,21 +176,21 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                         spacing: Spacing.sm,
                         runSpacing: Spacing.sm,
                         children: [
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'Latest',
                             selected: tempDate == _DateFilter.latest,
                             onTap: () => setSheetState(
                               () => tempDate = _DateFilter.latest,
                             ),
                           ),
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'Upcoming',
                             selected: tempDate == _DateFilter.upcoming,
                             onTap: () => setSheetState(
                               () => tempDate = _DateFilter.upcoming,
                             ),
                           ),
-                          _FilterChip(
+                          AppChoiceChip(
                             label: 'Expired',
                             selected: tempDate == _DateFilter.outdated,
                             onTap: () => setSheetState(
@@ -250,55 +251,6 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            Spacing.lg,
-            Spacing.sm,
-            Spacing.lg,
-            0,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(LucideIcons.search),
-                  ),
-                  onSubmitted: (value) =>
-                      setState(() => _search = value.trim()),
-                ),
-              ),
-              const SizedBox(width: Spacing.sm),
-              GestureDetector(
-                onTap: _openFilterSheet,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.md,
-                    vertical: Spacing.md,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: cs.outline),
-                    borderRadius: RadiusToken.circular(RadiusToken.sm),
-                  ),
-                  child: Badge(
-                    isLabelVisible: activeCount > 0,
-                    label: Text(
-                      '$activeCount',
-                      style: const TextStyle(fontSize: FontSizeToken.xxs),
-                    ),
-                    child: Icon(
-                      LucideIcons.slidersHorizontal,
-                      size: 20,
-                      color: cs.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: Spacing.sm),
         Expanded(
           child: feedAsync.when(
             data: (items) {
@@ -344,47 +296,18 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
             error: (err, _) => Center(child: Text('Failed to load: $err')),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.md,
-          vertical: Spacing.sm,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? cs.primaryContainer : cs.surfaceContainerLow,
-          borderRadius: RadiusToken.circular(RadiusToken.sm),
-          border: Border.all(color: selected ? cs.primary : cs.outlineVariant),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: FontSizeToken.md,
-            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-            color: selected ? cs.onPrimaryContainer : cs.onSurface,
+        GlassSearchDock(
+          hint: 'Search circulars...',
+          debounceMilliseconds: 500,
+          onChanged: (value) => setState(() => _search = value.trim()),
+          action: GlassCircleButton(
+            icon: LucideIcons.slidersHorizontal,
+            tooltip: 'Filter',
+            active: activeCount > 0,
+            onTap: _openFilterSheet,
           ),
         ),
-      ),
+      ],
     );
   }
 }

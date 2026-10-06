@@ -25,100 +25,83 @@ class ChatInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     final canSend = hasText && !isSending;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-        Spacing.md,
-        Spacing.xs,
-        Spacing.md,
-        Spacing.md,
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.transparent : context.colors.surface,
-          borderRadius: BorderRadius.circular(RadiusToken.xxxl),
-          border: Border.all(color: context.colors.borderStrong),
-          boxShadow: [
-            BoxShadow(
-              color: context.colors.shadow.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Spacing.md,
+          Spacing.sm,
+          Spacing.md,
+          Spacing.md,
         ),
         child: Row(
-          crossAxisAlignment: isMultiline
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Align(
-              alignment: isMultiline
-                  ? Alignment.bottomCenter
-                  : Alignment.center,
-              child: IconButton(
-                icon: Icon(
-                  Icons.add_circle_outline,
-                  color: context.colors.textMuted,
-                  size: 22,
-                ),
-                onPressed: () {},
-              ),
-            ),
             Expanded(
-              child: TextField(
-                controller: controller,
-                textInputAction: .newline,
-                minLines: 1,
-                maxLines: 5,
-                keyboardType: .multiline,
-                style: TextStyle(
-                  color: context.colors.text,
-                  fontSize: FontSizeToken.lg,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Type a message',
-                  hintStyle: TextStyle(
-                    color: context.colors.textSubtle,
-                    fontSize: FontSizeToken.lg,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                decoration: BoxDecoration(
+                  color: c.surface,
+                  borderRadius: BorderRadius.circular(
+                    isMultiline ? RadiusToken.xl : RadiusToken.xxxl,
                   ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: Spacing.md,
+                  border: Border.all(color: c.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: c.shadow.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: controller,
+                  textInputAction: .newline,
+                  textCapitalization: TextCapitalization.sentences,
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: .multiline,
+                  style: TextStyle(color: c.text, fontSize: FontSizeToken.lg),
+                  decoration: InputDecoration(
+                    hintText: 'Type a message',
+                    hintStyle: TextStyle(
+                      color: c.textSubtle,
+                      fontSize: FontSizeToken.lg,
+                    ),
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: Spacing.md,
+                    ),
                   ),
                 ),
               ),
             ),
-            Align(
-              alignment: isMultiline
-                  ? Alignment.bottomCenter
-                  : Alignment.center,
-              child: Container(
-                width: 28,
-                height: 28,
-                margin: const EdgeInsets.only(right: Spacing.xs),
-                decoration: BoxDecoration(
-                  color: canSend
-                      ? context.colors.primary
-                      : context.colors.textSubtle,
-                  borderRadius: BorderRadius.circular(RadiusToken.xxl),
-                ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: isSending
-                      ? SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CupertinoActivityIndicator(
-                            color: context.colors.onPrimary,
+            const SizedBox(width: Spacing.sm),
+            Material(
+              color: canSend ? c.primary : c.border,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: canSend ? onSend : null,
+                child: SizedBox(
+                  width: 46,
+                  height: 46,
+                  child: Center(
+                    child: isSending
+                        ? CupertinoActivityIndicator(color: c.onPrimary)
+                        : Icon(
+                            Icons.arrow_upward_rounded,
+                            color: canSend ? c.onPrimary : c.textSubtle,
+                            size: 22,
                           ),
-                        )
-                      : Icon(
-                          Icons.arrow_upward_rounded,
-                          color: context.colors.onPrimary,
-                          size: 16,
-                        ),
-                  onPressed: canSend ? onSend : null,
+                  ),
                 ),
               ),
             ),

@@ -50,12 +50,12 @@ class StaffRepositoryImpl implements StaffRepository {
 
     // 2. Fall back to cache.
     try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: cacheKey,
-      );
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
       if (cachedData.isNotEmpty) {
         return Right(
-          cachedData.map((json) => StaffModel.fromJson(json).toEntity()).toList(),
+          cachedData
+              .map((json) => StaffModel.fromJson(json).toEntity())
+              .toList(),
         );
       }
     } catch (e) {

@@ -9,7 +9,7 @@ abstract class RewardRepository {
   Future<Either<Failure, RewardBalance>> earn();
   Future<Either<Failure, Map<String, dynamic>>> spend(String resourceId);
   Future<Either<Failure, ({List<RewardTransaction> data, int count})>>
-      getTransactions({int limit, int offset});
+  getTransactions({int limit, int offset});
   Future<Either<Failure, int>> getCost(String resourceId);
 }
 
@@ -39,9 +39,7 @@ class RewardRepositoryImpl implements RewardRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> spend(
-    String resourceId,
-  ) async {
+  Future<Either<Failure, Map<String, dynamic>>> spend(String resourceId) async {
     try {
       final result = await remoteDataSource.spend(resourceId);
       return Right(result);
@@ -52,10 +50,12 @@ class RewardRepositoryImpl implements RewardRepository {
 
   @override
   Future<Either<Failure, ({List<RewardTransaction> data, int count})>>
-      getTransactions({int limit = 20, int offset = 0}) async {
+  getTransactions({int limit = 20, int offset = 0}) async {
     try {
-      final result =
-          await remoteDataSource.getTransactions(limit: limit, offset: offset);
+      final result = await remoteDataSource.getTransactions(
+        limit: limit,
+        offset: offset,
+      );
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

@@ -85,7 +85,7 @@ class CourseCardContent extends StatelessWidget {
       padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.md + 2),
         border: Border.all(color: context.colors.border),
         boxShadow: [
           BoxShadow(
@@ -103,9 +103,15 @@ class CourseCardContent extends StatelessWidget {
               color: isDark
                   ? theme.colorScheme.surface.withValues(alpha: 0.5)
                   : context.colors.primary,
-              border: Border.all(color: context.colors.border),
-              borderRadius: BorderRadius.circular(RadiusToken.sm),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
             ),
+            // Border drawn over the image with the same radius, so the image
+            // and its border share one curve.
+            foregroundDecoration: BoxDecoration(
+              border: Border.all(color: context.colors.border),
+              borderRadius: BorderRadius.circular(RadiusToken.md),
+            ),
+            clipBehavior: Clip.antiAlias,
             width: 80,
             height: 90,
             child: CachedNetworkImage(
@@ -115,7 +121,7 @@ class CourseCardContent extends StatelessWidget {
                   color: isDark
                       ? theme.colorScheme.surface.withValues(alpha: 0.5)
                       : context.colors.primary,
-                  borderRadius: BorderRadius.circular(RadiusToken.sm),
+                  borderRadius: BorderRadius.circular(RadiusToken.md),
                   image: DecorationImage(image: imageProvider, fit: .cover),
                 ),
               ),
@@ -126,7 +132,7 @@ class CourseCardContent extends StatelessWidget {
                   color: isDark
                       ? theme.colorScheme.surface.withValues(alpha: 0.5)
                       : context.colors.primary,
-                  borderRadius: BorderRadius.circular(RadiusToken.sm),
+                  borderRadius: BorderRadius.circular(RadiusToken.md),
                   image: const DecorationImage(
                     fit: .cover,
                     image: AssetImage('assets/images/placeholder.png'),
@@ -169,7 +175,7 @@ class CourseCardContent extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                          : context.colors.surfaceAlt,
+                          : context.colors.surfaceAlt.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(RadiusToken.sm),
                     ),
                     child: Row(

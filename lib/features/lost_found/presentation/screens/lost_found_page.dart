@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '/core/widgets/app_choice_chip.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/routes/app_route.dart';
@@ -63,12 +64,17 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
     final categoriesAsync = ref.watch(lostFoundCategoriesProvider);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.pushNamed(AppRoute.lostFoundCreate.name),
-        icon: const Icon(Icons.add),
-        label: const Text('Post item'),
+      // Lifted clear of the bottom search capsule.
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 60),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.pushNamed(AppRoute.lostFoundCreate.name),
+          icon: const Icon(Icons.add),
+          label: const Text('Post item'),
+        ),
       ),
       body: CustomHeaderLayout(
+        searchAtBottom: true,
         title: 'Lost & Found',
         searchHint: 'Search title, location...',
         onSearchChanged: _onSearchChanged,
@@ -93,30 +99,26 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
             if (_activeTab != LostFoundFeedTab.myPosts)
               categoriesAsync.when(
                 data: (categories) => SizedBox(
-                  height: 40,
-                  child: ListView(
+                  height: AppChoiceChip.rowHeight,
+                  child: ListView.separated(
                     scrollDirection: .horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
-                    children: [
-                      _CategoryChip(
-                        label: 'All',
-                        selected: _categoryId == null,
-                        onTap: () => setState(() => _categoryId = null),
-                      ),
-                      for (final category in categories)
-                        Padding(
-                          padding: const EdgeInsets.only(left: Spacing.sm),
-                          child: _CategoryChip(
-                            label: category.name,
-                            selected: _categoryId == category.id,
-                            onTap: () =>
-                                setState(() => _categoryId = category.id),
-                          ),
-                        ),
-                    ],
+                    itemCount: categories.length + 1,
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(width: Spacing.sm),
+                    itemBuilder: (context, index) {
+                      final category = index == 0
+                          ? null
+                          : categories[index - 1];
+                      return AppChoiceChip(
+                        label: category?.name ?? 'All',
+                        selected: _categoryId == category?.id,
+                        onTap: () => setState(() => _categoryId = category?.id),
+                      );
+                    },
                   ),
                 ),
-                loading: () => const SizedBox(height: 40),
+                loading: () => const SizedBox(height: AppChoiceChip.rowHeight),
                 error: (_, _) => const SizedBox.shrink(),
               ),
             const SizedBox(height: Spacing.sm),
@@ -131,7 +133,7 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
                     )),
                   );
                   return feedAsync.when(
-                    data: (items) => _ItemsGrid(items: items),
+                    data: (items) => _ItemsList(items: items),
                     loading: () =>
                         const Center(child: CupertinoActivityIndicator()),
                     error: (err, _) =>
@@ -147,30 +149,9 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
   }
 }
 
-class _CategoryChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _CategoryChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => onTap(),
-    );
-  }
-}
-
-class _ItemsGrid extends StatelessWidget {
+class _ItemsList extends StatelessWidget {
   final List<LostFoundItem> items;
-  const _ItemsGrid({required this.items});
+  const _ItemsList({required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -193,15 +174,10 @@ class _ItemsGrid extends StatelessWidget {
         ),
       );
     }
-    return GridView.builder(
-      padding: const EdgeInsets.all(Spacing.md),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.72,
-      ),
+    return ListView.separated(
+      padding: const EdgeInsets.all(Spacing.lg),
       itemCount: items.length,
+      separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
       itemBuilder: (context, index) {
         final item = items[index];
         return LostFoundCard(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,10 +41,14 @@ class _CareerPageState extends ConsumerState<CareerPage>
   Widget? _buildFab() {
     switch (_tabController.index) {
       case 1:
-        return FloatingActionButton.extended(
-          onPressed: () => context.pushNamed(AppRoute.careerJobCreate.name),
-          icon: const Icon(Icons.add),
-          label: const Text('Add job'),
+        // Lifted clear of the bottom search capsule.
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 60),
+          child: FloatingActionButton.extended(
+            onPressed: () => context.pushNamed(AppRoute.careerJobCreate.name),
+            icon: const Icon(Icons.add),
+            label: const Text('Add job'),
+          ),
         );
       case 2:
         return FloatingActionButton.extended(
@@ -58,89 +63,89 @@ class _CareerPageState extends ConsumerState<CareerPage>
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = context.colors.primary;
-
-    return Scaffold(
-      backgroundColor: primaryColor,
-      floatingActionButton: _buildFab(),
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(
-          'Career',
-          style: TextStyle(
-            fontWeight: .bold,
-            color: context.colors.onPrimary,
-            fontSize: FontSizeToken.xxl,
-          ),
-        ),
+    return HeaderGradientBackdrop(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: Spacing.sm),
-            child: GestureDetector(
-              onTap: () =>
-                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+        floatingActionButton: _buildFab(),
+        appBar: AppBar(
+          centerTitle: false,
+          title: Text(
+            'Career',
+            style: TextStyle(
+              fontWeight: .bold,
+              color: context.colors.onPrimary,
+              fontSize: FontSizeToken.xxl,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: Spacing.md),
+              child: GestureDetector(
+                onTap: () =>
+                    ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(Spacing.xs),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    child: Image.asset('assets/images/logo.png', fit: .contain),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
               child: Container(
-                width: 28,
-                height: 28,
                 decoration: BoxDecoration(
-                  color: context.colors.surface.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
                 ),
-                padding: const EdgeInsets.all(Spacing.xs),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                  child: Image.asset('assets/images/logo.png', fit: .contain),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        Spacing.lg,
+                        Spacing.lg,
+                        Spacing.sm,
+                      ),
+                      child: SectionTabBar(
+                        controller: _tabController,
+                        tabs: const [
+                          Tab(text: 'Circular'),
+                          Tab(text: 'My Jobs'),
+                          Tab(text: 'Reminders'),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: const [
+                          CircularListTab(),
+                          JobsListTab(),
+                          RemindersListTab(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      Spacing.lg,
-                      Spacing.lg,
-                      Spacing.lg,
-                      Spacing.sm,
-                    ),
-                    child: SectionTabBar(
-                      controller: _tabController,
-                      tabs: const [
-                        Tab(text: 'Circular'),
-                        Tab(text: 'My Jobs'),
-                        Tab(text: 'Reminders'),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: const [
-                        CircularListTab(),
-                        JobsListTab(),
-                        RemindersListTab(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

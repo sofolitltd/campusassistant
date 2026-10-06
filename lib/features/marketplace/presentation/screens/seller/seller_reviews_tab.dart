@@ -22,7 +22,12 @@ class SellerReviewsTab extends ConsumerWidget {
     final async = ref.watch(merchantReviewsProvider(merchantId));
     return async.when(
       loading: () => const Center(child: CupertinoActivityIndicator()),
-      error: (_, _) => Center(child: Text('Could not load reviews.', style: TextStyle(color: c.textSubtle))),
+      error: (_, _) => Center(
+        child: Text(
+          'Could not load reviews.',
+          style: TextStyle(color: c.textSubtle),
+        ),
+      ),
       data: (reviews) {
         if (reviews.isEmpty) {
           return Center(
@@ -44,7 +49,8 @@ class SellerReviewsTab extends ConsumerWidget {
           child: ListView.builder(
             padding: const EdgeInsets.all(Spacing.lg),
             itemCount: reviews.length,
-            itemBuilder: (context, i) => _SellerReviewCard(review: reviews[i], merchantId: merchantId),
+            itemBuilder: (context, i) =>
+                _SellerReviewCard(review: reviews[i], merchantId: merchantId),
           ),
         );
       },
@@ -62,27 +68,44 @@ class _SellerReviewCard extends ConsumerWidget {
     final text = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(review.sellerReply.isEmpty ? 'Reply to review' : 'Edit your reply'),
+        title: Text(
+          review.sellerReply.isEmpty ? 'Reply to review' : 'Edit your reply',
+        ),
         content: TextField(
           controller: controller,
           maxLines: 4,
           maxLength: 1000,
           textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(hintText: 'Thank them, or explain what you will do about it'),
+          decoration: const InputDecoration(
+            hintText: 'Thank them, or explain what you will do about it',
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('Post reply')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Post Reply'),
+          ),
         ],
       ),
     );
     controller.dispose();
     if (text == null || !context.mounted) return;
     try {
-      await replyToReview(ref, merchantId: merchantId, reviewId: review.id, reply: text);
+      await replyToReview(
+        ref,
+        merchantId: merchantId,
+        reviewId: review.id,
+        reply: text,
+      );
     } catch (err) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(apiErrorMessage(err))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(apiErrorMessage(err))));
       }
     }
   }
@@ -93,7 +116,11 @@ class _SellerReviewCard extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: Spacing.md),
       padding: const EdgeInsets.all(Spacing.md),
-      decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(RadiusToken.lg), border: Border.all(color: c.border)),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(color: c.border),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -101,8 +128,23 @@ class _SellerReviewCard extends ConsumerWidget {
             children: [
               StarRow(rating: review.rating.toDouble(), size: 14),
               const SizedBox(width: Spacing.sm),
-              Expanded(child: Text(review.reviewerName, style: TextStyle(fontSize: FontSizeToken.sm, fontWeight: FontWeight.w700, color: c.text))),
-              Text(DateFormat.yMMMd().format(review.createdAt), style: TextStyle(fontSize: FontSizeToken.xs, color: c.textSubtle)),
+              Expanded(
+                child: Text(
+                  review.reviewerName,
+                  style: TextStyle(
+                    fontSize: FontSizeToken.sm,
+                    fontWeight: FontWeight.w700,
+                    color: c.text,
+                  ),
+                ),
+              ),
+              Text(
+                DateFormat.yMMMd().format(review.createdAt),
+                style: TextStyle(
+                  fontSize: FontSizeToken.xs,
+                  color: c.textSubtle,
+                ),
+              ),
             ],
           ),
           if (review.comment.isNotEmpty) ...[
@@ -114,8 +156,18 @@ class _SellerReviewCard extends ConsumerWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(Spacing.md),
-              decoration: BoxDecoration(color: c.surfaceAlt, borderRadius: BorderRadius.circular(RadiusToken.md)),
-              child: Text('You: ${review.sellerReply}', style: TextStyle(fontSize: 12.5, color: c.textMuted, height: 1.4)),
+              decoration: BoxDecoration(
+                color: c.surfaceAlt,
+                borderRadius: BorderRadius.circular(RadiusToken.md),
+              ),
+              child: Text(
+                'You: ${review.sellerReply}',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: c.textMuted,
+                  height: 1.4,
+                ),
+              ),
             ),
           ],
           Align(

@@ -34,18 +34,22 @@ final rewardEarnProvider = FutureProvider<RewardBalance>((ref) async {
 });
 
 final rewardTransactionsProvider =
-    FutureProvider.family<({List<RewardTransaction> data, int count}), int>(
-  (ref, offset) async {
-    final repo = ref.watch(rewardRepositoryProvider);
-    final result = await repo.getTransactions(limit: 20, offset: offset);
-    return result.fold(
-      (failure) => throw Exception(failure.message),
-      (data) => data,
-    );
-  },
-);
+    FutureProvider.family<({List<RewardTransaction> data, int count}), int>((
+      ref,
+      offset,
+    ) async {
+      final repo = ref.watch(rewardRepositoryProvider);
+      final result = await repo.getTransactions(limit: 20, offset: offset);
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (data) => data,
+      );
+    });
 
-final rewardCostProvider = FutureProvider.family<int, String>((ref, resourceId) async {
+final rewardCostProvider = FutureProvider.family<int, String>((
+  ref,
+  resourceId,
+) async {
   final repo = ref.watch(rewardRepositoryProvider);
   final result = await repo.getCost(resourceId);
   return result.fold((_) => 1, (cost) => cost);

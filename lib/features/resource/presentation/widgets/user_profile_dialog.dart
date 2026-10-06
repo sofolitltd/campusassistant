@@ -19,20 +19,17 @@ Future<void> showUserProfileDialog(
   required String? userId,
   required String fallbackName,
 }) => showDialog(
-    context: context,
-    builder: (dialogContext) => userId == null
-        ? _FallbackProfileDialog(name: fallbackName)
-        : _UserProfileDialog(userId: userId, fallbackName: fallbackName),
-  );
+  context: context,
+  builder: (dialogContext) => userId == null
+      ? _FallbackProfileDialog(name: fallbackName)
+      : _UserProfileDialog(userId: userId, fallbackName: fallbackName),
+);
 
 class _UserProfileDialog extends ConsumerWidget {
   final String userId;
   final String fallbackName;
 
-  const _UserProfileDialog({
-    required this.userId,
-    required this.fallbackName,
-  });
+  const _UserProfileDialog({required this.userId, required this.fallbackName});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,10 +45,8 @@ class _UserProfileDialog extends ConsumerWidget {
       content: SizedBox(
         width: double.maxFinite,
         child: studentAsync.when(
-          data: (student) => _ProfileBody(
-            student: student,
-            fallbackName: fallbackName,
-          ),
+          data: (student) =>
+              _ProfileBody(student: student, fallbackName: fallbackName),
           loading: () => _LoadingBody(fallbackName: fallbackName),
           error: (_, _) => _FallbackBody(name: fallbackName),
         ),
@@ -81,9 +76,9 @@ class _ProfileBody extends StatelessWidget {
     addRow(LucideIcons.users, 'Batch', s?.batchName);
     addRow(LucideIcons.calendarRange, 'Session', s?.sessionName);
 
-        final studentId = s?.studentId;
-        final imageUrl = s?.imageUrl ?? '';
-        final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    final studentId = s?.studentId;
+    final imageUrl = s?.imageUrl ?? '';
+    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
     return Column(
       mainAxisSize: .min,
@@ -120,18 +115,18 @@ class _ProfileBody extends StatelessWidget {
           const SizedBox(height: Spacing.xs),
           Text(
             studentId,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: context.colors.textMuted,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: context.colors.textMuted),
           ),
         ],
         if (s == null) ...[
           const SizedBox(height: Spacing.xs),
           Text(
             'No profile details available.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: context.colors.textSubtle,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: context.colors.textSubtle),
           ),
         ],
         const SizedBox(height: Spacing.lg),
@@ -191,28 +186,28 @@ class _LoadingBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: const EdgeInsets.all(Spacing.xl),
-      child: Column(
-        mainAxisSize: .min,
-        children: [
-          Text(
-            fallbackName,
-            textAlign: .center,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: .w700,
-              color: context.colors.text,
-            ),
+    padding: const EdgeInsets.all(Spacing.xl),
+    child: Column(
+      mainAxisSize: .min,
+      children: [
+        Text(
+          fallbackName,
+          textAlign: .center,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: .w700,
+            color: context.colors.text,
           ),
-          const SizedBox(height: Spacing.lg),
-          const CircularProgressIndicator(),
-          const SizedBox(height: Spacing.lg),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
+        ),
+        const SizedBox(height: Spacing.lg),
+        const CircularProgressIndicator(),
+        const SizedBox(height: Spacing.lg),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
 }
 
 class _FallbackProfileDialog extends StatelessWidget {

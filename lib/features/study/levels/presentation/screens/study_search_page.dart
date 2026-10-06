@@ -8,6 +8,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/di.dart';
 import '/core/theme/app_colors.dart';
+import '/core/widgets/app_choice_chip.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/course/presentation/screens/course_card.dart'
@@ -47,7 +48,13 @@ const _categories = <(String key, String label)>[
   ('video', 'Video'),
 ];
 
-const _resourceSubtypes = <String>{'note', 'book', 'question', 'syllabus', 'video'};
+const _resourceSubtypes = <String>{
+  'note',
+  'book',
+  'question',
+  'syllabus',
+  'video',
+};
 
 class StudySearchPage extends ConsumerStatefulWidget {
   const StudySearchPage({super.key});
@@ -108,34 +115,35 @@ class _StudySearchPageState extends ConsumerState<StudySearchPage> {
 
   @override
   Widget build(BuildContext context) => CustomHeaderLayout(
-      title: 'Search Study',
-      searchHint: 'Search courses, notes, books...',
-      controller: _controller,
-      onSearchChanged: _onSearchChanged,
-      onClear: () {
-        _debounce?.cancel();
-        setState(() {
-          _query = '';
-          _resultsFuture = null;
-        });
-      },
-      body: Column(
-        children: [
-          const SizedBox(height: Spacing.sm),
-          _StudyCategoryChips(
-            selected: _category,
-            onSelected: (key) {
-              setState(() {
-                _category = key;
-                _resultsFuture = _fetchResults(_query);
-              });
-            },
-          ),
-          const SizedBox(height: Spacing.sm),
-          Expanded(child: _buildBody()),
-        ],
-      ),
-    );
+    glassSearch: true,
+    title: 'Search Study',
+    searchHint: 'Search courses, notes, books...',
+    controller: _controller,
+    onSearchChanged: _onSearchChanged,
+    onClear: () {
+      _debounce?.cancel();
+      setState(() {
+        _query = '';
+        _resultsFuture = null;
+      });
+    },
+    body: Column(
+      children: [
+        const SizedBox(height: Spacing.sm),
+        _StudyCategoryChips(
+          selected: _category,
+          onSelected: (key) {
+            setState(() {
+              _category = key;
+              _resultsFuture = _fetchResults(_query);
+            });
+          },
+        ),
+        const SizedBox(height: Spacing.sm),
+        Expanded(child: _buildBody()),
+      ],
+    ),
+  );
 
   Widget _buildBody() {
     if (_query.trim().length < 2) {
@@ -163,7 +171,10 @@ class _StudySearchPageState extends ConsumerState<StudySearchPage> {
               child: Text(
                 'Something went wrong: ${snapshot.error}',
                 textAlign: .center,
-                style: TextStyle(color: context.colors.danger, fontSize: FontSizeToken.md),
+                style: TextStyle(
+                  color: context.colors.danger,
+                  fontSize: FontSizeToken.md,
+                ),
               ),
             ),
           );
@@ -272,7 +283,12 @@ class _GroupedResultsList extends ConsumerWidget {
           crossAxisAlignment: .start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.md, Spacing.lg, Spacing.sm),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.md,
+                Spacing.lg,
+                Spacing.sm,
+              ),
               child: Text(
                 _typeLabels[type] ?? type,
                 style: TextStyle(
@@ -316,17 +332,12 @@ class _StudyCategoryChips extends StatelessWidget {
   final String selected;
   final ValueChanged<String> onSelected;
 
-  const _StudyCategoryChips({
-    required this.selected,
-    required this.onSelected,
-  });
+  const _StudyCategoryChips({required this.selected, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
-    final appColors = Theme.of(context).appColors;
-
     return SizedBox(
-      height: 30,
+      height: AppChoiceChip.rowHeight,
       child: ListView.separated(
         scrollDirection: .horizontal,
         padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
@@ -334,29 +345,10 @@ class _StudyCategoryChips extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: Spacing.sm),
         itemBuilder: (context, index) {
           final (key, label) = _categories[index];
-          final isSelected = selected == key;
-          return Theme(
-            data: Theme.of(context).copyWith(
-              chipTheme: ChipTheme.of(context).copyWith(
-                checkmarkColor: context.colors.onPrimary,
-              ),
-            ),
-            child: ChoiceChip(
-              showCheckmark: true,
-              label: Text(label),
-              selected: isSelected,
-              onSelected: (_) => onSelected(key),
-              selectedColor: appColors.primary,
-              labelStyle: TextStyle(
-                fontSize: FontSizeToken.sm,
-                color: isSelected ? context.colors.onPrimary : null,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-              labelPadding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: 0),
-              visualDensity: VisualDensity.compact,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+          return AppChoiceChip(
+            label: label,
+            selected: selected == key,
+            onTap: () => onSelected(key),
           );
         },
       ),
@@ -371,20 +363,23 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Spacing.xxl),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(icon, size: 48, color: context.colors.borderStrong),
-            const SizedBox(height: Spacing.md),
-            Text(
-              message,
-              textAlign: .center,
-              style: TextStyle(color: context.colors.textSubtle, fontWeight: .w500),
+    child: Padding(
+      padding: const EdgeInsets.all(Spacing.xxl),
+      child: Column(
+        mainAxisSize: .min,
+        children: [
+          Icon(icon, size: 48, color: context.colors.borderStrong),
+          const SizedBox(height: Spacing.md),
+          Text(
+            message,
+            textAlign: .center,
+            style: TextStyle(
+              color: context.colors.textSubtle,
+              fontWeight: .w500,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    ),
+  );
 }

@@ -546,14 +546,14 @@ class _BuyBar extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onAddToCart,
                   icon: const Icon(LucideIcons.shoppingCart, size: 18),
-                  label: const Text('Add to Cart'),
+                  label: const Text('Add To Cart'),
                 ),
               ),
               const SizedBox(width: Spacing.md),
               Expanded(
                 child: ElevatedButton(
                   onPressed: onBuyNow,
-                  child: const Text('Buy now'),
+                  child: const Text('Buy Now'),
                 ),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '/core/widgets/custom_header_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -158,167 +159,159 @@ class _SuggestClubPageState extends ConsumerState<SuggestClubPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(title: const Text('Suggest a Club')),
-          body: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(Spacing.lg),
+    return CustomHeaderLayout(
+      title: 'Suggest a Club',
+      showSearchBar: false,
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(Spacing.lg),
+          children: [
+            Text(
+              'Know a club or organization that isn\'t listed yet? Suggest it '
+              'here with as much detail as you can — an admin will review it '
+              'before it goes live, and you\'ll be able to manage it '
+              'yourself from "My Clubs" once approved.',
+              style: TextStyle(color: context.colors.textMuted, height: 1.4),
+            ),
+            const SizedBox(height: Spacing.lg),
+            Row(
               children: [
-                Text(
-                  'Know a club or organization that isn\'t listed yet? Suggest it '
-                  'here with as much detail as you can — an admin will review it '
-                  'before it goes live, and you\'ll be able to manage it '
-                  'yourself from "My Clubs" once approved.',
-                  style: TextStyle(
-                    color: context.colors.textMuted,
-                    height: 1.4,
+                Expanded(
+                  child: _ImagePickerBox(
+                    label: 'Logo',
+                    file: _logoFile,
+                    onTap: () => _pickImage(true),
+                    onClear: () => setState(() => _logoFile = null),
                   ),
                 ),
-                const SizedBox(height: Spacing.lg),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _ImagePickerBox(
-                        label: 'Logo',
-                        file: _logoFile,
-                        onTap: () => _pickImage(true),
-                        onClear: () => setState(() => _logoFile = null),
-                      ),
-                    ),
-                    const SizedBox(width: Spacing.md),
-                    Expanded(
-                      child: _ImagePickerBox(
-                        label: 'Banner',
-                        file: _bannerFile,
-                        onTap: () => _pickImage(false),
-                        onClear: () => setState(() => _bannerFile = null),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Club Name'),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    alignLabelWithHint: true,
+                const SizedBox(width: Spacing.md),
+                Expanded(
+                  child: _ImagePickerBox(
+                    label: 'Banner',
+                    file: _bannerFile,
+                    onTap: () => _pickImage(false),
+                    onClear: () => setState(() => _bannerFile = null),
                   ),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
-                ),
-                const SizedBox(height: Spacing.md),
-                SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(
-                      value: 'department',
-                      label: Text('My department'),
-                    ),
-                    ButtonSegment(
-                      value: 'university',
-                      label: Text('University-wide'),
-                    ),
-                  ],
-                  selected: {_clubType},
-                  onSelectionChanged: (s) =>
-                      setState(() => _clubType = s.first),
-                ),
-                const SizedBox(height: Spacing.md),
-                DropdownButtonFormField<String>(
-                  initialValue: _category,
-                  decoration: const InputDecoration(labelText: 'Category'),
-                  items: clubCategories
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (v) => setState(() => _category = v),
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _foundedYearController,
-                  keyboardType: .number,
-                  decoration: const InputDecoration(
-                    labelText: 'Founded Year (optional)',
-                  ),
-                ),
-                const SizedBox(height: Spacing.lg),
-                Text(
-                  'Contact',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
-                ),
-                const SizedBox(height: Spacing.sm),
-                TextFormField(
-                  controller: _contactEmailController,
-                  keyboardType: .emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Contact Email (optional)',
-                  ),
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _contactPhoneController,
-                  keyboardType: .phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Contact Phone (optional)',
-                  ),
-                ),
-                const SizedBox(height: Spacing.lg),
-                Text(
-                  'Social Links',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
-                ),
-                const SizedBox(height: Spacing.sm),
-                TextFormField(
-                  controller: _facebookController,
-                  decoration: const InputDecoration(
-                    labelText: 'Facebook (optional)',
-                  ),
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _instagramController,
-                  decoration: const InputDecoration(
-                    labelText: 'Instagram (optional)',
-                  ),
-                ),
-                const SizedBox(height: Spacing.md),
-                TextFormField(
-                  controller: _linkedinController,
-                  decoration: const InputDecoration(
-                    labelText: 'LinkedIn (optional)',
-                  ),
-                ),
-                const SizedBox(height: Spacing.xl),
-                FilledButton(
-                  onPressed: _submitting ? null : _submit,
-                  style: FilledButton.styleFrom(),
-                  child: _submitting
-                      ? SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CupertinoActivityIndicator(
-                            color: context.colors.onPrimary,
-                          ),
-                        )
-                      : const Text('Submit for Review'),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: Spacing.md),
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Club Name'),
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: Spacing.md),
+            TextFormField(
+              controller: _descriptionController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                alignLabelWithHint: true,
+              ),
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: Spacing.md),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(
+                  value: 'department',
+                  label: Text('My department'),
+                ),
+                ButtonSegment(
+                  value: 'university',
+                  label: Text('University-wide'),
+                ),
+              ],
+              selected: {_clubType},
+              onSelectionChanged: (s) => setState(() => _clubType = s.first),
+            ),
+            const SizedBox(height: Spacing.md),
+            DropdownButtonFormField<String>(
+              initialValue: _category,
+              decoration: const InputDecoration(labelText: 'Category'),
+              items: clubCategories
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  .toList(),
+              onChanged: (v) => setState(() => _category = v),
+            ),
+            const SizedBox(height: Spacing.md),
+            TextFormField(
+              controller: _foundedYearController,
+              keyboardType: .number,
+              decoration: const InputDecoration(
+                labelText: 'Founded Year (optional)',
+              ),
+            ),
+            const SizedBox(height: Spacing.lg),
+            Text(
+              'Contact',
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+            ),
+            const SizedBox(height: Spacing.sm),
+            TextFormField(
+              controller: _contactEmailController,
+              keyboardType: .emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Contact Email (optional)',
+              ),
+            ),
+            const SizedBox(height: Spacing.md),
+            TextFormField(
+              controller: _contactPhoneController,
+              keyboardType: .phone,
+              decoration: const InputDecoration(
+                labelText: 'Contact Phone (optional)',
+              ),
+            ),
+            const SizedBox(height: Spacing.lg),
+            Text(
+              'Social Links',
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+            ),
+            const SizedBox(height: Spacing.sm),
+            TextFormField(
+              controller: _facebookController,
+              decoration: const InputDecoration(
+                labelText: 'Facebook (optional)',
+              ),
+            ),
+            const SizedBox(height: Spacing.md),
+            TextFormField(
+              controller: _instagramController,
+              decoration: const InputDecoration(
+                labelText: 'Instagram (optional)',
+              ),
+            ),
+            const SizedBox(height: Spacing.md),
+            TextFormField(
+              controller: _linkedinController,
+              decoration: const InputDecoration(
+                labelText: 'LinkedIn (optional)',
+              ),
+            ),
+            const SizedBox(height: Spacing.xl),
+            FilledButton(
+              onPressed: _submitting ? null : _submit,
+              style: FilledButton.styleFrom(),
+              child: _submitting
+                  ? SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CupertinoActivityIndicator(
+                        color: context.colors.onPrimary,
+                      ),
+                    )
+                  : const Text('Submit for Review'),
+            ),
+          ],
         ),
       ),
     );

@@ -189,7 +189,7 @@ class _YearSelectorSheetState extends State<_YearSelectorSheet> {
                 widget.onSelected(_selected);
                 Navigator.pop(context);
               },
-              child: const Text('Confirm selection'),
+              child: const Text('Confirm Selection'),
             ),
           ),
         ],

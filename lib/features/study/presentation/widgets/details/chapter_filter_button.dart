@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/chapter/domain/entities/chapter.dart';
 import 'chapter_tile.dart';
+import '/core/widgets/inline_search_bar.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -42,7 +43,7 @@ class ChapterFilterButton extends ConsumerWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: Spacing.md,
-              vertical: Spacing.sm,
+              vertical: Spacing.xs,
             ),
             decoration: BoxDecoration(
               color: redBg
@@ -187,32 +188,9 @@ class ChapterFilterButton extends ConsumerWidget {
                   const SizedBox(height: Spacing.lg),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(RadiusToken.lg),
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => searchText = v),
-                        decoration: InputDecoration(
-                          hintText: 'Search chapter...',
-                          hintStyle: TextStyle(
-                            color: context.colors.textSubtle,
-                            fontSize: FontSizeToken.base,
-                          ),
-                          prefixIcon: Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: context.colors.textSubtle,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: Spacing.md,
-                          ),
-                        ),
-                      ),
+                    child: InlineSearchBar(
+                      hintText: 'Search chapter...',
+                      onChanged: (v) => setState(() => searchText = v),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),

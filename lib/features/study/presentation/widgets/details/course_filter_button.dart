@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/course/domain/entities/course.dart';
+import '/core/widgets/inline_search_bar.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -34,7 +35,7 @@ class CourseFilterButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.sm,
-          vertical: Spacing.sm,
+          vertical: Spacing.xs,
         ),
         decoration: BoxDecoration(
           color: redBg ? context.colors.surface.withValues(alpha: 0.15) : null,
@@ -97,9 +98,11 @@ class CourseFilterButton extends StatelessWidget {
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setState) {
+            final sortedCourses = [...courses]
+              ..sort((a, b) => _compareCourseCodes(a.courseCode, b.courseCode));
             final filtered = searchText.isEmpty
-                ? courses
-                : courses
+                ? sortedCourses
+                : sortedCourses
                       .where(
                         (c) =>
                             c.courseCode.toLowerCase().contains(
@@ -155,32 +158,9 @@ class CourseFilterButton extends StatelessWidget {
                   const SizedBox(height: Spacing.lg),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(RadiusToken.lg),
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => searchText = v),
-                        decoration: InputDecoration(
-                          hintText: 'Search course...',
-                          hintStyle: TextStyle(
-                            color: context.colors.textSubtle,
-                            fontSize: FontSizeToken.base,
-                          ),
-                          prefixIcon: Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: context.colors.textSubtle,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: Spacing.md,
-                          ),
-                        ),
-                      ),
+                    child: InlineSearchBar(
+                      hintText: 'Search course...',
+                      onChanged: (v) => setState(() => searchText = v),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),
@@ -284,4 +264,18 @@ class CourseFilterButton extends StatelessWidget {
       },
     );
   }
+}
+
+/// Orders course codes the way people read them: by prefix, then by the
+/// number inside (so `PSY-501` < `PSY-502` < `PSY-1001`, not plain text order).
+int _compareCourseCodes(String a, String b) {
+  final pa = RegExp(r'^\D*').stringMatch(a) ?? '';
+  final pb = RegExp(r'^\D*').stringMatch(b) ?? '';
+  final byPrefix = pa.toLowerCase().compareTo(pb.toLowerCase());
+  if (byPrefix != 0) return byPrefix;
+
+  final na = int.tryParse(RegExp(r'\d+').stringMatch(a) ?? '');
+  final nb = int.tryParse(RegExp(r'\d+').stringMatch(b) ?? '');
+  if (na != null && nb != null && na != nb) return na.compareTo(nb);
+  return a.toLowerCase().compareTo(b.toLowerCase());
 }

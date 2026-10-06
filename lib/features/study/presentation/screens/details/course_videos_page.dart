@@ -162,7 +162,12 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
             itemCount: resources.length,
             separatorBuilder: (BuildContext context, int index) =>
                 const SizedBox(height: Spacing.md),
-            padding: const EdgeInsets.all(Spacing.lg),
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.xs,
+              Spacing.lg,
+              Spacing.lg,
+            ),
             itemBuilder: (context, index) {
               final resource = resources[index];
               final videoId =

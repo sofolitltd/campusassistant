@@ -4,8 +4,9 @@ import '/core/di.dart';
 import '../../../presentation/providers/career_refresh_provider.dart';
 import '../../data/models/career_reminder.dart';
 
-final myCareerRemindersProvider =
-    FutureProvider<List<CareerReminder>>((ref) async {
+final myCareerRemindersProvider = FutureProvider<List<CareerReminder>>((
+  ref,
+) async {
   ref.watch(careerRefreshProvider);
   final repo = ref.watch(careerReminderRepositoryProvider);
   final reminders = await repo.getMyReminders();
@@ -22,11 +23,9 @@ class CareerReminderActions {
     required String title,
     required DateTime remindAt,
   }) async {
-    await ref.read(careerReminderRepositoryProvider).createReminder(
-          jobId: jobId,
-          title: title,
-          remindAt: remindAt,
-        );
+    await ref
+        .read(careerReminderRepositoryProvider)
+        .createReminder(jobId: jobId, title: title, remindAt: remindAt);
     ref.read(careerRefreshProvider.notifier).bump();
   }
 

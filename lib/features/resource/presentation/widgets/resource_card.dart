@@ -39,6 +39,15 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 
+/// Height of the card's top row (course badge / reward cost). The overflow
+/// menu is centred on this row so the three line up.
+const double _kTopRowHeight = 18;
+
+/// Shared height of the thumbnail and the text column beside it, so the image
+/// runs from the course badge down to the info tiles.
+const double _kContentHeight = 99;
+const double _kMenuTapSize = 40;
+
 class ResourceCard extends ConsumerStatefulWidget {
   final Resource resource;
 
@@ -164,7 +173,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.md + 2),
         color: theme.cardColor,
         border: Border.all(color: context.colors.border),
         boxShadow: [
@@ -178,7 +187,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       child: Column(
         children: [
           InkWell(
-            borderRadius: BorderRadius.circular(RadiusToken.sm),
+            borderRadius: BorderRadius.circular(RadiusToken.md + 2),
             onTap: () async {
               if (isProContent && !isProUser) {
                 _showProDialog(context);
@@ -203,14 +212,21 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                     children: [
                       GestureDetector(
                         onTap: _showInfoBottomSheet,
-                        child: _buildThumbnail(isProContent),
+                        child: _buildThumbnail(
+                          isProContent,
+                          showRewardCost: !isProUser,
+                        ),
                       ),
                       const SizedBox(width: Spacing.md),
                       _buildDetails(context),
                     ],
                   ),
                 ),
-                Positioned(top: -4, right: -6, child: _buildPopupMenu()),
+                Positioned(
+                  top: Spacing.md + (_kTopRowHeight - _kMenuTapSize) / 2,
+                  right: 0,
+                  child: _buildPopupMenu(),
+                ),
                 Positioned(
                   bottom: -4,
                   right: 12,
@@ -220,12 +236,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                           mainAxisSize: .min,
                           children: [
                             _buildBookmark(),
-                            const SizedBox(width: Spacing.xxs),
-                            if (!isProUser)
-                              RewardCostIndicator(
-                                resourceId: widget.resource.id,
-                                fileSizeBytes: widget.resource.fileSizeBytes,
-                              ),
                             const SizedBox(width: Spacing.xxs),
                             _buildDownloadStatusAction(),
                           ],
@@ -239,20 +249,23 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     );
   }
 
-  Widget _buildThumbnail(bool isProContent) {
+  Widget _buildThumbnail(bool isProContent, {required bool showRewardCost}) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return Stack(
       alignment: Alignment.topLeft,
       children: [
         Container(
-          width: 80,
-          height: 90,
+          width: 84,
+          height: _kContentHeight,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(RadiusToken.sm),
+            borderRadius: BorderRadius.circular(RadiusToken.xs),
             color: isDark
                 ? theme.colorScheme.surface.withValues(alpha: 0.5)
                 : AccentToken.blue.withValues(alpha: 0.1),
+          ),
+          foregroundDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(RadiusToken.xs),
             border: Border.all(color: context.colors.borderStrong, width: 1),
           ),
           clipBehavior: .antiAlias,
@@ -279,6 +292,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   ),
                 ),
         ),
+        if (showRewardCost)
+          Positioned(
+            left: 4,
+            bottom: 4,
+            child: RewardCostIndicator(
+              resourceId: widget.resource.id,
+              fileSizeBytes: widget.resource.fileSizeBytes,
+              onImage: true,
+            ),
+          ),
         if (isProContent)
           Positioned(
             top: 4,
@@ -303,30 +326,41 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   Widget _buildDetails(BuildContext context) {
     return Expanded(
       child: SizedBox(
-        height: 95,
+        height: _kContentHeight,
         child: Column(
           crossAxisAlignment: .start,
           mainAxisAlignment: .start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Spacing.xs,
-                vertical: Spacing.xxs,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).appColors.primary.withValues(alpha: .5),
-                borderRadius: BorderRadius.circular(2.5),
-              ),
-              child: Text(
-                '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
-                style: TextStyle(
-                  height: 1,
-                  fontSize: FontSizeToken.xxs,
-                  fontWeight: .bold,
-                  color: context.colors.onPrimary,
-                ),
+            SizedBox(
+              height: _kTopRowHeight,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.xs,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      // Same fill as the file-size / page tiles below.
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.surface.withValues(alpha: 0.5)
+                          : context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      border: Border.all(color: context.colors.surfaceAlt),
+                    ),
+                    child: Text(
+                      '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: FontSizeToken.xxs,
+                        fontWeight: .bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: Spacing.xs),
@@ -378,7 +412,12 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     return PopupMenuButton<String>(
       padding: EdgeInsets.zero,
       color: theme.cardColor,
-      icon: const Icon(LucideIcons.ellipsisVertical, size: 16),
+      tooltip: 'More options',
+      child: const SizedBox(
+        width: _kMenuTapSize,
+        height: _kMenuTapSize,
+        child: Center(child: Icon(LucideIcons.ellipsisVertical, size: 18)),
+      ),
       onSelected: (value) async {
         switch (value) {
           case 'download':
@@ -692,7 +731,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Watch ad'),
+            child: const Text('Watch Ad'),
           ),
         ],
       ),

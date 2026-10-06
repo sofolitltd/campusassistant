@@ -29,7 +29,8 @@ class CircularRepository {
       queryParameters: {
         'university_id': universityId,
         'department_id': departmentId,
-        if (categoryId != null && categoryId.isNotEmpty) 'category_id': categoryId,
+        if (categoryId != null && categoryId.isNotEmpty)
+          'category_id': categoryId,
         if (search != null && search.isNotEmpty) 'search': search,
       },
     );
@@ -51,7 +52,9 @@ class CircularRepository {
 
   /// "Save to My Jobs" — copies the circular into a job owned by the caller.
   Future<Map<String, dynamic>> saveToMyJobs(String circularId) async {
-    final response = await apiClient.post('/my/career-jobs/from-circular/$circularId');
+    final response = await apiClient.post(
+      '/my/career-jobs/from-circular/$circularId',
+    );
     return response.data as Map<String, dynamic>;
   }
 }

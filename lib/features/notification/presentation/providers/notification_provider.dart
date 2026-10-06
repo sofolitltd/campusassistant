@@ -34,7 +34,10 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     // just on first watch.
     ref.watch(appRefreshProvider);
     final repo = ref.watch(notificationRepositoryProvider);
-    final page = await repo.getNotifications(offset: 0, limit: _notificationsPageSize);
+    final page = await repo.getNotifications(
+      offset: 0,
+      limit: _notificationsPageSize,
+    );
     _offset = page.items.length;
     _totalCount = page.totalCount;
     return page.items;
@@ -45,7 +48,10 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     _isLoadingMore = true;
     try {
       final repo = ref.read(notificationRepositoryProvider);
-      final page = await repo.getNotifications(offset: _offset, limit: _notificationsPageSize);
+      final page = await repo.getNotifications(
+        offset: _offset,
+        limit: _notificationsPageSize,
+      );
       _offset += page.items.length;
       _totalCount = page.totalCount;
       final current = state.value ?? [];
@@ -58,7 +64,10 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
   /// Applies [update] to the notification with [id] in local state only, for
   /// instant UI feedback (e.g. isRead flipping) without waiting on/forcing a
   /// full-list refetch just to reflect a single-row change.
-  void updateLocal(String id, AppNotification Function(AppNotification) update) {
+  void updateLocal(
+    String id,
+    AppNotification Function(AppNotification) update,
+  ) {
     final current = state.value;
     if (current == null) return;
     state = AsyncValue.data([

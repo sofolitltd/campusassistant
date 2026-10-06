@@ -13,13 +13,21 @@ import '/features/university/presentation/providers/university_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
-import '/core/theme/tokens/app_accents.dart';
 
-class UniversityFacultiesPage extends ConsumerWidget {
+class UniversityFacultiesPage extends ConsumerStatefulWidget {
   const UniversityFacultiesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UniversityFacultiesPage> createState() =>
+      _UniversityFacultiesPageState();
+}
+
+class _UniversityFacultiesPageState
+    extends ConsumerState<UniversityFacultiesPage> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
     final universityAsync = ref.watch(myUniversityProvider);
 
     return universityAsync.when(
@@ -30,9 +38,12 @@ class UniversityFacultiesPage extends ConsumerWidget {
 
         return CustomHeaderLayout(
           title: 'Faculties',
-          showSearchBar: false,
+          searchAtBottom: true,
+          searchHint: 'Search faculties...',
+          onSearchChanged: (value) => setState(() => _query = value),
           body: facultiesAsync.when(
-            data: (faculties) => _FacultiesList(faculties: faculties),
+            data: (faculties) =>
+                _FacultiesList(faculties: faculties, query: _query),
             loading: () => const Center(child: CupertinoActivityIndicator()),
             error: (err, _) => Center(
               child: Padding(
@@ -76,12 +87,17 @@ class UniversityFacultiesPage extends ConsumerWidget {
 
 class _FacultiesList extends StatelessWidget {
   final List<Faculty> faculties;
+  final String query;
 
-  const _FacultiesList({required this.faculties});
+  const _FacultiesList({required this.faculties, required this.query});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final q = query.trim().toLowerCase();
+    final filtered = q.isEmpty
+        ? faculties
+        : faculties.where((f) => f.name.toLowerCase().contains(q)).toList();
 
     if (faculties.isEmpty) {
       return ListView(
@@ -118,59 +134,8 @@ class _FacultiesList extends StatelessWidget {
       padding: const EdgeInsets.all(Spacing.lg),
       physics: const BouncingScrollPhysics(),
       children: [
-        Container(
-          padding: const EdgeInsets.all(Spacing.lg),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AccentToken.blue.withValues(alpha: 0.1),
-                AccentToken.violet.withValues(alpha: 0.1),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(color: context.colors.info),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AccentToken.blue.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(RadiusToken.sm),
-                ),
-                child: const Icon(
-                  LucideIcons.building,
-                  color: AccentToken.blue,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: Spacing.lg),
-              Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    '${faculties.length}',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: .bold,
-                      color: AccentToken.blue,
-                    ),
-                  ),
-                  Text(
-                    'Total Faculties',
-                    style: TextStyle(
-                      color: context.colors.textMuted,
-                      fontSize: FontSizeToken.md,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: Spacing.xxl),
         Text(
-          'All Faculties',
+          'All Faculties (${filtered.length})',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.xs),
@@ -182,7 +147,18 @@ class _FacultiesList extends StatelessWidget {
           ),
         ),
         const SizedBox(height: Spacing.lg),
-        ...faculties.map((faculty) => _FacultyCard(faculty: faculty)),
+        if (filtered.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: Spacing.xxl),
+            child: Center(
+              child: Text(
+                'No faculties match "$query"',
+                style: TextStyle(color: context.colors.textMuted),
+              ),
+            ),
+          )
+        else
+          ...filtered.map((faculty) => _FacultyCard(faculty: faculty)),
       ],
     );
   }
@@ -224,7 +200,7 @@ class _FacultyCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AccentToken.blue.withValues(alpha: 0.1),
+                  color: context.colors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(RadiusToken.sm),
                 ),
                 child: Center(
@@ -232,8 +208,8 @@ class _FacultyCard extends StatelessWidget {
                     faculty.name.isNotEmpty
                         ? faculty.name.substring(0, 2).toUpperCase()
                         : '??',
-                    style: const TextStyle(
-                      color: AccentToken.blue,
+                    style: TextStyle(
+                      color: context.colors.primary,
                       fontWeight: .w800,
                       fontSize: FontSizeToken.base,
                     ),

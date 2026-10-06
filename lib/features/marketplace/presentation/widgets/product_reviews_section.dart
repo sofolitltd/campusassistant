@@ -16,7 +16,11 @@ import '/core/theme/tokens/app_font_size.dart';
 class ProductReviewsSection extends ConsumerWidget {
   final String productId;
   final String productTitle;
-  const ProductReviewsSection({super.key, required this.productId, required this.productTitle});
+  const ProductReviewsSection({
+    super.key,
+    required this.productId,
+    required this.productTitle,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +35,10 @@ class ProductReviewsSection extends ConsumerWidget {
         if (s.count == 0 && !data.canReview) {
           return Padding(
             padding: const EdgeInsets.only(top: Spacing.xl),
-            child: Text('No reviews yet', style: TextStyle(color: c.textSubtle)),
+            child: Text(
+              'No reviews yet',
+              style: TextStyle(color: c.textSubtle),
+            ),
           );
         }
         final shown = data.reviews.take(3).toList();
@@ -41,7 +48,14 @@ class ProductReviewsSection extends ConsumerWidget {
             const SizedBox(height: Spacing.xxl),
             Row(
               children: [
-                Text('Ratings & reviews', style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: FontWeight.w800, color: c.text)),
+                Text(
+                  'Ratings & reviews',
+                  style: TextStyle(
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: FontWeight.w800,
+                    color: c.text,
+                  ),
+                ),
                 const Spacer(),
                 if (data.canReview)
                   TextButton(
@@ -51,7 +65,9 @@ class ProductReviewsSection extends ConsumerWidget {
                       productTitle: productTitle,
                       existing: data.myReview,
                     ),
-                    child: Text(data.myReview == null ? 'Write a review' : 'Edit yours'),
+                    child: Text(
+                      data.myReview == null ? 'Write a review' : 'Edit yours',
+                    ),
                   ),
               ],
             ),
@@ -63,12 +79,15 @@ class ProductReviewsSection extends ConsumerWidget {
               if (data.total > shown.length)
                 TextButton(
                   onPressed: () => _showAll(context, data),
-                  child: Text('See all ${data.total} reviews'),
+                  child: Text('See All ${data.total} Reviews'),
                 ),
             ] else
               Padding(
                 padding: const EdgeInsets.only(top: Spacing.xs),
-                child: Text('Be the first to review this product.', style: TextStyle(color: c.textMuted)),
+                child: Text(
+                  'Be the first to review this product.',
+                  style: TextStyle(color: c.textMuted),
+                ),
               ),
           ],
         );
@@ -87,7 +106,12 @@ class ProductReviewsSection extends ConsumerWidget {
         maxChildSize: 0.95,
         builder: (context, controller) => ListView(
           controller: controller,
-          padding: const EdgeInsets.fromLTRB(Spacing.xl, 0, Spacing.xl, Spacing.xxl),
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.xl,
+            0,
+            Spacing.xl,
+            Spacing.xxl,
+          ),
           children: [
             _Summary(summary: data.summary),
             const SizedBox(height: Spacing.md),
@@ -110,13 +134,22 @@ class _Summary extends StatelessWidget {
       children: [
         Column(
           children: [
-            Text(summary.average.toStringAsFixed(1),
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800, color: c.text, height: 1)),
+            Text(
+              summary.average.toStringAsFixed(1),
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.w800,
+                color: c.text,
+                height: 1,
+              ),
+            ),
             const SizedBox(height: Spacing.xs),
             StarRow(rating: summary.average, size: 14),
             const SizedBox(height: Spacing.xs),
-            Text('${summary.count} ${summary.count == 1 ? 'review' : 'reviews'}',
-                style: TextStyle(fontSize: FontSizeToken.xs, color: c.textSubtle)),
+            Text(
+              '${summary.count} ${summary.count == 1 ? 'review' : 'reviews'}',
+              style: TextStyle(fontSize: FontSizeToken.xs, color: c.textSubtle),
+            ),
           ],
         ),
         const SizedBox(width: Spacing.xl),
@@ -128,13 +161,25 @@ class _Summary extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: Spacing.xxs),
                   child: Row(
                     children: [
-                      SizedBox(width: 12, child: Text('$star', style: TextStyle(fontSize: FontSizeToken.xs, color: c.textMuted))),
+                      SizedBox(
+                        width: 12,
+                        child: Text(
+                          '$star',
+                          style: TextStyle(
+                            fontSize: FontSizeToken.xs,
+                            color: c.textMuted,
+                          ),
+                        ),
+                      ),
                       const SizedBox(width: Spacing.sm),
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(RadiusToken.full),
                           child: LinearProgressIndicator(
-                            value: summary.count == 0 ? 0 : (summary.distribution[star] ?? 0) / summary.count,
+                            value: summary.count == 0
+                                ? 0
+                                : (summary.distribution[star] ?? 0) /
+                                      summary.count,
                             minHeight: 6,
                             backgroundColor: c.surfaceAlt,
                             valueColor: AlwaysStoppedAnimation(c.warning),
@@ -165,7 +210,9 @@ class _ReviewTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: c.surface,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(color: review.mine ? c.primary.withValues(alpha: 0.5) : c.border),
+        border: Border.all(
+          color: review.mine ? c.primary.withValues(alpha: 0.5) : c.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,10 +224,20 @@ class _ReviewTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   review.mine ? 'You' : review.reviewerName,
-                  style: TextStyle(fontSize: FontSizeToken.sm, fontWeight: FontWeight.w700, color: c.text),
+                  style: TextStyle(
+                    fontSize: FontSizeToken.sm,
+                    fontWeight: FontWeight.w700,
+                    color: c.text,
+                  ),
                 ),
               ),
-              Text(DateFormat.yMMMd().format(review.createdAt), style: TextStyle(fontSize: FontSizeToken.xs, color: c.textSubtle)),
+              Text(
+                DateFormat.yMMMd().format(review.createdAt),
+                style: TextStyle(
+                  fontSize: FontSizeToken.xs,
+                  color: c.textSubtle,
+                ),
+              ),
             ],
           ),
           if (review.comment.isNotEmpty) ...[
@@ -192,13 +249,30 @@ class _ReviewTile extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(Spacing.md),
-              decoration: BoxDecoration(color: c.surfaceAlt, borderRadius: BorderRadius.circular(RadiusToken.md)),
+              decoration: BoxDecoration(
+                color: c.surfaceAlt,
+                borderRadius: BorderRadius.circular(RadiusToken.md),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Seller replied', style: TextStyle(fontSize: FontSizeToken.xs, fontWeight: FontWeight.w700, color: c.primary)),
+                  Text(
+                    'Seller replied',
+                    style: TextStyle(
+                      fontSize: FontSizeToken.xs,
+                      fontWeight: FontWeight.w700,
+                      color: c.primary,
+                    ),
+                  ),
                   const SizedBox(height: Spacing.xxs),
-                  Text(review.sellerReply, style: TextStyle(fontSize: 12.5, color: c.textMuted, height: 1.4)),
+                  Text(
+                    review.sellerReply,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: c.textMuted,
+                      height: 1.4,
+                    ),
+                  ),
                 ],
               ),
             ),

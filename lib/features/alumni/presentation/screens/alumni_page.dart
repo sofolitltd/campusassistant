@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/custom_header_layout.dart';
+import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/section_tab_bar.dart';
 
 import '../providers/alumni_provider.dart';
@@ -71,74 +72,21 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
     super.dispose();
   }
 
-  Widget _buildOrgFilterTrailing() {
-    final selectedOrg = ref.watch(alumniSelectedOrganizationProvider);
-    return IntrinsicWidth(
-      child: Row(
-        mainAxisSize: .min,
-        children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(RadiusToken.xxl),
-            onTap: () => showOrganizationFilterSheet(context, ref),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Spacing.xs,
-                vertical: Spacing.md,
-              ),
-              child: Row(
-                mainAxisSize: .min,
-                children: [
-                  Icon(
-                    LucideIcons.building2,
-                    color: context.colors.textMuted,
-                    size: 20,
-                  ),
-                  const SizedBox(width: Spacing.xs),
-                  Text(
-                    'Org.',
-                    style: TextStyle(
-                      color: context.colors.textMuted,
-                      fontSize: FontSizeToken.md,
-                      fontWeight: .w500,
-                    ),
-                  ),
-                  Icon(Icons.arrow_drop_down, color: context.colors.textMuted),
-                ],
-              ),
-            ),
-          ),
-          if (selectedOrg != null)
-            InkWell(
-              borderRadius: BorderRadius.circular(RadiusToken.xxl),
-              onTap: () => ref
-                  .read(alumniSelectedOrganizationProvider.notifier)
-                  .update(null),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  right: Spacing.md,
-                  left: Spacing.xxs,
-                ),
-                child: Icon(
-                  Icons.close_rounded,
-                  color: context.colors.textSubtle,
-                  size: 18,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final alumniStateAsync = ref.watch(alumniPaginationProvider);
     final selectedOrg = ref.watch(alumniSelectedOrganizationProvider);
 
     return CustomHeaderLayout(
+      searchAtBottom: true,
       title: 'Alumni Network',
       searchHint: 'Search alumni...',
-      searchTrailing: _buildOrgFilterTrailing(),
+      searchAction: GlassCircleButton(
+        icon: LucideIcons.slidersHorizontal,
+        tooltip: 'Filter by organization',
+        active: selectedOrg != null,
+        onTap: () => showOrganizationFilterSheet(context, ref),
+      ),
       onSearchChanged: _onSearchChanged,
       body: Column(
         children: [
@@ -183,6 +131,17 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
                         color: context.colors.textMuted,
                       ),
                       overflow: .ellipsis,
+                    ),
+                  ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(RadiusToken.xxl),
+                    onTap: () => ref
+                        .read(alumniSelectedOrganizationProvider.notifier)
+                        .update(null),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: context.colors.textSubtle,
+                      size: 18,
                     ),
                   ),
                 ],

@@ -5,14 +5,24 @@ class Contact {
   final String userId;
   final String name;
   final String? avatarUrl;
+  final String? batchName;
+  final String? sessionName;
 
-  const Contact({required this.userId, required this.name, this.avatarUrl});
+  const Contact({
+    required this.userId,
+    required this.name,
+    this.avatarUrl,
+    this.batchName,
+    this.sessionName,
+  });
 
   factory Contact.fromJson(Map<String, dynamic> json) {
     return Contact(
       userId: json['userId'] as String,
       name: json['name'] as String,
       avatarUrl: json['avatarUrl'] as String?,
+      batchName: json['batchName'] as String?,
+      sessionName: json['sessionName'] as String?,
     );
   }
 }

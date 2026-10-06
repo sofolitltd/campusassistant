@@ -252,6 +252,8 @@ class PreferenceTile extends StatelessWidget {
   }
 }
 
+/// Same pill design as [SectionTabBar] (the Academic / Personal / Address
+/// tabs): a rounded track with a raised white pill under the selected option.
 class _ThemeSegmentedControl extends ConsumerWidget {
   final ThemeMode currentMode;
 
@@ -259,8 +261,7 @@ class _ThemeSegmentedControl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.colors;
 
     final segments = [
       (icon: LucideIcons.sun, label: 'Light', mode: ThemeMode.light),
@@ -269,56 +270,76 @@ class _ThemeSegmentedControl extends ConsumerWidget {
     ];
 
     return Container(
-      decoration: BoxDecoration(
-        color: isDark
-            ? cs.surfaceContainerHighest
-            : cs.outlineVariant.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(RadiusToken.sm),
-      ),
+      height: 40,
       padding: const EdgeInsets.all(Spacing.xs),
+      decoration: BoxDecoration(
+        color: colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+      ),
       child: Row(
-        children: List.generate(segments.length, (i) {
-          final segment = segments[i];
-          final selected = currentMode == segment.mode;
-          return Expanded(
-            child: GestureDetector(
-              onTap: selected
-                  ? null
-                  : () =>
-                        ref.read(themeProvider.notifier).setTheme(segment.mode),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 100),
-                height: 34,
-                decoration: BoxDecoration(
-                  color: selected ? context.colors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(RadiusToken.sm),
-                ),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisSize: .min,
-                  spacing: 4,
-                  children: [
-                    Icon(
-                      segment.icon,
-                      size: 13,
-                      color: selected ? cs.onPrimary : cs.onSurfaceVariant,
-                    ),
-                    Text(
-                      segment.label,
-                      style: TextStyle(
-                        fontSize: FontSizeToken.xs,
-                        fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        color: selected ? cs.onPrimary : cs.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+        children: [
+          for (final segment in segments)
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: currentMode == segment.mode
+                    ? null
+                    : () => ref
+                          .read(themeProvider.notifier)
+                          .setTheme(segment.mode),
+                child: _segment(
+                  colors,
+                  segment.icon,
+                  segment.label,
+                  currentMode == segment.mode,
                 ),
               ),
             ),
-          );
-        }),
+        ],
+      ),
+    );
+  }
+
+  Widget _segment(
+    AppColors colors,
+    IconData icon,
+    String label,
+    bool selected,
+  ) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(RadiusToken.sm),
+        color: selected ? colors.surface : Colors.transparent,
+        boxShadow: selected
+            ? [
+                BoxShadow(
+                  color: colors.shadow,
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
+                ),
+              ]
+            : const [],
+      ),
+      child: Row(
+        mainAxisSize: .min,
+        spacing: 6,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: selected ? colors.text : colors.textMuted,
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: FontSizeToken.md,
+              fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+              color: selected ? colors.text : colors.textMuted,
+            ),
+          ),
+        ],
       ),
     );
   }

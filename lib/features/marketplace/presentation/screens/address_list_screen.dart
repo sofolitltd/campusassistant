@@ -58,7 +58,7 @@ class AddressListScreen extends ConsumerWidget {
                         onPressed: () => context
                             .push(AppRoute.marketplaceAddressForm.path)
                             .then((_) => ref.invalidate(addressesProvider)),
-                        child: const Text('Add address'),
+                        child: const Text('Add Address'),
                       ),
                     ],
                   ),

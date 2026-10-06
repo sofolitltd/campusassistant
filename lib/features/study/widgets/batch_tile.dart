@@ -11,11 +11,15 @@ class BatchTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
+  /// Fills its grid cell (no outer margin, outlined) instead of a list row.
+  final bool grid;
+
   const BatchTile({
     super.key,
     required this.title,
     required this.isSelected,
     required this.onTap,
+    this.grid = false,
   });
 
   @override
@@ -26,27 +30,36 @@ class BatchTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(
-          vertical: Spacing.xxs,
-          horizontal: Spacing.sm,
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.lg,
-          vertical: Spacing.md,
+        margin: grid
+            ? EdgeInsets.zero
+            : const EdgeInsets.symmetric(
+                vertical: Spacing.xxs,
+                horizontal: Spacing.sm,
+              ),
+        padding: EdgeInsets.symmetric(
+          horizontal: grid ? Spacing.md : Spacing.lg,
+          vertical: grid ? Spacing.sm : Spacing.md,
         ),
         decoration: BoxDecoration(
           color: isSelected ? selectedBg : Colors.transparent,
           borderRadius: BorderRadius.circular(RadiusToken.md),
+          border: grid
+              ? Border.all(color: isSelected ? primary : context.colors.border)
+              : null,
         ),
         child: Row(
           mainAxisAlignment: .spaceBetween,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: FontSizeToken.lg,
-                color: isSelected ? primary : (context.colors.text),
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: FontSizeToken.lg,
+                  color: isSelected ? primary : (context.colors.text),
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
               ),
             ),
             if (isSelected) Icon(LucideIcons.check, color: primary, size: 20),

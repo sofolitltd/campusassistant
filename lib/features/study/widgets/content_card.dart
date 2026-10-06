@@ -121,7 +121,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(RadiusToken.md),
+        borderRadius: BorderRadius.circular(RadiusToken.md + 2),
         color: theme.cardColor,
         border: Border.all(color: context.colors.border),
         boxShadow: [
@@ -136,8 +136,8 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         children: [
           InkWell(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(RadiusToken.md),
-              topRight: Radius.circular(RadiusToken.md),
+              topLeft: Radius.circular(RadiusToken.md + 2),
+              topRight: Radius.circular(RadiusToken.md + 2),
             ),
             onTap: () async {
               if (isProContent && !isProUser) {
@@ -157,7 +157,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                         children: [
                           //
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(RadiusToken.sm),
+                            borderRadius: BorderRadius.circular(RadiusToken.md),
                             child: Container(
                               width: 80,
                               height: 90,

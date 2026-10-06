@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import '/core/widgets/custom_header_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,144 +27,134 @@ class LostFoundDetailScreen extends ConsumerWidget {
     final itemAsync = ref.watch(lostFoundItemDetailProvider(itemId));
     final currentUser = ref.watch(currentUserProvider).value;
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Item Details'),
-            actions: [
-              itemAsync.maybeWhen(
-                data: (item) =>
-                    currentUser != null && currentUser.id != item.posterId
-                    ? IconButton(
-                        icon: const Icon(Icons.flag_outlined),
-                        tooltip: 'Report',
-                        onPressed: () =>
-                            showReportBottomSheet(context, ref, itemId),
-                      )
-                    : const SizedBox.shrink(),
-                orElse: () => const SizedBox.shrink(),
-              ),
-            ],
-          ),
-          body: itemAsync.when(
-            data: (item) {
-              final isOwner =
-                  currentUser != null && currentUser.id == item.posterId;
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    if (item.imageUrls.isNotEmpty)
-                      AspectRatio(
-                        aspectRatio: 16 / 10,
-                        child: PageView(
-                          children: item.imageUrls
-                              .map(
-                                (url) => CachedNetworkImage(
-                                  imageUrl: ApiEndpoints.resolveImageUrl(url),
-                                  fit: .cover,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(Spacing.lg),
-                      child: Column(
-                        crossAxisAlignment: .start,
+    return CustomHeaderLayout(
+      title: 'Item Details',
+      showSearchBar: false,
+      actions: [
+        itemAsync.maybeWhen(
+          data: (item) => currentUser != null && currentUser.id != item.posterId
+              ? IconButton(
+                  icon: Icon(
+                    Icons.flag_outlined,
+                    color: context.colors.onPrimary,
+                  ),
+                  tooltip: 'Report',
+                  onPressed: () => showReportBottomSheet(context, ref, itemId),
+                )
+              : const SizedBox.shrink(),
+          orElse: () => const SizedBox.shrink(),
+        ),
+      ],
+      body: itemAsync.when(
+        data: (item) {
+          final isOwner =
+              currentUser != null && currentUser.id == item.posterId;
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                if (item.imageUrls.isNotEmpty)
+                  AspectRatio(
+                    aspectRatio: 16 / 10,
+                    child: PageView(
+                      children: item.imageUrls
+                          .map(
+                            (url) => CachedNetworkImage(
+                              imageUrl: ApiEndpoints.resolveImageUrl(url),
+                              fit: .cover,
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(Spacing.lg),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Chip(
-                                label: Text(
-                                  item.type == LostFoundType.lost
-                                      ? 'LOST'
-                                      : 'FOUND',
-                                ),
-                                backgroundColor: item.type == LostFoundType.lost
-                                    ? context.colors.warning
-                                    : context.colors.primary,
-                                labelStyle: TextStyle(
-                                  color: context.colors.onPrimary,
-                                  fontWeight: .bold,
-                                ),
-                              ),
-                              const SizedBox(width: Spacing.sm),
-                              Chip(label: Text(item.status.name.toUpperCase())),
-                            ],
-                          ),
-                          const SizedBox(height: Spacing.md),
-                          Text(
-                            item.title,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: Spacing.sm),
-                          Text(item.description),
-                          const SizedBox(height: Spacing.md),
-                          if (item.location.isNotEmpty)
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on_outlined,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: Spacing.xs),
-                                Text(item.location),
-                              ],
+                          Chip(
+                            label: Text(
+                              item.type == LostFoundType.lost
+                                  ? 'LOST'
+                                  : 'FOUND',
                             ),
-                          const SizedBox(height: Spacing.xs),
-                          Text(
-                            'Posted ${timeago.format(item.createdAt)} by ${item.poster?.name ?? "a student"}',
-                            style: Theme.of(context).textTheme.bodySmall,
+                            backgroundColor: item.type == LostFoundType.lost
+                                ? context.colors.warning
+                                : context.colors.primary,
+                            labelStyle: TextStyle(
+                              color: context.colors.onPrimary,
+                              fontWeight: .bold,
+                            ),
                           ),
-                          if (item.status == LostFoundStatus.removed &&
-                              item.removalReason != null) ...[
-                            const SizedBox(height: Spacing.md),
-                            Container(
-                              padding: const EdgeInsets.all(Spacing.md),
-                              decoration: BoxDecoration(
-                                color: context.colors.danger.withValues(
-                                  alpha: 0.08,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  RadiusToken.md,
-                                ),
-                              ),
-                              child: Text(
-                                'Removed by moderators: ${item.removalReason}',
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: Spacing.xl),
-                          if (isOwner)
-                            _OwnerActions(item: item)
-                          else if (item.status == LostFoundStatus.open)
-                            SizedBox(
-                              width: double.infinity,
-                              child: FilledButton.icon(
-                                onPressed: () =>
-                                    showClaimBottomSheet(context, ref, itemId),
-                                icon: const Icon(Icons.pan_tool_alt_outlined),
-                                label: Text(
-                                  item.type == LostFoundType.lost
-                                      ? "I found this"
-                                      : "This is mine",
-                                ),
-                              ),
-                            ),
+                          const SizedBox(width: Spacing.sm),
+                          Chip(label: Text(item.status.name.toUpperCase())),
                         ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: Spacing.md),
+                      Text(
+                        item.title,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: Spacing.sm),
+                      Text(item.description),
+                      const SizedBox(height: Spacing.md),
+                      if (item.location.isNotEmpty)
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_outlined, size: 16),
+                            const SizedBox(width: Spacing.xs),
+                            Text(item.location),
+                          ],
+                        ),
+                      const SizedBox(height: Spacing.xs),
+                      Text(
+                        'Posted ${timeago.format(item.createdAt)} by ${item.poster?.name ?? "a student"}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      if (item.status == LostFoundStatus.removed &&
+                          item.removalReason != null) ...[
+                        const SizedBox(height: Spacing.md),
+                        Container(
+                          padding: const EdgeInsets.all(Spacing.md),
+                          decoration: BoxDecoration(
+                            color: context.colors.danger.withValues(
+                              alpha: 0.08,
+                            ),
+                            borderRadius: BorderRadius.circular(RadiusToken.md),
+                          ),
+                          child: Text(
+                            'Removed by moderators: ${item.removalReason}',
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: Spacing.xl),
+                      if (isOwner)
+                        _OwnerActions(item: item)
+                      else if (item.status == LostFoundStatus.open)
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () =>
+                                showClaimBottomSheet(context, ref, itemId),
+                            icon: const Icon(Icons.pan_tool_alt_outlined),
+                            label: Text(
+                              item.type == LostFoundType.lost
+                                  ? "I found this"
+                                  : "This is mine",
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('Failed to load item: $err')),
-          ),
-        ),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(child: Text('Failed to load item: $err')),
       ),
     );
   }
@@ -196,7 +187,7 @@ class _OwnerActions extends ConsumerWidget {
                   }
                 },
                 icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Mark resolved'),
+                label: const Text('Mark Resolved'),
               ),
           ],
         ),

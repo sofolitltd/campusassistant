@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '/core/widgets/custom_header_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -26,48 +27,44 @@ class MyClubsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final clubsAsync = ref.watch(myClubsProvider);
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(title: const Text('My Clubs')),
-          body: clubsAsync.when(
-            data: (clubs) {
-              if (clubs.isEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(Spacing.xxxl),
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      children: [
-                        Icon(
-                          Icons.groups_outlined,
-                          size: 56,
-                          color: context.colors.textSubtle,
-                        ),
-                        const SizedBox(height: Spacing.md),
-                        Text(
-                          'You haven\'t suggested or joined managing any club '
-                          'yet.',
-                          textAlign: .center,
-                          style: TextStyle(color: context.colors.textMuted),
-                        ),
-                      ],
+    return CustomHeaderLayout(
+      title: 'My Clubs',
+      showSearchBar: false,
+      body: clubsAsync.when(
+        data: (clubs) {
+          if (clubs.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(Spacing.xxxl),
+                child: Column(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Icon(
+                      Icons.groups_outlined,
+                      size: 56,
+                      color: context.colors.textSubtle,
                     ),
-                  ),
-                );
-              }
-              return ListView.separated(
-                padding: const EdgeInsets.all(Spacing.lg),
-                itemCount: clubs.length,
-                separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
-                itemBuilder: (context, i) => _MyClubCard(club: clubs[i]),
-              );
-            },
-            loading: () => const Center(child: CupertinoActivityIndicator()),
-            error: (err, _) => Center(child: Text('Error: $err')),
-          ),
-        ),
+                    const SizedBox(height: Spacing.md),
+                    Text(
+                      'You haven\'t suggested or joined managing any club '
+                      'yet.',
+                      textAlign: .center,
+                      style: TextStyle(color: context.colors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(Spacing.lg),
+            itemCount: clubs.length,
+            separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
+            itemBuilder: (context, i) => _MyClubCard(club: clubs[i]),
+          );
+        },
+        loading: () => const Center(child: CupertinoActivityIndicator()),
+        error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );
   }

@@ -47,6 +47,7 @@ class _EmergencyPageState extends ConsumerState<EmergencyPage>
     final tabs = ['Department', 'University', 'National'];
 
     return CustomHeaderLayout(
+      searchAtBottom: true,
       title: 'Emergency Contacts',
       searchHint: 'Search contacts...',
       onSearchChanged: _onSearchChanged,

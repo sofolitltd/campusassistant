@@ -233,7 +233,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text('Clear all'),
+                              child: const Text('Clear All'),
                             ),
                           ],
                         ),
@@ -241,7 +241,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                       if (confirm == true) await _clearAll();
                     },
               icon: const Icon(LucideIcons.trash2, size: 18),
-              label: const Text('Clear all cache'),
+              label: const Text('Clear All Cache'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.danger,
                 side: BorderSide(color: context.colors.danger),

@@ -209,7 +209,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                 context.push(AppRoute.getVerificationCode.path);
                               },
                               child: Text(
-                                'Get your verification code!',
+                                'Get Your Verification Code!',
                                 style: const TextStyle(
                                   letterSpacing: .2,
                                   fontWeight: .bold,
@@ -225,7 +225,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                       child: TextButton(
                         onPressed: () => context.goNamed(AppRoute.login.name),
                         child: Text(
-                          'Cancel and login',
+                          'Cancel And Login',
                           style: TextStyle(
                             color: context.colors.textMuted,
                             letterSpacing: 1,

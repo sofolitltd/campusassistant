@@ -20,13 +20,16 @@ const double homeCardRadius = RadiusToken.lg;
 
 /// Wraps a section's content with the standard gap below it.
 class HomeSection extends StatelessWidget {
-  const HomeSection({super.key, required this.child});
+  const HomeSection({super.key, required this.child, this.bottom = Spacing.lg});
 
   final Widget child;
 
+  /// Gap below the section; defaults to the standard home rhythm.
+  final double bottom;
+
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: Spacing.lg),
+    padding: EdgeInsets.only(bottom: bottom),
     child: child,
   );
 }
@@ -43,15 +46,15 @@ class HomeSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: homeInset),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: .w700,
-          color: context.colors.text,
-        ),
+    padding: padding ?? const EdgeInsets.symmetric(horizontal: homeInset),
+    child: Text(
+      title,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: .w700,
+        color: context.colors.text,
       ),
-    );
+    ),
+  );
 }
 
 /// Loading placeholder: same card chrome as the content it stands in for, at
@@ -63,18 +66,18 @@ class HomeSectionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => HomeSection(
-      child: SectionCard(
-        margin: const EdgeInsets.symmetric(horizontal: homeInset),
-        radius: homeCardRadius,
-        shadow: false,
-        padding: EdgeInsets.zero,
-        child: SizedBox(
-          height: height,
-          width: double.infinity,
-          child: const Center(child: CupertinoActivityIndicator()),
-        ),
+    child: SectionCard(
+      margin: const EdgeInsets.symmetric(horizontal: homeInset),
+      radius: homeCardRadius,
+      shadow: false,
+      padding: EdgeInsets.zero,
+      child: SizedBox(
+        height: height,
+        width: double.infinity,
+        child: const Center(child: CupertinoActivityIndicator()),
       ),
-    );
+    ),
+  );
 }
 
 /// Error placeholder: one compact, retryable card for every section that can
@@ -114,7 +117,10 @@ class HomeSectionError extends StatelessWidget {
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(color: colors.textMuted, fontSize: FontSizeToken.base),
+                style: TextStyle(
+                  color: colors.textMuted,
+                  fontSize: FontSizeToken.base,
+                ),
               ),
             ),
             if (onRetry != null)

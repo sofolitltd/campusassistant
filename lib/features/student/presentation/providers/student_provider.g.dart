@@ -315,7 +315,8 @@ final class StudentsWithTotalByBatchPaginatedProvider
         $StreamProvider<PaginatedStudents> {
   StudentsWithTotalByBatchPaginatedProvider._({
     required StudentsWithTotalByBatchPaginatedFamily super.from,
-    required ({String batchId, int limit, int offset}) super.argument,
+    required ({String batchId, int limit, int offset, String? search})
+    super.argument,
   }) : super(
          retry: null,
          name: r'studentsWithTotalByBatchPaginatedProvider',
@@ -343,12 +344,15 @@ final class StudentsWithTotalByBatchPaginatedProvider
 
   @override
   Stream<PaginatedStudents> create(Ref ref) {
-    final argument = this.argument as ({String batchId, int limit, int offset});
+    final argument =
+        this.argument
+            as ({String batchId, int limit, int offset, String? search});
     return studentsWithTotalByBatchPaginated(
       ref,
       batchId: argument.batchId,
       limit: argument.limit,
       offset: argument.offset,
+      search: argument.search,
     );
   }
 
@@ -365,13 +369,13 @@ final class StudentsWithTotalByBatchPaginatedProvider
 }
 
 String _$studentsWithTotalByBatchPaginatedHash() =>
-    r'c24cafbe5c1b8a38a8e67dfef0116c121e49b2df';
+    r'69f1a081c6944c4d52d52639ee86bd135cfe3545';
 
 final class StudentsWithTotalByBatchPaginatedFamily extends $Family
     with
         $FunctionalFamilyOverride<
           Stream<PaginatedStudents>,
-          ({String batchId, int limit, int offset})
+          ({String batchId, int limit, int offset, String? search})
         > {
   StudentsWithTotalByBatchPaginatedFamily._()
     : super(
@@ -386,8 +390,9 @@ final class StudentsWithTotalByBatchPaginatedFamily extends $Family
     required String batchId,
     required int limit,
     required int offset,
+    String? search,
   }) => StudentsWithTotalByBatchPaginatedProvider._(
-    argument: (batchId: batchId, limit: limit, offset: offset),
+    argument: (batchId: batchId, limit: limit, offset: offset, search: search),
     from: this,
   );
 
@@ -822,6 +827,7 @@ final class StudentsWithTotalAllPaginatedProvider
       String? departmentId,
       int limit,
       int offset,
+      String? search,
     })
     super.argument,
   }) : super(
@@ -857,6 +863,7 @@ final class StudentsWithTotalAllPaginatedProvider
               String? departmentId,
               int limit,
               int offset,
+              String? search,
             });
     return studentsWithTotalAllPaginated(
       ref,
@@ -864,6 +871,7 @@ final class StudentsWithTotalAllPaginatedProvider
       departmentId: argument.departmentId,
       limit: argument.limit,
       offset: argument.offset,
+      search: argument.search,
     );
   }
 
@@ -880,13 +888,19 @@ final class StudentsWithTotalAllPaginatedProvider
 }
 
 String _$studentsWithTotalAllPaginatedHash() =>
-    r'6fc014297c4c4d64c70dde5dcd3d096914e9224e';
+    r'dafa183e3084e58b1bb715101aa29eae288ccda5';
 
 final class StudentsWithTotalAllPaginatedFamily extends $Family
     with
         $FunctionalFamilyOverride<
           Stream<PaginatedStudents>,
-          ({String? universityId, String? departmentId, int limit, int offset})
+          ({
+            String? universityId,
+            String? departmentId,
+            int limit,
+            int offset,
+            String? search,
+          })
         > {
   StudentsWithTotalAllPaginatedFamily._()
     : super(
@@ -902,12 +916,14 @@ final class StudentsWithTotalAllPaginatedFamily extends $Family
     required String? departmentId,
     required int limit,
     required int offset,
+    String? search,
   }) => StudentsWithTotalAllPaginatedProvider._(
     argument: (
       universityId: universityId,
       departmentId: departmentId,
       limit: limit,
       offset: offset,
+      search: search,
     ),
     from: this,
   );

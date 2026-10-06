@@ -314,7 +314,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                               size: 18,
                             ),
                             label: Text(
-                              'Go to ${_sourceLabel(notif.type)}',
+                              'Go To ${_sourceLabel(notif.type)}',
                               style: const TextStyle(fontWeight: .bold),
                             ),
                             style: ElevatedButton.styleFrom(

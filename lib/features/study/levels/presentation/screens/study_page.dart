@@ -1,4 +1,5 @@
 import '/routes/scaffold_with_navbar.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,232 +66,284 @@ class _StudyPageState extends ConsumerState<StudyPage>
     );
 
     final theme = Theme.of(context);
-    final primaryColor = context.colors.primary;
 
     final isLoading =
         batchesAsync.isLoading ||
         currentBatch == null ||
         ref.watch(semestersProvider).isLoading;
 
-    return Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(
-          'Study',
-          style: TextStyle(
-            fontWeight: .bold,
-            color: context.colors.onPrimary,
-            fontSize: FontSizeToken.xxl,
-          ),
-        ),
+    return HeaderGradientBackdrop(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(LucideIcons.search, color: context.colors.onPrimary),
-            onPressed: () => context.push('/study-search'),
+        appBar: AppBar(
+          centerTitle: false,
+          title: Text(
+            'Study',
+            style: TextStyle(
+              fontWeight: .bold,
+              color: context.colors.onPrimary,
+              fontSize: FontSizeToken.xxl,
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: Spacing.sm),
-            child: GestureDetector(
-              onTap: () =>
-                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: context.colors.surface.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(Spacing.xs),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                  child: Image.asset('assets/images/logo.png', fit: .contain),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: Icon(LucideIcons.search, color: context.colors.onPrimary),
+              onPressed: () => context.push('/study-search'),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: Spacing.md),
+              child: GestureDetector(
+                onTap: () =>
+                    ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(Spacing.xs),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    child: Image.asset('assets/images/logo.png', fit: .contain),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: theme.scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
                 ),
-              ),
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  ref.invalidate(semestersProvider);
-                  ref.invalidate(batchProviderStudy);
-                  await ref.read(semestersProvider.future);
-                },
-                child: isLoading
-                    ? const Center(child: CupertinoActivityIndicator())
-                    : CustomScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        slivers: [
-                          // Resources horizontal list
-                          SliverToBoxAdapter(
-                            child: ResourceShortcutsBar(
-                              bookmarkCount: bookmarkCount,
-                              downloadCount: downloadCount,
-                            ),
-                          ),
-
-                          // Levels header row
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                Spacing.lg,
-                                Spacing.sm,
-                                Spacing.lg,
-                                Spacing.lg,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () =>
-                                            setState(() => isGridView = false),
-                                        child: Icon(
-                                          Icons.list_alt,
-                                          color: !isGridView
-                                              ? theme.colorScheme.onSurface
-                                              : theme.colorScheme.onSurface
-                                                    .withAlpha(100),
-                                        ),
-                                      ),
-                                      const SizedBox(width: Spacing.lg),
-                                      GestureDetector(
-                                        onTap: () =>
-                                            setState(() => isGridView = true),
-                                        child: Icon(
-                                          Icons.grid_view_outlined,
-                                          color: isGridView
-                                              ? theme.colorScheme.onSurface
-                                              : theme.colorScheme.onSurface
-                                                    .withAlpha(100),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisSize: .min,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () => setState(
-                                          () =>
-                                              _sortAscending = !_sortAscending,
-                                        ),
-                                        child: Icon(
-                                          _sortAscending
-                                              ? LucideIcons.arrowUpWideNarrow
-                                              : LucideIcons.arrowDownWideNarrow,
-                                          size: 20,
-                                          color: theme.colorScheme.onSurface,
-                                        ),
-                                      ),
-                                      const SizedBox(width: Spacing.sm),
-                                      const BatchDropdown(),
-                                    ],
-                                  ),
-                                ],
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(semestersProvider);
+                    ref.invalidate(batchProviderStudy);
+                    await ref.read(semestersProvider.future);
+                  },
+                  child: isLoading
+                      ? const Center(child: CupertinoActivityIndicator())
+                      : CustomScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            // Resources horizontal list
+                            SliverToBoxAdapter(
+                              child: ResourceShortcutsBar(
+                                bookmarkCount: bookmarkCount,
+                                downloadCount: downloadCount,
                               ),
                             ),
-                          ),
 
-                          // Semesters content
-                          if (displaySemesters.isEmpty)
+                            // Levels header row
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 60,
+                                padding: const EdgeInsets.fromLTRB(
+                                  Spacing.lg,
+                                  Spacing.xl,
+                                  Spacing.lg,
+                                  Spacing.lg,
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: .center,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(
-                                      LucideIcons.frown,
-                                      size: 48,
-                                      color: theme.colorScheme.onSurface
-                                          .withAlpha(100),
+                                    Row(
+                                      mainAxisSize: .min,
+                                      children: [
+                                        // Outline around the list/grid switch; the
+                                        // two icons themselves are unchanged. 36px tall
+                                        // to line up with the sort and batch buttons.
+                                        Container(
+                                          height: 36,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: Spacing.sm,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: context.colors.surface,
+                                            border: Border.all(
+                                              color:
+                                                  context.colors.borderStrong,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              RadiusToken.md,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () => setState(
+                                                  () => isGridView = false,
+                                                ),
+                                                child: Icon(
+                                                  Icons.list_alt,
+                                                  color: !isGridView
+                                                      ? theme
+                                                            .colorScheme
+                                                            .onSurface
+                                                      : theme
+                                                            .colorScheme
+                                                            .onSurface
+                                                            .withAlpha(100),
+                                                ),
+                                              ),
+                                              const SizedBox(width: Spacing.md),
+                                              GestureDetector(
+                                                onTap: () => setState(
+                                                  () => isGridView = true,
+                                                ),
+                                                child: Icon(
+                                                  Icons.grid_view_outlined,
+                                                  color: isGridView
+                                                      ? theme
+                                                            .colorScheme
+                                                            .onSurface
+                                                      : theme
+                                                            .colorScheme
+                                                            .onSurface
+                                                            .withAlpha(100),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: Spacing.sm),
+                                        GestureDetector(
+                                          onTap: () => setState(
+                                            () => _sortAscending =
+                                                !_sortAscending,
+                                          ),
+                                          // Same border and radius as the switch and batch button.
+                                          child: Container(
+                                            height: 36,
+                                            width: 36,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              color: context.colors.surface,
+                                              border: Border.all(
+                                                color:
+                                                    context.colors.borderStrong,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    RadiusToken.md,
+                                                  ),
+                                            ),
+                                            child: Icon(
+                                              _sortAscending
+                                                  ? LucideIcons
+                                                        .arrowUpWideNarrow
+                                                  : LucideIcons
+                                                        .arrowDownWideNarrow,
+                                              size: 20,
+                                              color:
+                                                  theme.colorScheme.onSurface,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: Spacing.md),
-                                    Text(
-                                      "No semesters found.",
-                                      style: TextStyle(
-                                        color: theme.colorScheme.onSurface
-                                            .withAlpha(128),
-                                      ),
-                                    ),
+                                    const BatchDropdown(height: 36),
                                   ],
                                 ),
                               ),
-                            )
-                          else if (isGridView)
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(
-                                Spacing.lg,
-                                0,
-                                Spacing.lg,
-                                Spacing.lg,
-                              ),
-                              sliver: SliverMasonryGrid.count(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
-                                childCount: displaySemesters.length,
-                                itemBuilder: (context, index) {
-                                  final semester = displaySemesters[index];
-                                  return GestureDetector(
-                                    onTap: () => _goToSemester(semester),
-                                    child: SemesterGridCard(semester: semester),
-                                  );
-                                },
-                              ),
-                            )
-                          else
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(
-                                Spacing.lg,
-                                0,
-                                Spacing.lg,
-                                Spacing.lg,
-                              ),
-                              sliver: SliverList(
-                                delegate: SliverChildBuilderDelegate((
-                                  context,
-                                  index,
-                                ) {
-                                  final semester = displaySemesters[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: Spacing.lg,
-                                    ),
-                                    child: GestureDetector(
+                            ),
+
+                            // Semesters content
+                            if (displaySemesters.isEmpty)
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 60,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: .center,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.frown,
+                                        size: 48,
+                                        color: theme.colorScheme.onSurface
+                                            .withAlpha(100),
+                                      ),
+                                      const SizedBox(height: Spacing.md),
+                                      Text(
+                                        "No semesters found.",
+                                        style: TextStyle(
+                                          color: theme.colorScheme.onSurface
+                                              .withAlpha(128),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            else if (isGridView)
+                              SliverPadding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  Spacing.lg,
+                                  0,
+                                  Spacing.lg,
+                                  Spacing.lg,
+                                ),
+                                sliver: SliverMasonryGrid.count(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childCount: displaySemesters.length,
+                                  itemBuilder: (context, index) {
+                                    final semester = displaySemesters[index];
+                                    return GestureDetector(
                                       onTap: () => _goToSemester(semester),
-                                      child: SemesterListCard(
+                                      child: SemesterGridCard(
                                         semester: semester,
                                       ),
-                                    ),
-                                  );
-                                }, childCount: displaySemesters.length),
+                                    );
+                                  },
+                                ),
+                              )
+                            else
+                              SliverPadding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  Spacing.lg,
+                                  0,
+                                  Spacing.lg,
+                                  Spacing.lg,
+                                ),
+                                sliver: SliverList(
+                                  delegate: SliverChildBuilderDelegate((
+                                    context,
+                                    index,
+                                  ) {
+                                    final semester = displaySemesters[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: Spacing.lg,
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () => _goToSemester(semester),
+                                        child: SemesterListCard(
+                                          semester: semester,
+                                        ),
+                                      ),
+                                    );
+                                  }, childCount: displaySemesters.length),
+                                ),
                               ),
-                            ),
-                        ],
-                      ),
+                          ],
+                        ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

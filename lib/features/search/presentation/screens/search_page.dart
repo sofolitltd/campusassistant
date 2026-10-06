@@ -94,6 +94,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return CustomHeaderLayout(
+      glassSearch: true,
       title: 'Search',
       searchHint: 'Search courses, clubs, teachers, and more...',
       controller: _controller,
@@ -223,11 +224,7 @@ List<Widget> _itemWidgetsForType(
     case 'staff':
       return [
         for (final s in results.staffList)
-          InkWell(
-            key: ValueKey('staff-${s.id}'),
-            onTap: () => context.push('/staff/details?id=${s.id}'),
-            child: StaffCard(staff: s),
-          ),
+          StaffCard(key: ValueKey('staff-${s.id}'), staff: s),
       ];
     case 'marketplace':
       return [

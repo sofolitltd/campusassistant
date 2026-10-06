@@ -294,7 +294,7 @@ class _AboutTab extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onEdit,
           icon: const Icon(LucideIcons.pencil, size: 16),
-          label: const Text('Edit business'),
+          label: const Text('Edit Business'),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, ControlToken.height),
           ),

@@ -27,6 +27,7 @@ class SubscriptionPage extends ConsumerStatefulWidget {
 class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   SubscriptionPlan? selectedPlan;
   final _couponController = TextEditingController();
+  String? _appliedCoupon;
 
   @override
   void dispose() {
@@ -51,13 +52,16 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
 
           return plansAsync.when(
             data: (plans) {
-              void refresh() =>
-                  ref.invalidate(subscriptionPlansProvider(params));
+              void refresh() {
+                ref.invalidate(subscriptionPlansProvider(params));
+                ref.invalidate(userSubscriptionProvider(user.uid));
+              }
+
               return plans.isEmpty
                   ? _scrollableCentered(_buildEmptyState(), refresh)
                   : RefreshIndicator(
                       onRefresh: () async => refresh(),
-                      child: _buildContent(context, plans),
+                      child: _buildContent(context, plans, user.uid),
                     );
             },
             loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -117,7 +121,11 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     );
   }
 
-  Widget _buildContent(BuildContext context, List<SubscriptionPlan> plans) {
+  Widget _buildContent(
+    BuildContext context,
+    List<SubscriptionPlan> plans,
+    String uid,
+  ) {
     if (selectedPlan == null && plans.isNotEmpty) {
       selectedPlan = plans.first;
     }
@@ -137,6 +145,8 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
         children: [
           _buildHeroCard(context),
           const SizedBox(height: Spacing.xl),
+          _buildCurrentPlanCard(uid),
+          const SizedBox(height: Spacing.xl),
           _buildSectionHeader('Choose Your Plan'),
           const SizedBox(height: Spacing.md),
           _buildPlansSelector(context, plans),
@@ -151,57 +161,160 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     );
   }
 
-  /// A quiet tinted banner rather than a full-bleed gradient block, so the
-  /// plan cards below stay the focus.
+  /// Full-width banner with a single brand gradient behind all its content.
   Widget _buildHeroCard(BuildContext context) {
     final colors = context.colors;
-    return SectionCard(
-      radius: RadiusToken.lg,
-      color: colors.primarySubtle,
-      borderColor: Colors.transparent,
-      shadow: false,
-      child: Column(
-        crossAxisAlignment: .start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.sm + 2,
-              vertical: Spacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: colors.primary,
-              borderRadius: BorderRadius.circular(RadiusToken.full),
-            ),
-            child: Text(
-              'PRO ACCESS',
-              style: TextStyle(
-                color: colors.onPrimary,
-                fontWeight: .bold,
-                fontSize: FontSizeToken.xs,
-                letterSpacing: 1.1,
+    return SizedBox(
+      width: double.infinity,
+      child: SectionCard(
+        radius: RadiusToken.lg,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [colors.primary, colors.primaryPressed],
+        ),
+        borderColor: Colors.transparent,
+        shadow: false,
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.sm + 2,
+                vertical: Spacing.xs,
+              ),
+              decoration: BoxDecoration(
+                color: colors.onPrimary.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(RadiusToken.full),
+              ),
+              child: Text(
+                'PRO ACCESS',
+                style: TextStyle(
+                  color: colors.onPrimary,
+                  fontWeight: .bold,
+                  fontSize: FontSizeToken.xs,
+                  letterSpacing: 1.1,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: Spacing.md),
-          Text(
-            'Unlock Your Full Potential',
-            style: TextStyle(
-              color: colors.text,
-              fontSize: FontSizeToken.xxl,
-              fontWeight: .bold,
-              height: 1.15,
+            const SizedBox(height: Spacing.md),
+            Text(
+              'Unlock Your Full Potential',
+              style: TextStyle(
+                color: colors.onPrimary,
+                fontSize: FontSizeToken.xxl,
+                fontWeight: .bold,
+                height: 1.15,
+              ),
             ),
-          ),
-          const SizedBox(height: Spacing.sm),
-          Text(
-            'Enjoy ad-free experience and exclusive features.',
-            style: TextStyle(
-              color: colors.textMuted,
-              fontSize: FontSizeToken.md,
+            const SizedBox(height: Spacing.sm),
+            Text(
+              'Enjoy ad-free experience and exclusive features.',
+              style: TextStyle(
+                color: colors.onPrimary.withValues(alpha: 0.85),
+                fontSize: FontSizeToken.md,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  /// Shows the user's current package and its validity, or that they have
+  /// none. A null `endDate` means a lifetime plan.
+  Widget _buildCurrentPlanCard(String uid) {
+    final colors = context.colors;
+    final subAsync = ref.watch(userSubscriptionProvider(uid));
+
+    // (icon, tint, title, detail) for each state.
+    Widget card({
+      required IconData icon,
+      required Color accent,
+      required Color tint,
+      required String title,
+      required String detail,
+    }) {
+      return SizedBox(
+        width: double.infinity,
+        child: SectionCard(
+          radius: RadiusToken.lg,
+          color: tint,
+          borderColor: Colors.transparent,
+          shadow: false,
+          child: Row(
+            children: [
+              Icon(icon, size: 24, color: accent),
+              const SizedBox(width: Spacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: colors.text,
+                        fontSize: FontSizeToken.lg,
+                        fontWeight: .w600,
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.xxs),
+                    Text(
+                      detail,
+                      style: TextStyle(
+                        color: colors.textMuted,
+                        fontSize: FontSizeToken.sm,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return subAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: Spacing.lg),
+        child: Center(child: CupertinoActivityIndicator()),
+      ),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (sub) {
+        final fmt = DateFormat('MMM dd, yyyy');
+        final end = sub?.endDate;
+        final expired = end != null && end.isBefore(DateTime.now());
+
+        if (sub == null) {
+          return card(
+            icon: LucideIcons.lock,
+            accent: colors.textMuted,
+            tint: colors.surface,
+            title: 'No active package',
+            detail: 'You are on the free plan. Pick a plan below to go Pro.',
+          );
+        }
+        if (expired) {
+          return card(
+            icon: LucideIcons.clockAlert,
+            accent: colors.danger,
+            tint: colors.surface,
+            title: '${sub.plan} expired',
+            detail: 'Expired on ${fmt.format(end)}. Renew below.',
+          );
+        }
+        final daysLeft = end?.difference(DateTime.now()).inDays;
+        return card(
+          icon: LucideIcons.crown,
+          accent: colors.success,
+          tint: colors.successSubtle,
+          title: 'Current package: ${sub.plan}',
+          detail: end == null
+              ? 'Lifetime access'
+              : 'Valid until ${fmt.format(end)} · $daysLeft days left',
+        );
+      },
     );
   }
 
@@ -302,26 +415,37 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           Column(
             crossAxisAlignment: .end,
             children: [
-              if (plan.discount > 0)
-                Text(
-                  '৳${plan.mainPrice}',
-                  style: TextStyle(
-                    color: colors.textSubtle,
-                    fontSize: FontSizeToken.sm,
-                    decoration: .lineThrough,
+              // Old and new price share one baseline-aligned row.
+              Row(
+                mainAxisSize: .min,
+                crossAxisAlignment: .baseline,
+                textBaseline: .alphabetic,
+                children: [
+                  if (plan.discount > 0) ...[
+                    Text(
+                      '৳${plan.mainPrice}',
+                      style: TextStyle(
+                        color: colors.textSubtle,
+                        fontSize: FontSizeToken.sm,
+                        decoration: .lineThrough,
+                      ),
+                    ),
+                    const SizedBox(width: Spacing.sm),
+                  ],
+                  Text(
+                    '৳${plan.price}',
+                    style: TextStyle(
+                      fontWeight: .w800,
+                      fontSize: FontSizeToken.xl,
+                      color: isSelected ? colors.primary : colors.text,
+                    ),
                   ),
-                ),
-              Text(
-                '৳${plan.price}',
-                style: TextStyle(
-                  fontWeight: .w800,
-                  fontSize: FontSizeToken.xl,
-                  color: isSelected ? colors.primary : colors.text,
-                ),
+                ],
               ),
               if (plan.discount > 0)
                 Text(
                   '${plan.discount}% OFF · Save ৳${plan.savedAmount}',
+                  textAlign: .end,
                   style: TextStyle(
                     color: colors.success,
                     fontSize: FontSizeToken.xs,
@@ -372,22 +496,97 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   }
 
   Widget _buildCouponSection() {
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        _buildSectionHeader('Have a coupon?'),
-        const SizedBox(height: Spacing.md),
-        // Border, fill and padding come from the app-wide input theme.
-        TextField(
-          controller: _couponController,
-          decoration: const InputDecoration(
-            hintText: 'Enter coupon code',
-            prefixIcon: Icon(LucideIcons.tag, size: 20),
+    final colors = context.colors;
+    final applied = _appliedCoupon != null;
+    return SectionCard(
+      radius: RadiusToken.lg,
+      shadow: false,
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          _buildSectionHeader('Have a coupon?'),
+          const SizedBox(height: Spacing.md),
+          Row(
+            children: [
+              Expanded(
+                // Border, fill and padding come from the app-wide input theme.
+                child: TextField(
+                  controller: _couponController,
+                  enabled: !applied,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter coupon code',
+                    prefixIcon: Icon(LucideIcons.tag, size: 20),
+                  ),
+                  textCapitalization: .characters,
+                  onChanged: (_) => setState(() {}),
+                  onSubmitted: (_) => _applyCoupon(),
+                ),
+              ),
+              const SizedBox(width: Spacing.sm),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  // The theme's min width is infinite; a Row needs a finite one.
+                  minimumSize: const Size(88, ControlToken.height),
+                ),
+                onPressed: (applied || _couponController.text.trim().isEmpty)
+                    ? null
+                    : _applyCoupon,
+                child: const Text('Apply'),
+              ),
+            ],
           ),
-          textCapitalization: .characters,
-        ),
-      ],
+          // Cancel only exists once a coupon has been applied.
+          if (applied) ...[
+            const SizedBox(height: Spacing.sm),
+            Row(
+              children: [
+                Icon(LucideIcons.circleCheck, size: 16, color: colors.success),
+                const SizedBox(width: Spacing.xs),
+                Expanded(
+                  child: Text(
+                    'Coupon $_appliedCoupon applied',
+                    style: TextStyle(
+                      color: colors.success,
+                      fontSize: FontSizeToken.sm,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _cancelCoupon,
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(Spacing.xs),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: colors.danger,
+                        fontSize: FontSizeToken.sm,
+                        fontWeight: .w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
     );
+  }
+
+  void _applyCoupon() {
+    final code = _couponController.text.trim();
+    if (code.isEmpty) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _appliedCoupon = code);
+  }
+
+  void _cancelCoupon() {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _appliedCoupon = null;
+      _couponController.clear();
+    });
   }
 
   Widget _buildSubscribeButton(BuildContext context) {
@@ -416,8 +615,8 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
       'plan_title': selectedPlan!.title,
       'amount': selectedPlan!.price.toString(),
     };
-    final coupon = _couponController.text.trim();
-    if (coupon.isNotEmpty) {
+    final coupon = _appliedCoupon;
+    if (coupon != null && coupon.isNotEmpty) {
       params['coupon_code'] = coupon;
     }
     context.pushNamed(AppRoute.payment.name, queryParameters: params);

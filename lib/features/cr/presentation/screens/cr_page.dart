@@ -42,6 +42,7 @@ class _CrPageState extends ConsumerState<CrPage>
 
     return CustomHeaderLayout(
       title: 'Class Representative',
+      searchAtBottom: true,
       searchHint: 'Search class representatives...',
       onSearchChanged: (value) => setState(() => _searchQuery = value),
       body: Column(

@@ -10,9 +10,8 @@ import '/features/university/presentation/providers/faculty_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
-import '/core/theme/tokens/app_accents.dart';
 
-class FacultyDetailsPage extends ConsumerWidget {
+class FacultyDetailsPage extends ConsumerStatefulWidget {
   final String facultyId;
   final String facultyName;
 
@@ -23,17 +22,27 @@ class FacultyDetailsPage extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final departmentsAsync = ref.watch(departmentsByFacultyProvider(facultyId));
+  ConsumerState<FacultyDetailsPage> createState() => _FacultyDetailsPageState();
+}
+
+class _FacultyDetailsPageState extends ConsumerState<FacultyDetailsPage> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final facultyName = widget.facultyName;
+    final departmentsAsync = ref.watch(
+      departmentsByFacultyProvider(widget.facultyId),
+    );
 
     return CustomHeaderLayout(
       title: facultyName.isNotEmpty ? facultyName : 'Faculty',
-      showSearchBar: false,
+      searchAtBottom: true,
+      searchHint: 'Search departments...',
+      onSearchChanged: (value) => setState(() => _query = value),
       body: departmentsAsync.when(
-        data: (departments) => _DepartmentsList(
-          facultyName: facultyName,
-          departments: departments,
-        ),
+        data: (departments) =>
+            _DepartmentsList(departments: departments, query: _query),
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(
           child: Padding(
@@ -54,78 +63,31 @@ class FacultyDetailsPage extends ConsumerWidget {
 }
 
 class _DepartmentsList extends StatelessWidget {
-  final String facultyName;
   final List<Department> departments;
+  final String query;
 
-  const _DepartmentsList({
-    required this.facultyName,
-    required this.departments,
-  });
+  const _DepartmentsList({required this.departments, required this.query});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final q = query.trim().toLowerCase();
+    final filtered = q.isEmpty
+        ? departments
+        : departments
+              .where(
+                (d) =>
+                    d.name.toLowerCase().contains(q) ||
+                    d.acronym.toLowerCase().contains(q),
+              )
+              .toList();
 
     return ListView(
       padding: const EdgeInsets.all(Spacing.lg),
       physics: const BouncingScrollPhysics(),
       children: [
-        Container(
-          padding: const EdgeInsets.all(Spacing.lg),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AccentToken.blue.withValues(alpha: 0.1),
-                AccentToken.violet.withValues(alpha: 0.1),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(RadiusToken.md),
-            border: Border.all(color: context.colors.info),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AccentToken.blue.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(RadiusToken.sm),
-                ),
-                child: const Icon(
-                  LucideIcons.graduationCap,
-                  color: AccentToken.blue,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: Spacing.lg),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text(
-                      facultyName.isNotEmpty ? facultyName : 'Faculty',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: .bold,
-                      ),
-                      maxLines: 2,
-                      overflow: .ellipsis,
-                    ),
-                    Text(
-                      '${departments.length} department${departments.length == 1 ? '' : 's'}',
-                      style: TextStyle(
-                        color: context.colors.textMuted,
-                        fontSize: FontSizeToken.md,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: Spacing.xxl),
         Text(
-          'Assigned Departments',
+          'Departments (${filtered.length})',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.lg),
@@ -151,8 +113,18 @@ class _DepartmentsList extends StatelessWidget {
               ],
             ),
           )
+        else if (filtered.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: Spacing.xxl),
+            child: Center(
+              child: Text(
+                'No departments match "$query"',
+                style: TextStyle(color: context.colors.textMuted),
+              ),
+            ),
+          )
         else
-          ...departments.map((dept) => _DepartmentCard(department: dept)),
+          ...filtered.map((dept) => _DepartmentCard(department: dept)),
       ],
     );
   }
@@ -186,7 +158,7 @@ class _DepartmentCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: AccentToken.blue.withValues(alpha: 0.1),
+              color: context.colors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(RadiusToken.sm),
             ),
             child: Center(
@@ -194,8 +166,8 @@ class _DepartmentCard extends StatelessWidget {
                 department.acronym.isNotEmpty
                     ? department.acronym.substring(0, 2).toUpperCase()
                     : department.name.substring(0, 2).toUpperCase(),
-                style: const TextStyle(
-                  color: AccentToken.blue,
+                style: TextStyle(
+                  color: context.colors.primary,
                   fontWeight: .w800,
                   fontSize: FontSizeToken.base,
                 ),

@@ -189,7 +189,7 @@ class _UniversityLocationPageState
                     ElevatedButton.icon(
                       onPressed: () => _openMap(university),
                       icon: const Icon(LucideIcons.navigation),
-                      label: const Text('Open in Google Maps'),
+                      label: const Text('Open In Google Maps'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: theme.colorScheme.onPrimary,

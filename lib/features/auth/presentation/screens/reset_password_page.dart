@@ -166,8 +166,9 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                     children: [
                       Text(
                         'Enter the code',
-                        style: Theme.of(context).textTheme.titleMedium!
-                            .copyWith(fontWeight: .bold),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium!.copyWith(fontWeight: .bold),
                       ),
                       Text(
                         'We sent a 6-digit code to ${widget.email}. '
@@ -231,7 +232,10 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
 
                       Text(
                         '* If you don\'t see the email in your inbox, check your spam folder.',
-                        style: TextStyle(fontSize: FontSizeToken.sm, color: context.colors.textSubtle),
+                        style: TextStyle(
+                          fontSize: FontSizeToken.sm,
+                          color: context.colors.textSubtle,
+                        ),
                       ),
                     ],
                   ),

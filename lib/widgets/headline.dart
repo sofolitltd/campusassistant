@@ -21,10 +21,10 @@ class Headline extends StatelessWidget {
         crossAxisAlignment: .start,
         children: [
           Text(
-            title.toUpperCase(),
+            _sentenceCase(title),
             style: theme.textTheme.titleMedium!.copyWith(
               fontWeight: .bold,
-              letterSpacing: 1,
+              letterSpacing: 0.2,
               color: theme.colorScheme.onSurface,
             ),
           ),
@@ -32,4 +32,11 @@ class Headline extends StatelessWidget {
       ),
     );
   }
+}
+
+/// "MAJOR COURSE" / "major course" -> "Major course".
+String _sentenceCase(String text) {
+  final t = text.trim();
+  if (t.isEmpty) return t;
+  return t[0].toUpperCase() + t.substring(1).toLowerCase();
 }

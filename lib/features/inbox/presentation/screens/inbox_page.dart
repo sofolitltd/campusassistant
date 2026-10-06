@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '/core/widgets/glass_search_bar.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '/core/theme/app_colors.dart';
@@ -78,155 +82,105 @@ class _InboxPageState extends ConsumerState<InboxPage>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final conversationsAsync = ref.watch(conversationsProvider);
-    final primaryColor = context.colors.primary;
 
-    return Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: Spacing.sm),
-            child: GestureDetector(
-              onTap: () =>
-                  ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: context.colors.surface.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(Spacing.xs),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                  child: Image.asset('assets/images/logo.png', fit: .contain),
-                ),
-              ),
-            ),
-          ),
-        ],
-        title: Text(
-          'Inbox',
-          style: GoogleFonts.outfit(
-            fontWeight: .bold,
-            color: context.colors.onPrimary,
-            fontSize: FontSizeToken.xxl,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          _buildSearchBar(isDark),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.colors.surfaceAlt,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 700),
-                    child: conversationsAsync.when(
-                      data: (conversations) =>
-                          _buildConversationList(conversations, isDark),
-                      loading: () => _buildLoading(),
-                      error: (e, _) => Center(child: Text('Error: $e')),
-                    ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: false,
+          scrolledUnderElevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: Spacing.sm),
+              child: GestureDetector(
+                onTap: () =>
+                    ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(Spacing.xs),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    child: Image.asset('assets/images/logo.png', fit: .contain),
                   ),
                 ),
               ),
             ),
+          ],
+          title: Text(
+            'Inbox',
+            style: GoogleFonts.outfit(
+              fontWeight: .bold,
+              color: context.colors.onPrimary,
+              fontSize: FontSizeToken.xxl,
+            ),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.pushNamed(AppRoute.newChat.name),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RadiusToken.xl),
         ),
-        child: const Icon(LucideIcons.plus),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceAlt,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                  child: Column(
+                    children: [
+                      GlassSearchBar(
+                        atTop: true,
+                        controller: _searchController,
+                        hint: 'Search conversations...',
+                        onChanged: (v) => setState(() => _filterText = v),
+                        onClear: () {
+                          _searchController.clear();
+                          setState(() => _filterText = '');
+                        },
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 700),
+                            child: conversationsAsync.when(
+                              data: (conversations) =>
+                                  _buildConversationList(conversations, isDark),
+                              loading: () => _buildLoading(),
+                              error: (e, _) => Center(child: Text('Error: $e')),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => context.pushNamed(AppRoute.newChat.name),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(RadiusToken.xl),
+          ),
+          child: const Icon(LucideIcons.plus),
+        ),
       ),
     );
   }
 
   Widget _buildLoading() {
     return const Center(child: CupertinoActivityIndicator());
-  }
-
-  Widget _buildSearchBar(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Spacing.lg,
-        Spacing.xs,
-        Spacing.lg,
-        Spacing.xl,
-      ),
-      child: Container(
-        height: 48,
-        decoration: BoxDecoration(
-          color: context.colors.surface,
-          borderRadius: BorderRadius.circular(RadiusToken.lg),
-        ),
-        child: TextField(
-          controller: _searchController,
-          style: TextStyle(
-            fontSize: FontSizeToken.lg,
-            color: context.colors.text,
-          ),
-          decoration: InputDecoration(
-            hintText: 'Search',
-            hintStyle: TextStyle(
-              color: context.colors.textSubtle,
-              fontSize: FontSizeToken.lg,
-            ),
-            prefixIcon: Padding(
-              padding: const EdgeInsets.only(
-                left: Spacing.md,
-                right: Spacing.sm,
-              ),
-              child: Icon(
-                LucideIcons.search,
-                size: 20,
-                color: context.colors.textSubtle,
-              ),
-            ),
-            prefixIconConstraints: const BoxConstraints(minWidth: 40),
-            suffixIcon: _filterText.isNotEmpty
-                ? GestureDetector(
-                    onTap: () {
-                      _searchController.clear();
-                      setState(() => _filterText = '');
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.md,
-                      ),
-                      child: Icon(
-                        LucideIcons.circleX,
-                        size: 18,
-                        color: context.colors.textSubtle,
-                      ),
-                    ),
-                  )
-                : null,
-            suffixIconConstraints: const BoxConstraints(maxHeight: 32),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: Spacing.lg),
-          ),
-          onChanged: (v) => setState(() => _filterText = v),
-        ),
-      ),
-    );
   }
 
   Widget _buildConversationList(
@@ -561,7 +515,9 @@ class _ConversationTile extends StatelessWidget {
               CircleAvatar(
                 radius: 22,
                 backgroundImage: imageUrl.isNotEmpty
-                    ? NetworkImage(ApiEndpoints.resolveImageUrl(imageUrl))
+                    ? CachedNetworkImageProvider(
+                        ApiEndpoints.resolveImageUrl(imageUrl),
+                      )
                     : null,
                 backgroundColor: isPending
                     ? context.colors.warning.withValues(alpha: 0.2)

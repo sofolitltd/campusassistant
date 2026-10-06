@@ -52,7 +52,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     ref.invalidate(notificationsProvider);
                   },
                   child: Text(
-                    'Mark all read',
+                    'Mark All Read',
                     style: TextStyle(
                       fontSize: FontSizeToken.sm,
                       fontWeight: .w600,
@@ -191,7 +191,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                   if (mounted) setState(() => _loadingMore = false);
                 },
                 child: Text(
-                  'Load older notifications',
+                  'Load Older Notifications',
                   style: TextStyle(
                     fontSize: FontSizeToken.sm,
                     fontWeight: .w600,

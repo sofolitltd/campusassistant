@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
+import '/core/widgets/app_choice_chip.dart';
+import '/core/widgets/glass_search_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -10,7 +12,6 @@ import '/routes/app_route.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import 'job_card.dart';
-import '/core/theme/tokens/app_font_size.dart';
 
 enum _DeadlineFilter { all, upcoming, expired }
 
@@ -95,13 +96,13 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                       spacing: Spacing.sm,
                       runSpacing: Spacing.sm,
                       children: [
-                        _FilterChip(
+                        AppChoiceChip(
                           label: 'All',
                           selected: tempStatus == null,
                           onTap: () => setSheetState(() => tempStatus = null),
                         ),
                         for (final status in CareerJobStatus.values)
-                          _FilterChip(
+                          AppChoiceChip(
                             label:
                                 status.name[0].toUpperCase() +
                                 status.name.substring(1),
@@ -123,21 +124,21 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                       spacing: Spacing.sm,
                       runSpacing: Spacing.sm,
                       children: [
-                        _FilterChip(
+                        AppChoiceChip(
                           label: 'All',
                           selected: tempDeadline == _DeadlineFilter.all,
                           onTap: () => setSheetState(
                             () => tempDeadline = _DeadlineFilter.all,
                           ),
                         ),
-                        _FilterChip(
+                        AppChoiceChip(
                           label: 'Upcoming',
                           selected: tempDeadline == _DeadlineFilter.upcoming,
                           onTap: () => setSheetState(
                             () => tempDeadline = _DeadlineFilter.upcoming,
                           ),
                         ),
-                        _FilterChip(
+                        AppChoiceChip(
                           label: 'Expired',
                           selected: tempDeadline == _DeadlineFilter.expired,
                           onTap: () => setSheetState(
@@ -181,59 +182,10 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
   @override
   Widget build(BuildContext context) {
     final jobsAsync = ref.watch(myCareerJobsProvider);
-    final cs = Theme.of(context).colorScheme;
     final activeCount = _activeFilterCount;
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            Spacing.lg,
-            Spacing.sm,
-            Spacing.lg,
-            0,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(LucideIcons.search),
-                  ),
-                  onChanged: (value) => setState(() => _search = value.trim()),
-                ),
-              ),
-              const SizedBox(width: Spacing.sm),
-              GestureDetector(
-                onTap: _openFilterSheet,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.md,
-                    vertical: Spacing.md,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: cs.outline),
-                    borderRadius: RadiusToken.circular(RadiusToken.sm),
-                  ),
-                  child: Badge(
-                    isLabelVisible: activeCount > 0,
-                    label: Text(
-                      '$activeCount',
-                      style: const TextStyle(fontSize: FontSizeToken.xxs),
-                    ),
-                    child: Icon(
-                      LucideIcons.slidersHorizontal,
-                      size: 20,
-                      color: cs.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: Spacing.sm),
         Expanded(
           child: jobsAsync.when(
             data: (jobs) {
@@ -285,47 +237,17 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
             error: (err, _) => Center(child: Text('Failed to load jobs: $err')),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.md,
-          vertical: Spacing.sm,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? cs.primaryContainer : cs.surfaceContainerLow,
-          borderRadius: RadiusToken.circular(RadiusToken.sm),
-          border: Border.all(color: selected ? cs.primary : cs.outlineVariant),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: FontSizeToken.md,
-            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-            color: selected ? cs.onPrimaryContainer : cs.onSurface,
+        GlassSearchDock(
+          hint: 'Search jobs...',
+          onChanged: (value) => setState(() => _search = value.trim()),
+          action: GlassCircleButton(
+            icon: LucideIcons.slidersHorizontal,
+            tooltip: 'Filter',
+            active: activeCount > 0,
+            onTap: _openFilterSheet,
           ),
         ),
-      ),
+      ],
     );
   }
 }

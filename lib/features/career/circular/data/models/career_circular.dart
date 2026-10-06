@@ -43,7 +43,9 @@ class CareerCircular {
       title: json['title'] as String? ?? '',
       organization: json['organization'] as String? ?? '',
       categoryId: json['category_id'] as String?,
-      category: categoryJson != null && (categoryJson['id'] as String?)?.isNotEmpty == true
+      category:
+          categoryJson != null &&
+              (categoryJson['id'] as String?)?.isNotEmpty == true
           ? CircularCategory.fromJson(categoryJson)
           : null,
       description: json['description'] as String? ?? '',
@@ -57,7 +59,8 @@ class CareerCircular {
           ? DateTime.tryParse(json['deadline_date'].toString())
           : null,
       viewsCount: json['views_count'] as int? ?? 0,
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
     );
   }

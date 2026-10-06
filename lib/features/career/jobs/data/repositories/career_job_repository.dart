@@ -10,21 +10,32 @@ class CareerJobRepository {
     final response = await apiClient.get('/my/career-jobs');
     final data = response.data as Map<String, dynamic>;
     final items = data['data'] as List? ?? [];
-    return items.map((e) => CareerJob.fromJson(e as Map<String, dynamic>)).toList();
+    return items
+        .map((e) => CareerJob.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<CareerJob> createJob(CareerJob draft) async {
-    final response = await apiClient.post('/my/career-jobs', data: draft.toCreateJson());
+    final response = await apiClient.post(
+      '/my/career-jobs',
+      data: draft.toCreateJson(),
+    );
     return CareerJob.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<CareerJob> updateJob(String id, CareerJob draft) async {
-    final response = await apiClient.put('/my/career-jobs/$id', data: draft.toCreateJson());
+    final response = await apiClient.put(
+      '/my/career-jobs/$id',
+      data: draft.toCreateJson(),
+    );
     return CareerJob.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<void> setStatus(String id, CareerJobStatus status) async {
-    await apiClient.put('/my/career-jobs/$id/status', data: {'status': careerJobStatusToString(status)});
+    await apiClient.put(
+      '/my/career-jobs/$id/status',
+      data: {'status': careerJobStatusToString(status)},
+    );
   }
 
   Future<void> deleteJob(String id) async {
@@ -40,6 +51,8 @@ class CareerJobRepository {
     );
     final data = response.data as Map<String, dynamic>;
     final items = data['data'] as List? ?? [];
-    return items.map((e) => CareerJob.fromJson(e as Map<String, dynamic>)).toList();
+    return items
+        .map((e) => CareerJob.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

@@ -80,7 +80,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                         color: context.colors.success,
                       ),
                       label: Text(
-                        'Contact with CR/Moderator',
+                        'Contact With CR/Moderator',
                         style: const TextStyle(
                           letterSpacing: .5,
                           fontWeight: .bold,
@@ -153,7 +153,7 @@ class GetVerificationCodeScreen extends StatelessWidget {
                         color: context.colors.info,
                       ),
                       label: Text(
-                        'Go to Facebook page',
+                        'Go To Facebook Page',
                         style: const TextStyle(
                           letterSpacing: .5,
                           fontWeight: .bold,

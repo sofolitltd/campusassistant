@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '/core/widgets/search_clear_suffix.dart';
 import '/core/theme/app_colors.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -90,7 +91,7 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
           decoration: BoxDecoration(
             color: colors.surface.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(RadiusToken.xxl),
-            border: Border.all(color: colors.border, width: 1),
+            border: Border.all(color: colors.borderStrong, width: 1),
             boxShadow: [
               BoxShadow(
                 color: colors.shadow,
@@ -128,22 +129,12 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
                       ),
                     ),
                     prefixIconConstraints: const BoxConstraints(minWidth: 32),
-                    suffixIcon: _hasText
-                        ? GestureDetector(
-                            onTap: _onClear,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Spacing.md,
-                              ),
-                              child: Icon(
-                                LucideIcons.circleX,
-                                size: 14,
-                                color: colors.textSubtle,
-                              ),
-                            ),
-                          )
-                        : null,
-                    suffixIconConstraints: const BoxConstraints(maxHeight: 28),
+                    suffixIcon: SearchClearSuffix(
+                      visible: _hasText,
+                      onClear: _onClear,
+                      size: 32,
+                    ),
+                    suffixIconConstraints: SearchClearSuffix.constraints(32),
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(

@@ -162,9 +162,11 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.md,
-                    vertical: Spacing.md,
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.md,
+                    Spacing.xs,
+                    Spacing.md,
+                    Spacing.md,
                   ),
                   itemCount: adList.itemCount,
                   separatorBuilder: (_, _) =>

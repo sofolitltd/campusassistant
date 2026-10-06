@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -163,7 +165,6 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final userAsync = ref.watch(userProvider);
     final selectedBatch = ref.watch(resolvedBatchProvider);
     final selectedSemester = ref.watch(selectedSemesterNotifierProvider);
@@ -198,8 +199,6 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
     final courseModel = courseAsync.value;
     final isLoading = userAsync.isLoading || courseAsync.isLoading;
     final hasError = userAsync.hasError || courseAsync.hasError;
-
-    final primaryColor = context.colors.primary;
     final appBarTitle = courseModel != null
         ? '${courseModel.courseCode.toUpperCase()} : ${courseModel.courseTitle}'
         : widget.courseCode.toUpperCase();
@@ -207,177 +206,173 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
     // ── Error state ──────────────────────────────────────────────────
     if (hasError && !isLoading) {
       final errorMsg = userAsync.error ?? courseAsync.error;
-      return Scaffold(
-        backgroundColor: primaryColor,
-        body: Center(
-          child: Text(
-            'Error: $errorMsg',
-            style: TextStyle(color: context.colors.onPrimary),
+      return HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Text(
+              'Error: $errorMsg',
+              style: TextStyle(color: context.colors.onPrimary),
+            ),
           ),
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
+    return HeaderGradientBackdrop(
+      extraHeight: 44, // filter row
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        iconTheme: IconThemeData(color: context.colors.onPrimary),
-        centerTitle: true,
-        titleSpacing: 0,
-        title: Text(
-          appBarTitle,
-          maxLines: 1,
-          overflow: .ellipsis,
-          style: TextStyle(
-            color: context.colors.onPrimary,
-            fontWeight: .bold,
-            fontSize: FontSizeToken.xl,
-          ),
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: .start,
-        children: [
-          // ── Filter row (red area) ────────────────────────────
-          Padding(
-            padding: const .fromLTRB(16, 0, 0, 16),
-            child: Row(
-              children: [
-                Text(
-                  'Filter:',
-                  style: TextStyle(
-                    color: context.colors.onPrimary,
-                    fontWeight: .w500,
-                  ),
-                ),
-                const SizedBox(width: Spacing.sm),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: .horizontal,
-                    child: Row(
-                      children: [
-                        // Batch filter button (first)
-                        const BatchDropdown(redBg: true),
-                        const SizedBox(width: Spacing.sm),
-                        // Semester/Year filter button (second)
-                        SemesterFilterButton(
-                          selectedSemester: selectedSemester,
-                          semesters: semestersAsync,
-                          redBg: true,
-                        ),
-                        const SizedBox(width: Spacing.sm),
-                        // Course filter button (third)
-                        coursesAsync.when(
-                          data: (courses) {
-                            if (courses.isEmpty) return const SizedBox();
-                            return CourseFilterButton(
-                              courses: courses,
-                              selectedCourseCode: widget.courseCode,
-                              redBg: true,
-                            );
-                          },
-                          loading: () => SizedBox(
-                            width: 100,
-                            height: 32,
-                            child: Center(
-                              child: CupertinoActivityIndicator(
-                                color: context.colors.onPrimary,
-                              ),
-                            ),
-                          ),
-                          error: (_, _) => const SizedBox(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+          centerTitle: false,
+          titleSpacing: 0,
+          actions: [BookmarkAppBarButton(courseCode: widget.courseCode)],
+          title: Text(
+            appBarTitle,
+            maxLines: 1,
+            overflow: .ellipsis,
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.lg,
             ),
           ),
-
-          // ── White rounded container ──────────────────────────
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? theme.scaffoldBackgroundColor
-                    : context.colors.surfaceAlt,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-                child: courseModel == null
-                    ? const Center(child: CupertinoActivityIndicator())
-                    : Column(
+        ),
+        body: Column(
+          crossAxisAlignment: .start,
+          children: [
+            // ── Filter row (red area) ────────────────────────────
+            Padding(
+              padding: const .fromLTRB(16, 0, 0, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: .horizontal,
+                      child: Row(
                         children: [
-                          // ── SectionTabBar ──────────────────────────
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              Spacing.lg,
-                              Spacing.lg,
-                              Spacing.lg,
-                              Spacing.sm,
-                            ),
-                            child: SectionTabBar(
-                              controller: _tabController,
-                              isScrollable: true,
-                              tabs: kCourseType
-                                  .map((tab) => Tab(text: tab))
-                                  .toList(),
-                            ),
+                          // Batch filter button (first)
+                          const BatchDropdown(redBg: true),
+                          const SizedBox(width: Spacing.sm),
+                          // Semester/Year filter button (second)
+                          SemesterFilterButton(
+                            selectedSemester: selectedSemester,
+                            semesters: semestersAsync,
+                            redBg: true,
                           ),
-
-                          // ── Tab content ──────────────────────────
-                          Expanded(
-                            child: TabBarView(
-                              controller: _tabController,
-                              children: [
-                                CourseChaptersScreen(
-                                  courseType: kCourseType[0],
-                                  courseModel: courseModel,
-                                  batch: widget.batch,
-                                  semester: widget.semester,
+                          const SizedBox(width: Spacing.sm),
+                          // Course filter button (third)
+                          coursesAsync.when(
+                            data: (courses) {
+                              if (courses.isEmpty) return const SizedBox();
+                              return CourseFilterButton(
+                                courses: courses,
+                                selectedCourseCode: widget.courseCode,
+                                redBg: true,
+                              );
+                            },
+                            loading: () => SizedBox(
+                              width: 100,
+                              height: 32,
+                              child: Center(
+                                child: CupertinoActivityIndicator(
+                                  color: context.colors.onPrimary,
                                 ),
-                                CourseVideos(
-                                  courseModel: courseModel,
-                                  batch: widget.batch,
-                                  semester: widget.semester,
-                                ),
-                                CourseTypesDetails(
-                                  courseType: kCourseType[2],
-                                  courseModel: courseModel,
-                                  batch: widget.batch,
-                                  semester: widget.semester,
-                                ),
-                                CourseTypesDetails(
-                                  courseType: kCourseType[3],
-                                  courseModel: courseModel,
-                                  batch: widget.batch,
-                                  semester: widget.semester,
-                                ),
-                                CourseTypesDetails(
-                                  courseType: kCourseType[4],
-                                  courseModel: courseModel,
-                                  batch: widget.batch,
-                                  semester: widget.semester,
-                                ),
-                              ],
+                              ),
                             ),
+                            error: (_, _) => const SizedBox(),
                           ),
                         ],
                       ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+
+            // ── White rounded container ──────────────────────────
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: theme.scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                  child: courseModel == null
+                      ? const Center(child: CupertinoActivityIndicator())
+                      : Column(
+                          children: [
+                            // ── SectionTabBar ──────────────────────────
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                Spacing.lg,
+                                Spacing.lg,
+                                Spacing.lg,
+                                Spacing.sm,
+                              ),
+                              child: SectionTabBar(
+                                controller: _tabController,
+                                isScrollable: true,
+                                tabs: kCourseType
+                                    .map((tab) => Tab(text: tab))
+                                    .toList(),
+                              ),
+                            ),
+
+                            // ── Tab content ──────────────────────────
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  CourseChaptersScreen(
+                                    courseType: kCourseType[0],
+                                    courseModel: courseModel,
+                                    batch: widget.batch,
+                                    semester: widget.semester,
+                                  ),
+                                  CourseVideos(
+                                    courseModel: courseModel,
+                                    batch: widget.batch,
+                                    semester: widget.semester,
+                                  ),
+                                  CourseTypesDetails(
+                                    courseType: kCourseType[2],
+                                    courseModel: courseModel,
+                                    batch: widget.batch,
+                                    semester: widget.semester,
+                                  ),
+                                  CourseTypesDetails(
+                                    courseType: kCourseType[3],
+                                    courseModel: courseModel,
+                                    batch: widget.batch,
+                                    semester: widget.semester,
+                                  ),
+                                  CourseTypesDetails(
+                                    courseType: kCourseType[4],
+                                    courseModel: courseModel,
+                                    batch: widget.batch,
+                                    semester: widget.semester,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

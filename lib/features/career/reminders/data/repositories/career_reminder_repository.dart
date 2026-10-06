@@ -10,7 +10,9 @@ class CareerReminderRepository {
     final response = await apiClient.get('/my/career-reminders');
     final data = response.data as Map<String, dynamic>;
     final items = data['data'] as List? ?? [];
-    return items.map((e) => CareerReminder.fromJson(e as Map<String, dynamic>)).toList();
+    return items
+        .map((e) => CareerReminder.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<CareerReminder> createReminder({

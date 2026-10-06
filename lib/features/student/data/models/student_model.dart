@@ -10,7 +10,10 @@ part 'student_model.g.dart';
 // itself calls StudentAddress.fromJson on whatever readValue returns, so
 // returning an already-built StudentAddress here double-converts and throws
 // "type 'StudentAddress' is not a subtype of type 'Map<String, dynamic>'".
-Map<String, dynamic>? _readStudentAddress(Map<dynamic, dynamic> json, String key) {
+Map<String, dynamic>? _readStudentAddress(
+  Map<dynamic, dynamic> json,
+  String key,
+) {
   final raw = json[key];
   if (raw is! Map) return null;
   return Map<String, dynamic>.from(raw);
@@ -61,9 +64,17 @@ abstract class StudentModel with _$StudentModel {
     @JsonKey(readValue: _readDepartmentName) String? departmentName,
     @JsonKey(readValue: _readUniversityName) String? universityName,
     @JsonKey(readValue: _readSessionName) String? sessionName,
-    @JsonKey(name: 'present_address', readValue: _readStudentAddress, toJson: _writeStudentAddress)
+    @JsonKey(
+      name: 'present_address',
+      readValue: _readStudentAddress,
+      toJson: _writeStudentAddress,
+    )
     StudentAddress? presentAddress,
-    @JsonKey(name: 'permanent_address', readValue: _readStudentAddress, toJson: _writeStudentAddress)
+    @JsonKey(
+      name: 'permanent_address',
+      readValue: _readStudentAddress,
+      toJson: _writeStudentAddress,
+    )
     StudentAddress? permanentAddress,
   }) = _StudentModel;
 

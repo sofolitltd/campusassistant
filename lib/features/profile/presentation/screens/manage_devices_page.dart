@@ -55,7 +55,7 @@ class ManageDevicesPage extends ConsumerWidget {
                     ? null
                     : () => _confirmLogoutOthers(context, ref),
                 icon: const Icon(LucideIcons.logOut, size: 18),
-                label: const Text('Log Out of Other Devices'),
+                label: const Text('Log Out Of Other Devices'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(ControlToken.height),
                   shape: RoundedRectangleBorder(
@@ -67,7 +67,7 @@ class ManageDevicesPage extends ConsumerWidget {
               ElevatedButton.icon(
                 onPressed: () => _confirmLogoutAll(context, ref),
                 icon: const Icon(LucideIcons.shieldAlert, size: 18),
-                label: const Text('Log Out of All Devices'),
+                label: const Text('Log Out Of All Devices'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.colors.danger,
                   foregroundColor: context.colors.onPrimary,
@@ -126,7 +126,7 @@ class ManageDevicesPage extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Log out others'),
+            child: const Text('Log Out Others'),
           ),
         ],
       ),

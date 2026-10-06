@@ -14,11 +14,20 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 
-class UniversityDepartmentsPage extends ConsumerWidget {
+class UniversityDepartmentsPage extends ConsumerStatefulWidget {
   const UniversityDepartmentsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UniversityDepartmentsPage> createState() =>
+      _UniversityDepartmentsPageState();
+}
+
+class _UniversityDepartmentsPageState
+    extends ConsumerState<UniversityDepartmentsPage> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
     final universityAsync = ref.watch(myUniversityProvider);
 
     return universityAsync.when(
@@ -29,18 +38,12 @@ class UniversityDepartmentsPage extends ConsumerWidget {
 
         return CustomHeaderLayout(
           title: '${university.acronym} Departments',
-          showSearchBar: false,
+          searchAtBottom: true,
+          searchHint: 'Search departments...',
+          onSearchChanged: (value) => setState(() => _query = value),
           body: deptsAsync.when(
-            data: (departments) => Column(
-              children: [
-                _TotalCountBanner(
-                  count: departments.length,
-                  label: 'Total Departments',
-                  icon: LucideIcons.building2,
-                ),
-                Expanded(child: _DepartmentsList(departments: departments)),
-              ],
-            ),
+            data: (departments) =>
+                _DepartmentsList(departments: departments, query: _query),
             loading: () => const Center(child: CupertinoActivityIndicator()),
             error: (err, _) => Center(
               child: Padding(
@@ -82,90 +85,54 @@ class UniversityDepartmentsPage extends ConsumerWidget {
   }
 }
 
-class _TotalCountBanner extends StatelessWidget {
-  final int count;
-  final String label;
-  final IconData icon;
-
-  const _TotalCountBanner({
-    required this.count,
-    required this.label,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
-      child: Container(
-        padding: const EdgeInsets.all(Spacing.lg),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AccentToken.blue.withValues(alpha: 0.1),
-              AccentToken.violet.withValues(alpha: 0.1),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(color: context.colors.info),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AccentToken.blue.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(RadiusToken.sm),
-              ),
-              child: Icon(icon, color: AccentToken.blue, size: 22),
-            ),
-            const SizedBox(width: Spacing.lg),
-            Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  '$count',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: .bold,
-                    color: AccentToken.blue,
-                  ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: context.colors.textMuted,
-                    fontSize: FontSizeToken.md,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _DepartmentsList extends StatelessWidget {
   final List<Department> departments;
+  final String query;
 
-  const _DepartmentsList({required this.departments});
+  const _DepartmentsList({required this.departments, required this.query});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final q = query.trim().toLowerCase();
+    final filtered = q.isEmpty
+        ? departments
+        : departments
+              .where(
+                (d) =>
+                    d.name.toLowerCase().contains(q) ||
+                    d.acronym.toLowerCase().contains(q),
+              )
+              .toList();
 
-    return ListView.builder(
+    return ListView(
       padding: const EdgeInsets.all(Spacing.lg),
       physics: const BouncingScrollPhysics(),
-      itemCount: departments.length,
-      itemBuilder: (context, index) {
-        final dept = departments[index];
-        return _DepartmentCard(department: dept, isDark: isDark);
-      },
+      children: [
+        Text(
+          'Departments (${filtered.length})',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+        ),
+        const SizedBox(height: Spacing.lg),
+        if (filtered.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: Spacing.xxl),
+            child: Center(
+              child: Text(
+                departments.isEmpty
+                    ? 'No departments found'
+                    : 'No departments match "$query"',
+                style: TextStyle(color: context.colors.textMuted),
+              ),
+            ),
+          )
+        else
+          ...filtered.map(
+            (dept) => _DepartmentCard(department: dept, isDark: isDark),
+          ),
+      ],
     );
   }
 }

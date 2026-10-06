@@ -11,16 +11,26 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
-class DepartmentNoticesPage extends ConsumerWidget {
+class DepartmentNoticesPage extends ConsumerStatefulWidget {
   const DepartmentNoticesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DepartmentNoticesPage> createState() =>
+      _DepartmentNoticesPageState();
+}
+
+class _DepartmentNoticesPageState extends ConsumerState<DepartmentNoticesPage> {
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
     final noticesAsync = ref.watch(departmentNoticesProvider);
 
     return CustomHeaderLayout(
       title: 'Notices',
-      showSearchBar: false,
+      searchAtBottom: true,
+      searchHint: 'Search notices...',
+      onSearchChanged: (value) => setState(() => _searchQuery = value),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(departmentNoticesProvider);
@@ -62,14 +72,58 @@ class DepartmentNoticesPage extends ConsumerWidget {
               );
             }
 
+            final q = _searchQuery.trim().toLowerCase();
+            final filtered = q.isEmpty
+                ? notices
+                : notices
+                      .where(
+                        (n) =>
+                            n.message.toLowerCase().contains(q) ||
+                            n.uploader.toLowerCase().contains(q),
+                      )
+                      .toList();
+
+            if (filtered.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.5,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: .center,
+                        children: [
+                          Icon(
+                            LucideIcons.searchX,
+                            size: 48,
+                            color: context.colors.borderStrong,
+                          ),
+                          const SizedBox(height: Spacing.md),
+                          Text(
+                            'No matches found',
+                            style: TextStyle(
+                              color: context.colors.textSubtle,
+                              fontWeight: .w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
             return ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
               ),
               padding: const EdgeInsets.all(Spacing.lg),
-              itemCount: notices.length,
+              itemCount: filtered.length,
               itemBuilder: (context, index) {
-                final notice = notices[index];
+                final notice = filtered[index];
                 return NoticeCard(notice: notice);
               },
             );

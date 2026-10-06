@@ -107,130 +107,213 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ),
 
           SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Spacing.lg,
-                  vertical: Spacing.xxl,
-                ),
-                child: Form(
-                  key: _globalKey,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child:
-                        Container(
-                              padding: const EdgeInsets.all(Spacing.xxl),
-                              decoration: BoxDecoration(
-                                color: theme.cardColor,
-                                borderRadius: BorderRadius.circular(
-                                  RadiusToken.xxl,
-                                ),
-                                border: Border.all(
-                                  color: theme.colorScheme.outlineVariant,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: theme.colorScheme.shadow.withValues(
-                                      alpha: 0.06,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.lg,
+                        vertical: Spacing.xxl,
+                      ),
+                      child: Form(
+                        key: _globalKey,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 400),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Container(
+                                    padding: const EdgeInsets.all(Spacing.xxl),
+                                    decoration: BoxDecoration(
+                                      color: theme.cardColor,
+                                      borderRadius: BorderRadius.circular(
+                                        RadiusToken.xxl,
+                                      ),
+                                      border: Border.all(
+                                        color: theme.colorScheme.outlineVariant,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: theme.colorScheme.shadow
+                                              .withValues(alpha: 0.06),
+                                          blurRadius: 24,
+                                          offset: const Offset(0, 10),
+                                        ),
+                                      ],
                                     ),
-                                    blurRadius: 24,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: .stretch,
-                                children: [
-                                  // ── Brand mark ──
-                                  Center(
-                                        child: SizedBox(
-                                          height: 32,
-                                          child: const Center(child: AppLogo()),
-                                        ),
-                                      )
-                                      .animate()
-                                      .fadeIn(duration: 300.ms)
-                                      .scale(begin: const Offset(0.85, 0.85)),
-
-                                  const SizedBox(height: Spacing.lg),
-
-                                  Text(
-                                        'Login to your account',
-                                        textAlign: .center,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant
-                                                  .withValues(alpha: 0.8),
-                                            ),
-                                      )
-                                      .animate()
-                                      .fadeIn(delay: 100.ms, duration: 300.ms)
-                                      .slideY(begin: 0.12, end: 0),
-
-                                  const SizedBox(height: Spacing.xl),
-
-                                  AbsorbPointer(
-                                    absorbing: isLoading,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
+                                      crossAxisAlignment: .stretch,
                                       children: [
-                                        CommonTextFieldWidget(
-                                          controller: _emailController,
-                                          focusNode: _emailFocusNode,
-                                          heading: 'Email',
-                                          hintText: 'Enter email',
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                          autofillHints: const [
-                                            AutofillHints.username,
-                                          ],
-                                          validator: (val) {
-                                            if (val!.isEmpty) {
-                                              return 'Enter your email';
-                                            } else if (!regExp.hasMatch(val)) {
-                                              return 'Enter valid email';
-                                            }
-                                            return null;
-                                          },
-                                          textInputAction: .next,
-                                          onFieldSubmitted: (_) {
-                                            FocusScope.of(
-                                              context,
-                                            ).requestFocus(_passwordFocusNode);
-                                          },
-                                        ),
+                                        // ── Brand mark ──
+                                        Center(
+                                              child: SizedBox(
+                                                height: 32,
+                                                child: const Center(
+                                                  child: AppLogo(),
+                                                ),
+                                              ),
+                                            )
+                                            .animate()
+                                            .fadeIn(duration: 300.ms)
+                                            .scale(
+                                              begin: const Offset(0.85, 0.85),
+                                            ),
 
                                         const SizedBox(height: Spacing.lg),
 
-                                        CommonTextFieldWidget(
-                                          heading: 'Password',
-                                          controller: _passwordController,
-                                          focusNode: _passwordFocusNode,
-                                          hintText: 'Enter password',
-                                          keyboardType:
-                                              TextInputType.visiblePassword,
-                                          obscureText: true,
-                                          autofillHints: const [
-                                            AutofillHints.password,
-                                          ],
-                                          validator: (val) {
-                                            if (val!.isEmpty) {
-                                              return 'Enter your password';
-                                            } else if (val.length < 6) {
-                                              return 'Password too short';
-                                            }
-                                            return null;
-                                          },
-                                          textInputAction: .done,
-                                          onFieldSubmitted: (_) =>
-                                              _handleLogin(),
+                                        Text(
+                                              'Login to your account',
+                                              textAlign: .center,
+                                              style: theme.textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurfaceVariant
+                                                        .withValues(alpha: 0.8),
+                                                  ),
+                                            )
+                                            .animate()
+                                            .fadeIn(
+                                              delay: 100.ms,
+                                              duration: 300.ms,
+                                            )
+                                            .slideY(begin: 0.12, end: 0),
+
+                                        const SizedBox(height: Spacing.xl),
+
+                                        AbsorbPointer(
+                                          absorbing: isLoading,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              CommonTextFieldWidget(
+                                                controller: _emailController,
+                                                focusNode: _emailFocusNode,
+                                                heading: 'Email',
+                                                hintText: 'Enter email',
+                                                keyboardType:
+                                                    TextInputType.emailAddress,
+                                                autofillHints: const [
+                                                  AutofillHints.username,
+                                                ],
+                                                validator: (val) {
+                                                  if (val!.isEmpty) {
+                                                    return 'Enter your email';
+                                                  } else if (!regExp.hasMatch(
+                                                    val,
+                                                  )) {
+                                                    return 'Enter valid email';
+                                                  }
+                                                  return null;
+                                                },
+                                                textInputAction: .next,
+                                                onFieldSubmitted: (_) {
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).requestFocus(
+                                                    _passwordFocusNode,
+                                                  );
+                                                },
+                                              ),
+
+                                              const SizedBox(
+                                                height: Spacing.lg,
+                                              ),
+
+                                              CommonTextFieldWidget(
+                                                heading: 'Password',
+                                                controller: _passwordController,
+                                                focusNode: _passwordFocusNode,
+                                                hintText: 'Enter password',
+                                                keyboardType: TextInputType
+                                                    .visiblePassword,
+                                                obscureText: true,
+                                                autofillHints: const [
+                                                  AutofillHints.password,
+                                                ],
+                                                validator: (val) {
+                                                  if (val!.isEmpty) {
+                                                    return 'Enter your password';
+                                                  } else if (val.length < 6) {
+                                                    return 'Password too short';
+                                                  }
+                                                  return null;
+                                                },
+                                                textInputAction: .done,
+                                                onFieldSubmitted: (_) =>
+                                                    _handleLogin(),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        if (loginError != null) ...[
+                                          const SizedBox(height: Spacing.sm),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: Spacing.md,
+                                              vertical: Spacing.sm,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: colors.danger.withValues(
+                                                alpha: 0.1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    RadiusToken.md,
+                                                  ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.error_outline,
+                                                  size: 18,
+                                                  color: colors.danger,
+                                                ),
+                                                const SizedBox(
+                                                  width: Spacing.sm,
+                                                ),
+                                                Expanded(
+                                                  child: Text(
+                                                    loginError,
+                                                    style: theme
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                          color: colors.danger,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+
+                                        const SizedBox(height: Spacing.xl),
+
+                                        ElevatedButton(
+                                          onPressed: isLoading
+                                              ? null
+                                              : _handleLogin,
+                                          child: isLoading
+                                              ? SizedBox(
+                                                  height: 24,
+                                                  width: 24,
+                                                  child:
+                                                      CupertinoActivityIndicator(
+                                                        color: context
+                                                            .colors
+                                                            .onPrimary,
+                                                      ),
+                                                )
+                                              : const Text('Login'),
                                         ),
 
                                         Align(
-                                          alignment: Alignment.centerRight,
+                                          alignment: Alignment.center,
                                           child: TextButton(
                                             onPressed: () {
                                               context.pushNamed(
@@ -238,145 +321,106 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               );
                                             },
                                             child: Text(
-                                              'Forgot password?',
+                                              'Forgot Password?',
                                               style: TextStyle(
                                                 color: colors.primary,
-                                                fontWeight: .w600,
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  )
+                                  .animate()
+                                  .fadeIn(duration: 350.ms)
+                                  .slideY(begin: 0.05, end: 0),
 
-                                  if (loginError != null) ...[
-                                    const SizedBox(height: Spacing.sm),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: Spacing.md,
-                                        vertical: Spacing.sm,
+                              const SizedBox(height: Spacing.lg),
+
+                              Container(
+                                    padding: const EdgeInsets.all(Spacing.xl),
+                                    decoration: BoxDecoration(
+                                      color: theme.cardColor,
+                                      borderRadius: BorderRadius.circular(
+                                        RadiusToken.xxl,
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: colors.danger.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          RadiusToken.md,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.error_outline,
-                                            size: 18,
-                                            color: colors.danger,
-                                          ),
-                                          const SizedBox(width: Spacing.sm),
-                                          Expanded(
-                                            child: Text(
-                                              loginError,
-                                              style: theme.textTheme.bodySmall
-                                                  ?.copyWith(
-                                                    color: colors.danger,
-                                                  ),
-                                            ),
-                                          ),
-                                        ],
+                                      border: Border.all(
+                                        color: theme.colorScheme.outlineVariant,
                                       ),
                                     ),
-                                  ],
-
-                                  const SizedBox(height: Spacing.xl),
-
-                                  ElevatedButton(
-                                    onPressed: isLoading ? null : _handleLogin,
-                                    child: isLoading
-                                        ? SizedBox(
-                                            height: 24,
-                                            width: 24,
-                                            child: CupertinoActivityIndicator(
-                                              color: context.colors.onPrimary,
-                                            ),
-                                          )
-                                        : const Text('Login'),
-                                  ),
-
-                                  const SizedBox(height: Spacing.xxl),
-
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Divider(
-                                          color:
-                                              theme.colorScheme.outlineVariant,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        Text(
+                                          'New To Campus Assistant?',
+                                          textAlign: TextAlign.center,
+                                          style: theme.textTheme.titleSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: Spacing.md,
-                                        ),
-                                        child: Text(
-                                          'New here?',
-                                          style: theme.textTheme.labelMedium
+                                        const SizedBox(height: Spacing.xs),
+                                        Text(
+                                          'Create an account in a minute and '
+                                          'keep your notices, resources and '
+                                          'campus life in one place.',
+                                          textAlign: TextAlign.center,
+                                          style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                                 color: theme
                                                     .colorScheme
                                                     .onSurfaceVariant,
                                               ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: Divider(
-                                          color:
-                                              theme.colorScheme.outlineVariant,
+                                        const SizedBox(height: Spacing.md),
+                                        OutlinedButton.icon(
+                                          onPressed: isLoading
+                                              ? null
+                                              : () {
+                                                  context.pushNamed(
+                                                    AppRoute.verification.name,
+                                                  );
+                                                },
+                                          icon: const Icon(
+                                            Icons.person_add_alt_1_rounded,
+                                          ),
+                                          label: const Text(
+                                            'Create New Account',
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  const SizedBox(height: Spacing.lg),
-
-                                  OutlinedButton.icon(
-                                    onPressed: isLoading
-                                        ? null
-                                        : () {
-                                            context.pushNamed(
-                                              AppRoute.verification.name,
-                                            );
-                                          },
-                                    icon: const Icon(
-                                      Icons.person_add_alt_1_rounded,
+                                      ],
                                     ),
-                                    label: const Text('Create new account'),
-                                  ),
-
-                                  const SizedBox(height: Spacing.xl),
-
-                                  Center(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        _showContactSheet(context);
-                                      },
-                                      child: Text(
-                                        'Having trouble? Contact us',
-                                        style: TextStyle(
-                                          fontSize: FontSizeToken.md,
-                                          color: theme.colorScheme.primary,
-                                          fontWeight: .w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                            .animate()
-                            .fadeIn(duration: 350.ms)
-                            .slideY(begin: 0.05, end: 0),
+                                  )
+                                  .animate()
+                                  .fadeIn(duration: 350.ms, delay: 100.ms)
+                                  .slideY(begin: 0.05, end: 0),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: Spacing.lg,
+                    top: Spacing.sm,
+                  ),
+                  child: GestureDetector(
+                    onTap: () => _showContactSheet(context),
+                    child: Text(
+                      'Having trouble? Contact us',
+                      style: TextStyle(
+                        fontSize: FontSizeToken.md,
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -416,7 +460,6 @@ class _Blob extends StatelessWidget {
   }
 }
 
-
 // Feedback needs a signed-in user, so people locked out of login get direct
 // contact channels instead.
 void _showContactSheet(BuildContext context) {
@@ -430,7 +473,12 @@ void _showContactSheet(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Padding(
-              padding: EdgeInsets.fromLTRB(Spacing.xl, 0, Spacing.xl, Spacing.sm),
+              padding: EdgeInsets.fromLTRB(
+                Spacing.xl,
+                0,
+                Spacing.xl,
+                Spacing.sm,
+              ),
               child: Text(
                 'Having trouble signing in? Reach out and we will help.',
                 textAlign: TextAlign.center,

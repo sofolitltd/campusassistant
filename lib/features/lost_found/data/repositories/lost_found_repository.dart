@@ -37,13 +37,16 @@ class LostFoundRepository {
       queryParameters: {
         'university_id': universityId,
         'department_id': departmentId,
-        if (categoryId != null && categoryId.isNotEmpty) 'category_id': categoryId,
+        if (categoryId != null && categoryId.isNotEmpty)
+          'category_id': categoryId,
         if (type != null && type.isNotEmpty) 'type': type,
         if (search != null && search.isNotEmpty) 'search': search,
       },
     );
     final data = response.data;
-    final items = data is Map<String, dynamic> ? data['data'] as List? ?? [] : data as List;
+    final items = data is Map<String, dynamic>
+        ? data['data'] as List? ?? []
+        : data as List;
     return items
         .map((e) => LostFoundItem.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -85,7 +88,8 @@ class LostFoundRepository {
         targets: [
           {
             'university_id': universityId,
-            'department_id': departmentId ?? '00000000-0000-0000-0000-000000000000',
+            'department_id':
+                departmentId ?? '00000000-0000-0000-0000-000000000000',
           },
         ],
       ),
@@ -101,7 +105,10 @@ class LostFoundRepository {
     await apiClient.delete('/my/lost-found-items/$id');
   }
 
-  Future<LostFoundClaim> createClaim(String itemId, {String message = ''}) async {
+  Future<LostFoundClaim> createClaim(
+    String itemId, {
+    String message = '',
+  }) async {
     final response = await apiClient.post(
       '/lost-found-items/$itemId/claims',
       data: {'message': message},
@@ -121,7 +128,10 @@ class LostFoundRepository {
   /// Accepts a claim on the caller's own item, and returns the raw
   /// conversation payload (opened via GetOrCreateConversation) so the caller
   /// can navigate straight to the chat with the claimant.
-  Future<Map<String, dynamic>> acceptClaim(String itemId, String claimId) async {
+  Future<Map<String, dynamic>> acceptClaim(
+    String itemId,
+    String claimId,
+  ) async {
     final response = await apiClient.post(
       '/my/lost-found-items/$itemId/claims/$claimId/accept',
     );

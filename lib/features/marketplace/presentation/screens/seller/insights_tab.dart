@@ -30,13 +30,20 @@ class _InsightsTabState extends ConsumerState<InsightsTab> {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final async = ref.watch(merchantStatsProvider((merchantId: widget.merchantId, days: _days)));
+    final async = ref.watch(
+      merchantStatsProvider((merchantId: widget.merchantId, days: _days)),
+    );
     final money = NumberFormat.decimalPattern();
 
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(merchantStatsProvider);
-        await ref.read(merchantStatsProvider((merchantId: widget.merchantId, days: _days)).future);
+        await ref.read(
+          merchantStatsProvider((
+            merchantId: widget.merchantId,
+            days: _days,
+          )).future,
+        );
       },
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -60,7 +67,12 @@ class _InsightsTabState extends ConsumerState<InsightsTab> {
             ),
             error: (e, _) => Padding(
               padding: const EdgeInsets.all(Spacing.xxxl),
-              child: Center(child: Text('Could not load insights.', style: TextStyle(color: c.textSubtle))),
+              child: Center(
+                child: Text(
+                  'Could not load insights.',
+                  style: TextStyle(color: c.textSubtle),
+                ),
+              ),
             ),
             data: (s) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,17 +83,32 @@ class _InsightsTabState extends ConsumerState<InsightsTab> {
                 ],
                 Row(
                   children: [
-                    Expanded(child: _Kpi(label: 'Net revenue', value: '৳${money.format(s.netRevenue)}', accent: true)),
+                    Expanded(
+                      child: _Kpi(
+                        label: 'Net revenue',
+                        value: '৳${money.format(s.netRevenue)}',
+                        accent: true,
+                      ),
+                    ),
                     const SizedBox(width: Spacing.md),
-                    Expanded(child: _Kpi(label: 'Orders', value: '${s.orders}')),
+                    Expanded(
+                      child: _Kpi(label: 'Orders', value: '${s.orders}'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: Spacing.md),
                 Row(
                   children: [
-                    Expanded(child: _Kpi(label: 'Avg order', value: '৳${money.format(s.avgOrderValue)}')),
+                    Expanded(
+                      child: _Kpi(
+                        label: 'Avg order',
+                        value: '৳${money.format(s.avgOrderValue)}',
+                      ),
+                    ),
                     const SizedBox(width: Spacing.md),
-                    Expanded(child: _Kpi(label: 'Units sold', value: '${s.units}')),
+                    Expanded(
+                      child: _Kpi(label: 'Units sold', value: '${s.units}'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: Spacing.md),
@@ -90,32 +117,62 @@ class _InsightsTabState extends ConsumerState<InsightsTab> {
                     Expanded(
                       child: _Kpi(
                         label: 'Rating',
-                        value: s.ratingCount == 0 ? '—' : s.ratingAvg.toStringAsFixed(1),
-                        sub: s.ratingCount == 0 ? 'No reviews yet' : '${s.ratingCount} reviews',
+                        value: s.ratingCount == 0
+                            ? '—'
+                            : s.ratingAvg.toStringAsFixed(1),
+                        sub: s.ratingCount == 0
+                            ? 'No reviews yet'
+                            : '${s.ratingCount} reviews',
                       ),
                     ),
                     const SizedBox(width: Spacing.md),
                     Expanded(
                       child: _Kpi(
                         label: 'Ships in',
-                        value: s.shippedCount == 0 ? '—' : _hours(s.avgShipHours),
-                        sub: s.shippedCount == 0 ? 'No shipped orders yet' : 'avg of ${s.shippedCount} orders',
+                        value: s.shippedCount == 0
+                            ? '—'
+                            : _hours(s.avgShipHours),
+                        sub: s.shippedCount == 0
+                            ? 'No shipped orders yet'
+                            : 'avg of ${s.shippedCount} orders',
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: Spacing.xl),
-                Text('Revenue', style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: FontWeight.w800, color: c.text)),
+                Text(
+                  'Revenue',
+                  style: TextStyle(
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: FontWeight.w800,
+                    color: c.text,
+                  ),
+                ),
                 const SizedBox(height: Spacing.xs),
-                Text('Last $_days days, before commission',
-                    style: TextStyle(fontSize: FontSizeToken.sm, color: c.textSubtle)),
+                Text(
+                  'Last $_days days, before commission',
+                  style: TextStyle(
+                    fontSize: FontSizeToken.sm,
+                    color: c.textSubtle,
+                  ),
+                ),
                 const SizedBox(height: Spacing.md),
                 _BarChart(points: s.daily),
                 const SizedBox(height: Spacing.xxl),
-                Text('Top products', style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: FontWeight.w800, color: c.text)),
+                Text(
+                  'Top products',
+                  style: TextStyle(
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: FontWeight.w800,
+                    color: c.text,
+                  ),
+                ),
                 const SizedBox(height: Spacing.sm),
                 if (s.topProducts.isEmpty)
-                  Text('Sales will show up here once orders come in.', style: TextStyle(color: c.textSubtle))
+                  Text(
+                    'Sales will show up here once orders come in.',
+                    style: TextStyle(color: c.textSubtle),
+                  )
                 else
                   for (final p in s.topProducts) _TopProductRow(product: p),
                 if (s.lowStockProducts > 0) ...[
@@ -128,13 +185,20 @@ class _InsightsTabState extends ConsumerState<InsightsTab> {
                     ),
                     child: Row(
                       children: [
-                        Icon(LucideIcons.triangleAlert, size: 18, color: c.warning),
+                        Icon(
+                          LucideIcons.triangleAlert,
+                          size: 18,
+                          color: c.warning,
+                        ),
                         const SizedBox(width: Spacing.md),
                         Expanded(
                           child: Text(
                             '${s.lowStockProducts} product${s.lowStockProducts == 1 ? ' is' : 's are'} almost out of stock. '
                             'Restock to keep selling.',
-                            style: TextStyle(color: c.text, fontSize: FontSizeToken.md),
+                            style: TextStyle(
+                              color: c.text,
+                              fontSize: FontSizeToken.md,
+                            ),
                           ),
                         ),
                       ],
@@ -161,7 +225,12 @@ class _Kpi extends StatelessWidget {
   final String value;
   final String? sub;
   final bool accent;
-  const _Kpi({required this.label, required this.value, this.sub, this.accent = false});
+  const _Kpi({
+    required this.label,
+    required this.value,
+    this.sub,
+    this.accent = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -171,18 +240,32 @@ class _Kpi extends StatelessWidget {
       decoration: BoxDecoration(
         color: accent ? c.primarySubtle : c.surface,
         borderRadius: BorderRadius.circular(RadiusToken.lg),
-        border: Border.all(color: accent ? c.primary.withValues(alpha: 0.3) : c.border),
+        border: Border.all(
+          color: accent ? c.primary.withValues(alpha: 0.3) : c.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: FontSizeToken.xs, fontWeight: FontWeight.w600, color: c.textMuted)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: FontSizeToken.xs,
+              fontWeight: FontWeight.w600,
+              color: c.textMuted,
+            ),
+          ),
           const SizedBox(height: Spacing.xs),
           Text(
             value,
-            style: TextStyle(fontSize: FontSizeToken.xxl, fontWeight: FontWeight.w800, color: accent ? c.primary : c.text),
+            style: TextStyle(
+              fontSize: FontSizeToken.xxl,
+              fontWeight: FontWeight.w800,
+              color: accent ? c.primary : c.text,
+            ),
           ),
-          if (sub != null) Text(sub!, style: TextStyle(fontSize: 10.5, color: c.textSubtle)),
+          if (sub != null)
+            Text(sub!, style: TextStyle(fontSize: 10.5, color: c.textSubtle)),
         ],
       ),
     );
@@ -202,30 +285,50 @@ class _BarChart extends StatelessWidget {
       return Container(
         height: 110,
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: c.surfaceAlt, borderRadius: BorderRadius.circular(RadiusToken.lg)),
-        child: Text('No sales in this period yet', style: TextStyle(color: c.textSubtle, fontSize: FontSizeToken.sm)),
+        decoration: BoxDecoration(
+          color: c.surfaceAlt,
+          borderRadius: BorderRadius.circular(RadiusToken.lg),
+        ),
+        child: Text(
+          'No sales in this period yet',
+          style: TextStyle(color: c.textSubtle, fontSize: FontSizeToken.sm),
+        ),
       );
     }
     return Container(
       height: 130,
-      padding: const EdgeInsets.fromLTRB(Spacing.md, Spacing.md, Spacing.md, Spacing.sm),
-      decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(RadiusToken.lg), border: Border.all(color: c.border)),
+      padding: const EdgeInsets.fromLTRB(
+        Spacing.md,
+        Spacing.md,
+        Spacing.md,
+        Spacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(color: c.border),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           for (final p in points)
             Expanded(
               child: Tooltip(
-                message: '${p.date}\n৳${p.revenue} · ${p.orders} order${p.orders == 1 ? '' : 's'}',
+                message:
+                    '${p.date}\n৳${p.revenue} · ${p.orders} order${p.orders == 1 ? '' : 's'}',
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Spacing.xxs),
                   child: FractionallySizedBox(
-                    heightFactor: p.revenue == 0 ? 0.02 : (p.revenue / max).clamp(0.04, 1.0),
+                    heightFactor: p.revenue == 0
+                        ? 0.02
+                        : (p.revenue / max).clamp(0.04, 1.0),
                     alignment: Alignment.bottomCenter,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: p.revenue == 0 ? c.border : c.primary,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(RadiusToken.xs)),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(RadiusToken.xs),
+                        ),
                       ),
                     ),
                   ),
@@ -245,18 +348,29 @@ class _TopProductRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final conv = product.views == 0 ? null : (product.units / product.views * 100);
+    final conv = product.views == 0
+        ? null
+        : (product.units / product.views * 100);
     return Container(
       margin: const EdgeInsets.only(bottom: Spacing.sm),
       padding: const EdgeInsets.all(Spacing.md),
-      decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(RadiusToken.lg), border: Border.all(color: c.border)),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+        border: Border.all(color: c.border),
+      ),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w700, color: c.text)),
+                Text(
+                  product.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.w700, color: c.text),
+                ),
                 const SizedBox(height: Spacing.xxs),
                 Text(
                   '${product.units} sold · ${product.views} views${conv == null ? '' : ' · ${conv.toStringAsFixed(1)}% bought'}',
@@ -265,8 +379,10 @@ class _TopProductRow extends StatelessWidget {
               ],
             ),
           ),
-          Text('৳${NumberFormat.decimalPattern().format(product.revenue)}',
-              style: TextStyle(fontWeight: FontWeight.w800, color: c.primary)),
+          Text(
+            '৳${NumberFormat.decimalPattern().format(product.revenue)}',
+            style: TextStyle(fontWeight: FontWeight.w800, color: c.primary),
+          ),
         ],
       ),
     );

@@ -175,7 +175,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                       onPressed: () => ref
                           .read(libraryPaginationProvider.notifier)
                           .refresh(),
-                      child: const Text('Try again'),
+                      child: const Text('Try Again'),
                     ),
                   ],
                 ),

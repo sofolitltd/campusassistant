@@ -60,67 +60,73 @@ class _QuickFavoritesSectionState extends State<QuickFavoritesSection>
 
   @override
   Widget build(BuildContext context) {
-    return HomeSection(
-      child: SectionCard(
-        margin: const EdgeInsets.symmetric(horizontal: homeInset),
-        radius: homeCardRadius,
-        padding: EdgeInsets.zero,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final crossAxisCount = _crossAxisCountFor(constraints.maxWidth);
-            final gridHeight = _gridHeightFor(
-              constraints.maxWidth,
-              crossAxisCount,
-            );
+    // Pulled up so the gap above is Spacing.md (12px); the bottom gap shrinks by the same amount so the
+    // sections below don't move.
+    return Transform.translate(
+      offset: const Offset(0, -(Spacing.lg - Spacing.md)),
+      child: HomeSection(
+        bottom: Spacing.md,
+        child: SectionCard(
+          margin: const EdgeInsets.symmetric(horizontal: homeInset),
+          radius: homeCardRadius,
+          padding: EdgeInsets.zero,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = _crossAxisCountFor(constraints.maxWidth);
+              final gridHeight = _gridHeightFor(
+                constraints.maxWidth,
+                crossAxisCount,
+              );
 
-            return Column(
-              crossAxisAlignment: .start,
-              mainAxisSize: .min,
-              children: [
-                const HomeSectionHeader(
-                  'Quick Favorites',
-                  padding: EdgeInsets.fromLTRB(
-                    Spacing.md,
-                    Spacing.md,
-                    Spacing.md,
-                    0,
+              return Column(
+                crossAxisAlignment: .start,
+                mainAxisSize: .min,
+                children: [
+                  const HomeSectionHeader(
+                    'Quick Favorites',
+                    padding: EdgeInsets.fromLTRB(
+                      Spacing.md,
+                      Spacing.md,
+                      Spacing.md,
+                      0,
+                    ),
                   ),
-                ),
-                const SizedBox(height: Spacing.sm),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
-                  child: SectionTabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'University'),
-                      Tab(text: 'Department'),
-                    ],
+                  const SizedBox(height: Spacing.sm),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
+                    child: SectionTabBar(
+                      controller: _tabController,
+                      tabs: const [
+                        Tab(text: 'University'),
+                        Tab(text: 'Department'),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: Spacing.lg),
-                SizedBox(
-                  height: gridHeight,
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _FavoritesGrid(
-                        items: _universityItems,
-                        crossAxisCount: crossAxisCount,
-                        spacing: _gridSpacing,
-                        aspectRatio: _childAspectRatio,
-                      ),
-                      _FavoritesGrid(
-                        items: _departmentItems,
-                        crossAxisCount: crossAxisCount,
-                        spacing: _gridSpacing,
-                        aspectRatio: _childAspectRatio,
-                      ),
-                    ],
+                  const SizedBox(height: Spacing.lg),
+                  SizedBox(
+                    height: gridHeight,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _FavoritesGrid(
+                          items: _universityItems,
+                          crossAxisCount: crossAxisCount,
+                          spacing: _gridSpacing,
+                          aspectRatio: _childAspectRatio,
+                        ),
+                        _FavoritesGrid(
+                          items: _departmentItems,
+                          crossAxisCount: crossAxisCount,
+                          spacing: _gridSpacing,
+                          aspectRatio: _childAspectRatio,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

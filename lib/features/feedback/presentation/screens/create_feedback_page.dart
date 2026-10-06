@@ -69,9 +69,9 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
       context.pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -79,112 +79,119 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('Send Feedback'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(Spacing.lg),
-        child: Column(
-          crossAxisAlignment: .start,
-          children: [
-            const Text(
-              'What kind of feedback do you have?',
-              style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: .w600),
-            ),
-            const SizedBox(height: Spacing.lg),
-            ValueListenableBuilder<String>(
-              valueListenable: _categoryController,
-              builder: (_, selected, _) => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _categories.map((c) {
-                  final isSelected = selected == c.$1;
-                  return GestureDetector(
-                    onTap: () => _categoryController.value = c.$1,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: Spacing.lg, vertical: Spacing.md),
-                      decoration: BoxDecoration(
+    appBar: AppBar(title: const Text('Send Feedback'), centerTitle: true),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(Spacing.lg),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          const Text(
+            'What kind of feedback do you have?',
+            style: TextStyle(fontSize: FontSizeToken.lg, fontWeight: .w600),
+          ),
+          const SizedBox(height: Spacing.lg),
+          ValueListenableBuilder<String>(
+            valueListenable: _categoryController,
+            builder: (_, selected, _) => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _categories.map((c) {
+                final isSelected = selected == c.$1;
+                return GestureDetector(
+                  onTap: () => _categoryController.value = c.$1,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.lg,
+                      vertical: Spacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? c.$4.withValues(alpha: 0.15)
+                          : (context.colors.surfaceAlt),
+                      borderRadius: BorderRadius.circular(RadiusToken.full),
+                      border: Border.all(
                         color: isSelected
-                            ? c.$4.withValues(alpha: 0.15)
-                            : (context.colors.surfaceAlt),
-                        borderRadius:
-                            BorderRadius.circular(RadiusToken.full),
-                        border: Border.all(
-                          color: isSelected
-                              ? c.$4
-                              : (context.colors.borderStrong),
-                          width: isSelected ? 2 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: .min,
-                        children: [
-                          Icon(c.$3, size: 16, color: isSelected ? c.$4 : null),
-                          const SizedBox(width: Spacing.sm),
-                          Text(
-                            c.$2,
-                            style: TextStyle(
-                              fontSize: FontSizeToken.md,
-                              fontWeight:
-                                  isSelected ? FontWeight.bold : FontWeight.w500,
-                              color: isSelected ? c.$4 : null,
-                            ),
-                          ),
-                        ],
+                            ? c.$4
+                            : (context.colors.borderStrong),
+                        width: isSelected ? 2 : 1,
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
+                    child: Row(
+                      mainAxisSize: .min,
+                      children: [
+                        Icon(c.$3, size: 16, color: isSelected ? c.$4 : null),
+                        const SizedBox(width: Spacing.sm),
+                        Text(
+                          c.$2,
+                          style: TextStyle(
+                            fontSize: FontSizeToken.md,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                            color: isSelected ? c.$4 : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-            const SizedBox(height: Spacing.xxl),
-            const Text(
-              'Subject',
-              style: TextStyle(fontSize: FontSizeToken.base, fontWeight: .w500),
+          ),
+          const SizedBox(height: Spacing.xxl),
+          const Text(
+            'Subject',
+            style: TextStyle(fontSize: FontSizeToken.base, fontWeight: .w500),
+          ),
+          const SizedBox(height: Spacing.sm),
+          TextField(
+            controller: _subjectController,
+            decoration: InputDecoration(
+              hintText: 'Brief title for your feedback',
             ),
-            const SizedBox(height: Spacing.sm),
-            TextField(
-              controller: _subjectController,
-              decoration: InputDecoration(
-                hintText: 'Brief title for your feedback',),
-              textCapitalization: .sentences,
+            textCapitalization: .sentences,
+          ),
+          const SizedBox(height: Spacing.xl),
+          const Text(
+            'Message',
+            style: TextStyle(fontSize: FontSizeToken.base, fontWeight: .w500),
+          ),
+          const SizedBox(height: Spacing.sm),
+          TextField(
+            controller: _messageController,
+            maxLines: 6,
+            decoration: InputDecoration(
+              hintText: 'Describe your feedback or issue in detail...',
+              alignLabelWithHint: true,
             ),
-            const SizedBox(height: Spacing.xl),
-            const Text(
-              'Message',
-              style: TextStyle(fontSize: FontSizeToken.base, fontWeight: .w500),
+            textCapitalization: .sentences,
+          ),
+          const SizedBox(height: Spacing.xxxl),
+          SizedBox(
+            width: double.infinity,
+            height: ControlToken.height,
+            child: ElevatedButton(
+              onPressed: _submitting ? null : _submit,
+              child: _submitting
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: context.colors.onPrimary,
+                      ),
+                    )
+                  : const Text(
+                      'Submit feedback',
+                      style: TextStyle(
+                        fontSize: FontSizeToken.lg,
+                        fontWeight: .bold,
+                      ),
+                    ),
             ),
-            const SizedBox(height: Spacing.sm),
-            TextField(
-              controller: _messageController,
-              maxLines: 6,
-              decoration: InputDecoration(
-                hintText: 'Describe your feedback or issue in detail...',
-                alignLabelWithHint: true,),
-              textCapitalization: .sentences,
-            ),
-            const SizedBox(height: Spacing.xxxl),
-            SizedBox(
-              width: double.infinity,
-              height: ControlToken.height,
-              child: ElevatedButton(
-                onPressed: _submitting ? null : _submit,
-                child: _submitting
-                    ? SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: context.colors.onPrimary),
-                      )
-                    : const Text('Submit feedback',
-                        style: TextStyle(
-                            fontSize: FontSizeToken.lg, fontWeight: .bold)),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    ),
+  );
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -127,7 +129,6 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final universityId = widget.universityId ?? '';
     final departmentId = widget.departmentId ?? '';
     // final userAsync = ref.watch(userProvider);
@@ -199,191 +200,193 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
       ),
     );
 
-    final primaryColor = context.colors.primary;
-
-    return Scaffold(
-      backgroundColor: primaryColor,
-      appBar: AppBar(
+    return HeaderGradientBackdrop(
+      extraHeight: 44, // filter row
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        iconTheme: IconThemeData(color: context.colors.onPrimary),
-        centerTitle: true,
-        titleSpacing: 0,
-        title: Text(
-          chapterTitle.isNotEmpty
-              ? 'Chapter ${_selectedChapterNo ?? widget.chapterNo}: $chapterTitle'
-              : 'Chapter ${_selectedChapterNo ?? widget.chapterNo}',
-          maxLines: 1,
-          overflow: .ellipsis,
-          style: TextStyle(
-            color: context.colors.onPrimary,
-            fontWeight: .bold,
-            fontSize: FontSizeToken.xl,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+          centerTitle: false,
+          titleSpacing: 0,
+          actions: [
+            BookmarkAppBarButton(
+              courseCode: widget.courseCode,
+              lessonNo: int.tryParse(_selectedChapterNo ?? widget.chapterNo),
+            ),
+          ],
+          title: Text(
+            chapterTitle.isNotEmpty
+                ? 'Chapter ${_selectedChapterNo ?? widget.chapterNo}: $chapterTitle'
+                : 'Chapter ${_selectedChapterNo ?? widget.chapterNo}',
+            maxLines: 1,
+            overflow: .ellipsis,
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: .bold,
+              fontSize: FontSizeToken.lg,
+            ),
           ),
         ),
-      ),
-      body: Column(
-        crossAxisAlignment: .start,
-        children: [
-          // ── Filter row (red area) ──────────────────────────
-          Padding(
-            padding: const .fromLTRB(16, 0, 16, 16),
+        body: Column(
+          crossAxisAlignment: .start,
+          children: [
+            // ── Filter row (red area) ──────────────────────────
+            Padding(
+              padding: const .fromLTRB(16, 0, 16, 12),
 
-            child: Row(
-              children: [
-                Text(
-                  'Filter:',
-                  style: TextStyle(
-                    color: context.colors.onPrimary,
-                    fontWeight: .w500,
+              child: Row(
+                children: [
+                  ChapterFilterButton(
+                    chaptersAsync: chaptersAsync,
+                    selectedChapterNo: _selectedChapterNo ?? widget.chapterNo,
+                    onChapterSelected: _navigateToChapter,
+                    redBg: true,
+                  ),
+                ],
+              ),
+            ),
+
+            // ── White rounded container ──────────────────────────
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: theme.scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
                   ),
                 ),
-                const Spacer(),
-                ChapterFilterButton(
-                  chaptersAsync: chaptersAsync,
-                  selectedChapterNo: _selectedChapterNo ?? widget.chapterNo,
-                  onChapterSelected: _navigateToChapter,
-                  redBg: true,
-                ),
-              ],
-            ),
-          ),
-
-          // ── White rounded container ──────────────────────────
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? theme.scaffoldBackgroundColor
-                    : context.colors.surfaceAlt,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-                child: Column(
-                  children: [
-                    // ── SectionTabBar (inside container) ────────
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        Spacing.lg,
-                        Spacing.lg,
-                        Spacing.lg,
-                        Spacing.sm,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                  child: Column(
+                    children: [
+                      // ── SectionTabBar (inside container) ────────
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          Spacing.lg,
+                          Spacing.lg,
+                          Spacing.lg,
+                          Spacing.sm,
+                        ),
+                        child: SectionTabBar(
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(text: 'Notes'),
+                            Tab(text: 'Videos'),
+                          ],
+                        ),
                       ),
-                      child: SectionTabBar(
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(text: 'Notes'),
-                          Tab(text: 'Videos'),
-                        ],
-                      ),
-                    ),
 
-                    // ── Tab content ──────────────────────────────
-                    Expanded(
-                      child: resourcesStream.when(
-                        loading: () =>
-                            const Center(child: CupertinoActivityIndicator()),
-                        error: (e, _) => Center(child: Text('Error: $e')),
-                        data: (resources) {
-                          if (resources.isEmpty) {
-                            return Center(
-                              child: Column(
-                                mainAxisAlignment: .center,
-                                children: [
-                                  Icon(
-                                    _currentTab == 0
-                                        ? Icons.description_outlined
-                                        : Icons.videocam_outlined,
-                                    size: 64,
-                                    color: context.colors.borderStrong,
-                                  ),
-                                  const SizedBox(height: Spacing.lg),
-                                  Text(
-                                    _currentTab == 0
-                                        ? 'No notes found!'
-                                        : 'No videos found!',
-                                    style: TextStyle(
-                                      color: context.colors.textMuted,
-                                      fontSize: FontSizeToken.lg,
+                      // ── Tab content ──────────────────────────────
+                      Expanded(
+                        child: resourcesStream.when(
+                          loading: () =>
+                              const Center(child: CupertinoActivityIndicator()),
+                          error: (e, _) => Center(child: Text('Error: $e')),
+                          data: (resources) {
+                            if (resources.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: .center,
+                                  children: [
+                                    Icon(
+                                      _currentTab == 0
+                                          ? Icons.description_outlined
+                                          : Icons.videocam_outlined,
+                                      size: 64,
+                                      color: context.colors.borderStrong,
                                     ),
-                                  ),
-                                  const SizedBox(height: Spacing.sm),
-                                  Text(
-                                    _currentTab == 0
-                                        ? 'Upload lecture notes for this chapter'
-                                        : 'Add video lectures for this chapter',
-                                    style: TextStyle(
-                                      color: context.colors.textSubtle,
-                                      fontSize: FontSizeToken.md,
+                                    const SizedBox(height: Spacing.lg),
+                                    Text(
+                                      _currentTab == 0
+                                          ? 'No notes found!'
+                                          : 'No videos found!',
+                                      style: TextStyle(
+                                        color: context.colors.textMuted,
+                                        fontSize: FontSizeToken.lg,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          final adList = withPeriodicAds(
-                            realCount: resources.length,
-                            realItemBuilder: (context, index) {
-                              final resource = resources[index];
-                              return ResourceCard(
-                                resource: resource,
-                                autoOpen:
-                                    widget.resourceId != null &&
-                                    resource.id == widget.resourceId,
+                                    const SizedBox(height: Spacing.sm),
+                                    Text(
+                                      _currentTab == 0
+                                          ? 'Upload lecture notes for this chapter'
+                                          : 'Add video lectures for this chapter',
+                                      style: TextStyle(
+                                        color: context.colors.textSubtle,
+                                        fontSize: FontSizeToken.md,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
-                            },
-                          );
+                            }
 
-                          return ListView.separated(
-                            padding: const EdgeInsets.all(Spacing.lg),
-                            itemCount: adList.itemCount,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: Spacing.md),
-                            itemBuilder: adList.itemBuilder,
-                          );
-                        },
+                            final adList = withPeriodicAds(
+                              realCount: resources.length,
+                              realItemBuilder: (context, index) {
+                                final resource = resources[index];
+                                return ResourceCard(
+                                  resource: resource,
+                                  autoOpen:
+                                      widget.resourceId != null &&
+                                      resource.id == widget.resourceId,
+                                );
+                              },
+                            );
+
+                            return ListView.separated(
+                              padding: const EdgeInsets.fromLTRB(
+                                Spacing.lg,
+                                Spacing.xs,
+                                Spacing.lg,
+                                Spacing.lg,
+                              ),
+                              itemCount: adList.itemCount,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(height: Spacing.md),
+                              itemBuilder: adList.itemBuilder,
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
 
-      //todo: later add this feature
-      // floatingActionButton: canEdit
-      //     ? FloatingActionButton(
-      //         onPressed: () {
-      //           context.push(
-      //             Uri(
-      //               path: AppRoute.addResource.toPath({
-      //                 'universityId': universityId,
-      //                 'departmentId': departmentId,
-      //                 'courseCode': widget.courseCode,
-      //               }),
-      //               queryParameters: {
-      //                 'type': _currentTab == 0 ? 'note' : 'video',
-      //                 'lessonNo': _selectedChapterNo ?? widget.chapterNo,
-      //                 if (selectedBatch != null)
-      //                   'initialBatchName': selectedBatch.name,
-      //               },
-      //             ).toString(),
-      //           );
-      //         },
-      //         backgroundColor: primaryColor,
-      //         child: const Icon(Icons.add, color: Colors.white),
-      //       )
-      //     : null,
+        //todo: later add this feature
+        // floatingActionButton: canEdit
+        //     ? FloatingActionButton(
+        //         onPressed: () {
+        //           context.push(
+        //             Uri(
+        //               path: AppRoute.addResource.toPath({
+        //                 'universityId': universityId,
+        //                 'departmentId': departmentId,
+        //                 'courseCode': widget.courseCode,
+        //               }),
+        //               queryParameters: {
+        //                 'type': _currentTab == 0 ? 'note' : 'video',
+        //                 'lessonNo': _selectedChapterNo ?? widget.chapterNo,
+        //                 if (selectedBatch != null)
+        //                   'initialBatchName': selectedBatch.name,
+        //               },
+        //             ).toString(),
+        //           );
+        //         },
+        //         backgroundColor: primaryColor,
+        //         child: const Icon(Icons.add, color: Colors.white),
+        //       )
+        //     : null,
+      ),
     );
   }
 }

@@ -552,14 +552,14 @@ class _MembersTab extends ConsumerWidget {
             child: OutlinedButton.icon(
               onPressed: null,
               icon: const Icon(Icons.hourglass_top, size: 18),
-              label: const Text('Pending approval'),
+              label: const Text('Pending Approval'),
             ),
           ),
           const SizedBox(height: Spacing.sm),
           Center(
             child: TextButton(
               onPressed: memberPending ? null : onToggleMembership,
-              child: const Text('Cancel request'),
+              child: const Text('Cancel Request'),
             ),
           ),
         ] else
@@ -574,7 +574,7 @@ class _MembersTab extends ConsumerWidget {
                 : ElevatedButton.icon(
                     onPressed: memberPending ? null : onToggleMembership,
                     icon: const Icon(Icons.group_add, size: 18),
-                    label: const Text('Join association'),
+                    label: const Text('Join Association'),
                   ),
           ),
         const SizedBox(height: Spacing.lg),

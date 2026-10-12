@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import '/features/auth/presentation/providers/auth_provider.dart';
+import '/features/teacher/presentation/providers/teacher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -204,21 +205,49 @@ class _NewTeacherSignupScreenState
                                         departmentId: widget.department,
                                       );
 
-                                      result.fold(
-                                        (failure) {
+                                      await result.fold(
+                                        (failure) async {
                                           Fluttertoast.showToast(
                                             msg: failure.message,
                                           );
                                           setState(() => _isLoading = false);
                                         },
-                                        (user) {
-                                          Fluttertoast.showToast(
-                                            msg: 'Signup successful!',
+                                        (goUser) async {
+                                          final teacherRepo = ref.read(
+                                            teacherRepositoryProvider,
                                           );
-                                          // TODO: Claim teacher profile in Go backend
-                                          // For now, redirecting to home
-                                          if (!mounted) return;
-                                          context.goNamed(AppRoute.home.name);
+                                          final claimResult = await teacherRepo
+                                              .claimProfile(
+                                                code: widget.verificationUID,
+                                                userId: goUser.id,
+                                                phone: _mobileController.text
+                                                    .trim(),
+                                              );
+
+                                          claimResult.fold(
+                                            (failure) {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Profile setup failed: ${failure.message}',
+                                              );
+                                              setState(
+                                                () => _isLoading = false,
+                                              );
+                                            },
+                                            (teacher) {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Welcome to Campus Assistant!',
+                                              );
+                                              ref.invalidate(
+                                                currentUserProvider,
+                                              );
+                                              if (!mounted) return;
+                                              context.goNamed(
+                                                AppRoute.home.name,
+                                              );
+                                            },
+                                          );
                                         },
                                       );
                                     } catch (e) {

@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/features/student/presentation/providers/student_provider.dart';
+import '/features/teacher/presentation/providers/teacher_provider.dart';
+import '/features/staff/presentation/providers/staff_provider.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,8 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_control.dart';
+
+enum _AccountRole { student, teacher, staff }
 
 class VerificationPage extends ConsumerStatefulWidget {
   const VerificationPage({super.key});
@@ -22,6 +26,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
   final TextEditingController _verificationCodeController =
       TextEditingController();
   bool _isLoading = false;
+  _AccountRole _role = _AccountRole.student;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +93,27 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                             const SizedBox(height: Spacing.sm),
                             const Divider(height: .5),
                             const SizedBox(height: Spacing.lg),
+                            SegmentedButton<_AccountRole>(
+                              segments: const [
+                                ButtonSegment(
+                                  value: _AccountRole.student,
+                                  label: Text('Student'),
+                                ),
+                                ButtonSegment(
+                                  value: _AccountRole.teacher,
+                                  label: Text('Teacher'),
+                                ),
+                                ButtonSegment(
+                                  value: _AccountRole.staff,
+                                  label: Text('Staff'),
+                                ),
+                              ],
+                              selected: {_role},
+                              onSelectionChanged: (selection) {
+                                setState(() => _role = selection.first);
+                              },
+                            ),
+                            const SizedBox(height: Spacing.lg),
                             CommonTextFieldWidget(
                               controller: _verificationCodeController,
                               heading: 'Verification Code',
@@ -117,24 +143,124 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                       if (_globalKey.currentState!.validate()) {
                                         setState(() => _isLoading = true);
 
-                                        final studentRepo = ref.read(
-                                          studentRepositoryProvider,
-                                        );
                                         final code = _verificationCodeController
                                             .text
                                             .trim();
 
                                         try {
-                                          await studentRepo.verifyCode(code);
+                                          switch (_role) {
+                                            case _AccountRole.student:
+                                              final studentRepo = ref.read(
+                                                studentRepositoryProvider,
+                                              );
+                                              await studentRepo.verifyCode(
+                                                code,
+                                              );
+                                              if (!context.mounted) return;
+                                              setState(
+                                                () => _isLoading = false,
+                                              );
+                                              if (!context.mounted) return;
+                                              context.pushNamed(
+                                                AppRoute.registration.name,
+                                                pathParameters: {
+                                                  'studentId': code,
+                                                },
+                                              );
 
-                                          if (!context.mounted) return;
-                                          setState(() => _isLoading = false);
+                                            case _AccountRole.teacher:
+                                              final teacherRepo = ref.read(
+                                                teacherRepositoryProvider,
+                                              );
+                                              final result = await teacherRepo
+                                                  .verifyCode(code);
+                                              if (!context.mounted) return;
+                                              setState(
+                                                () => _isLoading = false,
+                                              );
+                                              result.fold(
+                                                (failure) =>
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          failure.message,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                (teacher) {
+                                                  if (!context.mounted) {
+                                                    return;
+                                                  }
+                                                  context.pushNamed(
+                                                    AppRoute.teacherSignup.name,
+                                                    pathParameters: {
+                                                      'uid': code,
+                                                    },
+                                                    extra: {
+                                                      'university':
+                                                          teacher.universityId,
+                                                      'department':
+                                                          teacher.departmentId,
+                                                      'profession': 'Teacher',
+                                                      'name': teacher.name,
+                                                      'information': {
+                                                        'mobile':
+                                                            teacher.mobile,
+                                                        'email': teacher.email,
+                                                      },
+                                                    },
+                                                  );
+                                                },
+                                              );
 
-                                          if (!context.mounted) return;
-                                          context.pushNamed(
-                                            AppRoute.registration.name,
-                                            pathParameters: {'studentId': code},
-                                          );
+                                            case _AccountRole.staff:
+                                              final staffRepo = ref.read(
+                                                staffRepositoryProvider,
+                                              );
+                                              final result = await staffRepo
+                                                  .verifyCode(code);
+                                              if (!context.mounted) return;
+                                              setState(
+                                                () => _isLoading = false,
+                                              );
+                                              result.fold(
+                                                (failure) =>
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          failure.message,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                (staff) {
+                                                  if (!context.mounted) {
+                                                    return;
+                                                  }
+                                                  context.pushNamed(
+                                                    AppRoute.staffSignup.name,
+                                                    pathParameters: {
+                                                      'uid': code,
+                                                    },
+                                                    extra: {
+                                                      'university':
+                                                          staff.universityId,
+                                                      'department':
+                                                          staff.departmentId,
+                                                      'profession': 'Staff',
+                                                      'name': staff.name,
+                                                      'information': {
+                                                        'mobile': staff.mobile,
+                                                        'email': '',
+                                                      },
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                          }
                                         } catch (e) {
                                           if (!context.mounted) return;
                                           setState(() => _isLoading = false);

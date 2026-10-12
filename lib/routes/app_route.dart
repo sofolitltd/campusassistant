@@ -347,6 +347,14 @@ class AppRoute {
     name: 'register',
     path: '/register/:studentId',
   );
+  static const teacherSignup = AppRoute(
+    name: 'teacherSignup',
+    path: '/teacher-signup/:uid',
+  );
+  static const staffSignup = AppRoute(
+    name: 'staffSignup',
+    path: '/staff-signup/:uid',
+  );
 
   //reward
   static const reward = AppRoute(name: 'reward', path: '/reward');

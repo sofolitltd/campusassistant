@@ -8,6 +8,8 @@ import '/features/auth/presentation/screens/reset_password_page.dart';
 import '/features/auth/presentation/screens/login_page.dart';
 import '/features/auth/presentation/screens/new_student_create_account_screen.dart';
 import '/features/auth/presentation/screens/new_student_sign_up_screen.dart';
+import '/features/auth/presentation/screens/new_teacher_signup_screen.dart';
+import '/features/auth/presentation/screens/new_staff_signup_screen.dart';
 import '/features/auth/presentation/screens/verification_page.dart';
 import '/features/bkash/views/bkash_web_view.dart';
 import '/features/alumni/presentation/screens/alumni_page.dart';
@@ -188,7 +190,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           matchedLocation == AppRoute.newPassword.path ||
           matchedLocation == AppRoute.verification.path ||
           matchedLocation.startsWith('/register') ||
-          matchedLocation.startsWith('/create-account');
+          matchedLocation.startsWith('/create-account') ||
+          matchedLocation.startsWith('/teacher-signup') ||
+          matchedLocation.startsWith('/staff-signup');
 
       if (!isLoggedIn) {
         if (!isGuestRoute) {
@@ -952,6 +956,50 @@ final routerProvider = Provider<GoRouter>((ref) {
               hallId: args['hallId'],
               hallName: args['hallName'],
               blood: args['blood'],
+              verificationUID: uid,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        name: AppRoute.teacherSignup.name,
+        path: AppRoute.teacherSignup.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final uid = state.pathParameters['uid']!;
+          final args = state.extra as Map<String, dynamic>?;
+          if (args == null) {
+            return const NoTransitionPage(child: VerificationPage());
+          }
+          return NoTransitionPage(
+            child: NewTeacherSignupScreen(
+              university: args['university'],
+              department: args['department'],
+              profession: args['profession'],
+              name: args['name'],
+              information: args['information'],
+              verificationUID: uid,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        name: AppRoute.staffSignup.name,
+        path: AppRoute.staffSignup.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final uid = state.pathParameters['uid']!;
+          final args = state.extra as Map<String, dynamic>?;
+          if (args == null) {
+            return const NoTransitionPage(child: VerificationPage());
+          }
+          return NoTransitionPage(
+            child: NewStaffSignupScreen(
+              university: args['university'],
+              department: args['department'],
+              profession: args['profession'],
+              name: args['name'],
+              information: args['information'],
               verificationUID: uid,
             ),
           );

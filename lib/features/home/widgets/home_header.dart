@@ -14,8 +14,8 @@ import 'home_section.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
 /// Gradient header: profile avatar, search / notifications / menu actions and
-/// the greeting. The action row is pinned, so it stays put while the page
-/// scrolls; the greeting fades away behind it. The enclosing page overlaps the
+/// the greeting. The action row and the sheet's rounded top edge are pinned, so
+/// they stay put while the page scrolls; the greeting scrolls away behind them. The enclosing page overlaps the
 /// sheet below it by [HomeHeader.overlap], so the header reserves that much
 /// extra bottom space.
 ///
@@ -52,6 +52,20 @@ class HomeHeader extends ConsumerWidget {
       toolbarHeight: _toolbarHeight,
       expandedHeight: _toolbarHeight + _greetingHeight,
       titleSpacing: homeInset,
+      // The sheet's rounded top edge, pinned under the toolbar so it stays
+      // visible once the page has scrolled, like the other pages' sheets.
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(overlap),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.bg,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxl),
+            ),
+          ),
+          child: const SizedBox(height: overlap, width: double.infinity),
+        ),
+      ),
       title: Align(
         alignment: Alignment.centerLeft,
         child: _Avatar(
@@ -84,7 +98,7 @@ class HomeHeader extends ConsumerWidget {
           child: FlexibleSpaceBar(
             collapseMode: CollapseMode.none,
             background: _ScrollWithBody(
-              builder: (strip) => Stack(
+              builder: () => Stack(
                 fit: StackFit.expand,
                 children: [
                   Padding(
@@ -122,25 +136,6 @@ class HomeHeader extends ConsumerWidget {
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // The sheet's rounded top edge. Painted here, inside the header,
-                  // because a translated sliver child is covered by the pinned bar.
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    height: overlap,
-                    child: Opacity(
-                      opacity: strip,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colors.bg,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(RadiusToken.xxl),
-                          ),
                         ),
                       ),
                     ),
@@ -237,28 +232,22 @@ class _LogoMark extends StatelessWidget {
 
 /// Moves its child up one-for-one with the scroll, so the greeting travels
 /// with the page body instead of staying put until the header collapses. The
-/// child's bottom edge stays glued to the header's bottom edge. [builder]
-/// receives how visible the rounded sheet edge should be: it fades out over its
-/// last [HomeHeader.overlap] pixels so it never lands on the pinned toolbar.
+/// child's bottom edge stays glued to the header's bottom edge.
 class _ScrollWithBody extends StatelessWidget {
   const _ScrollWithBody({required this.builder});
 
-  final Widget Function(double stripOpacity) builder;
+  final Widget Function() builder;
 
   @override
   Widget build(BuildContext context) {
     final settings = context
         .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
-    if (settings == null) return builder(1);
+    if (settings == null) return builder();
 
     final collapsed = (settings.maxExtent - settings.currentExtent).clamp(
       0.0,
       settings.maxExtent - settings.minExtent,
     );
-    final remaining = settings.currentExtent - settings.minExtent;
-    return Transform.translate(
-      offset: Offset(0, -collapsed),
-      child: builder((remaining / HomeHeader.overlap).clamp(0.0, 1.0)),
-    );
+    return Transform.translate(offset: Offset(0, -collapsed), child: builder());
   }
 }

@@ -32,4 +32,16 @@ abstract class TeacherRepository {
   Future<Either<Failure, Teacher>> createTeacher(Teacher teacher);
   Future<Either<Failure, Teacher>> updateTeacher(Teacher teacher);
   Future<Either<Failure, void>> deleteTeacher(String teacherId);
+
+  /// Checks whether [code] matches an unclaimed Teacher profile (set up by
+  /// an admin) before the user attempts to claim it.
+  Future<Either<Failure, Teacher>> verifyCode(String code);
+
+  /// Links the just-registered [userId] to the Teacher profile matching
+  /// [code], completing account setup for app login.
+  Future<Either<Failure, Teacher>> claimProfile({
+    required String code,
+    required String userId,
+    String? phone,
+  });
 }

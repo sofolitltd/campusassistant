@@ -7,6 +7,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/feedback/presentation/providers/feedback_provider.dart';
 import '/core/theme/app_colors.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_control.dart';
@@ -78,8 +79,9 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Send Feedback'), centerTitle: true),
+  Widget build(BuildContext context) => CustomHeaderLayout(
+    title: 'Send Feedback',
+    showSearchBar: false,
     body: SingleChildScrollView(
       padding: const EdgeInsets.all(Spacing.lg),
       child: Column(

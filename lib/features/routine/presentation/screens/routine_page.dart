@@ -12,11 +12,92 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
+import '/core/widgets/section_tab_bar.dart';
+import '../widgets/class_notice_tab.dart';
+import '../widgets/post_class_notice_sheet.dart';
+import '../widgets/today_classes_tab.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
-class RoutinePage extends ConsumerWidget {
+class RoutinePage extends ConsumerStatefulWidget {
   const RoutinePage({super.key});
+
+  @override
+  ConsumerState<RoutinePage> createState() => _RoutinePageState();
+}
+
+class _RoutinePageState extends ConsumerState<RoutinePage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController = TabController(
+    length: 3,
+    vsync: this,
+  );
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _openPostSheet() {
+    final info = ref.read(userProvider).value?.information;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => PostClassNoticeSheet(
+        universityId: info?.universityId ?? '',
+        departmentId: info?.departmentId ?? '',
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isCr = ref.watch(userProvider).value?.information.status?.cr ?? false;
+
+    return CustomHeaderLayout(
+      title: 'Class Routine',
+      showSearchBar: false,
+      // Only CRs can post; the API enforces it again server-side.
+      actionIcon: isCr ? LucideIcons.plus : null,
+      onActionTap: isCr ? _openPostSheet : null,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.sm,
+            ),
+            child: SectionTabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Today'),
+                Tab(text: 'Notices'),
+                Tab(text: 'Routines'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                TodayClassesTab(),
+                ClassNoticeTab(),
+                _RoutineListTab(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RoutineListTab extends ConsumerWidget {
+  const _RoutineListTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,86 +112,82 @@ class RoutinePage extends ConsumerWidget {
       )),
     );
 
-    return CustomHeaderLayout(
-      title: 'Class Routine',
-      showSearchBar: false,
-      body: routineAsync.when(
-        data: (routines) {
-          if (routines.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: .center,
-                children: [
-                  Icon(
-                    LucideIcons.calendarDays,
-                    size: 64,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outline.withValues(alpha: 0.5),
+    return routineAsync.when(
+      data: (routines) {
+        if (routines.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: .center,
+              children: [
+                Icon(
+                  LucideIcons.calendarDays,
+                  size: 64,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: Spacing.lg),
+                Text(
+                  'No Class Routines Found',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: .bold,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
-                  const SizedBox(height: Spacing.lg),
-                  Text(
-                    'No Class Routines Found',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: .bold,
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
+                ),
+                const SizedBox(height: Spacing.sm),
+                Text(
+                  'Check back later for updates.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.outline,
                   ),
-                  const SizedBox(height: Spacing.sm),
-                  Text(
-                    'Check back later for updates.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: MediaQuery.of(context).size.width > 800
-                  ? MediaQuery.of(context).size.width * .2
-                  : 16,
+                ),
+              ],
             ),
-            itemCount: routines.length,
-            itemBuilder: (context, index) {
-              final routine = routines[index];
-              return RoutineCard(routine: routine);
-            },
-            separatorBuilder: (context, index) =>
-                const SizedBox(height: Spacing.xl),
           );
-        },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisAlignment: .center,
-            children: [
-              Icon(
-                Icons.error_outline_rounded,
-                size: 48,
+        }
+
+        return ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: MediaQuery.of(context).size.width > 800
+                ? MediaQuery.of(context).size.width * .2
+                : 16,
+          ),
+          itemCount: routines.length,
+          itemBuilder: (context, index) {
+            final routine = routines[index];
+            return RoutineCard(routine: routine);
+          },
+          separatorBuilder: (context, index) =>
+              const SizedBox(height: Spacing.xl),
+        );
+      },
+      loading: () => const Center(child: CupertinoActivityIndicator()),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisAlignment: .center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: Spacing.lg),
+            Text(
+              'Something went wrong',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: .bold,
                 color: Theme.of(context).colorScheme.error,
               ),
-              const SizedBox(height: Spacing.lg),
-              Text(
-                'Something went wrong',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: .bold,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              const SizedBox(height: Spacing.sm),
-              Text(
-                e.toString(),
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: .center,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: Spacing.sm),
+            Text(
+              e.toString(),
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: .center,
+            ),
+          ],
         ),
       ),
     );

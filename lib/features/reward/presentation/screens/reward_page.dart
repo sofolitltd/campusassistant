@@ -8,6 +8,7 @@ import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '../providers/reward_providers.dart';
@@ -73,8 +74,9 @@ class _RewardPageState extends ConsumerState<RewardPage> {
     final balanceAsync = ref.watch(rewardBalanceProvider);
     final transactionsAsync = ref.watch(rewardTransactionsProvider(_offset));
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Rewards')),
+    return CustomHeaderLayout(
+      title: 'Rewards',
+      showSearchBar: false,
       body: ListView(
         padding: const EdgeInsets.all(Spacing.lg),
         children: [

@@ -22,4 +22,16 @@ abstract class StaffRepository {
   Future<Either<Failure, Staff>> createStaff(Staff staff);
   Future<Either<Failure, Staff>> updateStaff(Staff staff);
   Future<Either<Failure, void>> deleteStaff(String id);
+
+  /// Checks whether [code] matches an unclaimed Staff profile (set up by an
+  /// admin) before the user attempts to claim it.
+  Future<Either<Failure, Staff>> verifyCode(String code);
+
+  /// Links the just-registered [userId] to the Staff profile matching
+  /// [code], completing account setup for app login.
+  Future<Either<Failure, Staff>> claimProfile({
+    required String code,
+    required String userId,
+    String? mobile,
+  });
 }

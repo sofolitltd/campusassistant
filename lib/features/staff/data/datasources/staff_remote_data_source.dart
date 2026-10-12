@@ -21,6 +21,13 @@ abstract class StaffRemoteDataSource {
   Future<StaffModel> createStaff(StaffModel staff);
   Future<StaffModel> updateStaff(StaffModel staff);
   Future<void> deleteStaff(String id);
+
+  Future<StaffModel> verifyCode(String code);
+  Future<StaffModel> claimProfile({
+    required String code,
+    required String userId,
+    String? mobile,
+  });
 }
 
 class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
@@ -106,5 +113,30 @@ class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
   @override
   Future<void> deleteStaff(String id) async {
     await apiClient.delete('/staffs/$id');
+  }
+
+  @override
+  Future<StaffModel> verifyCode(String code) async {
+    final response = await apiClient.post(
+      '/staffs/verify-code',
+      data: {'code': code},
+    );
+    return StaffModel.fromJson(response.data);
+  }
+
+  @override
+  Future<StaffModel> claimProfile({
+    required String code,
+    required String userId,
+    String? mobile,
+  }) async {
+    final data = <String, dynamic>{'code': code, 'user_id': userId};
+    if (mobile != null) data['mobile'] = mobile;
+
+    final response = await apiClient.post(
+      '/staffs/claim-profile',
+      data: data,
+    );
+    return StaffModel.fromJson(response.data);
   }
 }

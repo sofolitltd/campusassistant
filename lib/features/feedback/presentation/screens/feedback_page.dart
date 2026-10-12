@@ -8,6 +8,7 @@ import '/features/feedback/presentation/providers/feedback_provider.dart';
 import '/features/feedback/presentation/widgets/feedback_card.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_control.dart';
@@ -19,8 +20,9 @@ class FeedbackPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final feedbacksAsync = ref.watch(myFeedbacksProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('My Feedback'), centerTitle: true),
+    return CustomHeaderLayout(
+      title: 'My Feedback',
+      showSearchBar: false,
       body: feedbacksAsync.when(
         data: (feedbacks) {
           if (feedbacks.isEmpty) {

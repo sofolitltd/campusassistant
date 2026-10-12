@@ -22,6 +22,13 @@ abstract class TeacherRemoteDataSource {
   Future<TeacherModel> createTeacher(TeacherModel teacher);
   Future<TeacherModel> updateTeacher(TeacherModel teacher);
   Future<void> deleteTeacher(String teacherId);
+
+  Future<TeacherModel> verifyCode(String code);
+  Future<TeacherModel> claimProfile({
+    required String code,
+    required String userId,
+    String? phone,
+  });
 }
 
 class TeacherRemoteDataSourceImpl implements TeacherRemoteDataSource {
@@ -118,5 +125,30 @@ class TeacherRemoteDataSourceImpl implements TeacherRemoteDataSource {
   @override
   Future<void> deleteTeacher(String teacherId) async {
     await apiClient.delete('/teachers/$teacherId');
+  }
+
+  @override
+  Future<TeacherModel> verifyCode(String code) async {
+    final response = await apiClient.post(
+      '/teachers/verify-code',
+      data: {'code': code},
+    );
+    return TeacherModel.fromJsonData(response.data);
+  }
+
+  @override
+  Future<TeacherModel> claimProfile({
+    required String code,
+    required String userId,
+    String? phone,
+  }) async {
+    final data = <String, dynamic>{'code': code, 'user_id': userId};
+    if (phone != null) data['phone'] = phone;
+
+    final response = await apiClient.post(
+      '/teachers/claim-profile',
+      data: data,
+    );
+    return TeacherModel.fromJsonData(response.data);
   }
 }

@@ -150,4 +150,42 @@ class StaffRepositoryImpl implements StaffRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Staff>> verifyCode(String code) async {
+    if (!connectivity.isConnected) {
+      return const Left(
+        NetworkFailure('Internet connection required to verify code'),
+      );
+    }
+    try {
+      final result = await remoteDataSource.verifyCode(code);
+      return Right(result.toEntity());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Staff>> claimProfile({
+    required String code,
+    required String userId,
+    String? mobile,
+  }) async {
+    if (!connectivity.isConnected) {
+      return const Left(
+        NetworkFailure('Internet connection required to claim profile'),
+      );
+    }
+    try {
+      final result = await remoteDataSource.claimProfile(
+        code: code,
+        userId: userId,
+        mobile: mobile,
+      );
+      return Right(result.toEntity());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

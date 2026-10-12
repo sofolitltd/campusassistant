@@ -408,6 +408,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                 }
                               }),
                             ),
+                            const SizedBox(height: Spacing.md),
+                            const Text('Home Address'),
                             const SizedBox(height: Spacing.sm),
                             TextFormField(
                               controller: _presentAddressLineController,
@@ -486,6 +488,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                   _addressDirty = true;
                                 }),
                               ),
+                              const SizedBox(height: Spacing.md),
+                              const Text('Home Address'),
                               const SizedBox(height: Spacing.sm),
                               TextFormField(
                                 controller: _permanentAddressLineController,

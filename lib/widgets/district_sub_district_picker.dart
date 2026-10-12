@@ -40,10 +40,13 @@ class DistrictSubDistrictPicker extends ConsumerWidget {
             .firstWhereOrNull((s) => s.id == subDistrictId);
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text('District'),
+            const SizedBox(height: Spacing.sm),
             DropdownButtonFormField<BDDistrict>(
               initialValue: selectedDistrict,
-              decoration: const InputDecoration(labelText: 'District'),
+              decoration: const InputDecoration(hintText: 'Select district'),
               items: districts
                   .map((d) => DropdownMenuItem(value: d, child: Text(d.name)))
                   .toList(),
@@ -53,10 +56,12 @@ class DistrictSubDistrictPicker extends ConsumerWidget {
               },
             ),
             const SizedBox(height: Spacing.md),
+            const Text('Sub-district (optional)'),
+            const SizedBox(height: Spacing.sm),
             DropdownButtonFormField<BDSubDistrict>(
               initialValue: selectedSubDistrict,
               decoration: const InputDecoration(
-                labelText: 'Sub-district (optional)',
+                hintText: 'Select sub-district',
               ),
               items: (selectedDistrict?.subDistricts ?? [])
                   .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))

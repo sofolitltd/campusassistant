@@ -131,6 +131,22 @@ class AccountSection extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(RadiusToken.lg),
                       ),
                       elevation: 0,
+                    ).copyWith(
+                      // The theme's ElevatedButtonThemeData paints every
+                      // elevated button with the brand gradient via
+                      // `backgroundBuilder`, which otherwise overrides the
+                      // flat `backgroundColor` above. Logout is destructive,
+                      // so it stays flat red instead of brand-colored.
+                      backgroundBuilder: (context, states, child) =>
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: context.colors.danger,
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.lg,
+                              ),
+                            ),
+                            child: child,
+                          ),
                     ),
                     child: const Text(
                       'Yes, Log Out',

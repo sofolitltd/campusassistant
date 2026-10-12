@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -11,8 +12,10 @@ import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/features/subscription/domain/entities/subscription.dart';
 import '/features/subscription/presentation/providers/subscription_provider.dart'
     show userSubscriptionProvider;
+import '/routes/app_route.dart';
 
 /// Shows the account's plan details: join date for Basic users, purchase date
 /// and remaining time for Pro users.
@@ -34,6 +37,125 @@ class AccountInfoDialog extends ConsumerWidget {
   static String _date(DateTime? d) =>
       d == null ? '—' : DateFormat('dd MMM yyyy').format(d.toLocal());
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final isPro = user.subscriptionStatus == 'pro';
+    final subscription = isPro
+        ? ref.watch(userSubscriptionProvider(user.id))
+        : null;
+
+    final rows = <_InfoRow>[
+      _InfoRow('Plan', isPro ? 'Pro' : 'Basic'),
+      _InfoRow('Joined', _date(user.createdAt)),
+    ];
+    Subscription? sub;
+    if (isPro && subscription != null && !subscription.isLoading) {
+      sub = subscription.value;
+      if (sub != null) {
+        rows.add(_InfoRow('Pro since', _date(sub.startDate)));
+      }
+    }
+
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Spacing.xl,
+              Spacing.xl,
+              Spacing.xl,
+              Spacing.xl,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(child: _Avatar(imageUrl: user.profileImage ?? '')),
+                const SizedBox(height: Spacing.md),
+                Text(
+                  user.fullName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: Spacing.xs),
+                Text(
+                  user.email,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: FontSizeToken.sm,
+                    color: colors.textMuted,
+                  ),
+                ),
+                const SizedBox(height: Spacing.lg),
+                Divider(color: colors.border, height: 1),
+                const SizedBox(height: Spacing.md),
+                if (isPro && (subscription?.isLoading ?? false))
+                  const Padding(
+                    padding: EdgeInsets.all(Spacing.lg),
+                    child: Center(child: CupertinoActivityIndicator()),
+                  )
+                else ...[
+                  for (final row in rows)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: Spacing.xs,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              row.label,
+                              style: TextStyle(color: colors.textMuted),
+                            ),
+                          ),
+                          Text(
+                            row.value,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: Spacing.md),
+                  _BkmeProSection(isPro: isPro, subscription: sub),
+                ],
+              ],
+            ),
+          ),
+          Positioned(
+            top: Spacing.sm,
+            right: Spacing.sm,
+            child: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(LucideIcons.x, size: 18, color: colors.textMuted),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              visualDensity: VisualDensity.compact,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BkmeProSection extends StatelessWidget {
+  final bool isPro;
+  final Subscription? subscription;
+
+  const _BkmeProSection({required this.isPro, required this.subscription});
+
+  static String _date(DateTime? d) =>
+      d == null ? '—' : DateFormat('dd MMM yyyy').format(d.toLocal());
+
   static String _remaining(DateTime end) {
     final days = end.difference(DateTime.now()).inDays;
     if (days < 0) return 'Expired';
@@ -43,99 +165,86 @@ class AccountInfoDialog extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final isPro = user.subscriptionStatus == 'pro';
-    final subscription = isPro
-        ? ref.watch(userSubscriptionProvider(user.id))
-        : null;
+    final end = subscription?.endDate;
 
-    final rows = <_InfoRow>[];
-    if (!isPro) {
-      rows.add(_InfoRow('Plan', 'Basic'));
-      rows.add(_InfoRow('Joined', _date(user.createdAt)));
-    } else if (subscription == null || subscription.isLoading) {
-      // Rows are added once loaded.
-    } else {
-      final sub = subscription.value;
-      rows.add(_InfoRow('Plan', sub == null ? 'Pro' : 'Pro (${sub.plan})'));
-      rows.add(_InfoRow('Joined', _date(user.createdAt)));
-      if (sub != null) {
-        rows.add(_InfoRow('Pro since', _date(sub.startDate)));
-        final end = sub.endDate;
-        rows.add(
-          _InfoRow('Valid until', end == null ? 'Life Time' : _date(end)),
-        );
-        rows.add(
-          _InfoRow('Time left', end == null ? 'Life Time' : _remaining(end)),
-        );
-      }
-    }
-
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(RadiusToken.lg),
+    final card = Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.md,
+        vertical: Spacing.sm,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(Spacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(child: _Avatar(imageUrl: user.profileImage ?? '')),
-            const SizedBox(height: Spacing.md),
-            Text(
-              user.fullName,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: FontSizeToken.lg,
-                fontWeight: FontWeight.bold,
-              ),
+      decoration: BoxDecoration(
+        color: colors.primary.withValues(alpha: .08),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+        border: Border.all(color: colors.primary.withValues(alpha: .3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colors.primary.withValues(alpha: .15),
             ),
-            const SizedBox(height: Spacing.xs),
-            Text(
-              user.email,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: FontSizeToken.sm,
-                color: colors.textMuted,
-              ),
-            ),
-            const SizedBox(height: Spacing.lg),
-            Divider(color: colors.border, height: 1),
-            const SizedBox(height: Spacing.md),
-            if (isPro && (subscription?.isLoading ?? false))
-              const Padding(
-                padding: EdgeInsets.all(Spacing.lg),
-                child: Center(child: CupertinoActivityIndicator()),
-              )
-            else
-              for (final row in rows)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          row.label,
-                          style: TextStyle(color: colors.textMuted),
-                        ),
-                      ),
-                      Text(
-                        row.value,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
+            child: Icon(LucideIcons.trophy, size: 16, color: colors.primary),
+          ),
+          const SizedBox(width: Spacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Become Pro',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: colors.primary,
                   ),
                 ),
-            const SizedBox(height: Spacing.lg),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
+                if (isPro)
+                  Text(
+                    end == null
+                        ? 'Life Time access'
+                        : '${_remaining(end)} left · ends ${_date(end)}',
+                    style: TextStyle(
+                      fontSize: FontSizeToken.sm,
+                      color: colors.textMuted,
+                    ),
+                  )
+                else
+                  Text(
+                    'Unlock premium features',
+                    style: TextStyle(
+                      fontSize: FontSizeToken.sm,
+                      color: colors.textMuted,
+                    ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+          if (!isPro)
+            Icon(
+              LucideIcons.chevronRight,
+              size: 18,
+              color: colors.primary,
+            ),
+        ],
       ),
+    );
+
+    if (isPro) return card;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(RadiusToken.md),
+      onTap: () {
+        Navigator.of(context).pop();
+        context.pushNamed(AppRoute.subscription.name);
+      },
+      child: card,
     );
   }
 }

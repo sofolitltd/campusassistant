@@ -123,31 +123,34 @@ class ProfileCompletionCard extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton.icon(
-            clipBehavior: Clip.antiAlias,
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.pushNamed(
-                AppRoute.editProfile.name,
-                queryParameters: {'uid': user.id},
-              );
-            },
-            icon: Icon(
-              missing.length == _completionFields.length
-                  ? LucideIcons.plus
-                  : LucideIcons.arrowRight,
-              size: 16,
-            ),
-            label: Text(
-              missing.isEmpty
-                  ? 'View profile'
-                  : 'Complete ${missing.take(2).join(' & ')}${missing.length > 2 ? ' +${missing.length - 2} more' : ''}',
+        
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              clipBehavior: Clip.antiAlias,
+              onPressed: () {
+                Navigator.pop(ctx);
+                context.pushNamed(
+                  AppRoute.editProfile.name,
+                  queryParameters: {'uid': user.id},
+                );
+              },
+              child: Text(
+                missing.isEmpty
+                    ? 'View profile'
+                    : 'Complete ${missing.take(2).join(' & ')}${missing.length > 2 ? ' +${missing.length - 2} more' : ''}',
+              ),
             ),
           ),
+         SizedBox(
+            width: double.infinity,
+            child: TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+          ),
+           
+         
         ],
       ),
     );

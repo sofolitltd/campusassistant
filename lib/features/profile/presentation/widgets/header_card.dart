@@ -23,7 +23,7 @@ class HeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPro = user.subscriptionStatus == 'pro';
     final planLabel = isPro ? 'Pro' : 'Basic';
-    final planColor = context.colors.textMuted;
+    final planColor = isPro ? context.colors.primary : context.colors.textMuted;
     final isProfileComplete = profileCompletionPercent(user) == 100;
 
     return Container(
@@ -46,7 +46,7 @@ class HeaderCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .center,
         children: [
-          _ProfileImage(imageUrl: user.profileImage ?? ''),
+          _ProfileImage(imageUrl: user.profileImage ?? '', userId: user.id),
           SizedBox(width: Spacing.md),
           Expanded(
             child: Column(
@@ -141,10 +141,25 @@ class HeaderCard extends StatelessWidget {
                           queryParameters: {'uid': user.id},
                         );
                       },
-                      child: Icon(
-                        LucideIcons.pencil,
-                        size: 18,
-                        color: context.colors.primary,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: Spacing.xs),
+                        padding: const EdgeInsets.all(Spacing.xs),
+                        decoration:
+                        //  isProfileComplete ?
+                             BoxDecoration(
+                                color: context.colors.surface,
+                                border: Border.all(
+                                  color: context.colors.borderStrong,
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(RadiusToken.xxl),
+                              )
+                             ,
+                        child: Icon(
+                          LucideIcons.pencil,
+                          size: 16,
+                          color: context.colors.primary,
+                        ),
                       ),
                     ),
                   ],
@@ -160,7 +175,8 @@ class HeaderCard extends StatelessWidget {
 
 class _ProfileImage extends StatelessWidget {
   final String imageUrl;
-  const _ProfileImage({required this.imageUrl});
+  final String userId;
+  const _ProfileImage({required this.imageUrl, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -205,17 +221,25 @@ class _ProfileImage extends StatelessWidget {
         Positioned(
           bottom: 0,
           right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(Spacing.xs),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: context.colors.border, width: 1),
-            ),
-            child: Icon(
-              Icons.camera_alt_outlined,
-              size: 14,
-              color: context.colors.primary,
+          child: GestureDetector(
+                  onTap: () {
+                        context.pushNamed(
+                          AppRoute.editProfile.name,
+                          queryParameters: {'uid': userId},
+                        );
+                      },
+            child: Container(
+              padding: const EdgeInsets.all(Spacing.xs),
+              decoration: BoxDecoration(
+                color: context.colors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: context.colors.border, width: 1),
+              ),
+              child: Icon(
+                Icons.camera_alt_outlined,
+                size: 14,
+                color: context.colors.primary,
+              ),
             ),
           ),
         ),

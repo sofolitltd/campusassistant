@@ -79,7 +79,9 @@ class _CommonTextFieldWidgetState extends State<CommonTextFieldWidget> {
           validator: (value) => widget.validator(value),
           style: TextStyle(color: widget.enabled! ? null : cs.onSurfaceVariant),
           decoration: InputDecoration(
-            filled: widget.enabled! ? false : true,
+            // Always filled so the field stands out on the white card; the fill
+            // colour and borders come from the theme's inputDecorationTheme.
+            filled: true,
             hintText: widget.hintText,
             suffixIcon: widget.obscureText!
                 ? IconButton(

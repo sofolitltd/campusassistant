@@ -101,6 +101,10 @@ import '/features/resource/presentation/screens/add_edit_resource_screen.dart';
 import '/widgets/image_viewer.dart';
 import '/features/club/domain/entities/club.dart';
 import '/features/auth/presentation/screens/get_verification_code_screen.dart';
+import '/features/student_verification/data/student_verification_request.dart';
+import '/features/student_verification/presentation/screens/document_signup_screen.dart';
+import '/features/student_verification/presentation/screens/verification_request_screen.dart';
+import '/features/student_verification/presentation/screens/verification_status_screen.dart';
 import '/features/profile/presentation/screens/change_password.dart';
 import '/features/profile/presentation/screens/downloaded_files_page.dart';
 import '/features/profile/presentation/screens/edit_profile_page.dart';
@@ -192,13 +196,25 @@ final routerProvider = Provider<GoRouter>((ref) {
           matchedLocation.startsWith('/register') ||
           matchedLocation.startsWith('/create-account') ||
           matchedLocation.startsWith('/teacher-signup') ||
-          matchedLocation.startsWith('/staff-signup');
+          matchedLocation.startsWith('/staff-signup') ||
+          matchedLocation == AppRoute.documentSignup.path;
+
+      // Help pages reachable from login, and fine to view signed in too.
+      final isPublicRoute =
+          matchedLocation == AppRoute.getVerificationCode.path ||
+          matchedLocation == AppRoute.contactWithCR.path;
+      if (isPublicRoute) return null;
 
       if (!isLoggedIn) {
         if (!isGuestRoute) {
           return AppRoute.login.path;
         }
         return null; // Stay on guest routes
+      }
+
+      // Just signed up without a code — continue to document verification.
+      if (matchedLocation == AppRoute.documentSignup.path) {
+        return AppRoute.studentVerificationRequest.path;
       }
 
       // Logged in — redirect away from guest routes
@@ -919,6 +935,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: ContactWithCR()),
+      ),
+      GoRoute(
+        name: AppRoute.documentSignup.name,
+        path: AppRoute.documentSignup.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const DocumentSignupScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.studentVerification.name,
+        path: AppRoute.studentVerification.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const VerificationStatusScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.studentVerificationRequest.name,
+        path: AppRoute.studentVerificationRequest.path,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => VerificationRequestScreen(
+          previous: state.extra as StudentVerificationRequest?,
+        ),
       ),
       GoRoute(
         name: AppRoute.registration.name,

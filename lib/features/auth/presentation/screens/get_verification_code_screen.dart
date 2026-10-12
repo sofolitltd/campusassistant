@@ -41,6 +41,41 @@ class GetVerificationCodeScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(Spacing.lg),
                 decoration: BoxDecoration(
+                  color: context.colors.primarySubtle,
+                  borderRadius: BorderRadius.circular(RadiusToken.xl),
+                  border: Border.all(color: context.colors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    Text(
+                      'No code? Verify with your documents',
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontWeight: .w600,
+                        color: context.colors.text,
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.xs),
+                    const Text(
+                      "Create an account, then upload your student ID card and "
+                      "your registration card or certificate. An admin will "
+                      "verify you — no CR needed.",
+                      style: TextStyle(height: 1.4),
+                    ),
+                    const SizedBox(height: Spacing.lg),
+                    ElevatedButton.icon(
+                      onPressed: () =>
+                          context.push(AppRoute.documentSignup.path),
+                      icon: const Icon(Icons.badge_outlined),
+                      label: const Text('Verify with documents'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: Spacing.xxl),
+              Container(
+                padding: const EdgeInsets.all(Spacing.lg),
+                decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(RadiusToken.xl),
                   border: Border.all(

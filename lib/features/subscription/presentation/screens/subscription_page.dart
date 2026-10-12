@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/di.dart';
 import '/features/subscription/domain/entities/subscription.dart';
 import '/features/subscription/presentation/providers/subscription_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
@@ -28,6 +31,9 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
   SubscriptionPlan? selectedPlan;
   final _couponController = TextEditingController();
   String? _appliedCoupon;
+  int? _discountAmount;
+  bool _isApplyingCoupon = false;
+  String? _couponError;
 
   @override
   void dispose() {
@@ -151,9 +157,11 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           const SizedBox(height: Spacing.md),
           _buildPlansSelector(context, plans),
           const SizedBox(height: Spacing.xl),
+          _buildCouponSection(),
+          const SizedBox(height: Spacing.xl),
           _buildPaymentSection(),
           const SizedBox(height: Spacing.xl),
-          _buildCouponSection(),
+          _buildPriceSummary(context),
           const SizedBox(height: Spacing.xxl),
           _buildSubscribeButton(context),
         ],
@@ -364,7 +372,14 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
       ),
       color: isSelected ? colors.primarySubtle : colors.surface,
       borderColor: isSelected ? colors.primary : colors.border,
-      onTap: () => setState(() => selectedPlan = plan),
+      onTap: () => setState(() {
+        selectedPlan = plan;
+        // The discount is plan-specific (min amount, plan-locked coupons),
+        // so a coupon applied against the old plan can no longer be trusted.
+        _appliedCoupon = null;
+        _discountAmount = null;
+        _couponError = null;
+      }),
       child: Row(
         children: [
           Icon(
@@ -518,6 +533,16 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                     prefixIcon: Icon(LucideIcons.tag, size: 20),
                   ),
                   textCapitalization: .characters,
+                  // textCapitalization only hints the on-screen keyboard —
+                  // it doesn't transform what actually lands in the field
+                  // (hardware keyboards, paste, autofill all bypass it), so
+                  // the formatter below forces the text itself to upper case.
+                  inputFormatters: [
+                    TextInputFormatter.withFunction(
+                      (oldValue, newValue) =>
+                          newValue.copyWith(text: newValue.text.toUpperCase()),
+                    ),
+                  ],
                   onChanged: (_) => setState(() {}),
                   onSubmitted: (_) => _applyCoupon(),
                 ),
@@ -528,10 +553,22 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                   // The theme's min width is infinite; a Row needs a finite one.
                   minimumSize: const Size(88, ControlToken.height),
                 ),
-                onPressed: (applied || _couponController.text.trim().isEmpty)
+                onPressed:
+                    (applied ||
+                        _isApplyingCoupon ||
+                        _couponController.text.trim().isEmpty)
                     ? null
                     : _applyCoupon,
-                child: const Text('Apply'),
+                child: _isApplyingCoupon
+                    ? SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colors.onPrimary,
+                        ),
+                      )
+                    : const Text('Apply'),
               ),
             ],
           ),
@@ -544,7 +581,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                 const SizedBox(width: Spacing.xs),
                 Expanded(
                   child: Text(
-                    'Coupon $_appliedCoupon applied',
+                    'Coupon $_appliedCoupon applied · -৳$_discountAmount',
                     style: TextStyle(
                       color: colors.success,
                       fontSize: FontSizeToken.sm,
@@ -569,24 +606,132 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
               ],
             ),
           ],
+          if (_couponError != null) ...[
+            const SizedBox(height: Spacing.sm),
+            Row(
+              children: [
+                Icon(LucideIcons.circleAlert, size: 16, color: colors.danger),
+                const SizedBox(width: Spacing.xs),
+                Expanded(
+                  child: Text(
+                    _couponError!,
+                    style: TextStyle(
+                      color: colors.danger,
+                      fontSize: FontSizeToken.sm,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
-  void _applyCoupon() {
-    final code = _couponController.text.trim();
-    if (code.isEmpty) return;
+  Future<void> _applyCoupon() async {
+    final code = _couponController.text.trim().toUpperCase();
+    if (code.isEmpty || selectedPlan == null) return;
     FocusScope.of(context).unfocus();
-    setState(() => _appliedCoupon = code);
+    setState(() {
+      _isApplyingCoupon = true;
+      _couponError = null;
+    });
+
+    try {
+      final response = await ref
+          .read(apiClientProvider)
+          .post(
+            '/payments/bkash/validate-coupon',
+            data: {'code': code, 'plan_id': selectedPlan!.id},
+          );
+      final data = response.data as Map<String, dynamic>;
+      if (!mounted) return;
+      setState(() {
+        _appliedCoupon = code;
+        _discountAmount = data['discount_amount'] as int;
+      });
+    } on DioException catch (e) {
+      final message = (e.response?.data is Map)
+          ? e.response?.data['error'] as String?
+          : null;
+      if (!mounted) return;
+      setState(
+        () => _couponError = message ?? 'Could not apply this coupon.',
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _couponError = 'Could not apply this coupon.');
+    } finally {
+      if (mounted) setState(() => _isApplyingCoupon = false);
+    }
   }
 
   void _cancelCoupon() {
     FocusScope.of(context).unfocus();
     setState(() {
       _appliedCoupon = null;
+      _discountAmount = null;
+      _couponError = null;
       _couponController.clear();
     });
+  }
+
+  /// Final price breakdown — plan price, the coupon's minus (if any), and
+  /// the total actually charged. Sits right above the CTA so the last thing
+  /// the user sees before tapping "Activate Premium" is what they'll pay.
+  Widget _buildPriceSummary(BuildContext context) {
+    final colors = context.colors;
+    final plan = selectedPlan;
+    if (plan == null) return const SizedBox.shrink();
+
+    final discount = _discountAmount ?? 0;
+    final total = plan.price - discount;
+
+    Widget row(String label, String value, {bool bold = false, Color? color}) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+        child: Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: bold ? FontSizeToken.lg : FontSizeToken.md,
+                fontWeight: bold ? .w700 : .w400,
+                color: color ?? colors.textMuted,
+              ),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: bold ? FontSizeToken.lg : FontSizeToken.md,
+                fontWeight: bold ? .w800 : .w600,
+                color: color ?? colors.text,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SectionCard(
+      radius: RadiusToken.lg,
+      shadow: false,
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          row('Plan price', '৳${plan.price}'),
+          if (_appliedCoupon != null && discount > 0)
+            row('Coupon ($_appliedCoupon)', '-৳$discount', color: colors.success),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: Spacing.xs),
+            child: Divider(height: 1),
+          ),
+          row('Total to pay', '৳$total', bold: true),
+        ],
+      ),
+    );
   }
 
   Widget _buildSubscribeButton(BuildContext context) {

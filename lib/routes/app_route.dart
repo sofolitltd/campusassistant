@@ -339,6 +339,22 @@ class AppRoute {
     name: 'contactWithCR',
     path: '/contact-with-cr',
   );
+
+  // Document-based student verification (no CR code). The status path is
+  // also the backend's push `action_route` for approve/reject.
+  static const documentSignup = AppRoute(
+    name: 'documentSignup',
+    path: '/document-signup',
+  );
+  static const studentVerification = AppRoute(
+    name: 'studentVerification',
+    path: '/student-verification',
+  );
+  // Takes an optional previous StudentVerificationRequest as `extra`.
+  static const studentVerificationRequest = AppRoute(
+    name: 'studentVerificationRequest',
+    path: '/student-verification/new',
+  );
   static const cacheManagement = AppRoute(
     name: 'cacheManagement',
     path: '/cache',

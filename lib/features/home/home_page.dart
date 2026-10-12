@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/core/ads/banner_ad_widget.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/features/student_verification/presentation/widgets/student_verification_banner.dart';
 import '/routes/scaffold_with_navbar.dart';
 import 'sections/banner_section.dart';
 import 'sections/marketplace_section.dart';
@@ -46,6 +47,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   color: colors.bg,
                   child: const Column(
                     children: [
+                      StudentVerificationBanner(),
                       HomeSection(child: ShortcutStrip()),
                       SubscriptionSection(),
                       QuickFavoritesSection(),

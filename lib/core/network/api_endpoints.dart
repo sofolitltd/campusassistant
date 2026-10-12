@@ -103,6 +103,10 @@ class ApiEndpoints {
   static const String notificationsReadAll = '/notifications/read-all';
   static String notificationDetail(String id) => '/notifications/$id';
 
+  // Student verification (document-based onboarding)
+  static const String myStudentVerification = '/my/student-verification';
+  static const String myUpload = '/my/upload';
+
   // Notification preferences (per-category mute)
   static const String notificationPreferences = '/my/notification-preferences';
   static String notificationPreferenceDetail(String category) =>

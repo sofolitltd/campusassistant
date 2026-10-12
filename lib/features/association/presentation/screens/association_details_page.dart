@@ -572,6 +572,7 @@ class _MembersTab extends ConsumerWidget {
                     label: const Text('Leave'),
                   )
                 : ElevatedButton.icon(
+                  clipBehavior: Clip.antiAlias,
                     onPressed: memberPending ? null : onToggleMembership,
                     icon: const Icon(Icons.group_add, size: 18),
                     label: const Text('Join Association'),

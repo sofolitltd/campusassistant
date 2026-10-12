@@ -404,6 +404,7 @@ class AboutWebsiteButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: FilledButton.icon(
+        clipBehavior: Clip.antiAlias,
         onPressed: () {
           if (kIsWeb) {
             OpenApp.withUrl(url);

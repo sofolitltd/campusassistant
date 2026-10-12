@@ -7,3 +7,15 @@ extension StringSlug on String {
         .trim();
   }
 }
+
+extension StringTitleCase on String {
+  /// Converts text like "your university" → "Your University".
+  String toTitleCase() {
+    if (isEmpty) return this;
+    return split(' ')
+        .map((word) => word.isEmpty
+            ? word
+            : word[0].toUpperCase() + word.substring(1).toLowerCase())
+        .join(' ');
+  }
+}

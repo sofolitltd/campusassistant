@@ -187,6 +187,7 @@ class _UniversityLocationPageState
                     ),
                     const SizedBox(height: Spacing.lg),
                     ElevatedButton.icon(
+                      clipBehavior: Clip.antiAlias,
                       onPressed: () => _openMap(university),
                       icon: const Icon(LucideIcons.navigation),
                       label: const Text('Open In Google Maps'),

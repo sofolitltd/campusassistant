@@ -730,6 +730,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             child: const Text('Go Pro'),
           ),
           FilledButton.tonal(
+            clipBehavior: Clip.antiAlias,
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Watch Ad'),
           ),

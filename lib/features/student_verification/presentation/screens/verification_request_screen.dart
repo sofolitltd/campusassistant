@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '/core/theme/app_colors.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_control.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -17,6 +18,7 @@ import '/features/session/presentation/providers/session_provider.dart';
 import '/features/student_verification/data/student_verification_request.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/routes/app_route.dart';
+import '../providers/placement_selection_provider.dart';
 import '../providers/student_verification_provider.dart';
 
 /// Form a signed-in user fills to be verified as a student by document
@@ -67,6 +69,16 @@ class _VerificationRequestScreenState
       if (user != null) {
         _nameController.text = '${user.firstName} ${user.lastName}'.trim();
         _phoneController.text = user.phone ?? '';
+      }
+
+      // Carried over from the placement-selection step, so the student
+      // doesn't have to pick their university/department/batch again.
+      final placement = ref.read(placementSelectionProvider);
+      if (placement != null) {
+        _universityId = placement.universityId;
+        _departmentId = placement.departmentId;
+        _batchId = placement.batchId;
+        ref.read(placementSelectionProvider.notifier).clear();
       }
     }
   }
@@ -133,113 +145,142 @@ class _VerificationRequestScreenState
     final colors = context.colors;
     final width = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Verify as a student')),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          vertical: Spacing.lg,
-          horizontal: width > 800 ? width * .25 : Spacing.lg,
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: colors.onPrimary),
+          title: Text(
+            'Verify as a student',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: colors.onPrimary,
+            ),
+          ),
         ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(Spacing.md),
-                decoration: BoxDecoration(
-                  color: colors.infoSubtle,
-                  borderRadius: BorderRadius.circular(RadiusToken.lg),
-                ),
-                child: Text(
-                  'An admin checks your documents and links your account to '
-                  'your batch. Your documents are stored privately and are '
-                  'only visible to admins.',
-                  style: TextStyle(color: colors.text, height: 1.4),
-                ),
-              ),
-              const SizedBox(height: Spacing.xxl),
-              _sectionTitle(context, 'Your class'),
-              ..._placementFields(),
-              const SizedBox(height: Spacing.lg),
-              TextFormField(
-                controller: _rollController,
-                decoration: const InputDecoration(
-                  labelText: 'Roll / Student ID',
-                ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Enter your roll' : null,
-              ),
-              const SizedBox(height: Spacing.xxl),
-              _sectionTitle(context, 'About you'),
-              TextFormField(
-                controller: _nameController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Full name (as on your ID card)',
-                ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
-              ),
-              const SizedBox(height: Spacing.lg),
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Mobile number'),
-              ),
-              const SizedBox(height: Spacing.xxl),
-              _sectionTitle(context, 'Documents'),
-              _DocumentPicker(
-                label: 'Student ID card',
-                file: _idCardFile,
-                onPick: () async {
-                  final f = await _pickImage();
-                  if (f != null) setState(() => _idCardFile = f);
-                },
-              ),
-              const SizedBox(height: Spacing.lg),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'registration_card',
-                    label: Text('Registration card'),
+        body: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxxl),
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              vertical: Spacing.xl,
+              horizontal: width > 800 ? width * .25 : Spacing.lg,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(Spacing.md),
+                    decoration: BoxDecoration(
+                      color: colors.infoSubtle,
+                      borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    ),
+                    child: Text(
+                      'An admin checks your documents and links your account to '
+                      'your batch. Your documents are stored privately and are '
+                      'only visible to admins.',
+                      style: TextStyle(color: colors.text, height: 1.4),
+                    ),
                   ),
-                  ButtonSegment(
-                    value: 'certificate',
-                    label: Text('Certificate'),
+                  const SizedBox(height: Spacing.xxl),
+                  _sectionTitle(context, 'Your class'),
+                  ..._placementFields(),
+                  const SizedBox(height: Spacing.lg),
+                  TextFormField(
+                    controller: _rollController,
+                    decoration: const InputDecoration(
+                      labelText: 'Roll / Student ID',
+                    ),
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter your roll'
+                        : null,
                   ),
+                  const SizedBox(height: Spacing.xxl),
+                  _sectionTitle(context, 'About you'),
+                  TextFormField(
+                    controller: _nameController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Full name (as on your ID card)',
+                    ),
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter your name'
+                        : null,
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      labelText: 'Mobile number',
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.xxl),
+                  _sectionTitle(context, 'Documents'),
+                  _DocumentPicker(
+                    label: 'Student ID card',
+                    file: _idCardFile,
+                    onPick: () async {
+                      final f = await _pickImage();
+                      if (f != null) setState(() => _idCardFile = f);
+                    },
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(
+                        value: 'registration_card',
+                        label: Text('Registration card'),
+                      ),
+                      ButtonSegment(
+                        value: 'certificate',
+                        label: Text('Certificate'),
+                      ),
+                    ],
+                    selected: {_secondDocType},
+                    onSelectionChanged: (s) =>
+                        setState(() => _secondDocType = s.first),
+                  ),
+                  const SizedBox(height: Spacing.sm),
+                  _DocumentPicker(
+                    label: _secondDocType == 'registration_card'
+                        ? 'University registration card'
+                        : 'Certificate copy (SSC/HSC)',
+                    file: _secondDocFile,
+                    onPick: () async {
+                      final f = await _pickImage();
+                      if (f != null) setState(() => _secondDocFile = f);
+                    },
+                  ),
+                  const SizedBox(height: Spacing.xxxl),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(
+                        double.infinity,
+                        ControlToken.height,
+                      ),
+                    ),
+                    onPressed: _submitting ? null : _submit,
+                    child: _submitting
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Submit for review'),
+                  ),
+                  const SizedBox(height: Spacing.xxl),
                 ],
-                selected: {_secondDocType},
-                onSelectionChanged: (s) =>
-                    setState(() => _secondDocType = s.first),
               ),
-              const SizedBox(height: Spacing.sm),
-              _DocumentPicker(
-                label: _secondDocType == 'registration_card'
-                    ? 'University registration card'
-                    : 'Certificate copy (SSC/HSC)',
-                file: _secondDocFile,
-                onPick: () async {
-                  final f = await _pickImage();
-                  if (f != null) setState(() => _secondDocFile = f);
-                },
-              ),
-              const SizedBox(height: Spacing.xxxl),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, ControlToken.height),
-                ),
-                onPressed: _submitting ? null : _submit,
-                child: _submitting
-                    ? const SizedBox(
-                        height: 22,
-                        width: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Submit for review'),
-              ),
-              const SizedBox(height: Spacing.xxl),
-            ],
+            ),
           ),
         ),
       ),

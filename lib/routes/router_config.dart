@@ -103,6 +103,7 @@ import '/features/club/domain/entities/club.dart';
 import '/features/auth/presentation/screens/get_verification_code_screen.dart';
 import '/features/student_verification/data/student_verification_request.dart';
 import '/features/student_verification/presentation/screens/document_signup_screen.dart';
+import '/features/student_verification/presentation/screens/placement_selection_screen.dart';
 import '/features/student_verification/presentation/screens/verification_request_screen.dart';
 import '/features/student_verification/presentation/screens/verification_status_screen.dart';
 import '/features/profile/presentation/screens/change_password.dart';
@@ -197,6 +198,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           matchedLocation.startsWith('/create-account') ||
           matchedLocation.startsWith('/teacher-signup') ||
           matchedLocation.startsWith('/staff-signup') ||
+          matchedLocation == AppRoute.studentVerificationPlacement.path ||
           matchedLocation == AppRoute.documentSignup.path;
 
       // Help pages reachable from login, and fine to view signed in too.
@@ -935,6 +937,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: ContactWithCR()),
+      ),
+      GoRoute(
+        name: AppRoute.studentVerificationPlacement.name,
+        path: AppRoute.studentVerificationPlacement.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: PlacementSelectionScreen()),
       ),
       GoRoute(
         name: AppRoute.documentSignup.name,

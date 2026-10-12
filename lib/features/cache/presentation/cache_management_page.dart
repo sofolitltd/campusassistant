@@ -140,6 +140,7 @@ class _CacheManagementPageState extends ConsumerState<CacheManagementPage> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
+                    clipBehavior: Clip.antiAlias,
                     onPressed: _clearing
                         ? null
                         : () async {

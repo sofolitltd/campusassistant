@@ -6,6 +6,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_control.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import '/features/student_verification/data/student_verification_request.dart';
@@ -21,34 +22,56 @@ class VerificationStatusScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(myStudentVerificationProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Student verification')),
-      body: RefreshIndicator(
-        onRefresh: () => ref.refresh(myStudentVerificationProvider.future),
-        child: ListView(
-          padding: const EdgeInsets.all(Spacing.lg),
-          children: [
-            async.when(
-              data: (request) => _StatusBody(request: request),
-              loading: () => const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => Padding(
-                padding: const EdgeInsets.only(top: 120),
-                child: Column(
-                  children: [
-                    Text(serverErrorMessage(e) ?? 'Could not load status.'),
-                    TextButton(
-                      onPressed: () =>
-                          ref.invalidate(myStudentVerificationProvider),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+          title: Text(
+            'Student verification',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: context.colors.onPrimary,
             ),
-          ],
+          ),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxxl),
+            ),
+          ),
+          child: RefreshIndicator(
+            onRefresh: () => ref.refresh(myStudentVerificationProvider.future),
+            child: ListView(
+              padding: const EdgeInsets.all(Spacing.lg),
+              children: [
+                async.when(
+                  data: (request) => _StatusBody(request: request),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.only(top: 120),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (e, _) => Padding(
+                    padding: const EdgeInsets.only(top: 120),
+                    child: Column(
+                      children: [
+                        Text(serverErrorMessage(e) ?? 'Could not load status.'),
+                        TextButton(
+                          onPressed: () =>
+                              ref.invalidate(myStudentVerificationProvider),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

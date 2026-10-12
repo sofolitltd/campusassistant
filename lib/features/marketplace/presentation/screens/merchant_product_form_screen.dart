@@ -375,6 +375,7 @@ class _MerchantProductFormScreenState
                   ),
                   const SizedBox(height: Spacing.xxl),
                   ElevatedButton.icon(
+                    clipBehavior: Clip.antiAlias,
                     onPressed: _saving ? null : _save,
                     icon: _saving
                         ? SizedBox(

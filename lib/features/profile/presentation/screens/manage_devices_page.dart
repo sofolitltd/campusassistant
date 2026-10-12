@@ -65,6 +65,7 @@ class ManageDevicesPage extends ConsumerWidget {
               ),
               const SizedBox(height: Spacing.md),
               ElevatedButton.icon(
+                clipBehavior: Clip.antiAlias,
                 onPressed: () => _confirmLogoutAll(context, ref),
                 icon: const Icon(LucideIcons.shieldAlert, size: 18),
                 label: const Text('Log Out Of All Devices'),

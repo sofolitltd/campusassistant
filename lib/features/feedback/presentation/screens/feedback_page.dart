@@ -57,6 +57,7 @@ class FeedbackPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: Spacing.xxxl),
                     ElevatedButton.icon(
+                      clipBehavior: Clip.antiAlias,
                       onPressed: () =>
                           context.push(AppRoute.createFeedback.path),
                       icon: const Icon(LucideIcons.plus),

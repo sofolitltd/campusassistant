@@ -11,6 +11,44 @@ import '/core/theme/tokens/app_font_size.dart';
 /// Cached Outfit font family so GoogleFonts.outfit() is called only once.
 final String? _outfitFamily = GoogleFonts.outfit().fontFamily;
 
+/// The one brand gradient, shared by every elevated/filled button — same
+/// gradient `homeHeaderGradient` (see `features/home/widgets/home_section.dart`)
+/// already uses for the home header and drawer: `primaryPressed` (deeper) to
+/// `primary` (lighter), top-left to bottom-right. Buttons reuse this exact
+/// stop order and direction rather than inventing a second brand gradient.
+/// Disabled buttons fall back to a flat `surfaceAlt` fill (a gradient would
+/// read as a bug, not a style, on a button that can't be pressed).
+ButtonLayerBuilder _primaryGradientBackgroundBuilder(AppColors colors) {
+  // `backgroundBuilder`'s result paints *inside* the button's Material, but
+  // Material doesn't clip its child to the button's rounded `shape` by
+  // default — so a plain, radius-less DecoratedBox here would paint square
+  // corners over the rounded outline. Round it to match (RadiusToken.lg,
+  // the shape every elevated/filled button already declares).
+  const shape = BorderRadius.all(Radius.circular(RadiusToken.lg));
+  return (context, states, child) {
+    if (states.contains(WidgetState.disabled)) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surfaceAlt,
+          borderRadius: shape,
+        ),
+        child: child,
+      );
+    }
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: shape,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [colors.primaryPressed, colors.primary],
+        ),
+      ),
+      child: child,
+    );
+  };
+}
+
 ThemeData buildLightTheme() => _buildTheme(AppColors.light, Brightness.light);
 
 ThemeData buildDarkTheme() => _buildTheme(AppColors.dark, Brightness.dark);
@@ -158,10 +196,16 @@ ThemeData _buildTheme(AppColors colors, Brightness brightness) {
     ),
 
     // --- Buttons ---
+    // Every primary/filled button shares one diagonal brand gradient
+    // (primary -> primaryPressed) via `backgroundBuilder`, rather than a flat
+    // `backgroundColor` fill, so the brand teal reads as one consistent
+    // surface across the app. `backgroundColor` is left transparent so the
+    // builder's gradient is what actually paints.
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, ControlToken.height),
-        backgroundColor: colors.primary,
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
         foregroundColor: colors.onPrimary,
         elevation: 0,
         textStyle: TextStyle(
@@ -172,11 +216,13 @@ ThemeData _buildTheme(AppColors colors, Brightness brightness) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
-      ),
+      ).copyWith(backgroundBuilder: _primaryGradientBackgroundBuilder(colors)),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size(64, ControlToken.height),
+        backgroundColor: Colors.transparent,
+        foregroundColor: colors.onPrimary,
         elevation: 0,
         textStyle: TextStyle(
           fontFamily: _outfitFamily,
@@ -186,7 +232,7 @@ ThemeData _buildTheme(AppColors colors, Brightness brightness) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(RadiusToken.lg),
         ),
-      ),
+      ).copyWith(backgroundBuilder: _primaryGradientBackgroundBuilder(colors)),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(

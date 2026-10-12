@@ -505,6 +505,7 @@ class _ActionsState extends ConsumerState<_Actions> {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
+              clipBehavior: Clip.antiAlias,
               onPressed: _busy ? null : _reorder,
               icon: const Icon(LucideIcons.refreshCw, size: 16),
               label: Text(_busy ? 'Adding…' : 'Order again'),

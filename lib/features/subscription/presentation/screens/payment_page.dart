@@ -227,6 +227,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                     const SizedBox(height: 40),
                     if (!_isSuccess) ...[
                       ElevatedButton.icon(
+                        clipBehavior: Clip.antiAlias,
                         onPressed: _startPaymentProcess,
                         icon: const Icon(LucideIcons.refreshCw),
                         label: const Text('Try Again'),

@@ -489,6 +489,7 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
           ),
           const SizedBox(height: Spacing.xxl),
           ElevatedButton.icon(
+            clipBehavior: Clip.antiAlias,
             onPressed: _submitting ? null : _submit,
             icon: _submitting
                 ? SizedBox(

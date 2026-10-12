@@ -308,6 +308,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                           width: double.infinity,
                           height: ControlToken.height,
                           child: ElevatedButton.icon(
+                            clipBehavior: Clip.antiAlias,
                             onPressed: () => _navigateToSource(context, notif),
                             icon: const Icon(
                               LucideIcons.arrowUpRight,

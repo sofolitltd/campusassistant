@@ -136,6 +136,7 @@ class LostFoundDetailScreen extends ConsumerWidget {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton.icon(
+                            clipBehavior: Clip.antiAlias,
                             onPressed: () =>
                                 showClaimBottomSheet(context, ref, itemId),
                             icon: const Icon(Icons.pan_tool_alt_outlined),

@@ -10,13 +10,12 @@ import 'package:go_router/go_router.dart';
 import '/routes/app_route.dart';
 import '/widgets/app_logo.dart';
 import '/widgets/common_text_field_widget.dart';
-import '/widgets/open_app.dart';
-import '/utils/constants.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/contact_help_sheet.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -125,7 +124,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Container(
-                                    padding: const EdgeInsets.all(Spacing.xxl),
+                                    padding: const EdgeInsets.fromLTRB(Spacing.xxl, Spacing.xxl, Spacing.xxl, Spacing.sm),
                                     decoration: BoxDecoration(
                                       color: theme.cardColor,
                                       borderRadius: BorderRadius.circular(
@@ -312,9 +311,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               : const Text('Login'),
                                         ),
 
+
+SizedBox(height: Spacing.sm),
                                         Align(
                                           alignment: Alignment.center,
                                           child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              minimumSize: const Size(150, 36),
+                                            ),
                                             onPressed: () {
                                               context.pushNamed(
                                                 AppRoute.forgotPassword.name,
@@ -409,7 +414,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     top: Spacing.sm,
                   ),
                   child: GestureDetector(
-                    onTap: () => _showContactSheet(context),
+                    onTap: () => showContactHelpSheet(
+                      context,
+                      title: 'Need help signing in?',
+                    ),
                     child: Text(
                       'Having trouble? Contact us',
                       style: TextStyle(
@@ -460,64 +468,3 @@ class _Blob extends StatelessWidget {
   }
 }
 
-// Feedback needs a signed-in user, so people locked out of login get direct
-// contact channels instead.
-void _showContactSheet(BuildContext context) {
-  showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    builder: (sheetContext) => SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: Spacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
-                Spacing.xl,
-                0,
-                Spacing.xl,
-                Spacing.sm,
-              ),
-              child: Text(
-                'Having trouble signing in? Reach out and we will help.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.mail_outline_rounded),
-              title: const Text('Email'),
-              subtitle: const Text(kAppEmail),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                OpenApp.withEmailNew(
-                  kAppEmail,
-                  subject: 'Login problem - Campus Assistant',
-                  message: '',
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.phone_outlined),
-              title: const Text('Phone'),
-              subtitle: const Text(kDeveloperMobile),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                OpenApp.withNumber(kDeveloperMobile);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.language_rounded),
-              title: const Text('Website'),
-              subtitle: const Text(kDevWebsite),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                OpenApp.withUrl(kDevWebsite);
-              },
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}

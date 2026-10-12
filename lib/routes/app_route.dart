@@ -340,6 +340,13 @@ class AppRoute {
     path: '/contact-with-cr',
   );
 
+  // Pick university/department/batch before the document-based signup, so
+  // we can tell the student up front if their batch isn't in the system yet.
+  static const studentVerificationPlacement = AppRoute(
+    name: 'studentVerificationPlacement',
+    path: '/student-verification/placement',
+  );
+
   // Document-based student verification (no CR code). The status path is
   // also the backend's push `action_route` for approve/reject.
   static const documentSignup = AppRoute(

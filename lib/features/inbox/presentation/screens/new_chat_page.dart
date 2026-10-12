@@ -435,6 +435,7 @@ class _ContactDialogState extends State<_ContactDialog> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
+                    clipBehavior: Clip.antiAlias,
                     onPressed: _sending ? null : _send,
                     icon: _sending
                         ? const SizedBox(

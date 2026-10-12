@@ -162,6 +162,7 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton.icon(
+                              clipBehavior: Clip.antiAlias,
                               onPressed: _saving ? null : _saveToMyJobs,
                               icon: _saving
                                   ? const SizedBox(

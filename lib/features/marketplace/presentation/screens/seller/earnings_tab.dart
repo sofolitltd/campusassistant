@@ -280,6 +280,7 @@ class _BalanceCardState extends ConsumerState<_BalanceCard> {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
+              clipBehavior: Clip.antiAlias,
               onPressed: canRequest ? _request : null,
               icon: _busy
                   ? const SizedBox(

@@ -513,6 +513,7 @@ class _MembersTab extends ConsumerWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
+            clipBehavior: Clip.antiAlias,
             onPressed: memberPending ? null : onToggleMembership,
             icon: Icon(
               isMember ? Icons.check_circle : Icons.group_add,

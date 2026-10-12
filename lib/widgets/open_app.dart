@@ -31,6 +31,18 @@ class OpenApp {
   }
 
   //
+  static Future<void> withSms(String? number) async {
+    if (number == null || number == '') {
+      Fluttertoast.showToast(msg: 'No number found');
+    } else {
+      var url = Uri(scheme: 'sms', path: number);
+      if (!await launchUrl(url)) {
+        throw Exception('Could not launch $url');
+      }
+    }
+  }
+
+  //
   static Future<void> withEmail(String? email) async {
     if (email == null || email == '') {
       Fluttertoast.showToast(msg: 'No email found');

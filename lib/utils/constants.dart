@@ -55,6 +55,8 @@ const kAdminContactEmail = kAppEmail;
 
 // official fb gr
 const kFbGroup = 'https://www.facebook.com/campusassistantbd';
+final kRegistrationWhatsAppUrl =
+    'https://wa.me/8801704340860?text=${Uri.encodeComponent("Hi, I want to register on Campus Assistant.\n\nFull Name:\nUniversity:\nDepartment:\nStudent ID:")}';
 const kYoutubeUrl = 'https://www.youtube.com/@campusassistantbd';
 const kPlayStoreUrl =
     'https://play.google.com/store/apps/details?id=com.sofolit.campusassistant';

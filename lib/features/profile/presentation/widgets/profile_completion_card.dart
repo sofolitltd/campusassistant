@@ -128,6 +128,7 @@ class ProfileCompletionCard extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           FilledButton.icon(
+            clipBehavior: Clip.antiAlias,
             onPressed: () {
               Navigator.pop(ctx);
               context.pushNamed(

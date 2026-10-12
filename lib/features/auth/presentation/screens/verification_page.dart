@@ -4,13 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
-import '/widgets/common_text_field_widget.dart';
+import '/widgets/otp_code_field_widget.dart';
 import '/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_control.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 enum _AccountRole { student, teacher, staff }
 
@@ -30,17 +31,33 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verification'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goNamed(AppRoute.login.name),
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+          title: Text(
+            'Verification',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: context.colors.onPrimary,
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: context.colors.onPrimary),
+            onPressed: () => context.goNamed(AppRoute.login.name),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Center(
+        body: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(RadiusToken.xxxl),
+            ),
+          ),
           child: Form(
             key: _globalKey,
             child: SingleChildScrollView(
@@ -49,7 +66,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                   horizontal: MediaQuery.of(context).size.width > 800
                       ? MediaQuery.of(context).size.width * .3
                       : 16,
-                  vertical: 16,
+                  vertical: Spacing.xl,
                 ),
                 child: Column(
                   crossAxisAlignment: .start,
@@ -59,7 +76,8 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
-                          color: Theme.of(context).brightness == Brightness.dark
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
                               ? context.colors.border
                               : context.colors.border,
                         ),
@@ -79,46 +97,79 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         child: Column(
                           crossAxisAlignment: .start,
                           children: [
-                            Text(
-                              'Have a verification code?',
-                              style: Theme.of(context).textTheme.titleSmall!
-                                  .copyWith(fontWeight: .w600),
-                            ),
-                            Text(
-                              'Enter your 6-digit verification code to create a new account.',
-                              style: TextStyle(
-                                color: context.colors.textSubtle,
-                              ),
-                            ),
-                            const SizedBox(height: Spacing.sm),
-                            const Divider(height: .5),
-                            const SizedBox(height: Spacing.lg),
-                            SegmentedButton<_AccountRole>(
-                              segments: const [
-                                ButtonSegment(
-                                  value: _AccountRole.student,
-                                  label: Text('Student'),
+                            Row(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(Spacing.md),
+                                  decoration: BoxDecoration(
+                                    color: context.colors.primarySubtle,
+                                    borderRadius: BorderRadius.circular(
+                                      RadiusToken.full,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.verified_user_outlined,
+                                    color: context.colors.primary,
+                                    size: 20,
+                                  ),
                                 ),
-                                ButtonSegment(
-                                  value: _AccountRole.teacher,
-                                  label: Text('Teacher'),
-                                ),
-                                ButtonSegment(
-                                  value: _AccountRole.staff,
-                                  label: Text('Staff'),
+                                const SizedBox(width: Spacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text(
+                                        'Have A Verification Code?',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(fontWeight: .w700),
+                                      ),
+                                      const SizedBox(height: Spacing.xxs),
+                                      Text(
+                                        'Enter your 6-digit code below',
+                                        style: TextStyle(
+                                          color: context.colors.textMuted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
-                              selected: {_role},
-                              onSelectionChanged: (selection) {
-                                setState(() => _role = selection.first);
-                              },
                             ),
+          
                             const SizedBox(height: Spacing.lg),
-                            CommonTextFieldWidget(
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: SegmentedButton<_AccountRole>(
+                                    segments: const [
+                                      ButtonSegment(
+                                        value: _AccountRole.student,
+                                        label: Text('Student'),
+                                      ),
+                                      ButtonSegment(
+                                        value: _AccountRole.teacher,
+                                        label: Text('Teacher'),
+                                      ),
+                                      ButtonSegment(
+                                        value: _AccountRole.staff,
+                                        label: Text('Staff'),
+                                      ),
+                                    ],
+                                    selected: {_role},
+                                    onSelectionChanged: (selection) {
+                                      setState(() => _role = selection.first);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: Spacing.md),
+                            OtpCodeFieldWidget(
                               controller: _verificationCodeController,
                               heading: 'Verification Code',
-                              hintText: 'Enter 6-digit code',
-                              keyboardType: .number,
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return 'Enter your verification code';
@@ -140,13 +191,14 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                               onPressed: _isLoading
                                   ? null
                                   : () async {
-                                      if (_globalKey.currentState!.validate()) {
+                                      if (_globalKey.currentState!
+                                          .validate()) {
                                         setState(() => _isLoading = true);
-
-                                        final code = _verificationCodeController
-                                            .text
-                                            .trim();
-
+          
+                                        final code =
+                                            _verificationCodeController.text
+                                                .trim();
+          
                                         try {
                                           switch (_role) {
                                             case _AccountRole.student:
@@ -167,7 +219,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                                   'studentId': code,
                                                 },
                                               );
-
+          
                                             case _AccountRole.teacher:
                                               final teacherRepo = ref.read(
                                                 teacherRepositoryProvider,
@@ -194,27 +246,30 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                                     return;
                                                   }
                                                   context.pushNamed(
-                                                    AppRoute.teacherSignup.name,
+                                                    AppRoute
+                                                        .teacherSignup
+                                                        .name,
                                                     pathParameters: {
                                                       'uid': code,
                                                     },
                                                     extra: {
-                                                      'university':
-                                                          teacher.universityId,
-                                                      'department':
-                                                          teacher.departmentId,
+                                                      'university': teacher
+                                                          .universityId,
+                                                      'department': teacher
+                                                          .departmentId,
                                                       'profession': 'Teacher',
                                                       'name': teacher.name,
                                                       'information': {
                                                         'mobile':
                                                             teacher.mobile,
-                                                        'email': teacher.email,
+                                                        'email':
+                                                            teacher.email,
                                                       },
                                                     },
                                                   );
                                                 },
                                               );
-
+          
                                             case _AccountRole.staff:
                                               final staffRepo = ref.read(
                                                 staffRepositoryProvider,
@@ -253,7 +308,8 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                                       'profession': 'Staff',
                                                       'name': staff.name,
                                                       'information': {
-                                                        'mobile': staff.mobile,
+                                                        'mobile':
+                                                            staff.mobile,
                                                         'email': '',
                                                       },
                                                     },
@@ -284,9 +340,8 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                       ),
                                     )
                                   : Text(
-                                      'Verify now',
+                                      'Verify Now',
                                       style: const TextStyle(
-                                        letterSpacing: 1,
                                         fontWeight: .bold,
                                       ),
                                     ),
@@ -301,7 +356,8 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
-                          color: Theme.of(context).brightness == Brightness.dark
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
                               ? context.colors.border
                               : context.colors.border,
                         ),
@@ -322,17 +378,16 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                           crossAxisAlignment: .stretch,
                           children: [
                             Text(
-                              'Don\'t have a verification code?',
-                              style: Theme.of(context).textTheme.titleSmall!
-                                  .copyWith(
-                                    fontWeight: .w600,
-                                    color: context.colors.textSubtle,
-                                  ),
+                              'Don\'t Have a Verification Code?',
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: Spacing.lg),
                             OutlinedButton(
                               onPressed: () {
-                                context.push(AppRoute.getVerificationCode.path);
+                                context.push(
+                                  AppRoute.getVerificationCode.path,
+                                );
                               },
                               child: Text(
                                 'Get Your Verification Code!',
@@ -348,13 +403,13 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                     ),
                     const SizedBox(height: Spacing.xxl),
                     Center(
-                      child: TextButton(
+                      child: TextButton.icon(
                         onPressed: () => context.goNamed(AppRoute.login.name),
-                        child: Text(
+                        icon: const Icon(CupertinoIcons.back, size: 16),
+                        label: Text(
                           'Cancel And Login',
                           style: TextStyle(
-                            color: context.colors.textMuted,
-                            letterSpacing: 1,
+                            color: context.colors.primary,
                             fontWeight: .bold,
                           ),
                         ),

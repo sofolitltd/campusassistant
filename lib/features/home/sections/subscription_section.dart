@@ -151,6 +151,7 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton.icon(
+                            clipBehavior: Clip.antiAlias,
                             onPressed: () => context.push('/subscription'),
                             icon: const Icon(LucideIcons.crown, size: 18),
                             style: FilledButton.styleFrom(

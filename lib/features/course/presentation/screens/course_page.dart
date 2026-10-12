@@ -276,6 +276,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                                       Text('Error: $e', textAlign: .center),
                                       const SizedBox(height: Spacing.lg),
                                       ElevatedButton.icon(
+                                        clipBehavior: Clip.antiAlias,
                                         onPressed: () => ref.invalidate(
                                           coursesProvider(
                                             universityId: uid,
@@ -422,6 +423,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
               Text('Error: $e', textAlign: .center),
               const SizedBox(height: Spacing.lg),
               ElevatedButton.icon(
+                clipBehavior: Clip.antiAlias,
                 onPressed: () => ref.invalidate(userProvider),
                 icon: const Icon(Icons.refresh, size: 18),
                 label: const Text('Retry'),

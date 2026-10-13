@@ -203,9 +203,13 @@ class AppColors extends ThemeExtension<AppColors> {
   /// The dark primary stays #4DB6AC: it has enough luminance to sit on both
   /// #F7F9F9 and #101414, so "primary" keeps the same identity across themes
   /// instead of flipping between a dark and a light colour.
+  ///
+  /// `primaryPressed` is a distinctly deeper teal (not just light's `primary`
+  /// reused) so gradients built from [primaryPressed, primary] (home header,
+  /// section cards, etc.) keep real contrast instead of reading as a flat fill.
   static const dark = AppColors(
     primary: Color(0xFF4DB6AC),
-    primaryPressed: Color(0xFF26A69A),
+    primaryPressed: Color(0xFF0F6358),
     primarySubtle: Color(0xFF1F3B38),
     onPrimary: Color(0xFF06201D),
     text: Color(0xFFEAF0EF),

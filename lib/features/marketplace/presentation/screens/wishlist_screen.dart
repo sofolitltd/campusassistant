@@ -10,6 +10,7 @@ import '../widgets/market_product_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class WishlistScreen extends ConsumerWidget {
   const WishlistScreen({super.key});
@@ -19,75 +20,82 @@ class WishlistScreen extends ConsumerWidget {
     final c = context.colors;
     final async = ref.watch(wishlistProductsProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Saved items')),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
-            child: async.when(
-              loading: () => const Center(child: CupertinoActivityIndicator()),
-              error: (_, _) => Center(
-                child: Text(
-                  'Could not load your saved items.',
-                  style: TextStyle(color: c.textSubtle),
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Saved items'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 700),
+              child: async.when(
+                loading: () =>
+                    const Center(child: CupertinoActivityIndicator()),
+                error: (_, _) => Center(
+                  child: Text(
+                    'Could not load your saved items.',
+                    style: TextStyle(color: c.textSubtle),
+                  ),
                 ),
-              ),
-              data: (products) {
-                if (products.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(Spacing.xxxl),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            LucideIcons.heart,
-                            size: 44,
-                            color: c.borderStrong,
-                          ),
-                          const SizedBox(height: Spacing.md),
-                          Text(
-                            'Nothing saved yet',
-                            style: TextStyle(
-                              fontSize: FontSizeToken.xl,
-                              fontWeight: FontWeight.w800,
-                              color: c.text,
+                data: (products) {
+                  if (products.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(Spacing.xxxl),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              LucideIcons.heart,
+                              size: 44,
+                              color: c.borderStrong,
                             ),
-                          ),
-                          const SizedBox(height: Spacing.xs),
-                          Text(
-                            'Tap the heart on any product to keep it here. We will tell you when it is back in stock or gets cheaper.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: c.textMuted,
-                              fontSize: 12.5,
-                              height: 1.4,
+                            const SizedBox(height: Spacing.md),
+                            Text(
+                              'Nothing saved yet',
+                              style: TextStyle(
+                                fontSize: FontSizeToken.xl,
+                                fontWeight: FontWeight.w800,
+                                color: c.text,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: Spacing.xs),
+                            Text(
+                              'Tap the heart on any product to keep it here. We will tell you when it is back in stock or gets cheaper.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: c.textMuted,
+                                fontSize: 12.5,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    );
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(wishlistProductsProvider);
+                      await ref.read(wishlistProductsProvider.future);
+                    },
+                    child: MasonryGridView.extent(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(Spacing.lg),
+                      maxCrossAxisExtent: 180,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      itemCount: products.length,
+                      itemBuilder: (context, i) =>
+                          MarketProductCard(product: products[i]),
                     ),
                   );
-                }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(wishlistProductsProvider);
-                    await ref.read(wishlistProductsProvider.future);
-                  },
-                  child: MasonryGridView.extent(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(Spacing.lg),
-                    maxCrossAxisExtent: 180,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    itemCount: products.length,
-                    itemBuilder: (context, i) =>
-                        MarketProductCard(product: products[i]),
-                  ),
-                );
-              },
+                },
+              ),
             ),
           ),
         ),

@@ -11,6 +11,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class AddressListScreen extends ConsumerWidget {
   const AddressListScreen({super.key});
@@ -19,22 +20,25 @@ class AddressListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final addressesAsync = ref.watch(addressesProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Addresses'),
-        actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.plus),
-            onPressed: () => context
-                .push(AppRoute.marketplaceAddressForm.path)
-                .then((_) => ref.invalidate(addressesProvider)),
-          ),
-        ],
-      ),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Addresses'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(LucideIcons.plus),
+              onPressed: () => context
+                  .push(AppRoute.marketplaceAddressForm.path)
+                  .then((_) => ref.invalidate(addressesProvider)),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: addressesAsync.when(
               data: (addresses) {
@@ -217,12 +221,14 @@ class AddressListScreen extends ConsumerWidget {
                   },
                 );
               },
-              loading: () => const Center(child: CupertinoActivityIndicator()),
+              loading: () =>
+                  const Center(child: CupertinoActivityIndicator()),
               error: (e, _) =>
                   Center(child: Text('Could not load addresses: $e')),
             ),
           ),
         ),
+      ),
       ),
     );
   }

@@ -407,7 +407,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         onPressed: () => context.goNamed(AppRoute.login.name),
                         icon: const Icon(CupertinoIcons.back, size: 16),
                         label: Text(
-                          'Cancel And Login',
+                          'Cancel & Login',
                           style: TextStyle(
                             color: context.colors.primary,
                             fontWeight: .bold,

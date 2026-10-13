@@ -17,6 +17,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class AllStudentsPage extends ConsumerStatefulWidget {
   const AllStudentsPage({super.key});
@@ -79,12 +80,38 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
     return batchesAsync.when(
       data: (batches) {
         if (batches.isEmpty) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('All Students'),
-              centerTitle: true,
+          return HeaderGradientBackdrop(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: Text(
+                  'All Students',
+                  style: TextStyle(
+                    color: context.colors.onPrimary,
+                    fontWeight: .bold,
+                  ),
+                ),
+                centerTitle: true,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                iconTheme: IconThemeData(color: context.colors.onPrimary),
+              ),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(RadiusToken.xxxl),
+                        ),
+                      ),
+                      child: const Center(child: Text('No batches found!')),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            body: const Center(child: Text('No batches found!')),
           );
         }
         // Sort batches descending: Batch 21, Batch 20, Batch 19...
@@ -168,13 +195,71 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           ),
         );
       },
-      loading: () => Scaffold(
-        appBar: AppBar(title: const Text('All Students'), centerTitle: true),
-        body: const Center(child: CupertinoActivityIndicator()),
+      loading: () => HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(
+              'All Students',
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: .bold,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                  ),
+                  child: const Center(child: CupertinoActivityIndicator()),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      error: (e, st) => Scaffold(
-        appBar: AppBar(title: const Text('All Students'), centerTitle: true),
-        body: Center(child: Text('Error: $e')),
+      error: (e, st) => HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(
+              'All Students',
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: .bold,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                  ),
+                  child: Center(child: Text('Error: $e')),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

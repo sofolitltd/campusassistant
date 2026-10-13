@@ -15,6 +15,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../../data/models/merchant.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 const _businessTypes = [
   'Food & Beverage',
@@ -157,12 +158,17 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).appColors;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Business')),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Business'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Form(
               key: _formKey,
@@ -325,6 +331,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

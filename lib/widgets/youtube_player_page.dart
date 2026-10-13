@@ -60,7 +60,12 @@ class _YoutubePlayerPageState extends State<YoutubePlayerPage> {
       body: Column(
         children: [
           // Fullscreen, orientation and system UI are handled by the player.
-          YoutubePlayer(controller: _controller),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 960),
+              child: YoutubePlayer(controller: _controller),
+            ),
+          ),
           const Expanded(child: SizedBox.shrink()),
         ],
       ),

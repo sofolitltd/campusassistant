@@ -7,6 +7,7 @@ import '/features/course/presentation/providers/course_provider.dart';
 import '/features/resource/data/models/resource_model.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -412,16 +413,35 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
     final String typeName =
         widget.type[0].toUpperCase() + widget.type.substring(1);
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              widget.resource == null ? 'Add $typeName' : 'Edit $typeName',
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            widget.resource == null ? 'Add $typeName' : 'Edit $typeName',
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          body: SingleChildScrollView(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: SingleChildScrollView(
             padding: const EdgeInsets.all(Spacing.lg),
             child: Form(
               key: _formKey,
@@ -769,7 +789,12 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                 ],
               ),
             ),
-          ),
+                  ),
+                ),
+              ),
+            ),
+            ),
+          ],
         ),
       ),
     );

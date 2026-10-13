@@ -11,6 +11,8 @@ abstract class RewardRepository {
   Future<Either<Failure, ({List<RewardTransaction> data, int count})>>
   getTransactions({int limit, int offset});
   Future<Either<Failure, int>> getCost(String resourceId);
+  Future<Either<Failure, Map<String, dynamic>>> getDailyLoginStatus();
+  Future<Either<Failure, Map<String, dynamic>>> claimDailyLogin();
 }
 
 class RewardRepositoryImpl implements RewardRepository {
@@ -66,6 +68,26 @@ class RewardRepositoryImpl implements RewardRepository {
   Future<Either<Failure, int>> getCost(String resourceId) async {
     try {
       final result = await remoteDataSource.getCost(resourceId);
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getDailyLoginStatus() async {
+    try {
+      final result = await remoteDataSource.getDailyLoginStatus();
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> claimDailyLogin() async {
+    try {
+      final result = await remoteDataSource.claimDailyLogin();
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

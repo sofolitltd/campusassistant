@@ -7,6 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/core/error/failures.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_card.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
@@ -150,12 +151,12 @@ class _SubscriptionSectionState extends ConsumerState<SubscriptionSection> {
                         const SizedBox(height: Spacing.md),
                         SizedBox(
                           width: double.infinity,
-                          child: FilledButton.icon(
+                          child: OutlinedButton.icon(
                             clipBehavior: Clip.antiAlias,
                             onPressed: () => context.push('/subscription'),
                             icon: const Icon(LucideIcons.crown, size: 18),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: onPrimary,
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: Colors.white,
                               foregroundColor: colors.primaryPressed,
                             ),
                             label: Text(

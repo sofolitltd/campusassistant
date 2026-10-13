@@ -18,6 +18,7 @@ import '../widgets/market_product_card.dart';
 import '../widgets/market_theme.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 enum _Sort {
   newest('new', 'Newest'),
@@ -233,11 +234,17 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
     final hasFilters = _inStock || _price != null || _categoryId != null;
 
     const chipDense = VisualDensity.compact;
-    return Scaffold(
-      backgroundColor: c.primary,
-      appBar: AppBar(title: const Text('Search')),
-      body: Center(
-        child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      extraHeight: 68,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('Search'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Center(
+          child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
           child: Column(
             children: [
@@ -334,6 +341,7 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

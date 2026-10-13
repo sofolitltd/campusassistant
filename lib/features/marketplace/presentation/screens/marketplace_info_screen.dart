@@ -6,18 +6,24 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class MarketplaceInfoScreen extends StatelessWidget {
   const MarketplaceInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('About Campus Market')),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: Container(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('About Campus Market'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: Container(
             constraints: const BoxConstraints(maxWidth: 700),
             child: ListView(
               padding: const EdgeInsets.all(Spacing.lg),
@@ -85,6 +91,7 @@ class MarketplaceInfoScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

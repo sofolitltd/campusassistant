@@ -12,6 +12,7 @@ import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '../providers/reward_providers.dart';
+import '../widgets/daily_reward_banner.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
 class RewardPage extends ConsumerStatefulWidget {
@@ -95,6 +96,8 @@ class _RewardPageState extends ConsumerState<RewardPage> {
               ),
             ),
           ),
+          const SizedBox(height: Spacing.lg),
+          const DailyRewardBanner(padded: false),
           if (!kIsWeb && !ref.watch(isProUserProvider)) ...[
             const SizedBox(height: Spacing.lg),
             _WatchAdCard(isLoading: _isClaiming, onPressed: _watchAdForReward),

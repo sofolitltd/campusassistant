@@ -54,3 +54,17 @@ final rewardCostProvider = FutureProvider.family<int, String>((
   final result = await repo.getCost(resourceId);
   return result.fold((_) => 1, (cost) => cost);
 });
+
+/// Read-only: whether today's login reward has already been claimed.
+/// Never triggers a claim itself — the claim only happens on an explicit
+/// button tap via [RewardRepository.claimDailyLogin].
+final dailyLoginStatusProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
+  final repo = ref.watch(rewardRepositoryProvider);
+  final result = await repo.getDailyLoginStatus();
+  return result.fold(
+    (failure) => throw Exception(failure.message),
+    (status) => status,
+  );
+});

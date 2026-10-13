@@ -12,6 +12,7 @@ import '../providers/marketplace_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 const _labelOptions = ['Home', 'Hall', 'Other'];
 
@@ -184,14 +185,17 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.address != null ? 'Edit Address' : 'Add Address'),
-      ),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.address != null ? 'Edit Address' : 'Add Address'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Form(
               key: _formKey,
@@ -286,6 +290,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

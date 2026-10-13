@@ -13,6 +13,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class UniversityLocationPage extends ConsumerStatefulWidget {
   const UniversityLocationPage({super.key});
@@ -203,13 +204,71 @@ class _UniversityLocationPageState
           ],
         ),
       ),
-      loading: () => Scaffold(
-        appBar: AppBar(title: const Text('Campus Map'), centerTitle: true),
-        body: const Center(child: CupertinoActivityIndicator()),
+      loading: () => HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(
+              'Campus Map',
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: .bold,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                  ),
+                  child: const Center(child: CupertinoActivityIndicator()),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(title: const Text('Campus Map'), centerTitle: true),
-        body: Center(child: Text('Error: $e')),
+      error: (e, _) => HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(
+              'Campus Map',
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: .bold,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                  ),
+                  child: Center(child: Text('Error: $e')),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

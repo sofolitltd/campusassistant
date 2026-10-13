@@ -11,6 +11,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -24,33 +25,39 @@ class CartScreen extends ConsumerWidget {
       return Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 700),
-          child: Scaffold(
-            backgroundColor: context.colors.primary,
-            appBar: AppBar(title: const Text('Cart')),
-            body: MarketBody(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: .center,
-                  children: [
-                    Icon(
-                      LucideIcons.shoppingCart,
-                      size: 64,
-                      color: context.colors.borderStrong,
-                    ),
-                    const SizedBox(height: Spacing.lg),
-                    const Text(
-                      'Your cart is empty',
-                      style: TextStyle(
-                        fontSize: FontSizeToken.xl,
-                        fontWeight: .bold,
+          child: HeaderGradientBackdrop(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: const Text('Cart'),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              ),
+              body: MarketBody(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: .center,
+                    children: [
+                      Icon(
+                        LucideIcons.shoppingCart,
+                        size: 64,
+                        color: context.colors.borderStrong,
                       ),
-                    ),
-                    const SizedBox(height: Spacing.sm),
-                    Text(
-                      'Add some products to get started!',
-                      style: TextStyle(color: context.colors.textSubtle),
-                    ),
-                  ],
+                      const SizedBox(height: Spacing.lg),
+                      const Text(
+                        'Your cart is empty',
+                        style: TextStyle(
+                          fontSize: FontSizeToken.xl,
+                          fontWeight: .bold,
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.sm),
+                      Text(
+                        'Add some products to get started!',
+                        style: TextStyle(color: context.colors.textSubtle),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -69,71 +76,77 @@ class CartScreen extends ConsumerWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          backgroundColor: context.colors.primary,
-          appBar: AppBar(title: const Text('Cart')),
-          body: MarketBody(
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(Spacing.lg),
-              children: groupedByMerchant.entries.map((entry) {
-                final merchant = entry.value.first.product.merchant;
-                return _MerchantGroup(
-                  merchantId: entry.key,
-                  merchantName: merchant?.businessName ?? 'Campus Assistant',
-                  logoUrl: merchant?.logoUrl,
-                  isPlatform: merchant?.isPlatform ?? true,
-                  items: entry.value,
-                  ref: ref,
-                );
-              }).toList(),
+        child: HeaderGradientBackdrop(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: const Text('Cart'),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
             ),
-          ),
-          bottomNavigationBar: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              border: Border(top: BorderSide(color: context.colors.border)),
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
+            body: MarketBody(
+              child: ListView(
+                shrinkWrap: true,
                 padding: const EdgeInsets.all(Spacing.lg),
-                child: Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: .start,
-                      mainAxisSize: .min,
-                      children: [
-                        Text(
-                          'Total',
-                          style: TextStyle(
-                            fontSize: FontSizeToken.sm,
-                            color: context.colors.textSubtle,
+                children: groupedByMerchant.entries.map((entry) {
+                  final merchant = entry.value.first.product.merchant;
+                  return _MerchantGroup(
+                    merchantId: entry.key,
+                    merchantName: merchant?.businessName ?? 'Campus Assistant',
+                    logoUrl: merchant?.logoUrl,
+                    isPlatform: merchant?.isPlatform ?? true,
+                    items: entry.value,
+                    ref: ref,
+                  );
+                }).toList(),
+              ),
+            ),
+            bottomNavigationBar: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                border: Border(top: BorderSide(color: context.colors.border)),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.lg),
+                  child: Row(
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: .start,
+                        mainAxisSize: .min,
+                        children: [
+                          Text(
+                            'Total',
+                            style: TextStyle(
+                              fontSize: FontSizeToken.sm,
+                              color: context.colors.textSubtle,
+                            ),
                           ),
-                        ),
-                        Text(
-                          '৳$totalAmount',
-                          style: const TextStyle(
-                            fontSize: FontSizeToken.xxl,
-                            fontWeight: .bold,
+                          Text(
+                            '৳$totalAmount',
+                            style: const TextStyle(
+                              fontSize: FontSizeToken.xxl,
+                              fontWeight: .bold,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: ElevatedButton(
-                        onPressed: () =>
-                            context.push(AppRoute.marketplaceCheckout.path),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                          onPressed: () =>
+                              context.push(AppRoute.marketplaceCheckout.path),
 
-                        child: const Text(
-                          'Checkout',
-                          style: TextStyle(fontWeight: .bold),
+                          child: const Text(
+                            'Checkout',
+                            style: TextStyle(fontWeight: .bold),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

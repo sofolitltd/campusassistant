@@ -12,6 +12,8 @@ abstract class RewardRemoteDataSource {
     int offset,
   });
   Future<int> getCost(String resourceId);
+  Future<Map<String, dynamic>> getDailyLoginStatus();
+  Future<Map<String, dynamic>> claimDailyLogin();
 }
 
 class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
@@ -64,5 +66,17 @@ class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
       ApiEndpoints.rewardCost(resourceId),
     );
     return response.data['cost'] as int;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDailyLoginStatus() async {
+    final response = await apiClient.get(ApiEndpoints.rewardDailyLoginStatus);
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  @override
+  Future<Map<String, dynamic>> claimDailyLogin() async {
+    final response = await apiClient.post(ApiEndpoints.rewardDailyLogin);
+    return Map<String, dynamic>.from(response.data);
   }
 }

@@ -18,6 +18,7 @@ import '../widgets/review_sheet.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -28,12 +29,17 @@ class OrderDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final orderAsync = ref.watch(orderDetailsProvider(orderId));
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Order Details')),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Order Details'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: orderAsync.when(
               data: (order) => RefreshIndicator(
@@ -146,11 +152,14 @@ class OrderDetailScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              loading: () => const Center(child: CupertinoActivityIndicator()),
-              error: (e, _) => Center(child: Text('Could not load order: $e')),
+              loading: () =>
+                  const Center(child: CupertinoActivityIndicator()),
+              error: (e, _) =>
+                  Center(child: Text('Could not load order: $e')),
             ),
           ),
         ),
+      ),
       ),
     );
   }

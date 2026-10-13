@@ -287,6 +287,12 @@ class AppRoute {
   //onboarding
   static const onboarding = AppRoute(name: 'onboarding', path: '/onboarding');
 
+  //force update
+  static const forceUpdate = AppRoute(
+    name: 'forceUpdate',
+    path: '/force-update',
+  );
+
   //login
   static const login = AppRoute(name: 'login', path: '/login');
 

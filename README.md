@@ -81,13 +81,13 @@ cp .env.example .env
 
 # Run the app
 flutter run --dart-define-from-file=.env
-# or just: make run  (see BUILD_AND_DEPLOY.md for VS Code/other shortcuts)
+# or just: make run  (see docs/BUILD_AND_DEPLOY.md for VS Code/other shortcuts)
 ```
 
 ### Environment Variables
 
 Configuration is compiled into the app at build time via `--dart-define-from-file`
-(see `.env.example` and `BUILD_AND_DEPLOY.md` for the full explanation of why,
+(see `.env.example` and [docs/BUILD_AND_DEPLOY.md](docs/BUILD_AND_DEPLOY.md) for the full explanation of why,
 and the exact commands for every build target). `.env` uses ordinary
 `KEY=VALUE` syntax with `#` comments, same as before — the difference is it's
 now read only by the build tool, never bundled into the app as a fetchable
@@ -105,6 +105,7 @@ only in `campusassistant-api`'s server-side environment. The app calls your own
 ## Project Structure
 
 ```
+docs/                # Project docs (design system, build/deploy, architecture plans)
 lib/
 ├── core/              # Shared infrastructure
 │   ├── network/       # API client, endpoints
@@ -153,6 +154,13 @@ The app follows a **feature-first** architecture with Riverpod for state managem
 - **Presentation layer** — Screens, widgets, providers
 
 Each feature module is self-contained with its own providers, models, and screens.
+
+## Documentation
+
+- **[Design System](docs/DESIGN_SYSTEM_V1.md)** — colors, typography, spacing, component specs
+- **[Build & Deploy](docs/BUILD_AND_DEPLOY.md)** — env/config setup and build commands per platform
+- **[Chat Offline Architecture](docs/CHAT_OFFLINE_ARCHITECTURE.md)** — local-first chat design and rollout phases
+- **[Notification Triggers Plan](docs/NOTIFICATION_TRIGGERS_PLAN.md)** — planned system-triggered notifications (not yet implemented)
 
 ## License
 

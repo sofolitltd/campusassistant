@@ -13,6 +13,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_control.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class NewStudentSignUpScreen extends ConsumerStatefulWidget {
   const NewStudentSignUpScreen({super.key, required this.studentId});
@@ -64,289 +65,353 @@ class _NewStudentSignUpScreenState
           departmentNameProvider('${s.universityId}|${s.departmentId}'),
         );
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Sign Up(1/2)'),
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.pop(),
-            ),
-          ),
-          body: SingleChildScrollView(
-            child: Form(
-              key: _globalKey,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width > 800
-                      ? MediaQuery.of(context).size.width * .3
-                      : 16,
-                  vertical: 16,
+        return HeaderGradientBackdrop(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: Text(
+                'Sign Up(1/2)',
+                style: TextStyle(
+                  color: context.colors.onPrimary,
+                  fontWeight: .bold,
                 ),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(RadiusToken.xl),
-                        border: Border.all(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? context.colors.border
-                              : context.colors.border,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: context.colors.shadow,
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+              ),
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: IconThemeData(color: context.colors.onPrimary),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: context.colors.onPrimary),
+                onPressed: () => context.pop(),
+              ),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(RadiusToken.xxxl),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          Spacing.lg,
-                          Spacing.lg,
-                          Spacing.lg,
-                          Spacing.lg,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            Text(
-                              'Hello',
-                              style: Theme.of(context).textTheme.titleLarge!
-                                  .copyWith(
-                                    fontWeight: .bold,
-                                    letterSpacing: 1,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _globalKey,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: MediaQuery.of(context).size.width > 800
+                                ? MediaQuery.of(context).size.width * .3
+                                : 16,
+                            vertical: 16,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(
+                                    RadiusToken.xl,
                                   ),
-                            ),
-                            Text(
-                              'Fill your user information',
-                              style: Theme.of(context).textTheme.labelLarge!
-                                  .copyWith(fontWeight: .w100),
-                            ),
-                            const Divider(height: 24),
-                            Container(
-                              padding: const EdgeInsets.all(Spacing.md),
-                              decoration: BoxDecoration(
-                                color: context.colors.info,
-                                borderRadius: BorderRadius.circular(
-                                  RadiusToken.sm,
-                                ),
-                                border: Border.all(color: context.colors.info),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.verified,
-                                    color: context.colors.info,
-                                    size: 20,
+                                  border: Border.all(
+                                    color:
+                                        Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? context.colors.border
+                                        : context.colors.border,
                                   ),
-                                  const SizedBox(width: Spacing.sm),
-                                  Text(
-                                    'Pre-verified Student Record',
-                                    style: TextStyle(
-                                      color: context.colors.info,
-                                      fontWeight: .bold,
-                                      fontSize: FontSizeToken.sm,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: context.colors.shadow,
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: Spacing.lg),
-                            _buildOfficialInfoRow(
-                              context,
-                              'University',
-                              universityName,
-                            ),
-                            const SizedBox(height: Spacing.sm),
-                            _buildOfficialInfoRow(
-                              context,
-                              'Department',
-                              departmentName,
-                            ),
-                            const SizedBox(height: Spacing.sm),
-                            _buildOfficialInfoRow(
-                              context,
-                              'Student ID',
-                              s.studentId,
-                            ),
-                            const SizedBox(height: Spacing.sm),
-                            _buildOfficialInfoRow(context, 'Batch', s.batchId),
-                            const Divider(height: 32),
-                            Text(
-                              'Personal information',
-                              style: Theme.of(context).textTheme.labelLarge!
-                                  .copyWith(
-                                    fontWeight: .bold,
-                                    color: context.colors.textMuted,
-                                    letterSpacing: 1,
-                                  ),
-                            ),
-                            const SizedBox(height: Spacing.md),
-                            CommonTextFieldWidget(
-                              controller: _nameController,
-                              heading: 'Full Name',
-                              hintText: 'Enter your name as per certificate',
-                              keyboardType: .name,
-                              textCapitalization: .words,
-                              validator: (val) {
-                                if (val!.isEmpty) {
-                                  return 'Enter your name';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: Spacing.md),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 4,
-                                  child: CommonTextFieldWidget(
-                                    controller: _mobileController,
-                                    heading: 'Mobile',
-                                    hintText: 'Enter mobile number',
-                                    keyboardType: .phone,
-                                    validator: (val) {
-                                      if (val!.isEmpty) {
-                                        return 'Enter mobile number';
-                                      }
-                                      if (val.length < 11) {
-                                        return 'Mobile number at least 11 digits';
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                  ],
                                 ),
-                                const SizedBox(width: Spacing.md),
-                                Expanded(
-                                  flex: 2,
-                                  child: CommonDropDownWidget(
-                                    heading: 'Blood Group',
-                                    hint: 'Blood group',
-                                    value: _selectedBloodGroup,
-                                    itemList: kBloodGroup,
-                                    onChanged: (value) => setState(
-                                      () => _selectedBloodGroup = value!,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: Spacing.md),
-                            hallsAsync.when(
-                              data: (halls) {
-                                final hallNames = halls
-                                    .map((e) => e.name)
-                                    .toList();
-
-                                String? initialHallName;
-                                if (_selectedHall == null && s.hallId != null) {
-                                  try {
-                                    initialHallName = halls
-                                        .firstWhere((h) => h.id == s.hallId)
-                                        .name;
-                                  } catch (_) {}
-                                }
-
-                                return CommonDropDownWidget(
-                                  heading: 'Halls ',
-                                  hint: 'Select your hall',
-                                  value: _selectedHall ?? initialHallName,
-                                  itemList: hallNames,
-                                  onChanged: (value) =>
-                                      setState(() => _selectedHall = value),
-                                );
-                              },
-                              loading: () => const Center(
                                 child: Padding(
-                                  padding: EdgeInsets.all(Spacing.sm),
-                                  child: CupertinoActivityIndicator(),
-                                ),
-                              ),
-                              error: (err, stack) => Text(
-                                'Error loading halls: $err',
-                                style: TextStyle(
-                                  color: context.colors.danger,
-                                  fontSize: FontSizeToken.sm,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: Spacing.xxl),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(
-                                  double.infinity,
-                                  ControlToken.height,
-                                ),
-                              ),
-                              onPressed: () {
-                                if (_globalKey.currentState!.validate()) {
-                                  final halls = hallsAsync.asData?.value;
-                                  String? hallId = s.hallId;
-                                  String hallName = '';
+                                  padding: const EdgeInsets.fromLTRB(
+                                    Spacing.lg,
+                                    Spacing.lg,
+                                    Spacing.lg,
+                                    Spacing.lg,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: .stretch,
+                                    children: [
+                                      Text(
+                                        'Hello',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                              fontWeight: .bold,
+                                              letterSpacing: 1,
+                                            ),
+                                      ),
+                                      Text(
+                                        'Fill your user information',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge!
+                                            .copyWith(fontWeight: .w100),
+                                      ),
+                                      const Divider(height: 24),
+                                      Container(
+                                        padding: const EdgeInsets.all(
+                                          Spacing.md,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: context.colors.info,
+                                          borderRadius: BorderRadius.circular(
+                                            RadiusToken.sm,
+                                          ),
+                                          border: Border.all(
+                                            color: context.colors.info,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.verified,
+                                              color: context.colors.info,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: Spacing.sm),
+                                            Text(
+                                              'Pre-verified Student Record',
+                                              style: TextStyle(
+                                                color: context.colors.info,
+                                                fontWeight: .bold,
+                                                fontSize: FontSizeToken.sm,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: Spacing.lg),
+                                      _buildOfficialInfoRow(
+                                        context,
+                                        'University',
+                                        universityName,
+                                      ),
+                                      const SizedBox(height: Spacing.sm),
+                                      _buildOfficialInfoRow(
+                                        context,
+                                        'Department',
+                                        departmentName,
+                                      ),
+                                      const SizedBox(height: Spacing.sm),
+                                      _buildOfficialInfoRow(
+                                        context,
+                                        'Student ID',
+                                        s.studentId,
+                                      ),
+                                      const SizedBox(height: Spacing.sm),
+                                      _buildOfficialInfoRow(
+                                        context,
+                                        'Batch',
+                                        s.batchId,
+                                      ),
+                                      const Divider(height: 32),
+                                      Text(
+                                        'Personal information',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge!
+                                            .copyWith(
+                                              fontWeight: .bold,
+                                              color: context.colors.textMuted,
+                                              letterSpacing: 1,
+                                            ),
+                                      ),
+                                      const SizedBox(height: Spacing.md),
+                                      CommonTextFieldWidget(
+                                        controller: _nameController,
+                                        heading: 'Full Name',
+                                        hintText:
+                                            'Enter your name as per certificate',
+                                        keyboardType: .name,
+                                        textCapitalization: .words,
+                                        validator: (val) {
+                                          if (val!.isEmpty) {
+                                            return 'Enter your name';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: Spacing.md),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 4,
+                                            child: CommonTextFieldWidget(
+                                              controller: _mobileController,
+                                              heading: 'Mobile',
+                                              hintText: 'Enter mobile number',
+                                              keyboardType: .phone,
+                                              validator: (val) {
+                                                if (val!.isEmpty) {
+                                                  return 'Enter mobile number';
+                                                }
+                                                if (val.length < 11) {
+                                                  return 'Mobile number at least 11 digits';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                          const SizedBox(width: Spacing.md),
+                                          Expanded(
+                                            flex: 2,
+                                            child: CommonDropDownWidget(
+                                              heading: 'Blood Group',
+                                              hint: 'Blood group',
+                                              value: _selectedBloodGroup,
+                                              itemList: kBloodGroup,
+                                              onChanged: (value) => setState(
+                                                () => _selectedBloodGroup =
+                                                    value!,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: Spacing.md),
+                                      hallsAsync.when(
+                                        data: (halls) {
+                                          final hallNames = halls
+                                              .map((e) => e.name)
+                                              .toList();
 
-                                  if (_selectedHall != null && halls != null) {
-                                    try {
-                                      final selectedHall = halls.firstWhere(
-                                        (h) => h.name == _selectedHall,
-                                      );
-                                      hallId = selectedHall.id;
-                                      hallName = selectedHall.name;
-                                    } catch (_) {}
-                                  } else if (s.hallId != null &&
-                                      halls != null) {
-                                    try {
-                                      final initialHall = halls.firstWhere(
-                                        (h) => h.id == s.hallId,
-                                      );
-                                      hallName = initialHall.name;
-                                    } catch (_) {}
-                                  }
+                                          String? initialHallName;
+                                          if (_selectedHall == null &&
+                                              s.hallId != null) {
+                                            try {
+                                              initialHallName = halls
+                                                  .firstWhere(
+                                                    (h) => h.id == s.hallId,
+                                                  )
+                                                  .name;
+                                            } catch (_) {}
+                                          }
 
-                                  context.pushNamed(
-                                    'createAccount',
-                                    pathParameters: {
-                                      'uid': s.verificationCode.isNotEmpty
-                                          ? s.verificationCode
-                                          : widget.studentId,
-                                    },
-                                    extra: {
-                                      'universityId': s.universityId,
-                                      'departmentId': s.departmentId,
-                                      'university': universityName,
-                                      'department': departmentName,
-                                      'profession': 'student',
-                                      'name': _nameController.text.trim(),
-                                      'mobile': _mobileController.text.trim(),
-                                      'batchId': s.batchId,
-                                      'studentId': s.studentId,
-                                      'sessionId': s.sessionId,
-                                      'hallId': hallId,
-                                      'hallName': hallName,
-                                      'blood': _selectedBloodGroup,
-                                    },
-                                  );
-                                }
-                              },
-                              child: Text(
-                                'Next',
-                                style: const TextStyle(
-                                  letterSpacing: 1,
-                                  fontWeight: .bold,
+                                          return CommonDropDownWidget(
+                                            heading: 'Halls ',
+                                            hint: 'Select your hall',
+                                            value:
+                                                _selectedHall ??
+                                                initialHallName,
+                                            itemList: hallNames,
+                                            onChanged: (value) => setState(
+                                              () => _selectedHall = value,
+                                            ),
+                                          );
+                                        },
+                                        loading: () => const Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(Spacing.sm),
+                                            child: CupertinoActivityIndicator(),
+                                          ),
+                                        ),
+                                        error: (err, stack) => Text(
+                                          'Error loading halls: $err',
+                                          style: TextStyle(
+                                            color: context.colors.danger,
+                                            fontSize: FontSizeToken.sm,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: Spacing.xxl),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: const Size(
+                                            double.infinity,
+                                            ControlToken.height,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          if (_globalKey.currentState!
+                                              .validate()) {
+                                            final halls =
+                                                hallsAsync.asData?.value;
+                                            String? hallId = s.hallId;
+                                            String hallName = '';
+
+                                            if (_selectedHall != null &&
+                                                halls != null) {
+                                              try {
+                                                final selectedHall = halls
+                                                    .firstWhere(
+                                                      (h) =>
+                                                          h.name ==
+                                                          _selectedHall,
+                                                    );
+                                                hallId = selectedHall.id;
+                                                hallName = selectedHall.name;
+                                              } catch (_) {}
+                                            } else if (s.hallId != null &&
+                                                halls != null) {
+                                              try {
+                                                final initialHall = halls
+                                                    .firstWhere(
+                                                      (h) => h.id == s.hallId,
+                                                    );
+                                                hallName = initialHall.name;
+                                              } catch (_) {}
+                                            }
+
+                                            context.pushNamed(
+                                              'createAccount',
+                                              pathParameters: {
+                                                'uid':
+                                                    s
+                                                        .verificationCode
+                                                        .isNotEmpty
+                                                    ? s.verificationCode
+                                                    : widget.studentId,
+                                              },
+                                              extra: {
+                                                'universityId': s.universityId,
+                                                'departmentId': s.departmentId,
+                                                'university': universityName,
+                                                'department': departmentName,
+                                                'profession': 'student',
+                                                'name': _nameController.text
+                                                    .trim(),
+                                                'mobile': _mobileController.text
+                                                    .trim(),
+                                                'batchId': s.batchId,
+                                                'studentId': s.studentId,
+                                                'sessionId': s.sessionId,
+                                                'hallId': hallId,
+                                                'hallName': hallName,
+                                                'blood': _selectedBloodGroup,
+                                              },
+                                            );
+                                          }
+                                        },
+                                        child: Text(
+                                          'Next',
+                                          style: const TextStyle(
+                                            letterSpacing: 1,
+                                            fontWeight: .bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: Spacing.sm),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: Spacing.sm),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );

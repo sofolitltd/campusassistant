@@ -12,6 +12,7 @@ import '../../data/models/invoice.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 final myInvoicesProvider = FutureProvider<List<Invoice>>((ref) async {
   final response = await ref
@@ -31,12 +32,17 @@ class InvoicesScreen extends ConsumerWidget {
     final c = context.colors;
     final async = ref.watch(myInvoicesProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Invoices & receipts')),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Invoices & receipts'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: async.when(
               loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -75,6 +81,7 @@ class InvoicesScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

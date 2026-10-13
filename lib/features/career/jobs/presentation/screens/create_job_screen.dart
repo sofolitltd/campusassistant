@@ -11,6 +11,8 @@ import '/core/widgets/app_choice_chip.dart';
 import '/core/di.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/app_colors.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
@@ -213,12 +215,36 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(centerTitle: true, title: const Text('Add Job Post')),
-          body: Stack(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'Add Job Post',
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: Stack(
             children: [
               SingleChildScrollView(
                 padding: const EdgeInsets.all(Spacing.lg),
@@ -422,7 +448,12 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
               ),
               if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
             ],
-          ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

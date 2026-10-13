@@ -1,25 +1,32 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/foundation.dart' show kIsWeb;
-// Immersive media surface: the black backdrop and white chrome are
-// intentional and theme-independent — photos are always viewed against
-// black, in light mode as well as dark. These are the documented
-// exception to the context.colors rule (see app_colors.dart).
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart' hide Share;
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '/core/database/app_database.dart';
 import '/core/network/api_endpoints.dart';
+import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
+import '/features/pdf_tabs/presentation/providers/pdf_tabs_provider.dart';
+import '/features/pdf_tabs/presentation/widgets/pdf_tab_switcher_sheet.dart';
+import 'pdf_viewer_actions_menu.dart';
 
-class PdfViewerPage extends StatefulWidget {
+/// Cache entity type used to remember the last page read per document (keyed
+/// by [PdfViewerPage.url], which is stable across both the streamed-on-web
+/// and downloaded-on-native cases). Kept alive far longer than the API-data
+/// TTLs in [CacheTTL] since this is reading progress, not fetched data.
+const _lastPageEntityType = 'pdf_last_page';
+const _lastPageTtl = Duration(days: 365);
+
+class PdfViewerPage extends ConsumerStatefulWidget {
   final String filePath;
   final String title;
   final String url;
@@ -32,23 +39,26 @@ class PdfViewerPage extends StatefulWidget {
   });
 
   @override
-  State<PdfViewerPage> createState() => _PdfViewerPageState();
+  ConsumerState<PdfViewerPage> createState() => _PdfViewerPageState();
 }
 
-class _PdfViewerPageState extends State<PdfViewerPage> {
-  final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
-  File? _pdfFile;
+enum _LoadState { loading, loaded, failed }
+
+class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
+  GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
+  final PdfViewerController _pdfController = PdfViewerController();
+
   bool _showAppBar = true;
   bool _isLandscape = false;
 
+  _LoadState _loadState = _LoadState.loading;
+  String? _loadErrorMessage;
+
   @override
-  void initState() {
-    super.initState();
-    // Web has no local filesystem — SfPdfViewer.network streams widget.url
-    // directly instead, so _pdfFile is never touched there.
-    if (!kIsWeb) {
-      _pdfFile = File(widget.filePath);
-    }
+  void dispose() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    _pdfController.dispose();
+    super.dispose();
   }
 
   void _toggleAppBar() {
@@ -71,194 +81,215 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     }
   }
 
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    super.dispose();
+  Future<void> _onDocumentLoaded(PdfDocumentLoadedDetails details) async {
+    setState(() {
+      _loadState = _LoadState.loaded;
+    });
+    await _restoreLastReadPage();
+  }
+
+  void _onDocumentLoadFailed(PdfDocumentLoadFailedDetails details) {
+    setState(() {
+      _loadState = _LoadState.failed;
+      _loadErrorMessage = details.description;
+    });
+  }
+
+  void _onPageChanged(PdfPageChangedDetails details) {
+    _saveLastReadPage(details.newPageNumber);
+  }
+
+  // Web has no Drift/sqlite3 connection (see app_database.dart), so reading
+  // progress simply isn't persisted there.
+  OfflineDatabase? get _db => kIsWeb ? null : ref.read(offlineDatabaseProvider);
+
+  Future<void> _restoreLastReadPage() async {
+    final db = _db;
+    if (db == null || widget.url.isEmpty) return;
+    final cached = await db.getCachedEntity(
+      entityType: _lastPageEntityType,
+      entityKey: widget.url,
+    );
+    final page = cached?['page'] as int?;
+    if (page == null || page < 1 || page > _pdfController.pageCount) return;
+    if (page == 1) return; // already there
+    if (!mounted) return;
+    _pdfController.jumpToPage(page);
+  }
+
+  void _saveLastReadPage(int page) {
+    final db = _db;
+    if (db == null || widget.url.isEmpty) return;
+    db.cacheEntity(
+      entityType: _lastPageEntityType,
+      entityKey: widget.url,
+      data: {'page': page},
+      ttl: _lastPageTtl,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: _showAppBar
-          ? AppBar(
-              title: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: .bold,
-                  color: Colors.white,
-                ),
-              ),
+    final tabCount = ref.watch(pdfTabsProvider.select((s) => s.tabs.length));
 
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    _isLandscape
-                        ? LucideIcons.rotateCcwSquare
-                        : LucideIcons.rotateCwSquare,
-                    size: 20,
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: _showAppBar
+            ? AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                centerTitle: false,
+                iconTheme: IconThemeData(color: context.colors.onPrimary),
+                title: Text(
+                  widget.title,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontWeight: .bold,
+                    color: context.colors.onPrimary,
                   ),
-                  onPressed: _toggleOrientation,
-                  tooltip: _isLandscape ? 'Portrait' : 'Landscape',
                 ),
-                _buildPopupMenu(),
-              ],
-            )
-          : null,
-      body: SafeArea(
-        top: true, // Always reserve space for the status bar
-        bottom: false,
-        child: kIsWeb
-            ? SfPdfViewer.network(
-                // Same proxy used for images — R2 has no CORS policy, so a
-                // direct cross-origin fetch of the PDF bytes fails on web
-                // even though it works fine natively (no CORS there).
-                ApiEndpoints.resolveImageUrl(widget.url),
-                key: _pdfViewerKey,
-                onTap: (details) => _toggleAppBar(),
-                canShowScrollHead: true,
-                canShowPaginationDialog: true,
-                pageSpacing: 4,
+
+                actions: [
+                  if (tabCount > 1)
+                    IconButton(
+                      icon: Badge(
+                        label: Text('$tabCount'),
+                        backgroundColor: context.colors.primary,
+                        textColor: context.colors.onPrimary,
+                        child: const Icon(LucideIcons.layers, size: 20),
+                      ),
+                      onPressed: () => showPdfTabSwitcherSheet(context),
+                      tooltip: 'Open tabs',
+                    ),
+                  IconButton(
+                    icon: Icon(
+                      _isLandscape
+                          ? LucideIcons.rotateCcwSquare
+                          : LucideIcons.rotateCwSquare,
+                      size: 20,
+                    ),
+                    onPressed: _toggleOrientation,
+                    tooltip: _isLandscape ? 'Portrait' : 'Landscape',
+                  ),
+                  PdfViewerActionsMenu(
+                    filePath: widget.filePath,
+                    url: widget.url,
+                    title: widget.title,
+                  ),
+                ],
               )
-            : SfPdfViewer.file(
-                _pdfFile!,
-                key: _pdfViewerKey,
-                onTap: (details) => _toggleAppBar(),
-                canShowScrollHead: true,
-                canShowPaginationDialog: true,
-                pageSpacing: 4,
+            : null,
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            borderRadius: _sheetRadius,
+          ).copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+          child: ClipRRect(
+            borderRadius: _sheetRadius,
+            child: SafeArea(
+              top: !_showAppBar, // app bar already reserves the status bar
+              bottom: false,
+              child: Stack(
+                children: [
+                  Offstage(
+                    offstage: _loadState == _LoadState.failed,
+                    child: kIsWeb
+                        ? SfPdfViewer.network(
+                            // Same proxy used for images — R2 has no CORS
+                            // policy, so a direct cross-origin fetch of the
+                            // PDF bytes fails on web even though it works
+                            // fine natively (no CORS there).
+                            ApiEndpoints.resolveImageUrl(widget.url),
+                            key: _pdfViewerKey,
+                            controller: _pdfController,
+                            onTap: (details) => _toggleAppBar(),
+                            onDocumentLoaded: _onDocumentLoaded,
+                            onDocumentLoadFailed: _onDocumentLoadFailed,
+                            onPageChanged: _onPageChanged,
+                            canShowScrollHead: true,
+                            canShowPaginationDialog: true,
+                            pageSpacing: 4,
+                          )
+                        : SfPdfViewer.file(
+                            File(widget.filePath),
+                            key: _pdfViewerKey,
+                            controller: _pdfController,
+                            onTap: (details) => _toggleAppBar(),
+                            onDocumentLoaded: _onDocumentLoaded,
+                            onDocumentLoadFailed: _onDocumentLoadFailed,
+                            onPageChanged: _onPageChanged,
+                            canShowScrollHead: true,
+                            canShowPaginationDialog: true,
+                            pageSpacing: 4,
+                          ),
+                  ),
+                  if (_loadState == _LoadState.loading)
+                    const Center(child: CupertinoActivityIndicator(radius: 14)),
+                  if (_loadState == _LoadState.failed)
+                    _buildErrorState(context),
+                ],
               ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildPopupMenu() {
-    return PopupMenuButton<String>(
-      color: Colors.white,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 160),
-      icon: const Icon(LucideIcons.ellipsisVertical, size: 20),
-      onSelected: (value) async {
-        switch (value) {
-          case 'save':
-            await _saveToDownloads();
-          case 'share':
-            await SharePlus.instance.share(
-              ShareParams(files: [XFile(widget.filePath)], text: widget.title),
-            );
-          case 'open_with':
-            await OpenFilex.open(widget.filePath);
-          case 'open_browser':
-            await launchUrl(
-              Uri.parse(widget.url),
-              mode: LaunchMode.externalApplication,
-            );
-          case 'share_link':
-            await SharePlus.instance.share(
-              ShareParams(text: '${widget.title}\n${widget.url}'),
-            );
-        }
-      },
-      itemBuilder: (context) => kIsWeb
-          ? [
-              // Web has no local filesystem — no save/share-file/open-with,
-              // just the browser-native equivalents.
-              const PopupMenuItem(
-                value: 'open_browser',
-                height: 36,
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.externalLink, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text(
-                      'Open in Browser',
-                      style: TextStyle(fontSize: FontSizeToken.md),
-                    ),
-                  ],
-                ),
+  Widget _buildErrorState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(Spacing.lg),
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+            Icon(
+              LucideIcons.fileWarning,
+              size: 40,
+              color: context.colors.danger,
+            ),
+            const SizedBox(height: Spacing.md),
+            Text(
+              'Couldn\'t open this PDF',
+              style: TextStyle(
+                fontWeight: .bold,
+                fontSize: FontSizeToken.lg,
+                color: context.colors.text,
               ),
-              const PopupMenuItem(
-                value: 'share_link',
-                height: 36,
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.share2, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text(
-                      'Share Link',
-                      style: TextStyle(fontSize: FontSizeToken.md),
-                    ),
-                  ],
+              textAlign: .center,
+            ),
+            if (_loadErrorMessage != null) ...[
+              const SizedBox(height: Spacing.xs),
+              Text(
+                _loadErrorMessage!,
+                style: TextStyle(
+                  fontSize: FontSizeToken.sm,
+                  color: context.colors.textMuted,
                 ),
-              ),
-            ]
-          : [
-              const PopupMenuItem(
-                value: 'save',
-                height: 36,
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.download, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text(
-                      'Save to Downloads',
-                      style: TextStyle(fontSize: FontSizeToken.md),
-                    ),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'share',
-                height: 36,
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.share2, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text('Share', style: TextStyle(fontSize: FontSizeToken.md)),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'open_with',
-                height: 36,
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.externalLink, size: 18),
-                    SizedBox(width: Spacing.md),
-                    Text(
-                      'Open with',
-                      style: TextStyle(fontSize: FontSizeToken.md),
-                    ),
-                  ],
-                ),
+                textAlign: .center,
               ),
             ],
+            const SizedBox(height: Spacing.lg),
+            FilledButton.icon(
+              onPressed: () => setState(() {
+                _loadState = _LoadState.loading;
+                _loadErrorMessage = null;
+                // A fresh key forces SfPdfViewer to rebuild from scratch,
+                // re-attempting the load (there is no reload() on its
+                // controller/state).
+                _pdfViewerKey = GlobalKey();
+              }),
+              icon: const Icon(LucideIcons.refreshCw, size: 16),
+              label: const Text('Try again'),
+            ),
+          ],
+        ),
+      ),
     );
   }
-
-  Future<void> _saveToDownloads() async {
-    try {
-      final file = File(widget.filePath);
-      final fileName = widget.filePath.split('/').last;
-
-      Directory? downloadsDirectory;
-      if (Platform.isAndroid) {
-        downloadsDirectory = Directory(
-          '/storage/emulated/0/Download/Campus Assistant',
-        );
-      } else {
-        downloadsDirectory = await getDownloadsDirectory();
-      }
-
-      if (downloadsDirectory != null) {
-        await downloadsDirectory.create(recursive: true);
-        final newPath = '${downloadsDirectory.path}/$fileName';
-        await file.copy(newPath);
-        Fluttertoast.showToast(msg: 'Saved to Downloads/Campus Assistant');
-      }
-    } catch (e) {
-      Fluttertoast.showToast(msg: 'Error saving file: $e');
-    }
-  }
 }
+
+const _sheetRadius = BorderRadius.vertical(
+  top: Radius.circular(RadiusToken.xxxl),
+);

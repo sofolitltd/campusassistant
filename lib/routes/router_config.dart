@@ -122,6 +122,8 @@ import '/features/resource/domain/entities/resource.dart';
 import '/features/auth/presentation/screens/new_splash_screen.dart';
 import '/features/onboarding/presentation/providers/onboarding_provider.dart';
 import '/features/onboarding/presentation/screens/onboarding_screen.dart';
+import '/features/app_update/presentation/providers/app_update_provider.dart';
+import '/features/app_update/presentation/screens/force_update_screen.dart';
 import '/features/cache/presentation/cache_management_page.dart';
 import '/features/reward/presentation/screens/reward_page.dart';
 import '/features/feedback/presentation/screens/feedback_page.dart';
@@ -137,6 +139,8 @@ class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._ref) {
     _ref.listen(currentUserProvider, (_, _) => notifyListeners());
     _ref.listen(onboardingSeenProvider, (_, _) => notifyListeners());
+    _ref.listen(appUpdateConfigProvider, (_, _) => notifyListeners());
+    _ref.listen(packageInfoProvider, (_, _) => notifyListeners());
   }
 }
 
@@ -163,6 +167,27 @@ final routerProvider = Provider<GoRouter>((ref) {
       final bool hasSeenOnboarding = onboardingAsync.value ?? true;
 
       final matchedLocation = state.matchedLocation;
+
+      // ── Force update: overrides every other gate, including auth/onboarding.
+      // Fails open while the config is still loading or failed to load (the
+      // provider itself swallows errors to `null`), so a backend hiccup never
+      // locks out the whole user base.
+      final appConfig = ref.read(appUpdateConfigProvider).value;
+      final installedVersionCode = int.tryParse(
+        ref.read(packageInfoProvider).value?.buildNumber ?? '',
+      );
+      final bool requiresForceUpdate =
+          appConfig != null &&
+          installedVersionCode != null &&
+          installedVersionCode < appConfig.minSupportedVersionCode;
+      if (requiresForceUpdate) {
+        return matchedLocation == AppRoute.forceUpdate.path
+            ? null
+            : AppRoute.forceUpdate.path;
+      }
+      if (matchedLocation == AppRoute.forceUpdate.path) {
+        return '/splash'; // no longer required — re-run the normal flow
+      }
 
       // ── Splash screen: wait for auth + onboarding resolution ──
       if (matchedLocation == '/splash') {
@@ -232,6 +257,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: NewSplashScreen()),
+      ),
+      GoRoute(
+        name: AppRoute.forceUpdate.name,
+        path: AppRoute.forceUpdate.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: ForceUpdateScreen()),
       ),
       GoRoute(
         name: AppRoute.onboarding.name,

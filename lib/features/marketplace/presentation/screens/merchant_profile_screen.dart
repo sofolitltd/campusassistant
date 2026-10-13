@@ -15,6 +15,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class MerchantProfileScreen extends ConsumerWidget {
   final String merchantId;
@@ -25,12 +26,17 @@ class MerchantProfileScreen extends ConsumerWidget {
     final merchantAsync = ref.watch(merchantByIdProvider(merchantId));
     final productsAsync = ref.watch(merchantProductsProvider(merchantId));
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Merchant')),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Merchant'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: merchantAsync.when(
               loading: () => const Center(child: CupertinoActivityIndicator()),
@@ -194,6 +200,7 @@ class MerchantProfileScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

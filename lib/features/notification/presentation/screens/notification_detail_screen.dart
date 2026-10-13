@@ -13,6 +13,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_control.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class NotificationDetailScreen extends ConsumerWidget {
   final dynamic notification;
@@ -83,9 +84,37 @@ class NotificationDetailScreen extends ConsumerWidget {
         : null;
 
     if (notif == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Notification')),
-        body: const Center(child: Text('Notification not found')),
+      return HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(
+              'Notification',
+              style: TextStyle(
+                color: context.colors.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: context.colors.onPrimary),
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RadiusToken.xxxl),
+                    ),
+                  ),
+                  child: const Center(child: Text('Notification not found')),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 

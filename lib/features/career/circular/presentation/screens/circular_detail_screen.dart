@@ -9,6 +9,9 @@ import '/core/network/api_endpoints.dart';
 import '../../../reminders/presentation/widgets/set_reminder_sheet.dart';
 import '../providers/circular_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_radius.dart';
+import '/core/theme/app_colors.dart';
 
 class CircularDetailScreen extends ConsumerStatefulWidget {
   final String circularId;
@@ -79,12 +82,35 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
   Widget build(BuildContext context) {
     final circularAsync = ref.watch(circularDetailProvider(widget.circularId));
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(title: const Text('Circular Details')),
-          body: circularAsync.when(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            'Circular Details',
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: circularAsync.when(
             data: (circular) {
               if (!_viewRecorded) {
                 _viewRecorded = true;
@@ -204,7 +230,12 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (err, _) =>
                 Center(child: Text('Failed to load circular: $err')),
-          ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

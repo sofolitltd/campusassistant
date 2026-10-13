@@ -12,6 +12,8 @@ import '/core/di.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/app_colors.dart';
 import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
@@ -166,15 +168,36 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text('Edit Job Entry'),
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'Edit Job Entry',
+            style: TextStyle(
+              color: context.colors.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          body: Stack(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colors.onPrimary),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(RadiusToken.xxxl),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: Stack(
             children: [
               SingleChildScrollView(
                 padding: const EdgeInsets.all(Spacing.xxl),
@@ -289,7 +312,12 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
               ),
               if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
             ],
-          ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

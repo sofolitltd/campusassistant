@@ -56,6 +56,8 @@ class ApiEndpoints {
   static const String authResetPassword = '/auth/reset-password';
   static const String authChangePassword = '/auth/change-password';
 
+  static const String appConfig = '/app-config';
+
   static const String universities = '/universities';
   static const String departments = '/departments';
   static const String semesters = '/levels';
@@ -141,4 +143,6 @@ class ApiEndpoints {
   static String rewardSpend(String resourceId) => '/rewards/spend/$resourceId';
   static const String rewardTransactions = '/rewards/transactions';
   static String rewardCost(String resourceId) => '/rewards/cost/$resourceId';
+  static const String rewardDailyLoginStatus = '/rewards/daily-login/status';
+  static const String rewardDailyLogin = '/rewards/daily-login';
 }

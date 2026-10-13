@@ -13,6 +13,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class CategoryGridScreen extends ConsumerWidget {
   const CategoryGridScreen({super.key});
@@ -21,11 +22,16 @@ class CategoryGridScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesListProvider);
 
-    return Scaffold(
-      backgroundColor: context.colors.primary,
-      appBar: AppBar(title: const Text('Categories')),
-      body: MarketBody(
-        child: categoriesAsync.when(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('Categories'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: MarketBody(
+          child: categoriesAsync.when(
           data: (categories) {
             if (categories.isEmpty) {
               return const Center(child: Text('No categories yet.'));
@@ -88,8 +94,10 @@ class CategoryGridScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (e, _) => Center(child: Text('Could not load categories: $e')),
+          error: (e, _) =>
+              Center(child: Text('Could not load categories: $e')),
         ),
+      ),
       ),
     );
   }

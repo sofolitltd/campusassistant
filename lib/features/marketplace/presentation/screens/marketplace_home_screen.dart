@@ -16,6 +16,7 @@ import '../widgets/market_theme.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 class MarketplaceHomeScreen extends ConsumerWidget {
   const MarketplaceHomeScreen({super.key});
@@ -35,22 +36,25 @@ class MarketplaceHomeScreen extends ConsumerWidget {
       )),
     );
 
-    return Scaffold(
-      backgroundColor: context.colors.primary,
-      appBar: AppBar(
-        title: const Text('Campus Market'),
-        actions: [
-          IconButton(
-            tooltip: 'Saved items',
-            icon: const Icon(LucideIcons.heart),
-            onPressed: () =>
-                context.pushNamed(AppRoute.marketplaceWishlist.name),
-          ),
-        ],
-      ),
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('Campus Market'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
+              tooltip: 'Saved items',
+              icon: const Icon(LucideIcons.heart),
+              onPressed: () =>
+                  context.pushNamed(AppRoute.marketplaceWishlist.name),
+            ),
+          ],
+        ),
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: RefreshIndicator(
               onRefresh: () async {
@@ -247,6 +251,7 @@ class MarketplaceHomeScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

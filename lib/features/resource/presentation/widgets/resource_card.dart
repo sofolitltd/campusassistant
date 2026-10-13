@@ -16,7 +16,7 @@ import 'package:share_plus/share_plus.dart' hide Share;
 import 'package:uuid/uuid.dart';
 
 import '/features/resource/domain/entities/resource.dart';
-import '/widgets/pdf_viewer_page.dart';
+import '/features/pdf_tabs/presentation/open_pdf_tab.dart';
 import '/core/ads/download_ad_gate.dart';
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
@@ -43,9 +43,12 @@ import '/core/theme/tokens/app_accents.dart';
 /// menu is centred on this row so the three line up.
 const double _kTopRowHeight = 18;
 
-/// Shared height of the thumbnail and the text column beside it, so the image
-/// runs from the course badge down to the info tiles.
-const double _kContentHeight = 99;
+/// The thumbnail's height. The text column beside it is sized to its own
+/// content (not pinned to this), and the row that holds both bottom-aligns
+/// them (see `crossAxisAlignment: .end` in build()) so the info-tile/
+/// bookmark/download row always sits flush with the thumbnail's bottom
+/// edge, whether the title wraps to one line or two.
+const double _kContentHeight = 100;
 const double _kMenuTapSize = 40;
 
 class ResourceCard extends ConsumerStatefulWidget {
@@ -82,7 +85,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     final statusChecked = _checkFileStatus();
     if (widget.autoOpen) {
       statusChecked.then((_) {
-        if (mounted) _handleOpenContent();
+        if (mounted) _handleDownloadTap();
       });
     }
   }
@@ -124,7 +127,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     contentBatches.sort((a, b) => b.compareTo(a));
 
     final isProUser = ref.watch(isProUserProvider);
-    final isProContent = widget.resource.status == 'pro';
+    final isProContent = widget.resource.accessLevel == 'pro';
 
     final userId = profileData?.uid ?? '';
     if (userId.isNotEmpty) {
@@ -188,28 +191,21 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         children: [
           InkWell(
             borderRadius: BorderRadius.circular(RadiusToken.md + 2),
-            onTap: () async {
-              if (isProContent && !isProUser) {
-                _showProDialog(context);
-              } else if (!isProUser && !kIsWeb) {
-                final canAccess = await _checkRewardGate();
-                if (canAccess) {
-                  // Coins (or Pro) already granted access above — skip the
-                  // separate ad gate inside _downloadIfNeeded, otherwise a
-                  // user who just paid with coins gets shown the ad prompt
-                  // too.
-                  await _handleOpenContent(gateAlreadyChecked: true);
-                }
-              } else {
-                await _handleOpenContent();
-              }
-            },
+            onTap: _handleDownloadTap,
             child: Stack(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(Spacing.md),
                   child: Row(
+                    // Bottom-aligns the details column with the thumbnail
+                    // instead of top-aligning them, so the info-tile/
+                    // bookmark/download row always sits flush with the
+                    // thumbnail's bottom edge — whether the title wraps to
+                    // one line or two.
+                    crossAxisAlignment: .end,
                     children: [
+
+                      //
                       GestureDetector(
                         onTap: _showInfoBottomSheet,
                         child: _buildThumbnail(
@@ -218,7 +214,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                         ),
                       ),
                       const SizedBox(width: Spacing.md),
-                      _buildDetails(context),
+                      _buildDetails(context, isProContent),
                     ],
                   ),
                 ),
@@ -227,20 +223,32 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   right: 0,
                   child: _buildPopupMenu(),
                 ),
-                Positioned(
-                  bottom: -4,
-                  right: 12,
-                  child: _isLoading || _isPaused
-                      ? _buildDownloadStatusAction()
-                      : Row(
-                          mainAxisSize: .min,
-                          children: [
-                            _buildBookmark(),
-                            const SizedBox(width: Spacing.xxs),
-                            _buildDownloadStatusAction(),
-                          ],
-                        ),
-                ),
+                // bottom: Spacing.md is reliable now (not a guess): the
+                // content Row above is bottom-aligned via
+                // crossAxisAlignment: .end, so its bottom edge always sits
+                // exactly Spacing.md above the card edge — same inset as
+                // the Padding.all(Spacing.md) wrapping it — regardless of
+                // whether the title wraps to one line or two.
+                if (_isLoading || _isPaused)
+                  Positioned(
+                    bottom: 4,
+                    right: 12,
+                    child: _buildDownloadStatusAction(),
+                  )
+                else
+                  Positioned(
+                    bottom: 0,
+                    right: 12,
+                  
+                    child: Row(
+                      mainAxisSize: .min,
+                      children: [
+                        _buildBookmark(),
+                        const SizedBox(width: Spacing.xxs),
+                        _buildDownloadStatusAction(),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -256,7 +264,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       alignment: Alignment.topLeft,
       children: [
         Container(
-          width: 84,
+          width: 88,
           height: _kContentHeight,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(RadiusToken.xs),
@@ -301,6 +309,40 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               fileSizeBytes: widget.resource.fileSizeBytes,
               onImage: true,
             ),
+          )
+        else
+          Positioned(
+            left: 4,
+            bottom: 4,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.sm,
+                vertical: Spacing.xxs,
+              ),
+              decoration: BoxDecoration(
+                color: context.colors.success,
+                borderRadius: BorderRadius.circular(RadiusToken.full),
+              ),
+              child: Row(
+                mainAxisSize: .min,
+                children: [
+                  Icon(
+                    LucideIcons.checkCheck,
+                    size: 10,
+                    color: context.colors.onPrimary,
+                  ),
+                  const SizedBox(width: Spacing.xxs),
+                  Text(
+                    'FREE',
+                    style: TextStyle(
+                      fontSize: FontSizeToken.xxs,
+                      fontWeight: .bold,
+                      color: context.colors.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         if (isProContent)
           Positioned(
@@ -323,23 +365,22 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     );
   }
 
-  Widget _buildDetails(BuildContext context) {
+  Widget _buildDetails(BuildContext context, bool isProContent) {
     return Expanded(
-      child: SizedBox(
+      child: Container(
         height: _kContentHeight,
         child: Column(
-          crossAxisAlignment: .start,
           mainAxisAlignment: .start,
+          crossAxisAlignment: .start,
           children: [
             SizedBox(
               height: _kTopRowHeight,
               child: Row(
+                crossAxisAlignment: .stretch,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Spacing.xs,
-                      vertical: 3,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       // Same fill as the file-size / page tiles below.
                       color: Theme.of(context).brightness == Brightness.dark
@@ -360,6 +401,39 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                       ),
                     ),
                   ),
+                  if (isProContent) ...[
+                    const SizedBox(width: Spacing.xs),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.sm,
+                      ),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: context.colors.warning.withValues(alpha: .15),
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      ),
+                      child: Row(
+                        mainAxisSize: .min,
+                        children: [
+                          Icon(
+                            LucideIcons.crown,
+                            size: 10,
+                            color: context.colors.warning,
+                          ),
+                          const SizedBox(width: Spacing.xxs),
+                          Text(
+                            'PRO',
+                            style: TextStyle(
+                              height: 1,
+                              fontSize: FontSizeToken.xxs,
+                              fontWeight: .bold,
+                              color: context.colors.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -385,7 +459,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                 height: 1,
               ),
             ),
-            const Spacer(),
+            const SizedBox(height: Spacing.sm),
+
+            Spacer(),
             Row(
               children: [
                 _buildMiniInfoTile(
@@ -399,6 +475,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   LucideIcons.layers,
                   '${widget.resource.pageCount} Page',
                 ),
+              
+              //
+
               ],
             ),
           ],
@@ -421,7 +500,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       onSelected: (value) async {
         switch (value) {
           case 'download':
-            await _handleOpenContent();
+            await _handleDownloadTap();
           case 'cancel':
             _handleCancelDownload();
           case 'save':
@@ -505,7 +584,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         padding: const EdgeInsets.only(right: Spacing.md),
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.sm),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(color: context.colors.surfaceAlt),
           boxShadow: [BoxShadow(color: context.colors.shadow, blurRadius: 8)],
         ),
@@ -541,7 +620,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       );
     }
     return GestureDetector(
-      onTap: _handleOpenContent,
+      onTap: _handleDownloadTap,
       child: Icon(
         LucideIcons.circleArrowDown,
         color: theme.colorScheme.primary,
@@ -649,6 +728,13 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         builder: (context, scrollController) => ResourceInfoSheet(
           resource: widget.resource,
           scrollController: scrollController,
+          isDownloaded: _isDownloaded,
+          onDownload: () => _handleDownloadTap(),
+          onSaveToDownloads: () => _saveToPublicDownloads(),
+          onShare: () => _handleShare(),
+          onDeleteLocally: () => _handleDeleteLocally(),
+          isBookmarked: _isBookmarked,
+          onBookmarkToggle: _handleBookmarkToggle,
         ),
       ),
     );
@@ -679,9 +765,39 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     );
   }
 
+  /// Single gate-check for every "open/download this resource" tap target
+  /// (card body, download icon, popup menu, info sheet, open-with) so they
+  /// all apply the same Pro → direct, non-Pro+coins → direct, non-Pro+no-coins
+  /// → unlock-dialog logic instead of diverging into separate gates. Does
+  /// NOT download or open anything itself — only decides access.
+  Future<bool> _canAccessResource() async {
+    if (_isDownloaded) return true;
+
+    final isProUser = ref.read(isProUserProvider);
+    if (isProUser) return true;
+
+    final isProContent = widget.resource.accessLevel == 'pro';
+    if (isProContent) {
+      _showProDialog(context);
+      return false;
+    }
+
+    return _checkRewardGate();
+  }
+
+  Future<void> _handleDownloadTap() async {
+    final canAccess = await _canAccessResource();
+    if (canAccess) {
+      // Coins (or Pro) already granted access above — skip the separate ad
+      // gate inside _downloadIfNeeded, otherwise a user who just paid with
+      // coins gets shown the ad prompt too.
+      await _handleOpenContent(gateAlreadyChecked: true);
+    }
+  }
+
   Future<bool> _checkRewardGate() async {
     final isPro = ref.read(isProUserProvider);
-    if (isPro || kIsWeb) return true;
+    if (isPro) return true;
 
     final rewardRepo = ref.read(rewardRepositoryProvider);
 
@@ -705,36 +821,153 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     int balance,
   ) async {
     final manager = ref.read(rewardedAdManagerProvider);
-    manager.preload();
+    // google_mobile_ads has no web implementation — only preload (and later
+    // offer the "Watch Ad" button) off web.
+    if (!kIsWeb) manager.preload();
+
+    final shortfall = cost - balance;
+    final hasEnough = shortfall <= 0;
 
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Unlock to download'),
-        content: Text(
-          'This file costs $cost coin${cost > 1 ? 's' : ''}. '
-          'You have $balance coin${balance != 1 ? 's' : ''}. '
-          'Watch a short ad to earn 1 coin, or upgrade to Pro for unlimited access.',
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(RadiusToken.xxl),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Spacing.xl,
+            Spacing.xxl,
+            Spacing.xl,
+            Spacing.xl,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop(false);
-              context.push(AppRoute.subscription.path);
-            },
-            child: const Text('Go Pro'),
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AccentToken.gold.withValues(alpha: .15),
+                ),
+                child: Icon(
+                  LucideIcons.lock,
+                  size: 26,
+                  color: AccentToken.gold,
+                ),
+              ),
+              const SizedBox(height: Spacing.lg),
+              Text(
+                'Unlock to Download',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: .bold),
+              ),
+              const SizedBox(height: Spacing.xs),
+              Text(
+                '"${widget.resource.title}" needs coins to unlock',
+                textAlign: .center,
+                maxLines: 2,
+                overflow: .ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: context.colors.textMuted,
+                ),
+              ),
+              const SizedBox(height: Spacing.lg),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Spacing.lg,
+                  vertical: Spacing.md,
+                ),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(RadiusToken.lg),
+                ),
+                child: Row(
+                  mainAxisAlignment: .spaceEvenly,
+                  children: [
+                    _buildCoinStat(context, label: 'Cost', value: cost),
+                    Container(
+                      width: 1,
+                      height: 32,
+                      color: context.colors.border,
+                    ),
+                    _buildCoinStat(
+                      context,
+                      label: 'You have',
+                      value: balance,
+                      color: hasEnough
+                          ? context.colors.success
+                          : context.colors.danger,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: Spacing.md),
+              Text(
+                hasEnough
+                    ? 'You already have enough coins — tap below to unlock.'
+                    : kIsWeb
+                    ? 'Ads aren\'t available on web. Go Pro for unlimited downloads.'
+                    : 'Watch a short ad to earn 1 coin, or go Pro for unlimited downloads.',
+                textAlign: .center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: context.colors.textMuted,
+                ),
+              ),
+              const SizedBox(height: Spacing.xl),
+              if (!kIsWeb) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    icon: const Icon(LucideIcons.circlePlay, size: 18),
+                    label: const Text('Watch Ad • +1 Coin'),
+                  ),
+                ),
+                const SizedBox(height: Spacing.sm),
+              ],
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    ),
+                    side: BorderSide(color: AccentToken.gold),
+                    foregroundColor: AccentToken.gold,
+                  ),
+                  onPressed: () {
+                    Navigator.of(ctx).pop(false);
+                    context.push(AppRoute.subscription.path);
+                  },
+                  icon: const Icon(LucideIcons.crown, size: 16),
+                  label: const Text('Upgrade to Pro'),
+                ),
+              ),
+              const SizedBox(height: Spacing.xs),
+              TextButton(
+                style: ButtonStyle(
+                  minimumSize: WidgetStateProperty.all(const Size.fromHeight(32)),
+                ),
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(
+                  'Not Now',
+                  style: TextStyle(color: context.colors.textMuted),
+                ),
+              ),
+            ],
           ),
-          FilledButton.tonal(
-            clipBehavior: Clip.antiAlias,
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Watch Ad'),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -757,20 +990,59 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     });
   }
 
+  Widget _buildCoinStat(
+    BuildContext context, {
+    required String label,
+    required int value,
+    Color? color,
+  }) {
+    final statColor = color ?? context.colors.text;
+    return Column(
+      mainAxisSize: .min,
+      children: [
+        Row(
+          mainAxisSize: .min,
+          children: [
+            Icon(LucideIcons.coins, size: 14, color: statColor),
+            const SizedBox(width: Spacing.xxs),
+            Text(
+              '$value',
+              style: TextStyle(
+                fontWeight: .bold,
+                fontSize: FontSizeToken.lg,
+                color: statColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: Spacing.xxs),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: FontSizeToken.xxs,
+            color: context.colors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _handleOpenContent({bool gateAlreadyChecked = false}) async {
     // Web streams the PDF straight from the URL (see PdfViewerPage) — no
     // local download step needed or possible.
     if (kIsWeb) {
       if (mounted) {
         ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (_) => PdfViewerPage(
-              filePath: '',
-              url: widget.resource.fileUrl,
-              title: widget.resource.title,
-            ),
-          ),
+        await openPdfTab(
+          context,
+          ref,
+          resourceId: widget.resource.id,
+          filePath: '',
+          url: widget.resource.fileUrl,
+          title: widget.resource.title,
+          thumbnailUrl: widget.resource.thumbnailUrl,
+          courseCode: widget.resource.courseCode,
+          lessonNo: widget.resource.lessonNo,
         );
       }
       return;
@@ -782,14 +1054,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     if (_isDownloaded && _localPath.isNotEmpty) {
       if (mounted) {
         ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (_) => PdfViewerPage(
-              filePath: _localPath,
-              url: widget.resource.fileUrl,
-              title: widget.resource.title,
-            ),
-          ),
+        await openPdfTab(
+          context,
+          ref,
+          resourceId: widget.resource.id,
+          filePath: _localPath,
+          url: widget.resource.fileUrl,
+          title: widget.resource.title,
+          thumbnailUrl: widget.resource.thumbnailUrl,
+          courseCode: widget.resource.courseCode,
+          lessonNo: widget.resource.lessonNo,
         );
       }
     }
@@ -902,7 +1176,11 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       return;
     }
 
-    if (!_isDownloaded) await _downloadIfNeeded();
+    if (!_isDownloaded) {
+      final canAccess = await _canAccessResource();
+      if (!canAccess) return;
+      await _downloadIfNeeded(gateAlreadyChecked: true);
+    }
     if (_isDownloaded && _localPath.isNotEmpty) {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(_localPath)], text: widget.resource.title),
@@ -911,7 +1189,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _handleOpenWith() async {
-    if (!_isDownloaded) await _downloadIfNeeded();
+    if (!_isDownloaded) {
+      // Not downloaded yet — apply the same Pro/coin gate as every other
+      // download path before fetching the file, instead of falling through
+      // to the separate ad-only gate inside _downloadIfNeeded.
+      final canAccess = await _canAccessResource();
+      if (!canAccess) return;
+      await _downloadIfNeeded(gateAlreadyChecked: true);
+    }
+    // Already downloaded means it was already unlocked earlier — open it
+    // straight away, no gate needed.
     if (_isDownloaded && _localPath.isNotEmpty) {
       await OpenFilex.open(_localPath);
     }

@@ -17,6 +17,7 @@ import '../providers/marketplace_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
+import '/core/widgets/header_gradient_backdrop.dart';
 
 /// Create or edit a single product for one of the current user's own
 /// businesses. Pass `product` to edit an existing one, or omit it to create
@@ -175,30 +176,33 @@ class _MerchantProductFormScreenState
   Widget build(BuildContext context) {
     final categories = ref.watch(categoriesListProvider).value ?? const [];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Product' : 'Add Product'),
-        actions: [
-          if (_isEditing)
-            IconButton(
-              tooltip: 'Duplicate listing',
-              icon: const Icon(LucideIcons.copy),
-              onPressed: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (_) => MerchantProductFormScreen(
-                    merchantId: widget.merchantId,
-                    product: widget.product,
-                    duplicate: true,
+    return HeaderGradientBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Edit Product' : 'Add Product'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            if (_isEditing)
+              IconButton(
+                tooltip: 'Duplicate listing',
+                icon: const Icon(LucideIcons.copy),
+                onPressed: () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => MerchantProductFormScreen(
+                      merchantId: widget.merchantId,
+                      product: widget.product,
+                      duplicate: true,
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
-      ),
-      backgroundColor: context.colors.primary,
-      body: MarketBody(
-        child: Center(
-          child: ConstrainedBox(
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        body: MarketBody(
+          child: Center(
+            child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Form(
               key: _formKey,
@@ -397,6 +401,7 @@ class _MerchantProductFormScreenState
             ),
           ),
         ),
+      ),
       ),
     );
   }

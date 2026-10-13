@@ -14,7 +14,7 @@ import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/theme/tokens/app_radius.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../routes/app_route.dart';
-import '../../../../widgets/pdf_viewer_page.dart';
+import '../../../pdf_tabs/presentation/open_pdf_tab.dart';
 import '../../domain/entities/downloaded_file.dart';
 import '../providers/downloads_provider.dart';
 import '../../../auth/presentation/providers/user_profile_provider.dart';
@@ -79,14 +79,16 @@ class DownloadedResourceCard extends ConsumerWidget {
           InkWell(
             borderRadius: BorderRadius.circular(RadiusToken.md + 2),
             onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (_) => PdfViewerPage(
-                    filePath: downloadedFile.localPath,
-                    url: resource.fileUrl,
-                    title: resource.title,
-                  ),
-                ),
+              openPdfTab(
+                context,
+                ref,
+                resourceId: resource.id,
+                filePath: downloadedFile.localPath,
+                url: resource.fileUrl,
+                title: resource.title,
+                thumbnailUrl: resource.thumbnailUrl,
+                courseCode: resource.courseCode,
+                lessonNo: resource.lessonNo,
               );
             },
             child: Stack(
@@ -94,9 +96,14 @@ class DownloadedResourceCard extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(Spacing.md),
                   child: Row(
+                    // Bottom-aligns the details column with the thumbnail
+                    // so the info-tile/bookmark row always sits flush with
+                    // the thumbnail's bottom edge — see resource_card.dart.
+                    crossAxisAlignment: .end,
                     children: [
                       GestureDetector(
-                        onTap: () => _showInfoBottomSheet(context),
+                        onTap: () =>
+                            _showInfoBottomSheet(context, ref, isBookmarked),
                         child: _buildThumbnail(context, isDark, theme),
                       ),
                       const SizedBox(width: Spacing.md),
@@ -109,8 +116,12 @@ class DownloadedResourceCard extends ConsumerWidget {
                   right: 0,
                   child: _buildPopupMenu(context, ref, isBookmarked),
                 ),
+                // bottom: Spacing.md is reliable (not a guess): the content
+                // Row above is bottom-aligned via crossAxisAlignment: .end,
+                // so its bottom edge always sits exactly Spacing.md above
+                // the card edge, regardless of title line count.
                 Positioned(
-                  bottom: -4,
+                  bottom: Spacing.md,
                   right: 12,
                   child: Row(
                     mainAxisSize: .min,
@@ -203,86 +214,83 @@ class DownloadedResourceCard extends ConsumerWidget {
         '${downloadedFile.modifiedAt.day}/${downloadedFile.modifiedAt.month}/${downloadedFile.modifiedAt.year}';
 
     return Expanded(
-      child: SizedBox(
-        height: _kContentHeight,
-        child: Column(
-          crossAxisAlignment: .start,
-          mainAxisAlignment: .start,
-          children: [
-            SizedBox(
-              height: _kTopRowHeight,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Spacing.xs,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                          : context.colors.surfaceAlt,
-                      borderRadius: BorderRadius.circular(RadiusToken.xs),
-                      border: Border.all(color: context.colors.surfaceAlt),
-                    ),
-                    child: Text(
-                      '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
-                      style: TextStyle(
-                        height: 1,
-                        fontSize: FontSizeToken.xxs,
-                        fontWeight: .bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
+      child: Column(
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
+        children: [
+          SizedBox(
+            height: _kTopRowHeight,
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Spacing.xs,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                        : context.colors.surfaceAlt,
+                    borderRadius: BorderRadius.circular(RadiusToken.xs),
+                    border: Border.all(color: context.colors.surfaceAlt),
+                  ),
+                  child: Text(
+                    '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
+                    style: TextStyle(
+                      height: 1,
+                      fontSize: FontSizeToken.xxs,
+                      fontWeight: .bold,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: Spacing.xs),
-            Text(
-              resource.title,
-              maxLines: 2,
-              overflow: .ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: .bold,
-                height: 1.2,
-              ),
-            ),
-            const SizedBox(height: Spacing.xs),
-            Text(
-              resource.description.isNotEmpty
-                  ? resource.description
-                  : resource.type,
-              maxLines: 1,
-              overflow: .ellipsis,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: .w500,
-                color: context.colors.textMuted,
-                height: 1,
-              ),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                _buildMiniInfoTile(
-                  context,
-                  theme,
-                  isDark,
-                  LucideIcons.hardDrive,
-                  fileSize,
-                ),
-                const SizedBox(width: Spacing.sm),
-                _buildMiniInfoTile(
-                  context,
-                  theme,
-                  isDark,
-                  LucideIcons.calendar,
-                  dateStr,
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: Spacing.xs),
+          Text(
+            resource.title,
+            maxLines: 2,
+            overflow: .ellipsis,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: .bold,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: Spacing.xs),
+          Text(
+            resource.description.isNotEmpty
+                ? resource.description
+                : resource.type,
+            maxLines: 1,
+            overflow: .ellipsis,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: .w500,
+              color: context.colors.textMuted,
+              height: 1,
+            ),
+          ),
+          const SizedBox(height: Spacing.sm),
+          Row(
+            children: [
+              _buildMiniInfoTile(
+                context,
+                theme,
+                isDark,
+                LucideIcons.hardDrive,
+                fileSize,
+              ),
+              const SizedBox(width: Spacing.sm),
+              _buildMiniInfoTile(
+                context,
+                theme,
+                isDark,
+                LucideIcons.calendar,
+                dateStr,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -351,7 +359,7 @@ class DownloadedResourceCard extends ConsumerWidget {
               ),
             );
           case 'info':
-            _showInfoBottomSheet(context);
+            _showInfoBottomSheet(context, ref, isBookmarked);
           case 'bookmark':
             await _handleBookmarkToggle(context, ref, isBookmarked);
           case 'view_course':
@@ -483,7 +491,11 @@ class DownloadedResourceCard extends ConsumerWidget {
     }
   }
 
-  void _showInfoBottomSheet(BuildContext context) {
+  void _showInfoBottomSheet(
+    BuildContext context,
+    WidgetRef ref,
+    bool isBookmarked,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -501,6 +513,17 @@ class DownloadedResourceCard extends ConsumerWidget {
         builder: (context, scrollController) => ResourceInfoSheet(
           resource: downloadedFile.resource,
           scrollController: scrollController,
+          isDownloaded: true,
+          onShare: () => SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(downloadedFile.localPath)],
+              text: downloadedFile.resource.title,
+            ),
+          ),
+          onDeleteLocally: () => _deleteFile(context, ref),
+          isBookmarked: isBookmarked,
+          onBookmarkToggle: () =>
+              _handleBookmarkToggle(context, ref, isBookmarked),
         ),
       ),
     );

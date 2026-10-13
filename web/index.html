@@ -20,6 +20,20 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Smart assistant on Campus">
 
+  <!-- Start fetching the engine + renderer before flutter_bootstrap.js even
+       runs. These are the dart2wasm/skwasm build (what modern Chrome/Edge
+       picks) — ~10MB that otherwise only starts downloading after the
+       bootstrap script parses _flutter.buildConfig and selects a build,
+       which was most of our Largest Contentful Paint cost. Browsers that
+       fall back to the dart2js/canvaskit build just ignore these hints. -->
+  <link rel="preload" href="main.dart.wasm" as="fetch" type="application/wasm" crossorigin>
+  <link rel="modulepreload" href="main.dart.mjs">
+  <link rel="preload" href="canvaskit/skwasm.wasm" as="fetch" type="application/wasm" crossorigin>
+  <link rel="modulepreload" href="canvaskit/skwasm.js">
+
+  <!-- API origin — the app calls this immediately after first frame. -->
+  <link rel="preconnect" href="https://campusassistant.duckdns.org">
+
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">

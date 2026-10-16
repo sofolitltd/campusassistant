@@ -65,9 +65,8 @@ Future<bool> showDownloadAdGate(BuildContext context, WidgetRef ref) async {
               child: OutlinedButton(
                 onPressed: () {
                   Navigator.pop(dialogContext, false);
-                  GoRouter.of(
-                    dialogContext,
-                  ).pushNamed(AppRoute.subscription.name);
+                  GoRouter.of(dialogContext)
+                      .pushNamed(AppRoute.subscription.name);
                 },
                 child: const Text('Go Pro'),
               ),

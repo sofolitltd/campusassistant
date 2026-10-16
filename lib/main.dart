@@ -3,7 +3,9 @@ import 'dart:async';
 import '/core/auth/token_store.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import '/core/ads/ads_initializer.dart';
+
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite/sqflite.dart' show databaseFactory;
 
@@ -33,13 +35,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseApi().initBackgroundHandler();
-  if (!kIsWeb) {
-    // Not awaited: adapter init can take seconds on a cold start and nothing
-    // before the first frame needs it — ad requests made before it finishes
-    // are queued by the SDK.
-    unawaited(MobileAds.instance.initialize());
-  }
-
   if (kIsWeb) {
     setUrlStrategy(PathUrlStrategy());
     // sqflite has no native web implementation — this backs it with sql.js
@@ -50,6 +45,10 @@ Future<void> main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
   runApp(ProviderScope(child: const MyApp()));
+
+  // After runApp, and itself deferred past the first frame: SDK init loads a
+  // WebView on Android's main thread and was skipping ~60 frames on Home.
+  AdsInitializer.startDeferred();
 }
 
 // Built once: a fresh ThemeData on every MyApp rebuild makes every

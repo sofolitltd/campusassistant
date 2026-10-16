@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'ad_config.dart';
+import 'ads_initializer.dart';
 
 /// Preloads/shows a single rewarded ad, shared app-wide via
 /// [rewardedAdManagerProvider] so multiple ResourceCard/ContentCard widgets
@@ -24,6 +25,11 @@ class RewardedAdManager {
   void preload() {
     if (kIsWeb || _ad != null || _isLoading) return;
     _isLoading = true;
+    // Queued behind the deferred SDK init (see AdsInitializer).
+    AdsInitializer.ready.then((_) => _load());
+  }
+
+  void _load() {
     RewardedAd.load(
       adUnitId: AdConfig.rewardedAdUnitId,
       request: const AdRequest(),

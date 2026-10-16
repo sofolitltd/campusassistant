@@ -17,14 +17,16 @@ class AdConfig {
   static const _testAndroidRewardedUnitId =
       'ca-app-pub-3940256099942544/5224354917';
 
-  static String get androidAppId =>
-      Env.admobAndroidAppId.isNotEmpty ? Env.admobAndroidAppId : _testAndroidAppId;
+  static String get androidAppId => Env.admobAndroidAppId.isNotEmpty
+      ? Env.admobAndroidAppId
+      : _testAndroidAppId;
 
   static String get bannerAdUnitId => Env.admobBannerAdUnitIdAndroid.isNotEmpty
       ? Env.admobBannerAdUnitIdAndroid
       : _testAndroidBannerUnitId;
 
-  static String get rewardedAdUnitId => Env.admobRewardedAdUnitIdAndroid.isNotEmpty
+  static String get rewardedAdUnitId =>
+      Env.admobRewardedAdUnitIdAndroid.isNotEmpty
       ? Env.admobRewardedAdUnitIdAndroid
       : _testAndroidRewardedUnitId;
 }

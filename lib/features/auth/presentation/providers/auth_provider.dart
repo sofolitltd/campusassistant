@@ -72,9 +72,7 @@ class CurrentUser extends _$CurrentUser {
     _repository = ref.watch(authRepositoryProvider);
     final generation = ++_generation;
     final user = await _checkAuthStatus(generation);
-    if (user != null) {
-      unawaited(FirebaseApi().initNotifications());
-    }
+    if (user != null) _initNotificationsSoon();
     return user;
   }
 
@@ -138,6 +136,19 @@ class CurrentUser extends _$CurrentUser {
     }, (user) => (user: user, isOffline: false));
   }
 
+  /// FCM setup (permission prompt, token, local-notification channels) is
+  /// all platform-channel work on Android's main thread; started a beat
+  /// after sign-in so it doesn't land in the same frames as Home's first
+  /// render. Ads init is deferred separately, later still.
+  void _initNotificationsSoon() {
+    unawaited(
+      Future.delayed(
+        const Duration(seconds: 1),
+        () => FirebaseApi().initNotifications(),
+      ),
+    );
+  }
+
   Future<void> login(String email, String password) async {
     _generation++;
     state = const AsyncValue.loading();
@@ -146,7 +157,7 @@ class CurrentUser extends _$CurrentUser {
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (user) {
         state = AsyncValue.data(user);
-        unawaited(FirebaseApi().initNotifications());
+        _initNotificationsSoon();
       },
     );
   }

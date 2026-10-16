@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '/core/providers/is_pro_provider.dart';
 import 'ad_config.dart';
+import 'ads_initializer.dart';
 
 /// A banner ad that never requests an ad for Pro users or on web (checked
 /// once at mount, not just visually hidden), and reserves the banner's
@@ -30,7 +31,11 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
   void initState() {
     super.initState();
     if (!kIsWeb && !ref.read(isProUserProvider)) {
-      _loadAd();
+      // Wait for the deferred SDK init so this banner's WebView isn't created
+      // in the same burst as Home's first frames.
+      AdsInitializer.ready.then((_) {
+        if (mounted && !ref.read(isProUserProvider)) _loadAd();
+      });
     }
   }
 

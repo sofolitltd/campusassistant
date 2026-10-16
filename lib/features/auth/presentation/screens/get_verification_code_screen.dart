@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '/features/university/presentation/providers/university_provider.dart';
 import '/features/department/presentation/providers/department_provider.dart';
 import '/features/batch/presentation/providers/batch_provider.dart'
@@ -10,7 +11,9 @@ import '/features/batch/presentation/providers/batch_provider.dart'
 import '/features/cr/presentation/providers/cr_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/utils/constants.dart';
+
 import 'package:go_router/go_router.dart';
+
 import '/routes/app_route.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/widgets/inline_search_bar.dart';
@@ -60,9 +63,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
         children: [
           Text(
             'Which Describes You?',
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall!.copyWith(fontWeight: .w600),
+            style: Theme.of(context).textTheme.titleSmall!
+                .copyWith(fontWeight: .w600),
           ),
           const SizedBox(height: Spacing.xs),
           Text(
@@ -112,10 +114,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
         children: [
           Text(
             'Contact An Admin Or Moderator',
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-              fontWeight: .w600,
-              color: context.colors.text,
-            ),
+            style: Theme.of(context).textTheme.titleSmall!
+                .copyWith(fontWeight: .w600, color: context.colors.text),
           ),
           const SizedBox(height: Spacing.xs),
           const Text(
@@ -256,9 +256,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
                           Text(
                             'Get Verification Code from CR',
 
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleSmall!.copyWith(fontWeight: .w600),
+                            style: Theme.of(context).textTheme.titleSmall!
+                                .copyWith(fontWeight: .w600),
                           ),
                           const Text(
                             "Connect with your class representative",
@@ -308,9 +307,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
                         children: [
                           Text(
                             'Register with Social Media',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleSmall!.copyWith(fontWeight: .w600),
+                            style: Theme.of(context).textTheme.titleSmall!
+                                .copyWith(fontWeight: .w600),
                           ),
                           const Text(
                             "Message on Facebook or WhatsApp ",
@@ -388,9 +386,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
                   Text(
                     'Contact the developer',
                     textAlign: .center,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleSmall!.copyWith(fontWeight: .w600),
+                    style: Theme.of(context).textTheme.titleSmall!
+                        .copyWith(fontWeight: .w600),
                   ),
                   const SizedBox(height: Spacing.lg),
                   Container(
@@ -428,9 +425,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
                         const SizedBox(height: Spacing.md),
                         Text(
                           kDeveloperName,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleMedium!.copyWith(fontWeight: .bold),
+                          style: Theme.of(context).textTheme.titleMedium!
+                              .copyWith(fontWeight: .bold),
                         ),
                         const SizedBox(height: Spacing.xxs),
                         Text(
@@ -462,9 +458,8 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
                         ),
                         Text(
                           'University of Chittagong',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleSmall!.copyWith(fontWeight: .bold),
+                          style: Theme.of(context).textTheme.titleSmall!
+                              .copyWith(fontWeight: .bold),
                         ),
                         const SizedBox(height: Spacing.lg),
                         const Divider(),
@@ -1075,9 +1070,8 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                   const SizedBox(height: Spacing.xxl),
                   Text(
                     'CR/Moderator List',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium!.copyWith(fontWeight: .bold),
+                    style: Theme.of(context).textTheme.titleMedium!
+                        .copyWith(fontWeight: .bold),
                   ),
                   SizedBox(height: Spacing.sm),
                   const Divider(),

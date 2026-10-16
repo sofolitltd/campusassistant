@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -192,7 +192,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                         const SizedBox(height: Spacing.sm),
                         const Divider(height: .5),
                         const SizedBox(height: Spacing.xxl),
-          
+
                         OtpCodeFieldWidget(
                           controller: _codeController,
                           heading: 'Verification Code',
@@ -206,7 +206,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                           },
                         ),
                         const SizedBox(height: Spacing.xxl),
-          
+
                         ElevatedButton(
                           onPressed: _isLoading ? null : _submit,
                           child: _isLoading
@@ -223,7 +223,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                                 ),
                         ),
                         const SizedBox(height: Spacing.sm),
-          
+
                         TextButton(
                           onPressed: canResend ? _resendCode : null,
                           child: _isResending
@@ -235,7 +235,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                                 ),
                         ),
                         const SizedBox(height: Spacing.lg),
-          
+
                         Text(
                           '* If you don\'t see the email in your inbox, check your spam folder.',
                           style: TextStyle(

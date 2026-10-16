@@ -1,16 +1,20 @@
 import '/features/auth/data/datasources/auth_local_data_source.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite/sqflite.dart' show databaseFactory;
+
 import 'firebase_options.dart';
 import 'routes/router_config.dart';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart'
     show PathUrlStrategy, setUrlStrategy;
 import 'package:go_router/go_router.dart';
+
 import '/core/providers/theme_provider.dart';
 import '/core/providers/app_refresh_provider.dart';
 import '/core/theme/app_scroll_behavior.dart';
@@ -173,8 +177,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         routerConfig: router,
-        builder: (context, child) =>
-            OfflineBanner(child: child ?? const SizedBox.shrink()),
+        // Temporary: third-party deps still import flutter/material.dart.
+        // ignore: deprecated_member_use
+        builder: (context, child) => MaterialUiCompatibilityBridge(
+          child: OfflineBanner(child: child ?? const SizedBox.shrink()),
+        ),
       ),
       loading: () => MaterialApp.router(
         title: 'Campus Assistant',
@@ -184,8 +191,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         routerConfig: router,
-        builder: (context, child) =>
-            OfflineBanner(child: child ?? const SizedBox.shrink()),
+        // Temporary: third-party deps still import flutter/material.dart.
+        // ignore: deprecated_member_use
+        builder: (context, child) => MaterialUiCompatibilityBridge(
+          child: OfflineBanner(child: child ?? const SizedBox.shrink()),
+        ),
       ),
       error: (_, _) => MaterialApp.router(
         title: 'Campus Assistant',
@@ -195,8 +205,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         routerConfig: router,
-        builder: (context, child) =>
-            OfflineBanner(child: child ?? const SizedBox.shrink()),
+        // Temporary: third-party deps still import flutter/material.dart.
+        // ignore: deprecated_member_use
+        builder: (context, child) => MaterialUiCompatibilityBridge(
+          child: OfflineBanner(child: child ?? const SizedBox.shrink()),
+        ),
       ),
     );
   }

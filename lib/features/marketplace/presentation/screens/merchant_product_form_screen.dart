@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +18,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 /// Create or edit a single product for one of the current user's own
 /// businesses. Pass `product` to edit an existing one, or omit it to create
@@ -203,7 +204,7 @@ class _MerchantProductFormScreenState
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
+            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
             child: Form(
               key: _formKey,
               child: ListView(
@@ -306,8 +307,9 @@ class _MerchantProductFormScreenState
                             labelText: 'Price (৳)',
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Required';
+                            }
                             if (int.tryParse(v.trim()) == null) {
                               return 'Invalid number';
                             }
@@ -322,8 +324,9 @@ class _MerchantProductFormScreenState
                           keyboardType: .number,
                           decoration: const InputDecoration(labelText: 'Stock'),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Required';
+                            }
                             if (int.tryParse(v.trim()) == null) {
                               return 'Invalid number';
                             }

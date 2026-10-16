@@ -38,16 +38,15 @@ final entityDetailProvider =
       return result.fold((failure) => null, (detail) => detail);
     });
 
-typedef BookmarkScope = ({String userId, String? courseCode, int? lessonNo});
-
-/// The user's bookmarked resources, optionally narrowed to one course
-/// ([BookmarkScope.courseCode]) and one chapter ([BookmarkScope.lessonNo]).
+/// All of the user's bookmarked resources — intentionally the same full list
+/// everywhere a bookmark button appears (course page, chapter page, the
+/// dedicated Bookmarks page, …), so bookmarking something from one place
+/// means it's reachable from any of them, not just the place it was saved
+/// from.
 final scopedBookmarkResourcesProvider = FutureProvider.autoDispose
-    .family<List<Resource>, BookmarkScope>((ref, scope) async {
-      if (scope.userId.isEmpty) return const [];
-      final bookmarks = await ref.watch(
-        userBookmarksProvider(scope.userId).future,
-      );
+    .family<List<Resource>, String>((ref, userId) async {
+      if (userId.isEmpty) return const [];
+      final bookmarks = await ref.watch(userBookmarksProvider(userId).future);
       final details = await Future.wait(
         bookmarks.map(
           (b) => ref.watch(
@@ -65,13 +64,5 @@ final scopedBookmarkResourcesProvider = FutureProvider.autoDispose
           continue;
         }
       }
-
-      final code = scope.courseCode?.toLowerCase();
-      return resources.where((r) {
-        if (code != null && r.courseCode.toLowerCase() != code) return false;
-        if (scope.lessonNo != null && r.lessonNo != scope.lessonNo) {
-          return false;
-        }
-        return true;
-      }).toList();
+      return resources;
     });

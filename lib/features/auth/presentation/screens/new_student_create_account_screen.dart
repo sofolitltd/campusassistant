@@ -3,14 +3,16 @@ import 'dart:ui' as ui;
 
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/student/presentation/providers/student_provider.dart';
-import 'package:flutter/cupertino.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
+
 import '/routes/app_route.dart';
 
 import '/widgets/common_text_field_widget.dart';
@@ -67,6 +69,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _referralController = TextEditingController();
   bool _isLoading = false;
   File? _pickedMobileImage;
   Uint8List _webImage = Uint8List(8);
@@ -119,9 +122,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         ),
                         Text(
                           'with email and password',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelLarge!.copyWith(fontWeight: .w100),
+                          style: Theme.of(context).textTheme.labelLarge!
+                              .copyWith(fontWeight: .w100),
                         ),
                         const SizedBox(height: Spacing.xxl),
                         Row(
@@ -239,6 +241,14 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           },
                         ),
                         const SizedBox(height: Spacing.md),
+                        CommonTextFieldWidget(
+                          heading: 'Referral code (optional)',
+                          controller: _referralController,
+                          hintText: 'Code from a friend\'s member card',
+                          keyboardType: .text,
+                          validator: (_) => null,
+                        ),
+                        const SizedBox(height: Spacing.md),
                         const Text(
                           '* Please remember this email and password for further login.',
                         ),
@@ -278,6 +288,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                         gender: null,
                                         universityId: widget.universityId,
                                         departmentId: widget.departmentId,
+                                        referralCode: _referralController.text,
                                       );
 
                                       await regResult.fold(
@@ -309,10 +320,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                                             );
 
                                             Fluttertoast.showToast(
-                                              msg:
-                                                  'Welcome to Campus Assistant!',
-                                              backgroundColor: Colors
-                                                  .green, // toast: no BuildContext after the await above
+                                              msg: 'Welcome to Campus Assistant!',
+                                              backgroundColor: Colors.green, // toast: no BuildContext after the await above
                                             );
 
                                             // Force refresh current user to trigger router redirect

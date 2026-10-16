@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -121,13 +121,7 @@ class _BookmarkSearchResults extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(
-      scopedBookmarkResourcesProvider((
-        userId: userId,
-        courseCode: null,
-        lessonNo: null,
-      )),
-    );
+    final async = ref.watch(scopedBookmarkResourcesProvider(userId));
     final q = query.trim().toLowerCase();
 
     return async.when(

@@ -1,11 +1,13 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+
 import '/routes/app_route.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -283,8 +285,7 @@ class _NewStaffSignupScreenState extends ConsumerState<NewStaffSignupScreen> {
                                                       },
                                                       (staff) {
                                                         Fluttertoast.showToast(
-                                                          msg:
-                                                              'Welcome to Campus Assistant!',
+                                                          msg: 'Welcome to Campus Assistant!',
                                                         );
                                                         ref.invalidate(
                                                           currentUserProvider,

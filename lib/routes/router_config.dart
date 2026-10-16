@@ -1,4 +1,7 @@
-import 'package:flutter/material.dart';
+import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/content_column.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -126,6 +129,8 @@ import '/features/app_update/presentation/providers/app_update_provider.dart';
 import '/features/app_update/presentation/screens/force_update_screen.dart';
 import '/features/cache/presentation/cache_management_page.dart';
 import '/features/reward/presentation/screens/reward_page.dart';
+import '/features/member_card/presentation/screens/member_card_page.dart';
+import '/features/referral/referral_page.dart';
 import '/features/feedback/presentation/screens/feedback_page.dart';
 import '/features/feedback/presentation/screens/create_feedback_page.dart';
 import 'app_route.dart';
@@ -262,8 +267,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.forceUpdate.name,
         path: AppRoute.forceUpdate.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: ForceUpdateScreen()),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: ForceUpdateScreen(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.onboarding.name,
@@ -332,11 +341,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                               state.uri.queryParameters['semester'];
                           final tab = state.uri.queryParameters['tab'];
                           return NoTransitionPage(
-                            child: CourseDetailsScreen(
-                              courseCode: courseCode,
-                              batch: batch,
-                              semester: semester,
-                              initialTabName: tab,
+                            child: ContentColumn(
+                              child: CourseDetailsScreen(
+                                courseCode: courseCode,
+                                batch: batch,
+                                semester: semester,
+                                initialTabName: tab,
+                              ),
                             ),
                           );
                         },
@@ -361,15 +372,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                               final resourceId =
                                   state.uri.queryParameters['resourceId'];
                               return NoTransitionPage(
-                                child: CourseNotesScreens(
-                                  courseCode: courseCode,
-                                  chapterNo: chapterNo,
-                                  batch: batch,
-                                  semester: semester,
-                                  title: title,
-                                  universityId: universityId,
-                                  departmentId: departmentId,
-                                  resourceId: resourceId,
+                                child: ContentColumn(
+                                  child: CourseNotesScreens(
+                                    courseCode: courseCode,
+                                    chapterNo: chapterNo,
+                                    batch: batch,
+                                    semester: semester,
+                                    title: title,
+                                    universityId: universityId,
+                                    departmentId: departmentId,
+                                    resourceId: resourceId,
+                                  ),
                                 ),
                               );
                             },
@@ -953,48 +966,73 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.verification.name,
         path: AppRoute.verification.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: VerificationPage()),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: VerificationPage(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.getVerificationCode.name,
         path: AppRoute.getVerificationCode.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: GetVerificationCodeScreen()),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: GetVerificationCodeScreen(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.contactWithCR.name,
         path: AppRoute.contactWithCR.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: ContactWithCR()),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: ContactWithCR(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.studentVerificationPlacement.name,
         path: AppRoute.studentVerificationPlacement.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: PlacementSelectionScreen()),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: PlacementSelectionScreen(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.documentSignup.name,
         path: AppRoute.documentSignup.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const DocumentSignupScreen(),
+        builder: (context, state) => const ContentColumn(
+          maxWidth: AppLayout.formWidth,
+          child: DocumentSignupScreen(),
+        ),
       ),
       GoRoute(
         name: AppRoute.studentVerification.name,
         path: AppRoute.studentVerification.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const VerificationStatusScreen(),
+        builder: (context, state) => const ContentColumn(
+          maxWidth: AppLayout.formWidth,
+          child: VerificationStatusScreen(),
+        ),
       ),
       GoRoute(
         name: AppRoute.studentVerificationRequest.name,
         path: AppRoute.studentVerificationRequest.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => VerificationRequestScreen(
-          previous: state.extra as StudentVerificationRequest?,
+        builder: (context, state) => ContentColumn(
+          maxWidth: AppLayout.formWidth,
+          child: VerificationRequestScreen(
+            previous: state.extra as StudentVerificationRequest?,
+          ),
         ),
       ),
       GoRoute(
@@ -1004,7 +1042,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           final studentId = state.pathParameters['studentId']!;
           return NoTransitionPage(
-            child: NewStudentSignUpScreen(studentId: studentId),
+            child: ContentColumn(
+              maxWidth: AppLayout.formWidth,
+              child: NewStudentSignUpScreen(studentId: studentId),
+            ),
           );
         },
       ),
@@ -1016,24 +1057,32 @@ final routerProvider = Provider<GoRouter>((ref) {
           final uid = state.pathParameters['uid']!;
           final args = state.extra as Map<String, dynamic>?;
           if (args == null) {
-            return const NoTransitionPage(child: VerificationPage());
+            return const NoTransitionPage(
+              child: ContentColumn(
+                maxWidth: AppLayout.formWidth,
+                child: VerificationPage(),
+              ),
+            );
           }
           return NoTransitionPage(
-            child: CreateAccountScreen(
-              universityId: args['universityId'],
-              departmentId: args['departmentId'],
-              university: args['university'],
-              department: args['department'],
-              profession: args['profession'],
-              name: args['name'],
-              mobile: args['mobile'],
-              batchId: args['batchId'],
-              studentId: args['studentId'],
-              sessionId: args['sessionId'],
-              hallId: args['hallId'],
-              hallName: args['hallName'],
-              blood: args['blood'],
-              verificationUID: uid,
+            child: ContentColumn(
+              maxWidth: AppLayout.formWidth,
+              child: CreateAccountScreen(
+                universityId: args['universityId'],
+                departmentId: args['departmentId'],
+                university: args['university'],
+                department: args['department'],
+                profession: args['profession'],
+                name: args['name'],
+                mobile: args['mobile'],
+                batchId: args['batchId'],
+                studentId: args['studentId'],
+                sessionId: args['sessionId'],
+                hallId: args['hallId'],
+                hallName: args['hallName'],
+                blood: args['blood'],
+                verificationUID: uid,
+              ),
             ),
           );
         },
@@ -1046,16 +1095,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           final uid = state.pathParameters['uid']!;
           final args = state.extra as Map<String, dynamic>?;
           if (args == null) {
-            return const NoTransitionPage(child: VerificationPage());
+            return const NoTransitionPage(
+              child: ContentColumn(
+                maxWidth: AppLayout.formWidth,
+                child: VerificationPage(),
+              ),
+            );
           }
           return NoTransitionPage(
-            child: NewTeacherSignupScreen(
-              university: args['university'],
-              department: args['department'],
-              profession: args['profession'],
-              name: args['name'],
-              information: args['information'],
-              verificationUID: uid,
+            child: ContentColumn(
+              maxWidth: AppLayout.formWidth,
+              child: NewTeacherSignupScreen(
+                university: args['university'],
+                department: args['department'],
+                profession: args['profession'],
+                name: args['name'],
+                information: args['information'],
+                verificationUID: uid,
+              ),
             ),
           );
         },
@@ -1068,16 +1125,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           final uid = state.pathParameters['uid']!;
           final args = state.extra as Map<String, dynamic>?;
           if (args == null) {
-            return const NoTransitionPage(child: VerificationPage());
+            return const NoTransitionPage(
+              child: ContentColumn(
+                maxWidth: AppLayout.formWidth,
+                child: VerificationPage(),
+              ),
+            );
           }
           return NoTransitionPage(
-            child: NewStaffSignupScreen(
-              university: args['university'],
-              department: args['department'],
-              profession: args['profession'],
-              name: args['name'],
-              information: args['information'],
-              verificationUID: uid,
+            child: ContentColumn(
+              maxWidth: AppLayout.formWidth,
+              child: NewStaffSignupScreen(
+                university: args['university'],
+                department: args['department'],
+                profession: args['profession'],
+                name: args['name'],
+                information: args['information'],
+                verificationUID: uid,
+              ),
             ),
           );
         },
@@ -1195,8 +1260,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final extra = state.extra;
-          if (extra is Merchant)
+          if (extra is Merchant) {
             return MarketTheme(child: MerchantManageScreen(merchant: extra));
+          }
           // Opened from a push notification: only the id is known.
           return MarketTheme(
             child: MerchantManageLoader(
@@ -1407,6 +1473,28 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: RewardPage()),
+      ),
+      GoRoute(
+        name: AppRoute.memberCard.name,
+        path: AppRoute.memberCard.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: MemberCardPage(),
+          ),
+        ),
+      ),
+      GoRoute(
+        name: AppRoute.referral.name,
+        path: AppRoute.referral.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: ReferralPage(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.feedback.name,

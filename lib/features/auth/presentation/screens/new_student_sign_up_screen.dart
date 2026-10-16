@@ -1,11 +1,14 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '/features/department/presentation/providers/department_provider.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import '/utils/constants.dart';
+
 import 'package:go_router/go_router.dart';
+
 import '/widgets/common_dropdown_widget.dart';
 import '/widgets/common_text_field_widget.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -229,8 +232,7 @@ class _NewStudentSignUpScreenState
                                       CommonTextFieldWidget(
                                         controller: _nameController,
                                         heading: 'Full Name',
-                                        hintText:
-                                            'Enter your name as per certificate',
+                                        hintText: 'Enter your name as per certificate',
                                         keyboardType: .name,
                                         textCapitalization: .words,
                                         validator: (val) {
@@ -458,10 +460,8 @@ class _NewStudentSignUpScreenState
         const SizedBox(height: Spacing.xxs),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-            fontWeight: .w600,
-            color: context.colors.text,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium!
+              .copyWith(fontWeight: .w600, color: context.colors.text),
         ),
       ],
     );

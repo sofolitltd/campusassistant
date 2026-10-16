@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
 
@@ -12,6 +13,7 @@ abstract class AuthRepository {
     String? gender,
     String? universityId,
     String? departmentId,
+    String? referralCode,
   });
 
   Future<Either<Failure, User>> login({

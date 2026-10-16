@@ -26,14 +26,11 @@ class SyncManager {
   bool _isSyncing = false;
 
   SyncManager({
-    required OfflineDatabase? db,
-    required ApiClient apiClient,
-    required ConnectivityService connectivity,
-    required CacheManager cacheManager,
-  }) : _db = db,
-       _apiClient = apiClient,
-       _connectivity = connectivity,
-       _cacheManager = cacheManager;
+    required this._db,
+    required this._apiClient,
+    required this._connectivity,
+    required this._cacheManager,
+  });
 
   /// Whether a sync operation is currently in progress.
   bool get isSyncing => _isSyncing;

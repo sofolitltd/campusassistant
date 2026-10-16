@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -54,7 +54,9 @@ Future<bool> showDownloadAdGate(BuildContext context, WidgetRef ref) async {
       ),
       content: const Text(
         'Watch a short ad to download this file, or upgrade to Pro for '
-        'unlimited ad-free downloads.',
+        'unlimited ad-free downloads.\n\n'
+        'Ads and Pro help cover our server costs and keep Campus Assistant '
+        'running for everyone.',
       ),
       actions: [
         Row(

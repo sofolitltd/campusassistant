@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -11,26 +11,23 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
 import '../providers/bookmark_provider.dart';
 
-/// App-bar bookmark icon with a count badge. Tapping it lists the bookmarked
-/// resources (optionally scoped to a course / chapter) so they can be opened
-/// from where the user already is.
+/// App-bar bookmark icon with a count badge. Tapping it lists every
+/// bookmarked resource — the same full list on every page this button
+/// appears on, so a bookmark saved from anywhere is reachable from
+/// anywhere, without having to navigate back to where it was saved.
 class BookmarkAppBarButton extends ConsumerWidget {
-  const BookmarkAppBarButton({super.key, this.courseCode, this.lessonNo});
-
-  final String? courseCode;
-  final int? lessonNo;
+  const BookmarkAppBarButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final userId = ref.watch(userProvider).value?.uid ?? '';
-    final scope = (userId: userId, courseCode: courseCode, lessonNo: lessonNo);
     final count =
-        ref.watch(scopedBookmarkResourcesProvider(scope)).value?.length ?? 0;
+        ref.watch(scopedBookmarkResourcesProvider(userId)).value?.length ?? 0;
 
     return IconButton(
       tooltip: 'Bookmarks',
-      onPressed: () => _showSheet(context, scope),
+      onPressed: () => _showSheet(context, userId),
       icon: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -63,7 +60,7 @@ class BookmarkAppBarButton extends ConsumerWidget {
     );
   }
 
-  void _showSheet(BuildContext context, BookmarkScope scope) {
+  void _showSheet(BuildContext context, String userId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -77,21 +74,21 @@ class BookmarkAppBarButton extends ConsumerWidget {
         constraints: BoxConstraints(
           maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.75,
         ),
-        child: _BookmarkSheet(scope: scope),
+        child: _BookmarkSheet(userId: userId),
       ),
     );
   }
 }
 
 class _BookmarkSheet extends ConsumerWidget {
-  const _BookmarkSheet({required this.scope});
+  const _BookmarkSheet({required this.userId});
 
-  final BookmarkScope scope;
+  final String userId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final async = ref.watch(scopedBookmarkResourcesProvider(scope));
+    final async = ref.watch(scopedBookmarkResourcesProvider(userId));
 
     return Column(
       mainAxisSize: MainAxisSize.min,

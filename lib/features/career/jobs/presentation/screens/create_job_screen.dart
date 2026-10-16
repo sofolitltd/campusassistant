@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -18,6 +18,7 @@ import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
 import '../../../circular/presentation/providers/circular_provider.dart';
 import '../../../reminders/presentation/providers/career_reminder_provider.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 /// Ported "same to same" from personalassistant's AddJobScreen: sectioned
 /// form (Job Identity / Connections / Important Dates / Attachments),
@@ -243,7 +244,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 700),
+                    constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
                     child: Stack(
             children: [
               SingleChildScrollView(

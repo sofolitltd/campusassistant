@@ -88,6 +88,10 @@ class OfflineDatabase extends _$OfflineDatabase {
   }) async {
     final now = DateTime.now();
     await batch((batch) {
+      // Replace the whole list, not merge into it: items the server dropped
+      // must disappear, and re-inserting in order gives fresh ascending ids
+      // that getCachedEntities sorts by to keep the server's order.
+      batch.deleteWhere(cacheEntries, (t) => t.entityType.equals(entityType));
       for (final item in items) {
         final key = item['id']?.toString() ?? '';
         if (key.isEmpty) continue;
@@ -133,7 +137,10 @@ class OfflineDatabase extends _$OfflineDatabase {
         (t) =>
             t.entityType.equals(entityType) &
             t.expiresAt.isBiggerThanValue(now),
-      );
+      )
+      // Insertion order = the server's order. Without this SQLite returns rows
+      // in (entityType, entityKey) index order, i.e. shuffled by UUID.
+      ..orderBy([(t) => OrderingTerm.asc(t.id)]);
     final results = await query.get();
     return results
         .map((r) => jsonDecode(r.data) as Map<String, dynamic>)

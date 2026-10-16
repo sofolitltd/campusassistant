@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -14,6 +14,7 @@ import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_control.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class NotificationDetailScreen extends ConsumerWidget {
   final dynamic notification;
@@ -124,7 +125,7 @@ class NotificationDetailScreen extends ConsumerWidget {
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
+          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
           child: CustomScrollView(
             slivers: [
               SliverAppBar(

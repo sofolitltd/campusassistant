@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +16,7 @@ import '../../data/models/merchant.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 const _businessTypes = [
   'Food & Beverage',
@@ -169,7 +170,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
+            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
             child: Form(
               key: _formKey,
               child: ListView(

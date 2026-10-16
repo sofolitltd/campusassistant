@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:ui';
 
 import '/core/widgets/app_choice_chip.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -19,6 +19,7 @@ import '../widgets/market_theme.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 enum _Sort {
   newest('new', 'Newest'),
@@ -65,8 +66,9 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
   void initState() {
     super.initState();
     _scroll.addListener(() {
-      if (_scroll.position.pixels > _scroll.position.maxScrollExtent - 400)
+      if (_scroll.position.pixels > _scroll.position.maxScrollExtent - 400) {
         _load(more: true);
+      }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
@@ -245,7 +247,7 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
         ),
         body: Center(
           child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
+          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
           child: Column(
             children: [
               _GlassSearchField(

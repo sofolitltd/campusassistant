@@ -1239,32 +1239,30 @@ typedef $$CacheEntriesTableProcessedTableManager =
       CacheEntry,
       PrefetchHooks Function()
     >;
-typedef $$SyncQueueTableCreateCompanionBuilder =
-    SyncQueueCompanion Function({
-      Value<int> id,
-      required String operation,
-      required String entityType,
-      required String entityKey,
-      required String payload,
-      required String endpoint,
-      required String method,
-      Value<String> status,
-      required DateTime createdAt,
-      Value<int> retryCount,
-    });
-typedef $$SyncQueueTableUpdateCompanionBuilder =
-    SyncQueueCompanion Function({
-      Value<int> id,
-      Value<String> operation,
-      Value<String> entityType,
-      Value<String> entityKey,
-      Value<String> payload,
-      Value<String> endpoint,
-      Value<String> method,
-      Value<String> status,
-      Value<DateTime> createdAt,
-      Value<int> retryCount,
-    });
+typedef $$SyncQueueTableCreateCompanionBuilder = SyncQueueCompanion Function({
+  Value<int> id,
+  required String operation,
+  required String entityType,
+  required String entityKey,
+  required String payload,
+  required String endpoint,
+  required String method,
+  Value<String> status,
+  required DateTime createdAt,
+  Value<int> retryCount,
+});
+typedef $$SyncQueueTableUpdateCompanionBuilder = SyncQueueCompanion Function({
+  Value<int> id,
+  Value<String> operation,
+  Value<String> entityType,
+  Value<String> entityKey,
+  Value<String> payload,
+  Value<String> endpoint,
+  Value<String> method,
+  Value<String> status,
+  Value<DateTime> createdAt,
+  Value<int> retryCount,
+});
 
 class $$SyncQueueTableFilterComposer
     extends Composer<_$OfflineDatabase, $SyncQueueTable> {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/ads/banner_ad_widget.dart';
@@ -15,6 +15,7 @@ import 'sections/subscription_section.dart';
 import 'widgets/home_header.dart';
 import 'widgets/home_section.dart';
 import 'widgets/shortcut_strip.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 /// Composition only: the header, then a rounded sheet of sections. Sections
 /// own their own horizontal inset and the gap below them (see [HomeSection]),
@@ -35,7 +36,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       backgroundColor: colors.bg,
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
+          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [

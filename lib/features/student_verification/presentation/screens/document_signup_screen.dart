@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -27,6 +27,7 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _referralController = TextEditingController();
   bool _loading = false;
   bool _obscure = true;
 
@@ -37,6 +38,7 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
+    _referralController.dispose();
     super.dispose();
   }
 
@@ -52,6 +54,7 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
           phone: _phoneController.text.trim(),
+          referralCode: _referralController.text,
         );
 
     if (!mounted) return;
@@ -145,9 +148,8 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
                     validator: (v) {
                       final value = v?.trim() ?? '';
                       if (value.isEmpty) return 'Enter your email';
-                      if (!RegExp(
-                        r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                      ).hasMatch(value)) {
+                      if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                          .hasMatch(value)) {
                         return 'Enter a valid email';
                       }
                       return null;
@@ -180,6 +182,15 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
                     validator: (v) => (v == null || v.length < 8)
                         ? 'Password at least 8 characters'
                         : null,
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  TextFormField(
+                    controller: _referralController,
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: const InputDecoration(
+                      labelText: 'Referral code (optional)',
+                      helperText: 'Got a code from a friend\'s member card?',
+                    ),
                   ),
                   const SizedBox(height: Spacing.xxxl),
                   ElevatedButton(

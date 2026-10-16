@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
 import '/features/course/domain/entities/course.dart';
@@ -9,6 +9,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
+import '/utils/num_extensions.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard({
@@ -190,7 +191,7 @@ class CourseCardContent extends StatelessWidget {
                         courseInfo(
                           context,
                           title: 'Credits',
-                          value: courseModel.totalCredits.toString(),
+                          value: courseModel.totalCredits.toCompactString(),
                           alignRight: true,
                         ),
                         courseInfo(

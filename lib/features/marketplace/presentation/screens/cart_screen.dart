@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -12,6 +12,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -24,7 +25,7 @@ class CartScreen extends ConsumerWidget {
     if (cartItems.isEmpty) {
       return Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 700),
+          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
           child: HeaderGradientBackdrop(
             child: Scaffold(
               backgroundColor: Colors.transparent,
@@ -75,7 +76,7 @@ class CartScreen extends ConsumerWidget {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
         child: HeaderGradientBackdrop(
           child: Scaffold(
             backgroundColor: Colors.transparent,

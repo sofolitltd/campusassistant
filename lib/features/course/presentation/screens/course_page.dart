@@ -1,13 +1,13 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/ads/banner_ad_widget.dart';
 import '/features/course/domain/entities/course.dart';
 import '/features/course/presentation/providers/course_provider.dart';
-import '/features/batch/domain/entities/batch.dart';
+import '/features/study/widgets/batch_dropdown.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '../../../study/levels/presentation/providers/semester_provider.dart';
@@ -112,12 +112,19 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
     final selectedSemester = ref.watch(selectedSemesterNotifierProvider);
 
     final userAsync = ref.watch(userProvider);
-    final batchesAsync = ref.watch(batchProviderStudy);
     final semestersProviderState = ref.watch(semestersProvider);
     final filteredSemesters = ref.watch(filteredSemestersProvider);
 
     final currentSemesterName = selectedSemester?.name ?? '';
     final currentSemesterId = selectedSemester?.id;
+
+    // Cascading filter: if a batch change makes the selected semester no
+    // longer valid for it, fall back to the first semester the batch does
+    // have (or "All") instead of silently showing an empty course list.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      resolveSemesterForBatch(ref);
+    });
 
     return userAsync.when(
       data: (user) {
@@ -152,38 +159,9 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                   padding: const .fromLTRB(16, 0, 16, 12),
                   child: Row(
                     children: [
-                      // Batch filter (first)
-                      batchesAsync.when(
-                        data: (batches) {
-                          if (batches.isEmpty) return const SizedBox();
-                          return _BatchButton(
-                            batches: batches,
-                            selectedBatch: selectedBatch,
-                          );
-                        },
-                        loading: () => SizedBox(
-                          width: 100,
-                          height: 32,
-                          child: Center(
-                            child: CupertinoActivityIndicator(
-                              color: context.colors.onPrimary,
-                            ),
-                          ),
-                        ),
-                        error: (_, _) => SizedBox(
-                          width: 100,
-                          height: 32,
-                          child: Center(
-                            child: Text(
-                              'Failed',
-                              style: TextStyle(
-                                color: context.colors.textSubtle,
-                                fontSize: FontSizeToken.sm,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Batch filter (first) — same grid sheet as course details
+
+                      const BatchDropdown(redBg: true),
                       const SizedBox(width: Spacing.md),
                       // Semester/Year filter (second)
                       if (semestersProviderState.isLoading)
@@ -589,172 +567,6 @@ class _SemesterButton extends ConsumerWidget {
                             isSelected: selectedSemester?.id == s.id,
                             onTap: () {
                               notifier.setFromSemester(s);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-// ── _BatchButton ────────────────────────────────────────────────────────
-class _BatchButton extends ConsumerWidget {
-  final List<Batch> batches;
-  final Batch? selectedBatch;
-
-  const _BatchButton({required this.batches, required this.selectedBatch});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () => _showBatchSheet(context, ref),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.md,
-          vertical: Spacing.xs,
-        ),
-        decoration: BoxDecoration(
-          color: context.colors.surface.withValues(alpha: 0.15),
-          border: Border.all(
-            color: context.colors.onPrimary.withValues(alpha: 0.4),
-          ),
-          borderRadius: BorderRadius.circular(RadiusToken.md),
-        ),
-        child: Row(
-          mainAxisSize: .min,
-          children: [
-            Icon(LucideIcons.users, size: 14, color: context.colors.onPrimary),
-            const SizedBox(width: Spacing.sm),
-            Text(
-              selectedBatch?.name ?? 'All Batches',
-              style: TextStyle(
-                fontSize: FontSizeToken.md,
-                fontWeight: .w500,
-                color: context.colors.onPrimary,
-              ),
-            ),
-            const SizedBox(width: Spacing.sm),
-            Icon(
-              Icons.keyboard_arrow_down,
-              size: 16,
-              color: context.colors.onPrimary,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showBatchSheet(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    String searchText = '';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(RadiusToken.xxl),
-        ),
-      ),
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final filteredBatches = searchText.isEmpty
-                ? batches
-                : batches
-                      .where(
-                        (b) => b.name.toLowerCase().contains(
-                          searchText.toLowerCase(),
-                        ),
-                      )
-                      .toList();
-
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.75,
-              padding: const EdgeInsets.only(top: Spacing.md),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.colors.borderStrong,
-                        borderRadius: BorderRadius.circular(RadiusToken.xs),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        Text(
-                          'Select Batch',
-                          style: TextStyle(
-                            fontSize: FontSizeToken.xl,
-                            fontWeight: .bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            LucideIcons.x,
-                            size: 20,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: InlineSearchBar(
-                      hintText: 'Search batch...',
-                      onChanged: (v) => setState(() => searchText = v),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.md,
-                      ),
-                      children: [
-                        if (searchText.isEmpty)
-                          _FilterTile(
-                            title: 'All Batches',
-                            isSelected: selectedBatch == null,
-                            onTap: () {
-                              ref
-                                  .read(selectedBatchNotifierProvider.notifier)
-                                  .setAll();
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ...filteredBatches.map(
-                          (b) => _FilterTile(
-                            title: b.name,
-                            isSelected: selectedBatch?.id == b.id,
-                            onTap: () {
-                              ref
-                                  .read(selectedBatchNotifierProvider.notifier)
-                                  .setSelectedBatch(b);
                               Navigator.pop(context);
                             },
                           ),

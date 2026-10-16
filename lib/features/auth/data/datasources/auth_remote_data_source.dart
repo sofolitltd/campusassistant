@@ -13,8 +13,9 @@ abstract class AuthRemoteDataSource {
     String? phone,
     String? gender,
     String? universityId,
-    String? departmentId,
-  );
+    String? departmentId, {
+    String? referralCode,
+  });
   Future<UserModel> getCurrentUser();
   Future<void> forgotPassword(String email);
 
@@ -82,8 +83,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String? phone,
     String? gender,
     String? universityId,
-    String? departmentId,
-  ) async {
+    String? departmentId, {
+    String? referralCode,
+  }) async {
     final data = <String, dynamic>{
       'email': email,
       'password': password,
@@ -103,6 +105,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
     if (departmentId != null && departmentId.isNotEmpty) {
       data['department_id'] = departmentId;
+    }
+    if (referralCode != null && referralCode.trim().isNotEmpty) {
+      data['referral_code'] = referralCode.trim().toUpperCase();
     }
 
     final response = await apiClient.post('/auth/register', data: data);

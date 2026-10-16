@@ -109,6 +109,32 @@ final selectedSemesterNotifierProvider =
     );
 
 // ---------------------------------------------------------------------------
+// resolveSemesterForBatch
+//
+// Cascading-filter helper: call this (from a post-frame callback, after
+// `ref.watch(filteredSemestersProvider)` in build) whenever the selected
+// batch may have changed. If the current semester selection is no longer
+// one of the batch's semesters, it's swapped for the first semester in the
+// new list (or cleared to "All" if the batch has none) — so a stale
+// selection never silently keeps filtering content for a batch it no
+// longer belongs to.
+// ---------------------------------------------------------------------------
+void resolveSemesterForBatch(WidgetRef ref) {
+  final current = ref.read(selectedSemesterNotifierProvider);
+  if (current == null) return; // "All Semesters" is always valid.
+
+  final filtered = ref.read(filteredSemestersProvider);
+  if (filtered.any((s) => s.id == current.id)) return; // still valid.
+
+  final notifier = ref.read(selectedSemesterNotifierProvider.notifier);
+  if (filtered.isNotEmpty) {
+    notifier.setFromSemester(filtered.first);
+  } else {
+    notifier.clear();
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Admin / CRUD providers
 // ---------------------------------------------------------------------------
 final createSemesterProvider = Provider((ref) {

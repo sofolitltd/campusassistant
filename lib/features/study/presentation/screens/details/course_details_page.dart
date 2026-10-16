@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -182,6 +182,36 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
       ),
     );
 
+    // Cascading filters: a batch change can make the selected semester (and,
+    // through it, the course this screen is pinned to) no longer valid. Keep
+    // the selection if it's still valid, otherwise fall back to the first
+    // option — and for the course, actually navigate there (not just update
+    // the filter pill) so the chapter/book/question tabs below follow along
+    // instead of staying stuck on the old course.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      resolveSemesterForBatch(ref);
+    });
+    coursesAsync.whenData((courses) {
+      if (courses.isEmpty) return;
+      final stillValid = courses.any(
+        (c) => c.courseCode.toLowerCase() == widget.courseCode.toLowerCase(),
+      );
+      if (stillValid) return;
+      final target = courses.first;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.go(
+          Uri(
+            path: '/study/courses/${target.courseCode}',
+            queryParameters: {
+              if (target.semesterName != null) 'semester': target.semesterName!,
+            },
+          ).toString(),
+        );
+      });
+    });
+
     // Course data (may be loading)
     final user = userAsync.value;
     final courseAsync = user != null
@@ -230,7 +260,7 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
           iconTheme: IconThemeData(color: context.colors.onPrimary),
           centerTitle: false,
           titleSpacing: 0,
-          actions: [BookmarkAppBarButton(courseCode: widget.courseCode)],
+          actions: [const BookmarkAppBarButton()],
           title: Text(
             appBarTitle,
             maxLines: 1,

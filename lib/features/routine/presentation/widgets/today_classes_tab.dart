@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -10,6 +10,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/class_slot.dart';
 import '../providers/class_slot_provider.dart';
+import '/core/widgets/content_column.dart';
 import 'manage_schedule_screen.dart';
 
 String _fmtDate(DateTime d) =>
@@ -49,7 +50,8 @@ class TodayClassesTab extends ConsumerWidget {
 
     if (batchId.isEmpty) {
       return const _EmptySchedule(
-        message: 'Your batch is not set up yet, so there is no schedule to show.',
+        message:
+            'Your batch is not set up yet, so there is no schedule to show.',
       );
     }
 
@@ -68,9 +70,8 @@ class TodayClassesTab extends ConsumerWidget {
       },
       child: slotsAsync.when(
         data: (slots) {
-          final todaySlots =
-              slots.where((s) => s.dayOfWeek == dow).toList()
-                ..sort((a, b) => a.startTime.compareTo(b.startTime));
+          final todaySlots = slots.where((s) => s.dayOfWeek == dow).toList()
+            ..sort((a, b) => a.startTime.compareTo(b.startTime));
           final statuses = statusesAsync.value ?? [];
 
           return ListView(
@@ -85,11 +86,13 @@ class TodayClassesTab extends ConsumerWidget {
                   child: TextButton.icon(
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => ManageScheduleScreen(
-                          universityId: info?.universityId ?? '',
-                          departmentId: departmentId,
-                          batchId: batchId,
-                          slots: slots,
+                        builder: (_) => ContentColumn(
+                          child: ManageScheduleScreen(
+                            universityId: info?.universityId ?? '',
+                            departmentId: departmentId,
+                            batchId: batchId,
+                            slots: slots,
+                          ),
                         ),
                       ),
                     ),
@@ -99,8 +102,7 @@ class TodayClassesTab extends ConsumerWidget {
                 ),
               if (todaySlots.isEmpty)
                 const _EmptySchedule(
-                  message:
-                      'No classes scheduled for today. The CR enters the weekly routine once from the printed schedule, then only marks changes here.',
+                  message: 'No classes scheduled for today. The CR enters the weekly routine once from the printed schedule, then only marks changes here.',
                 )
               else
                 ...todaySlots.map((slot) {
@@ -165,9 +167,8 @@ class _EmptySchedule extends StatelessWidget {
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.textMuted),
             ),
           ),
         ],
@@ -237,9 +238,7 @@ class _SlotCard extends ConsumerWidget {
                   slot.courseName,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    decoration: isCancelled
-                        ? TextDecoration.lineThrough
-                        : null,
+                    decoration: isCancelled ? TextDecoration.lineThrough : null,
                   ),
                 ),
                 const SizedBox(height: Spacing.xs),
@@ -249,9 +248,7 @@ class _SlotCard extends ConsumerWidget {
                     if (room.isNotEmpty) room,
                     if (slot.teacher.isNotEmpty) slot.teacher,
                   ].join(' · '),
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colors.textMuted,
-                  ),
+                  style: textTheme.bodySmall?.copyWith(color: colors.textMuted),
                 ),
                 if (status?.note.isNotEmpty ?? false) ...[
                   const SizedBox(height: Spacing.xs),
@@ -299,10 +296,8 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: color,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: color, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -324,8 +319,7 @@ class _StatusActionSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_StatusActionSheet> createState() =>
-      _StatusActionSheetState();
+  ConsumerState<_StatusActionSheet> createState() => _StatusActionSheetState();
 }
 
 class _StatusActionSheetState extends ConsumerState<_StatusActionSheet> {
@@ -426,9 +420,8 @@ class _StatusActionSheetState extends ConsumerState<_StatusActionSheet> {
           children: [
             Text(
               widget.slot.courseName,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: Spacing.lg),
             ListTile(

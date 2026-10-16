@@ -1,11 +1,11 @@
 //
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 // Immersive media surface: the black backdrop and white chrome are
 // intentional and theme-independent — photos are always viewed against
 // black, in light mode as well as dark. These are the documented
 // exception to the context.colors rule (see app_colors.dart).
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../core/theme/tokens/app_radius.dart' show RadiusToken;
 import '../core/network/api_endpoints.dart';

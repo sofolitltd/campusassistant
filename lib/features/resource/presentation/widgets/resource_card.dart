@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -214,7 +214,11 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                         ),
                       ),
                       const SizedBox(width: Spacing.md),
-                      _buildDetails(context, isProContent),
+                      _buildDetails(
+                        context,
+                        isProContent,
+                        showRewardCost: !isProUser,
+                      ),
                     ],
                   ),
                 ),
@@ -300,17 +304,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   ),
                 ),
         ),
-        if (showRewardCost)
-          Positioned(
-            left: 4,
-            bottom: 4,
-            child: RewardCostIndicator(
-              resourceId: widget.resource.id,
-              fileSizeBytes: widget.resource.fileSizeBytes,
-              onImage: true,
-            ),
-          )
-        else
+        if (!showRewardCost)
           Positioned(
             left: 4,
             bottom: 4,
@@ -365,9 +359,13 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     );
   }
 
-  Widget _buildDetails(BuildContext context, bool isProContent) {
+  Widget _buildDetails(
+    BuildContext context,
+    bool isProContent, {
+    required bool showRewardCost,
+  }) {
     return Expanded(
-      child: Container(
+      child: SizedBox(
         height: _kContentHeight,
         child: Column(
           mainAxisAlignment: .start,
@@ -432,6 +430,14 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                  if (showRewardCost) ...[
+                    const SizedBox(width: Spacing.xs),
+                    RewardCostIndicator(
+                      resourceId: widget.resource.id,
+                      fileSizeBytes: widget.resource.fileSizeBytes,
+                      compact: true,
                     ),
                   ],
                 ],

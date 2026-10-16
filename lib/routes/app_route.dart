@@ -258,13 +258,11 @@ class AppRoute {
 
   static const addResource = AppRoute(
     name: 'addResource',
-    path:
-        '/universities/:universityId/departments/:departmentId/courses/:courseCode/resources/add',
+    path: '/universities/:universityId/departments/:departmentId/courses/:courseCode/resources/add',
   );
   static const editResource = AppRoute(
     name: 'editResource',
-    path:
-        '/universities/:universityId/departments/:departmentId/courses/:courseCode/resources/edit/:resourceId',
+    path: '/universities/:universityId/departments/:departmentId/courses/:courseCode/resources/edit/:resourceId',
   );
   static const downloadedFiles = AppRoute(
     name: 'downloadedFiles',
@@ -387,6 +385,12 @@ class AppRoute {
 
   //reward
   static const reward = AppRoute(name: 'reward', path: '/reward');
+
+  //referral
+  static const referral = AppRoute(name: 'referral', path: '/referral');
+
+  //member card
+  static const memberCard = AppRoute(name: 'memberCard', path: '/member-card');
 
   //feedback
   static const feedback = AppRoute(name: 'feedback', path: '/feedback');

@@ -1,6 +1,6 @@
 import 'package:campusassistant/core/theme/app_colors.dart';
 import 'package:campusassistant/core/theme/tokens/app_radius.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../data/models/career_job.dart';
 import 'attachment_thumbnail.dart';

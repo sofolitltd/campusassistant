@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'tokens/app_control.dart';
 import 'tokens/app_elevation.dart';
 import 'tokens/app_radius.dart';
+import 'tokens/app_layout.dart';
 import 'tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
@@ -298,6 +299,12 @@ ThemeData _buildTheme(AppColors colors, Brightness brightness) {
     // --- Dialogs & Sheets ---
     dialogTheme: DialogThemeData(
       backgroundColor: colors.surface,
+      // AlertDialog sizes to its content up to the viewport, so on web a long
+      // message would stretch edge to edge.
+      constraints: const BoxConstraints(
+        minWidth: AppLayout.dialogMinWidth,
+        maxWidth: AppLayout.dialogWidth,
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
           isLight ? RadiusToken.lg : RadiusToken.xl,
@@ -306,6 +313,7 @@ ThemeData _buildTheme(AppColors colors, Brightness brightness) {
     ),
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: colors.surface,
+      constraints: const BoxConstraints(maxWidth: AppLayout.sheetWidth),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(isLight ? RadiusToken.lg : RadiusToken.xl),

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,6 +12,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class CircularDetailScreen extends ConsumerStatefulWidget {
   final String circularId;
@@ -109,7 +110,7 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 700),
+                    constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
                     child: circularAsync.when(
             data: (circular) {
               if (!_viewRecorded) {

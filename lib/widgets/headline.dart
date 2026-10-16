@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '/core/theme/tokens/app_spacing.dart';
 
 class Headline extends StatelessWidget {

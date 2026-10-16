@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,7 +124,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Container(
-                                    padding: const EdgeInsets.fromLTRB(Spacing.xxl, Spacing.xxl, Spacing.xxl, Spacing.sm),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      Spacing.xxl,
+                                      Spacing.xxl,
+                                      Spacing.xxl,
+                                      Spacing.sm,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: theme.cardColor,
                                       borderRadius: BorderRadius.circular(
@@ -210,11 +215,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                 },
                                                 textInputAction: .next,
                                                 onFieldSubmitted: (_) {
-                                                  FocusScope.of(
-                                                    context,
-                                                  ).requestFocus(
-                                                    _passwordFocusNode,
-                                                  );
+                                                  FocusScope.of(context)
+                                                      .requestFocus(
+                                                        _passwordFocusNode,
+                                                      );
                                                 },
                                               ),
 
@@ -311,8 +315,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               : const Text('Login'),
                                         ),
 
-
-SizedBox(height: Spacing.sm),
+                                        SizedBox(height: Spacing.sm),
                                         Align(
                                           alignment: Alignment.center,
                                           child: TextButton(
@@ -467,4 +470,3 @@ class _Blob extends StatelessWidget {
     );
   }
 }
-

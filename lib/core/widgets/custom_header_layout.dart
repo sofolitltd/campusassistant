@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/search_outline.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
@@ -8,6 +8,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class CustomHeaderLayout extends StatefulWidget {
   final String title;
@@ -106,7 +107,7 @@ class _CustomHeaderLayoutState extends State<CustomHeaderLayout> {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
+          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
           child: HeaderGradientBackdrop(
             child: Column(
               children: [

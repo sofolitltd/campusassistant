@@ -117,12 +117,16 @@ class FirebaseApi {
         }
       }
 
+      // Backend sends via FCM registration tokens (SendEachForMulticast), so
+      // stay on getToken until it supports FID targets from register().
+      // ignore: deprecated_member_use
       final token = await _messaging.getToken(vapidKey: vapidKey);
       if (token != null) {
         _currentToken = token;
         await _registerToken(token);
       }
 
+      // ignore: deprecated_member_use
       _messaging.onTokenRefresh.listen((newToken) {
         _currentToken = newToken;
         _registerToken(newToken);

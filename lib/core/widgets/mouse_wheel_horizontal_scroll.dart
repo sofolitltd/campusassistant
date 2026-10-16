@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Wraps a horizontally-scrolling widget so the vertical mouse wheel also
 /// scrolls it — browsers/Flutter don't translate vertical wheel deltas into

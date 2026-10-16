@@ -3,9 +3,9 @@ import 'dart:io';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +25,7 @@ import '/core/network/api_endpoints.dart';
 import '/widgets/district_sub_district_picker.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 const kGenderOptions = <String>['Male', 'Female'];
 
@@ -182,7 +183,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
         padding: const EdgeInsets.all(Spacing.lg),
         child: Align(
           alignment: Alignment.topCenter,

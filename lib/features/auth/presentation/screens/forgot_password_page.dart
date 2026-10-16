@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/routes/app_route.dart';
 import '/widgets/common_text_field_widget.dart';
@@ -92,10 +93,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                 vertical: Spacing.xl,
               ),
               child: Container(
-                constraints: const BoxConstraints(
-                  minWidth: 350,
-                  maxWidth: 400,
-                ),
+                constraints: const BoxConstraints(minWidth: 350, maxWidth: 400),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
@@ -158,9 +156,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                                 )
                               : Text(
                                   'Submit',
-                                  style: const TextStyle(
-                                    fontWeight: .bold,
-                                  ),
+                                  style: const TextStyle(fontWeight: .bold),
                                 ),
                         ),
                         const SizedBox(height: Spacing.xxxl),

@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -15,6 +15,7 @@ import '../screens/account_tab.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class MarketplaceShell extends ConsumerStatefulWidget {
   const MarketplaceShell({super.key});
@@ -37,7 +38,7 @@ class _MarketplaceShellState extends ConsumerState<MarketplaceShell> {
     return MarketTheme(
       child: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 700),
+          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
           child: Scaffold(
             body: IndexedStack(
               index: _currentIndex,

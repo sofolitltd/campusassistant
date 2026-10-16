@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -13,6 +13,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 const _labelOptions = ['Home', 'Hall', 'Other'];
 
@@ -196,7 +197,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
+            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
             child: Form(
               key: _formKey,
               child: ListView(

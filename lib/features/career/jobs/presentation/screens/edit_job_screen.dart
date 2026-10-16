@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -18,6 +18,7 @@ import '../../data/models/career_job.dart';
 import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 /// Ported "same to same" from personalassistant's EditJobScreen: same
 /// sectioned layout as Add Job, plus an "Application Status" dropdown card
@@ -196,7 +197,7 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 700),
+                    constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
                     child: Stack(
             children: [
               SingleChildScrollView(

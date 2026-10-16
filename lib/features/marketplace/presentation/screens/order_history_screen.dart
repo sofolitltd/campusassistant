@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -11,6 +11,7 @@ import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
@@ -68,7 +69,7 @@ class OrderHistoryScreen extends ConsumerWidget {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
+            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
             child: ordersAsync.when(
               data: (orders) {
                 if (orders.isEmpty) {

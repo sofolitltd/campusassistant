@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../domain/entities/semester.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/utils/num_extensions.dart';
 
 /// Semester card for the two-column grid.
 ///
@@ -15,8 +16,6 @@ class SemesterGridCard extends StatelessWidget {
   final Semester semester;
 
   const SemesterGridCard({super.key, required this.semester});
-
-  static String _num(num v) => v % 1 == 0 ? '${v.toInt()}' : '$v';
 
   @override
   Widget build(BuildContext context) {
@@ -86,11 +85,14 @@ class SemesterGridCard extends StatelessWidget {
             const SizedBox(height: Spacing.md),
             _StatRow(label: 'Courses', value: '$courses'),
             const SizedBox(height: Spacing.xs),
-            _StatRow(label: 'Credits', value: _num(semester.totalCredits)),
+            _StatRow(
+              label: 'Credits',
+              value: semester.totalCredits.toCompactString(),
+            ),
             const SizedBox(height: Spacing.xs),
             _StatRow(
               label: 'Marks',
-              value: _num(semester.totalMarks),
+              value: semester.totalMarks.toCompactString(),
               darker: true,
             ),
           ],

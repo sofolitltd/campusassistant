@@ -1,5 +1,5 @@
 import 'package:campusassistant/core/theme/app_colors.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -15,6 +15,7 @@ import '../widgets/rating_widgets.dart';
 import '../widgets/wishlist_button.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final Product? product;
@@ -77,7 +78,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
         child: Scaffold(
           backgroundColor: theme.scaffoldBackgroundColor,
           body: CustomScrollView(

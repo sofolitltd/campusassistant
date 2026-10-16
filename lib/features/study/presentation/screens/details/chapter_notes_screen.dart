@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/ads/ad_list_helper.dart';
@@ -212,10 +212,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
           centerTitle: false,
           titleSpacing: 0,
           actions: [
-            BookmarkAppBarButton(
-              courseCode: widget.courseCode,
-              lessonNo: int.tryParse(_selectedChapterNo ?? widget.chapterNo),
-            ),
+            const BookmarkAppBarButton(),
           ],
           title: Text(
             chapterTitle.isNotEmpty

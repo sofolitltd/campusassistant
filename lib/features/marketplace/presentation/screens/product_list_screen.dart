@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -10,6 +10,7 @@ import '../widgets/product_grid_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class ProductListScreen extends ConsumerWidget {
   final String? categoryId;
@@ -48,7 +49,7 @@ class ProductListScreen extends ConsumerWidget {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 700),
+              constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
               child: productsAsync.when(
                 data: (products) {
                   if (products.isEmpty) {

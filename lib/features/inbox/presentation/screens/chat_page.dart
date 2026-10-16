@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +26,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final String conversationId;
@@ -440,7 +441,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
         child: HeaderGradientBackdrop(
           child: Scaffold(
             backgroundColor: Colors.transparent,

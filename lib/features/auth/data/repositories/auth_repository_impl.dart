@@ -72,6 +72,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String? gender,
     String? universityId,
     String? departmentId,
+    String? referralCode,
   }) async {
     try {
       final userModel = await remoteDataSource.register(
@@ -83,6 +84,7 @@ class AuthRepositoryImpl implements AuthRepository {
         gender,
         universityId,
         departmentId,
+        referralCode: referralCode,
       );
       // Cache user profile for offline access
       await localDataSource.cacheUser(userModel);

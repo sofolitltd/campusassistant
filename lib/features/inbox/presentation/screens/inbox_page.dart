@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import '/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +22,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class InboxPage extends ConsumerStatefulWidget {
   const InboxPage({super.key});
@@ -151,7 +152,7 @@ class _InboxPageState extends ConsumerState<InboxPage>
                       Expanded(
                         child: Center(
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 700),
+                            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
                             child: conversationsAsync.when(
                               data: (conversations) =>
                                   _buildConversationList(conversations, isDark),

@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -608,11 +608,11 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
           onPressed: widget.onBookmarkToggle!,
           color: widget.isBookmarked ? context.colors.primary : null,
         ),
-      if (!widget.isDownloaded && widget.onDownload != null)
+      if (widget.onDownload != null)
         _quickAction(
           context,
-          icon: LucideIcons.download,
-          label: 'Download',
+          icon: widget.isDownloaded ? LucideIcons.fileText : LucideIcons.download,
+          label: widget.isDownloaded ? 'Open' : 'Download',
           onPressed: widget.onDownload!,
         ),
       if (widget.isDownloaded && widget.onSaveToDownloads != null)

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '/features/batch/presentation/providers/batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
@@ -9,7 +9,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -26,6 +26,7 @@ import '../../../../widgets/year_multi_select_field.dart';
 import '../../../../features/study/presentation/providers/questions_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class AddEditResourceScreen extends ConsumerStatefulWidget {
   final Resource? resource;
@@ -440,7 +441,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 700),
+                    constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
                     child: SingleChildScrollView(
             padding: const EdgeInsets.all(Spacing.lg),
             child: Form(

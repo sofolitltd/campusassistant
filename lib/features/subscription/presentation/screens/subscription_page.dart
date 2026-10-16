@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -150,6 +151,8 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
         crossAxisAlignment: .start,
         children: [
           _buildHeroCard(context),
+          const SizedBox(height: Spacing.lg),
+          _buildWhyWeAskCard(),
           const SizedBox(height: Spacing.xl),
           _buildCurrentPlanCard(uid),
           const SizedBox(height: Spacing.xl),
@@ -164,6 +167,39 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           _buildPriceSummary(context),
           const SizedBox(height: Spacing.xxl),
           _buildSubscribeButton(context),
+        ],
+      ),
+    );
+  }
+
+  /// Explains why ads and subscriptions exist, so the ask reads as honest
+  /// rather than as a paywall.
+  Widget _buildWhyWeAskCard() {
+    final colors = context.colors;
+    return SectionCard(
+      radius: RadiusToken.lg,
+      color: colors.primarySubtle,
+      padding: const EdgeInsets.all(Spacing.md),
+      child: Row(
+        crossAxisAlignment: .start,
+        children: [
+          Icon(LucideIcons.heartHandshake, color: colors.primary, size: 22),
+          const SizedBox(width: Spacing.md),
+          Expanded(
+            child: Text(
+              'ক্যাম্পাস অ্যাসিস্ট্যান্ট আমরা নিজেদের উদ্যোগে চালাই, বাইরে থেকে '
+              'কোনো ফান্ডিং নেই। সার্ভার ও মেইনটেন্যান্সের খরচ বিজ্ঞাপন আর '
+              'সাবস্ক্রিপশন থেকেই মেটে। আপনার সাপোর্ট অ্যাপটিকে সবার জন্য চালু '
+              'রাখতে সাহায্য করে। ধন্যবাদ। ❤️',
+              style: GoogleFonts.tiroBangla(
+                textStyle: TextStyle(
+                  color: colors.textMuted,
+                  fontSize: FontSizeToken.sm,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

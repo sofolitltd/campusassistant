@@ -1,12 +1,15 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '/features/student/presentation/providers/student_provider.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
 import '/features/staff/presentation/providers/staff_provider.dart';
 import '/widgets/otp_code_field_widget.dart';
 import '/routes/app_route.dart';
+
 import 'package:go_router/go_router.dart';
+
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
@@ -76,8 +79,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
-                          color:
-                              Theme.of(context).brightness == Brightness.dark
+                          color: Theme.of(context).brightness == Brightness.dark
                               ? context.colors.border
                               : context.colors.border,
                         ),
@@ -138,7 +140,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                 ),
                               ],
                             ),
-          
+
                             const SizedBox(height: Spacing.lg),
                             Row(
                               children: [
@@ -191,14 +193,13 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                               onPressed: _isLoading
                                   ? null
                                   : () async {
-                                      if (_globalKey.currentState!
-                                          .validate()) {
+                                      if (_globalKey.currentState!.validate()) {
                                         setState(() => _isLoading = true);
-          
-                                        final code =
-                                            _verificationCodeController.text
-                                                .trim();
-          
+
+                                        final code = _verificationCodeController
+                                            .text
+                                            .trim();
+
                                         try {
                                           switch (_role) {
                                             case _AccountRole.student:
@@ -219,7 +220,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                                   'studentId': code,
                                                 },
                                               );
-          
+
                                             case _AccountRole.teacher:
                                               final teacherRepo = ref.read(
                                                 teacherRepositoryProvider,
@@ -246,30 +247,27 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                                     return;
                                                   }
                                                   context.pushNamed(
-                                                    AppRoute
-                                                        .teacherSignup
-                                                        .name,
+                                                    AppRoute.teacherSignup.name,
                                                     pathParameters: {
                                                       'uid': code,
                                                     },
                                                     extra: {
-                                                      'university': teacher
-                                                          .universityId,
-                                                      'department': teacher
-                                                          .departmentId,
+                                                      'university':
+                                                          teacher.universityId,
+                                                      'department':
+                                                          teacher.departmentId,
                                                       'profession': 'Teacher',
                                                       'name': teacher.name,
                                                       'information': {
                                                         'mobile':
                                                             teacher.mobile,
-                                                        'email':
-                                                            teacher.email,
+                                                        'email': teacher.email,
                                                       },
                                                     },
                                                   );
                                                 },
                                               );
-          
+
                                             case _AccountRole.staff:
                                               final staffRepo = ref.read(
                                                 staffRepositoryProvider,
@@ -308,8 +306,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                                       'profession': 'Staff',
                                                       'name': staff.name,
                                                       'information': {
-                                                        'mobile':
-                                                            staff.mobile,
+                                                        'mobile': staff.mobile,
                                                         'email': '',
                                                       },
                                                     },
@@ -321,13 +318,12 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                           if (!context.mounted) return;
                                           setState(() => _isLoading = false);
                                           if (!context.mounted) return;
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(e.toString()),
-                                            ),
-                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(e.toString()),
+                                                ),
+                                              );
                                         }
                                       }
                                     },
@@ -341,9 +337,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                     )
                                   : Text(
                                       'Verify Now',
-                                      style: const TextStyle(
-                                        fontWeight: .bold,
-                                      ),
+                                      style: const TextStyle(fontWeight: .bold),
                                     ),
                             ),
                           ],
@@ -356,8 +350,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(RadiusToken.xl),
                         border: Border.all(
-                          color:
-                              Theme.of(context).brightness == Brightness.dark
+                          color: Theme.of(context).brightness == Brightness.dark
                               ? context.colors.border
                               : context.colors.border,
                         ),
@@ -385,9 +378,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                             const SizedBox(height: Spacing.lg),
                             OutlinedButton(
                               onPressed: () {
-                                context.push(
-                                  AppRoute.getVerificationCode.path,
-                                );
+                                context.push(AppRoute.getVerificationCode.path);
                               },
                               child: Text(
                                 'Get Your Verification Code!',

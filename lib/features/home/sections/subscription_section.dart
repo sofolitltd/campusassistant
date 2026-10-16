@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +7,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/core/error/failures.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/core/theme/app_colors.dart';
-import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_card.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';

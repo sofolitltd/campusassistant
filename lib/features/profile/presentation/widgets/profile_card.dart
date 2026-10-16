@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -34,6 +34,24 @@ class ProfileCard extends ConsumerWidget {
             if (user.subscriptionStatus == 'pro')
               SubscriptionCard(uid: user.id),
             ProfileInfoTabsSection(user: user),
+            Padding(
+              padding: const EdgeInsets.only(top: Spacing.lg),
+              child: PreferenceCard(
+                children: [
+                  if (user.role == 'student')
+                    PreferenceTile(
+                      icon: LucideIcons.idCard,
+                      title: 'My Member Card',
+                      onTap: () => context.push(AppRoute.memberCard.path),
+                    ),
+                  PreferenceTile(
+                    icon: LucideIcons.gift,
+                    title: 'Invite & Earn',
+                    onTap: () => context.push(AppRoute.referral.path),
+                  ),
+                ],
+              ),
+            ),
             const AccountSection(),
             const QuickActionsSection(),
             const ThemeSection(),

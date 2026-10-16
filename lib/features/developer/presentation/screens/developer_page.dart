@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +12,7 @@ import '/routes/scaffold_with_navbar.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class DeveloperPage extends ConsumerWidget {
   const DeveloperPage({super.key});
@@ -67,7 +68,7 @@ class DeveloperPage extends ConsumerWidget {
               ),
             ),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 700),
+              constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
               child: Padding(
                 padding: const EdgeInsets.all(Spacing.xxl),
                 child: Column(

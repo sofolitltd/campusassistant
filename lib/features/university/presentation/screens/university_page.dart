@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../providers/university_provider.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/about_page_parts.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class UniversityPage extends ConsumerWidget {
   const UniversityPage({super.key});
@@ -19,7 +20,7 @@ class UniversityPage extends ConsumerWidget {
         data: (university) => SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 700),
+              constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

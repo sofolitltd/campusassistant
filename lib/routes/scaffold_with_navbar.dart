@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -10,6 +10,7 @@ import '../core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 /// Branch indices match the StatefulShellRoute.indexedStack branch order in
 /// router_config.dart: 0=Home, 1=Study, 2=Career, 3=Community, 4=Profile.
@@ -47,7 +48,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
         child: Scaffold(
           key: scaffoldKey,
           drawer: const CustomDrawer(),

@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -17,6 +17,7 @@ import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/features/pdf_tabs/presentation/providers/pdf_tabs_provider.dart';
 import '/features/pdf_tabs/presentation/widgets/pdf_tab_switcher_sheet.dart';
+import '/core/widgets/content_column.dart';
 import 'pdf_viewer_actions_menu.dart';
 
 /// Cache entity type used to remember the last page read per document (keyed
@@ -132,103 +133,108 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
   Widget build(BuildContext context) {
     final tabCount = ref.watch(pdfTabsProvider.select((s) => s.tabs.length));
 
-    return HeaderGradientBackdrop(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: _showAppBar
-            ? AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                scrolledUnderElevation: 0,
-                centerTitle: false,
-                iconTheme: IconThemeData(color: context.colors.onPrimary),
-                title: Text(
-                  widget.title,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontWeight: .bold,
-                    color: context.colors.onPrimary,
+    // Capped here (not at the call sites) so the single viewer and every tab in
+    // PdfTabsPage share one width.
+    return ContentColumn(
+      child: HeaderGradientBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: _showAppBar
+              ? AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  centerTitle: false,
+                  iconTheme: IconThemeData(color: context.colors.onPrimary),
+                  title: Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: .bold,
+                      color: context.colors.onPrimary,
+                    ),
                   ),
-                ),
 
-                actions: [
-                  if (tabCount > 1)
-                    IconButton(
-                      icon: Badge(
-                        label: Text('$tabCount'),
-                        backgroundColor: context.colors.primary,
-                        textColor: context.colors.onPrimary,
-                        child: const Icon(LucideIcons.layers, size: 20),
+                  actions: [
+                    if (tabCount > 1)
+                      IconButton(
+                        icon: Badge(
+                          label: Text('$tabCount'),
+                          backgroundColor: context.colors.primary,
+                          textColor: context.colors.onPrimary,
+                          child: const Icon(LucideIcons.layers, size: 20),
+                        ),
+                        onPressed: () => showPdfTabSwitcherSheet(context),
+                        tooltip: 'Open tabs',
                       ),
-                      onPressed: () => showPdfTabSwitcherSheet(context),
-                      tooltip: 'Open tabs',
+                    IconButton(
+                      icon: Icon(
+                        _isLandscape
+                            ? LucideIcons.rotateCcwSquare
+                            : LucideIcons.rotateCwSquare,
+                        size: 20,
+                      ),
+                      onPressed: _toggleOrientation,
+                      tooltip: _isLandscape ? 'Portrait' : 'Landscape',
                     ),
-                  IconButton(
-                    icon: Icon(
-                      _isLandscape
-                          ? LucideIcons.rotateCcwSquare
-                          : LucideIcons.rotateCwSquare,
-                      size: 20,
+                    PdfViewerActionsMenu(
+                      filePath: widget.filePath,
+                      url: widget.url,
+                      title: widget.title,
                     ),
-                    onPressed: _toggleOrientation,
-                    tooltip: _isLandscape ? 'Portrait' : 'Landscape',
-                  ),
-                  PdfViewerActionsMenu(
-                    filePath: widget.filePath,
-                    url: widget.url,
-                    title: widget.title,
-                  ),
-                ],
-              )
-            : null,
-        body: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            borderRadius: _sheetRadius,
-          ).copyWith(color: Theme.of(context).scaffoldBackgroundColor),
-          child: ClipRRect(
-            borderRadius: _sheetRadius,
-            child: SafeArea(
-              top: !_showAppBar, // app bar already reserves the status bar
-              bottom: false,
-              child: Stack(
-                children: [
-                  Offstage(
-                    offstage: _loadState == _LoadState.failed,
-                    child: kIsWeb
-                        ? SfPdfViewer.network(
-                            // Same proxy used for images — R2 has no CORS
-                            // policy, so a direct cross-origin fetch of the
-                            // PDF bytes fails on web even though it works
-                            // fine natively (no CORS there).
-                            ApiEndpoints.resolveImageUrl(widget.url),
-                            key: _pdfViewerKey,
-                            controller: _pdfController,
-                            onTap: (details) => _toggleAppBar(),
-                            onDocumentLoaded: _onDocumentLoaded,
-                            onDocumentLoadFailed: _onDocumentLoadFailed,
-                            onPageChanged: _onPageChanged,
-                            canShowScrollHead: true,
-                            canShowPaginationDialog: true,
-                            pageSpacing: 4,
-                          )
-                        : SfPdfViewer.file(
-                            File(widget.filePath),
-                            key: _pdfViewerKey,
-                            controller: _pdfController,
-                            onTap: (details) => _toggleAppBar(),
-                            onDocumentLoaded: _onDocumentLoaded,
-                            onDocumentLoadFailed: _onDocumentLoadFailed,
-                            onPageChanged: _onPageChanged,
-                            canShowScrollHead: true,
-                            canShowPaginationDialog: true,
-                            pageSpacing: 4,
-                          ),
-                  ),
-                  if (_loadState == _LoadState.loading)
-                    const Center(child: CupertinoActivityIndicator(radius: 14)),
-                  if (_loadState == _LoadState.failed)
-                    _buildErrorState(context),
-                ],
+                  ],
+                )
+              : null,
+          body: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(borderRadius: _sheetRadius)
+                .copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+            child: ClipRRect(
+              borderRadius: _sheetRadius,
+              child: SafeArea(
+                top: !_showAppBar, // app bar already reserves the status bar
+                bottom: false,
+                child: Stack(
+                  children: [
+                    Offstage(
+                      offstage: _loadState == _LoadState.failed,
+                      child: kIsWeb
+                          ? SfPdfViewer.network(
+                              // Same proxy used for images — R2 has no CORS
+                              // policy, so a direct cross-origin fetch of the
+                              // PDF bytes fails on web even though it works
+                              // fine natively (no CORS there).
+                              ApiEndpoints.resolveImageUrl(widget.url),
+                              key: _pdfViewerKey,
+                              controller: _pdfController,
+                              onTap: (details) => _toggleAppBar(),
+                              onDocumentLoaded: _onDocumentLoaded,
+                              onDocumentLoadFailed: _onDocumentLoadFailed,
+                              onPageChanged: _onPageChanged,
+                              canShowScrollHead: true,
+                              canShowPaginationDialog: true,
+                              pageSpacing: 4,
+                            )
+                          : SfPdfViewer.file(
+                              File(widget.filePath),
+                              key: _pdfViewerKey,
+                              controller: _pdfController,
+                              onTap: (details) => _toggleAppBar(),
+                              onDocumentLoaded: _onDocumentLoaded,
+                              onDocumentLoadFailed: _onDocumentLoadFailed,
+                              onPageChanged: _onPageChanged,
+                              canShowScrollHead: true,
+                              canShowPaginationDialog: true,
+                              pageSpacing: 4,
+                            ),
+                    ),
+                    if (_loadState == _LoadState.loading)
+                      const Center(
+                        child: CupertinoActivityIndicator(radius: 14),
+                      ),
+                    if (_loadState == _LoadState.failed)
+                      _buildErrorState(context),
+                  ],
+                ),
               ),
             ),
           ),

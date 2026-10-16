@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../jobs/presentation/widgets/attachment_thumbnail.dart';
 import '../../data/models/career_circular.dart';

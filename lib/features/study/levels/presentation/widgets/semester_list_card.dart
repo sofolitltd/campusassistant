@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../domain/entities/semester.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/utils/num_extensions.dart';
 
 class SemesterListCard extends StatelessWidget {
   final Semester semester;
@@ -94,10 +95,13 @@ class SemesterListCard extends StatelessWidget {
                     spacing: 12,
                     children: [
                       infoChip('Courses', semester.totalCourses.toString()),
-                      infoChip('Credits', semester.totalCredits.toString()),
+                      infoChip(
+                        'Credits',
+                        semester.totalCredits.toCompactString(),
+                      ),
                       infoChip(
                         'Marks',
-                        semester.totalMarks.toString(),
+                        semester.totalMarks.toCompactString(),
                         useShade200: true,
                       ),
                     ],

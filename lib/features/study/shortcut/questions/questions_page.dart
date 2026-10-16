@@ -2,8 +2,8 @@ import 'dart:async';
 
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/features/study/widgets/content_card.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -14,6 +14,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/theme/tokens/app_layout.dart';
 
 class QuestionsPage extends ConsumerStatefulWidget {
   const QuestionsPage({super.key});
@@ -360,7 +361,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
         child: HeaderGradientBackdrop(
           extraHeight: 44, // filter row
           child: Scaffold(

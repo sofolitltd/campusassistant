@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Flutter's default web scroll behavior already allows mouse-drag on most
 /// versions, but making it explicit here removes any doubt and covers

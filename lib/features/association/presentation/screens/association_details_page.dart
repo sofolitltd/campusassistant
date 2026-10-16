@@ -1,7 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:intl/intl.dart';
@@ -22,6 +21,7 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// [association], if provided (a list-card tap), is rendered immediately
 /// with no network round-trip. If null (a deep link, e.g. an association
@@ -171,8 +171,8 @@ class _AssociationDetailsViewState
               association.bannerUrl!.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(RadiusToken.md),
-              child: CachedNetworkImage(
-                imageUrl: ApiEndpoints.resolveImageUrl(association.bannerUrl),
+              child: AppNetworkImage(
+                ApiEndpoints.resolveImageUrl(association.bannerUrl),
                 height: 160,
                 width: double.infinity,
                 fit: .cover,
@@ -200,10 +200,8 @@ class _AssociationDetailsViewState
                           association.logoUrl!.isNotEmpty
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(RadiusToken.xxxl),
-                          child: CachedNetworkImage(
-                            imageUrl: ApiEndpoints.resolveImageUrl(
-                              association.logoUrl,
-                            ),
+                          child: AppNetworkImage(
+                            ApiEndpoints.resolveImageUrl(association.logoUrl),
                             fit: .cover,
                           ),
                         )
@@ -572,7 +570,7 @@ class _MembersTab extends ConsumerWidget {
                     label: const Text('Leave'),
                   )
                 : ElevatedButton.icon(
-                  clipBehavior: Clip.antiAlias,
+                    clipBehavior: Clip.antiAlias,
                     onPressed: memberPending ? null : onToggleMembership,
                     icon: const Icon(Icons.group_add, size: 18),
                     label: const Text('Join Association'),
@@ -618,7 +616,9 @@ class _MemberRow extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         backgroundImage: member.avatarUrl.isNotEmpty
-            ? NetworkImage(ApiEndpoints.resolveImageUrl(member.avatarUrl))
+            ? AppNetworkImage.provider(
+                ApiEndpoints.resolveImageUrl(member.avatarUrl),
+              )
             : null,
         child: member.avatarUrl.isEmpty
             ? Text(member.fullName.isNotEmpty ? member.fullName[0] : '?')

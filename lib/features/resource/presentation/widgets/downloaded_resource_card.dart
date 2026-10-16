@@ -1,35 +1,36 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/theme/tokens/app_radius.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../routes/app_route.dart';
 import '../../../pdf_tabs/presentation/open_pdf_tab.dart';
 import '../../domain/entities/downloaded_file.dart';
 import '../providers/downloads_provider.dart';
 import '../../../auth/presentation/providers/user_profile_provider.dart';
 import '../../../bookmark/domain/entities/bookmark.dart';
 import '../../../bookmark/presentation/providers/bookmark_provider.dart';
+
 import 'package:uuid/uuid.dart';
+
 import 'resource_info_sheet.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Same metrics as [ResourceCard], so downloaded files look like every other
 /// content card.
 const double _kTopRowHeight = 18;
-const double _kContentHeight = 99;
+const double _kContentHeight = 100;
 const double _kMenuTapSize = 40;
 
 class DownloadedResourceCard extends ConsumerWidget {
@@ -78,19 +79,7 @@ class DownloadedResourceCard extends ConsumerWidget {
         children: [
           InkWell(
             borderRadius: BorderRadius.circular(RadiusToken.md + 2),
-            onTap: () {
-              openPdfTab(
-                context,
-                ref,
-                resourceId: resource.id,
-                filePath: downloadedFile.localPath,
-                url: resource.fileUrl,
-                title: resource.title,
-                thumbnailUrl: resource.thumbnailUrl,
-                courseCode: resource.courseCode,
-                lessonNo: resource.lessonNo,
-              );
-            },
+            onTap: () => _openFile(context, ref),
             child: Stack(
               children: [
                 Padding(
@@ -116,12 +105,10 @@ class DownloadedResourceCard extends ConsumerWidget {
                   right: 0,
                   child: _buildPopupMenu(context, ref, isBookmarked),
                 ),
-                // bottom: Spacing.md is reliable (not a guess): the content
-                // Row above is bottom-aligned via crossAxisAlignment: .end,
-                // so its bottom edge always sits exactly Spacing.md above
-                // the card edge, regardless of title line count.
+                // Same placement as ResourceCard: the IconButton's padded
+                // tap target centres the icons on the info-tile row.
                 Positioned(
-                  bottom: Spacing.md,
+                  bottom: 0,
                   right: 12,
                   child: Row(
                     mainAxisSize: .min,
@@ -169,7 +156,7 @@ class DownloadedResourceCard extends ConsumerWidget {
       alignment: Alignment.topLeft,
       children: [
         Container(
-          width: 84,
+          width: 88,
           height: _kContentHeight,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(RadiusToken.xs),
@@ -183,15 +170,15 @@ class DownloadedResourceCard extends ConsumerWidget {
           ),
           clipBehavior: .antiAlias,
           child: resource.thumbnailUrl.isNotEmpty
-              ? CachedNetworkImage(
-                  imageUrl: ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
+              ? AppNetworkImage(
+                  ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
                   fit: .cover,
-                  placeholder: (context, _) => Icon(
+                  placeholder: (context) => Icon(
                     LucideIcons.fileText,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     size: 30,
                   ),
-                  errorWidget: (context, _, _) => Icon(
+                  errorBuilder: (context, _, _) => Icon(
                     LucideIcons.fileText,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     size: 30,
@@ -203,6 +190,23 @@ class DownloadedResourceCard extends ConsumerWidget {
                   size: 30,
                 ),
         ),
+        if (resource.accessLevel == 'pro')
+          Positioned(
+            top: 4,
+            left: 4,
+            child: Container(
+              padding: const EdgeInsets.all(2.5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(RadiusToken.xs),
+                color: context.colors.warning.withValues(alpha: .8),
+              ),
+              child: Icon(
+                LucideIcons.crown,
+                color: context.colors.onPrimary,
+                size: 15,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -214,83 +218,118 @@ class DownloadedResourceCard extends ConsumerWidget {
         '${downloadedFile.modifiedAt.day}/${downloadedFile.modifiedAt.month}/${downloadedFile.modifiedAt.year}';
 
     return Expanded(
-      child: Column(
-        crossAxisAlignment: .start,
-        mainAxisSize: .min,
-        children: [
-          SizedBox(
-            height: _kTopRowHeight,
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.xs,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? theme.colorScheme.surface.withValues(alpha: 0.5)
-                        : context.colors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(RadiusToken.xs),
-                    border: Border.all(color: context.colors.surfaceAlt),
-                  ),
-                  child: Text(
-                    '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
-                    style: TextStyle(
-                      height: 1,
-                      fontSize: FontSizeToken.xxs,
-                      fontWeight: .bold,
-                      color: theme.colorScheme.onSurface,
+      child: SizedBox(
+        height: _kContentHeight,
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            SizedBox(
+              height: _kTopRowHeight,
+              child: Row(
+                crossAxisAlignment: .stretch,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                          : context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      border: Border.all(color: context.colors.surfaceAlt),
+                    ),
+                    child: Text(
+                      '${resource.courseCode.toUpperCase()}: ${resource.lessonNo}',
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: FontSizeToken.xxs,
+                        fontWeight: .bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ),
+                  if (resource.accessLevel == 'pro') ...[
+                    const SizedBox(width: Spacing.xs),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.sm,
+                      ),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: context.colors.warning.withValues(alpha: .15),
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      ),
+                      child: Row(
+                        mainAxisSize: .min,
+                        children: [
+                          Icon(
+                            LucideIcons.crown,
+                            size: 10,
+                            color: context.colors.warning,
+                          ),
+                          const SizedBox(width: Spacing.xxs),
+                          Text(
+                            'PRO',
+                            style: TextStyle(
+                              height: 1,
+                              fontSize: FontSizeToken.xxs,
+                              fontWeight: .bold,
+                              color: context.colors.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: Spacing.xs),
+            Text(
+              resource.title,
+              maxLines: 2,
+              overflow: .ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: .bold,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: Spacing.xs),
+            Text(
+              resource.description.isNotEmpty
+                  ? resource.description
+                  : resource.type,
+              maxLines: 1,
+              overflow: .ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: .w500,
+                color: context.colors.textMuted,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: Spacing.sm),
+            const Spacer(),
+            Row(
+              children: [
+                _buildMiniInfoTile(
+                  context,
+                  theme,
+                  isDark,
+                  LucideIcons.hardDrive,
+                  fileSize,
+                ),
+                const SizedBox(width: Spacing.sm),
+                _buildMiniInfoTile(
+                  context,
+                  theme,
+                  isDark,
+                  LucideIcons.calendar,
+                  dateStr,
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: Spacing.xs),
-          Text(
-            resource.title,
-            maxLines: 2,
-            overflow: .ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: .bold,
-              height: 1.2,
-            ),
-          ),
-          const SizedBox(height: Spacing.xs),
-          Text(
-            resource.description.isNotEmpty
-                ? resource.description
-                : resource.type,
-            maxLines: 1,
-            overflow: .ellipsis,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: .w500,
-              color: context.colors.textMuted,
-              height: 1,
-            ),
-          ),
-          const SizedBox(height: Spacing.sm),
-          Row(
-            children: [
-              _buildMiniInfoTile(
-                context,
-                theme,
-                isDark,
-                LucideIcons.hardDrive,
-                fileSize,
-              ),
-              const SizedBox(width: Spacing.sm),
-              _buildMiniInfoTile(
-                context,
-                theme,
-                isDark,
-                LucideIcons.calendar,
-                dateStr,
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -351,6 +390,8 @@ class DownloadedResourceCard extends ConsumerWidget {
         switch (value) {
           case 'open':
             await OpenFilex.open(downloadedFile.localPath);
+          case 'save':
+            await _saveToPublicDownloads();
           case 'share':
             await SharePlus.instance.share(
               ShareParams(
@@ -362,8 +403,6 @@ class DownloadedResourceCard extends ConsumerWidget {
             _showInfoBottomSheet(context, ref, isBookmarked);
           case 'bookmark':
             await _handleBookmarkToggle(context, ref, isBookmarked);
-          case 'view_course':
-            _navigateToCourse(context);
           case 'delete':
             await _deleteFile(context, ref);
         }
@@ -373,6 +412,14 @@ class DownloadedResourceCard extends ConsumerWidget {
           height: 34,
           value: 'open',
           child: _PopupItem(icon: LucideIcons.externalLink, text: 'Open with'),
+        ),
+        const PopupMenuItem(
+          height: 34,
+          value: 'save',
+          child: _PopupItem(
+            icon: LucideIcons.cloudDownload,
+            text: 'Save to Downloads',
+          ),
         ),
         const PopupMenuItem(
           height: 34,
@@ -395,15 +442,6 @@ class DownloadedResourceCard extends ConsumerWidget {
             errorColor: isBookmarked ? theme.appColors.danger : null,
           ),
         ),
-        if (downloadedFile.resource.id.isNotEmpty)
-          const PopupMenuItem(
-            height: 34,
-            value: 'view_course',
-            child: _PopupItem(
-              icon: LucideIcons.arrowRightFromLine,
-              text: 'View in Course',
-            ),
-          ),
         PopupMenuItem(
           height: 34,
           value: 'delete',
@@ -505,15 +543,19 @@ class DownloadedResourceCard extends ConsumerWidget {
           top: Radius.circular(RadiusToken.xl),
         ),
       ),
-      builder: (context) => DraggableScrollableSheet(
+      // Actions pop the sheet before running, so they must use the card's
+      // context, not the sheet's.
+      builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.8,
         minChildSize: 0.4,
         maxChildSize: 0.9,
         expand: false,
-        builder: (context, scrollController) => ResourceInfoSheet(
+        builder: (_, scrollController) => ResourceInfoSheet(
           resource: downloadedFile.resource,
           scrollController: scrollController,
           isDownloaded: true,
+          onDownload: () => _openFile(context, ref),
+          onSaveToDownloads: _saveToPublicDownloads,
           onShare: () => SharePlus.instance.share(
             ShareParams(
               files: [XFile(downloadedFile.localPath)],
@@ -529,12 +571,41 @@ class DownloadedResourceCard extends ConsumerWidget {
     );
   }
 
-  void _navigateToCourse(BuildContext context) {
+  void _openFile(BuildContext context, WidgetRef ref) {
     final resource = downloadedFile.resource;
-    if (resource.universityId.isEmpty || resource.departmentId.isEmpty) return;
-    context.push(
-      '${AppRoute.courseDetails.path}/${resource.universityId}/${resource.departmentId}/${resource.courseCode}',
+    openPdfTab(
+      context,
+      ref,
+      resourceId: resource.id,
+      filePath: downloadedFile.localPath,
+      url: resource.fileUrl,
+      title: resource.title,
+      thumbnailUrl: resource.thumbnailUrl,
+      courseCode: resource.courseCode,
+      lessonNo: resource.lessonNo,
     );
+  }
+
+  /// Copies the app-private file to the public Downloads folder — same
+  /// destination as [ResourceCard]'s "Save to Downloads".
+  Future<void> _saveToPublicDownloads() async {
+    try {
+      final file = File(downloadedFile.localPath);
+      if (!file.existsSync()) {
+        Fluttertoast.showToast(msg: 'File not found');
+        return;
+      }
+      final dir = Platform.isAndroid
+          ? Directory('/storage/emulated/0/Download/Campus Assistant')
+          : await getDownloadsDirectory();
+      if (dir == null) return;
+      await dir.create(recursive: true);
+      final name = downloadedFile.localPath.split(Platform.pathSeparator).last;
+      await file.copy('${dir.path}/$name');
+      Fluttertoast.showToast(msg: 'Saved to Downloads');
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Error saving: $e');
+    }
   }
 
   Future<void> _deleteFile(BuildContext context, WidgetRef ref) async {

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 // Immersive media surface: the black backdrop and white chrome are
 // intentional and theme-independent — photos are always viewed against
@@ -12,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/download_client.dart';
 
 class ImageViewer extends StatelessWidget {
   final String title;
@@ -36,14 +36,10 @@ class ImageViewer extends StatelessWidget {
     );
 
     try {
-      // 2. Download the image bytes using http
+      // 2. Download the image bytes
       final resolvedUrl = ApiEndpoints.resolveImageUrl(image);
 
-      final dio = Dio();
-      final response = await dio.get(
-        resolvedUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
+      final bytes = await downloadBytes(resolvedUrl);
 
       // 3. Get the temporary directory path
       final directory = await getTemporaryDirectory();
@@ -51,7 +47,7 @@ class ImageViewer extends StatelessWidget {
       final file = File(filePath);
 
       // 4. Write the downloaded bytes to the temporary file
-      await file.writeAsBytes(response.data);
+      await file.writeAsBytes(bytes);
 
       // 5. Share the file along with the custom message
       await SharePlus.instance.share(

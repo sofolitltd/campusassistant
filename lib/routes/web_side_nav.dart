@@ -12,6 +12,7 @@ import 'app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Collapsible left sidebar shown instead of a NavigationRail on large/web
 /// screens — styled to match the admin dashboard's sidebar (components/sidebar.tsx):
@@ -212,7 +213,7 @@ class _WebSideNavState extends ConsumerState<WebSideNav> {
                                     alpha: 0.15,
                                   ),
                                   backgroundImage: userImage.isNotEmpty
-                                      ? NetworkImage(
+                                      ? AppNetworkImage.provider(
                                           ApiEndpoints.resolveImageUrl(
                                             userImage,
                                           ),

@@ -12,7 +12,6 @@ Future<bool?> showClaimBottomSheet(
   WidgetRef ref,
   String itemId,
 ) {
-  final controller = TextEditingController();
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
@@ -23,35 +22,37 @@ Future<bool?> showClaimBottomSheet(
         top: 16,
         bottom: MediaQuery.of(context).viewInsets.bottom + 16,
       ),
-      child: _ClaimForm(controller: controller, itemId: itemId, ref: ref),
+      child: _ClaimForm(itemId: itemId, ref: ref),
     ),
   );
 }
 
 class _ClaimForm extends StatefulWidget {
-  final TextEditingController controller;
   final String itemId;
   final WidgetRef ref;
 
-  const _ClaimForm({
-    required this.controller,
-    required this.itemId,
-    required this.ref,
-  });
+  const _ClaimForm({required this.itemId, required this.ref});
 
   @override
   State<_ClaimForm> createState() => _ClaimFormState();
 }
 
 class _ClaimFormState extends State<_ClaimForm> {
+  final _controller = TextEditingController();
   bool _submitting = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
       await widget.ref
           .read(lostFoundActionsProvider)
-          .claimItem(widget.itemId, message: widget.controller.text.trim());
+          .claimItem(widget.itemId, message: _controller.text.trim());
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {
@@ -78,7 +79,7 @@ class _ClaimFormState extends State<_ClaimForm> {
         ),
         const SizedBox(height: Spacing.md),
         TextField(
-          controller: widget.controller,
+          controller: _controller,
           maxLines: 3,
           decoration: const InputDecoration(
             hintText: 'e.g. It has a scratch on the back cover...',

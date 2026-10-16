@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +17,8 @@ import '/features/staff/presentation/providers/staff_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
+import '/core/network/download_client.dart';
 
 class StaffDetailsScreen extends ConsumerWidget {
   const StaffDetailsScreen({super.key, required this.staffId});
@@ -90,13 +90,12 @@ class _ActionBar extends StatelessWidget {
       final text = '${staff.name}\n${staff.post}\n\nPhone:\n+88${staff.phone}';
       final files = <XFile>[];
       if (staff.imageUrl.isNotEmpty) {
-        final response = await Dio().get(
+        final bytes = await downloadBytes(
           ApiEndpoints.resolveImageUrl(staff.imageUrl),
-          options: Options(responseType: ResponseType.bytes),
         );
         final tempDir = await getTemporaryDirectory();
         final file = File('${tempDir.path}/${staff.name}.png');
-        await file.writeAsBytes(response.data);
+        await file.writeAsBytes(bytes);
         files.add(XFile(file.path));
       }
 
@@ -276,13 +275,13 @@ class _HeaderCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
-                child: CachedNetworkImage(
-                  imageUrl: ApiEndpoints.resolveImageUrl(staff.imageUrl),
+                child: AppNetworkImage(
+                  ApiEndpoints.resolveImageUrl(staff.imageUrl),
                   fit: .cover,
-                  placeholder: (context, url) => const Center(
+                  placeholder: (context) => const Center(
                     child: CupertinoActivityIndicator(radius: 6),
                   ),
-                  errorWidget: (context, url, error) => Icon(
+                  errorBuilder: (context, error, _) => Icon(
                     LucideIcons.user,
                     color: context.colors.borderStrong,
                     size: 24,

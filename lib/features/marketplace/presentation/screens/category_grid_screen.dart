@@ -14,6 +14,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/widgets/app_network_image.dart';
 
 class CategoryGridScreen extends ConsumerWidget {
   const CategoryGridScreen({super.key});
@@ -32,72 +33,72 @@ class CategoryGridScreen extends ConsumerWidget {
         ),
         body: MarketBody(
           child: categoriesAsync.when(
-          data: (categories) {
-            if (categories.isEmpty) {
-              return const Center(child: Text('No categories yet.'));
-            }
-            return CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
+            data: (categories) {
+              if (categories.isEmpty) {
+                return const Center(child: Text('No categories yet.'));
+              }
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.lg,
+                        Spacing.xl,
+                        Spacing.lg,
+                        Spacing.md,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Browse by category',
+                            style: TextStyle(
+                              fontSize: FontSizeToken.xl,
+                              fontWeight: FontWeight.w800,
+                              color: context.colors.text,
+                            ),
+                          ),
+                          const SizedBox(height: Spacing.xxs),
+                          Text(
+                            '${categories.length} categories on campus',
+                            style: TextStyle(
+                              fontSize: FontSizeToken.sm,
+                              color: context.colors.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
                     padding: const EdgeInsets.fromLTRB(
                       Spacing.lg,
-                      Spacing.xl,
+                      0,
                       Spacing.lg,
-                      Spacing.md,
+                      Spacing.xxxl,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Browse by category',
-                          style: TextStyle(
-                            fontSize: FontSizeToken.xl,
-                            fontWeight: FontWeight.w800,
-                            color: context.colors.text,
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            mainAxisSpacing: 14,
+                            crossAxisSpacing: 14,
+                            childAspectRatio: 1,
                           ),
-                        ),
-                        const SizedBox(height: Spacing.xxs),
-                        Text(
-                          '${categories.length} categories on campus',
-                          style: TextStyle(
-                            fontSize: FontSizeToken.sm,
-                            color: context.colors.textMuted,
-                          ),
-                        ),
-                      ],
+                      delegate: SliverChildBuilderDelegate(
+                        (context, i) => _CategoryCard(category: categories[i]),
+                        childCount: categories.length,
+                      ),
                     ),
                   ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    Spacing.lg,
-                    0,
-                    Spacing.lg,
-                    Spacing.xxxl,
-                  ),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200,
-                          mainAxisSpacing: 14,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 1,
-                        ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, i) => _CategoryCard(category: categories[i]),
-                      childCount: categories.length,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-          loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (e, _) =>
-              Center(child: Text('Could not load categories: $e')),
+                ],
+              );
+            },
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+            error: (e, _) =>
+                Center(child: Text('Could not load categories: $e')),
+          ),
         ),
-      ),
       ),
     );
   }
@@ -155,7 +156,7 @@ class _CategoryCard extends ConsumerWidget {
                 ),
               ),
               if (category.imageUrl.isNotEmpty)
-                Image.network(
+                AppNetworkImage(
                   ApiEndpoints.resolveImageUrl(category.imageUrl),
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),

@@ -18,6 +18,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/network/download_client.dart';
 
 class SyllabusCard extends StatefulWidget {
   const SyllabusCard({super.key, required this.syllabus});
@@ -269,7 +270,7 @@ class _SyllabusCardState extends State<SyllabusCard> {
     final file = File('${directory.path}/$fileName');
 
     try {
-      final response = await Dio().get(
+      final response = await downloadClient.get(
         url,
         options: Options(
           responseType: ResponseType.bytes,

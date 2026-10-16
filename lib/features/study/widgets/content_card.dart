@@ -27,6 +27,14 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
+import '/core/network/download_client.dart';
+
+/// Same metrics as [ResourceCard], so question-bank / submission cards look
+/// like every other content card.
+const double _kTopRowHeight = 18;
+const double _kContentHeight = 100;
+const double _kMenuTapSize = 40;
 
 class ContentCard extends ConsumerStatefulWidget {
   final ContentModel contentModel;
@@ -51,6 +59,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   bool _isDownloaded = false;
   bool _isBookmarked = false;
   String? _bookmarkId;
+  String? _savedBookmarkId;
   String _localPath = '';
   CancelToken? _cancelToken;
 
@@ -84,8 +93,6 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final profileAsync = ref.watch(userProvider);
-    final profileData = profileAsync.value;
 
     List<String> contentBatches = List<String>.from(
       widget.contentModel.batches,
@@ -95,29 +102,24 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     final isProUser = ref.watch(isProUserProvider);
     final isProContent = widget.contentModel.status == 'pro';
 
-    final userId = profileData?.uid ?? '';
-    ref.listen(userBookmarksProvider(userId), (_, next) {
-      if (userId.isEmpty) return;
-      next.whenOrNull(
-        data: (bookmarks) {
-          final match = bookmarks.where(
-            (b) =>
-                b.entityType == 'resource' &&
-                b.entityId == widget.contentModel.contentId,
+    // Select only the uid: the rest of the profile changing shouldn't
+    // rebuild every card on screen.
+    final userId = ref.watch(
+      userProvider.select((profile) => profile.value?.uid ?? ''),
+    );
+    final savedBookmarkId = userId.isEmpty
+        ? null
+        : ref.watch(
+            resourceBookmarkIdsProvider(userId)
+                .select((ids) => ids[widget.contentModel.contentId]),
           );
-          final found = match.isNotEmpty;
-          if (found != _isBookmarked ||
-              (found && _bookmarkId != match.first.id)) {
-            if (mounted) {
-              setState(() {
-                _isBookmarked = found;
-                _bookmarkId = found ? match.first.id : null;
-              });
-            }
-          }
-        },
-      );
-    });
+    // Adopt the server's answer when it changes; between changes the local
+    // fields hold the optimistic result of a toggle.
+    if (savedBookmarkId != _savedBookmarkId) {
+      _savedBookmarkId = savedBookmarkId;
+      _bookmarkId = savedBookmarkId;
+      _isBookmarked = savedBookmarkId != null;
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -135,10 +137,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       child: Column(
         children: [
           InkWell(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(RadiusToken.md + 2),
-              topRight: Radius.circular(RadiusToken.md + 2),
-            ),
+            borderRadius: BorderRadius.circular(RadiusToken.md + 2),
             onTap: () async {
               if (isProContent && !isProUser) {
                 _showProDialog(context);
@@ -151,169 +150,218 @@ class _ContentCardState extends ConsumerState<ContentCard> {
                 Padding(
                   padding: const EdgeInsets.all(Spacing.md),
                   child: Row(
+                    // Bottom-aligned like ResourceCard, so the info-tile/
+                    // bookmark/download row sits flush with the thumbnail.
+                    crossAxisAlignment: .end,
                     children: [
-                      Stack(
-                        alignment: Alignment.topLeft,
-                        children: [
-                          //
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(RadiusToken.md),
-                            child: Container(
-                              width: 80,
-                              height: 90,
-                              color: isDark
-                                  ? theme.colorScheme.surface.withValues(
-                                      alpha: 0.5,
-                                    )
-                                  : AccentToken.blue.withValues(alpha: 0.1),
-                              child: widget.contentModel.imageUrl == ''
-                                  ? Image.asset(
-                                      'assets/images/placeholder.png',
-                                      fit: .fitHeight,
-                                    )
-                                  : Image.network(
-                                      ApiEndpoints.resolveImageUrl(
-                                        widget.contentModel.imageUrl,
-                                      ),
-                                      fit: .contain,
-                                    ),
-                            ),
-                          ),
-
-                          //
-                          if (isProContent)
-                            Positioned(
-                              top: 4,
-                              left: 4,
-                              child: Container(
-                                padding: .all(2.5),
-                                decoration: BoxDecoration(
-                                  shape: .rectangle,
-                                  borderRadius: .circular(4),
-                                  color: context.colors.warning.withValues(
-                                    alpha: .8,
-                                  ),
-                                ),
-                                child: Icon(
-                                  LucideIcons.crown,
-                                  color: context.colors.onPrimary,
-                                  size: 15,
-                                ),
-                              ),
-                            ),
-
-                          //
-                          Positioned(
-                            bottom: 4,
-                            left: 4,
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(
-                                Spacing.xs,
-                                Spacing.xs,
-                                Spacing.xs,
-                                3.5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.colors.primary.withValues(
-                                  alpha: .5,
-                                ),
-                                borderRadius: BorderRadius.circular(2.5),
-                              ),
-                              child: Text(
-                                widget.contentModel.contentType.toLowerCase() ==
-                                        "notes"
-                                    ? '${widget.contentModel.courseCode.toUpperCase()}: ${widget.contentModel.lessonNo}'
-                                    : widget.contentModel.courseCode
-                                          .toUpperCase(),
-                                style: theme.textTheme.bodySmall!.copyWith(
-                                  height: 1,
-                                  fontSize: FontSizeToken.xxs,
-                                  fontWeight: .bold,
-                                  color: context.colors.onPrimary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: _showInfoBottomSheet,
+                        child: _buildThumbnail(isDark, isProContent),
                       ),
                       const SizedBox(width: Spacing.md),
-
-                      //
-                      Expanded(
-                        child: SizedBox(
-                          height: 95,
-                          child: Column(
-                            crossAxisAlignment: .start,
-                            mainAxisAlignment: .start,
-                            children: [
-                              Text(
-                                widget.contentModel.contentTitle,
-                                maxLines: 2,
-                                overflow: .ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: .bold,
-                                  height: 1.2,
-                                ),
-                              ),
-                              const SizedBox(height: Spacing.xs),
-                              Text(
-                                widget.contentModel.contentSubtitle,
-                                maxLines: 1,
-                                overflow: .ellipsis,
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  fontWeight: .w500,
-                                  color: context.colors.textMuted,
-                                  height: 1,
-                                ),
-                              ),
-                              const Spacer(),
-                              Row(
-                                children: [
-                                  _buildMiniInfoTile(
-                                    context,
-                                    LucideIcons.hardDrive,
-                                    _getFileSizeStr(
-                                      widget
-                                          .contentModel
-                                          .metadata?['fileSizeBytes'],
-                                    ),
-                                  ),
-                                  const SizedBox(width: Spacing.sm),
-                                  _buildMiniInfoTile(
-                                    context,
-                                    LucideIcons.layers,
-                                    '${widget.contentModel.metadata?['pageCount'] ?? 0} Page',
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      _buildDetails(isDark, isProContent),
                     ],
                   ),
                 ),
-
-                //
-                Positioned(top: 0, right: 0, child: _buildPopupMenu()),
-
-                //
                 Positioned(
-                  bottom: 5,
-                  right: 40,
-                  child: Row(children: [_buildInfoButton(), _buildBookmark()]),
+                  top: Spacing.md + (_kTopRowHeight - _kMenuTapSize) / 2,
+                  right: 0,
+                  child: _buildPopupMenu(),
                 ),
-
-                //
-                Positioned(
-                  bottom: 15,
-                  right: 12,
-                  child: _buildDownloadStatusAction(),
-                ),
+                if (_isLoading || _isPaused)
+                  Positioned(
+                    bottom: 4,
+                    right: 12,
+                    child: _buildDownloadStatusAction(),
+                  )
+                else
+                  Positioned(
+                    bottom: 0,
+                    right: 12,
+                    child: Row(
+                      mainAxisSize: .min,
+                      children: [
+                        _buildBookmark(),
+                        const SizedBox(width: Spacing.xxs),
+                        _buildDownloadStatusAction(),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildThumbnail(bool isDark, bool isProContent) {
+    final theme = Theme.of(context);
+    final placeholder = Icon(
+      LucideIcons.fileText,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+      size: 30,
+    );
+    return Stack(
+      alignment: Alignment.topLeft,
+      children: [
+        Container(
+          width: 88,
+          height: _kContentHeight,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(RadiusToken.xs),
+            color: isDark
+                ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                : AccentToken.blue.withValues(alpha: 0.1),
+          ),
+          foregroundDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(RadiusToken.xs),
+            border: Border.all(color: context.colors.borderStrong, width: 1),
+          ),
+          clipBehavior: .antiAlias,
+          child: widget.contentModel.imageUrl.isEmpty
+              ? placeholder
+              : AppNetworkImage(
+                  ApiEndpoints.resolveImageUrl(widget.contentModel.imageUrl),
+                  fit: .cover,
+                  placeholder: (context) => placeholder,
+                  errorBuilder: (context, _, _) => placeholder,
+                ),
+        ),
+        if (isProContent)
+          Positioned(
+            top: 4,
+            left: 4,
+            child: Container(
+              padding: const EdgeInsets.all(2.5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(RadiusToken.xs),
+                color: context.colors.warning.withValues(alpha: .8),
+              ),
+              child: Icon(
+                LucideIcons.crown,
+                color: context.colors.onPrimary,
+                size: 15,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDetails(bool isDark, bool isProContent) {
+    final theme = Theme.of(context);
+    final model = widget.contentModel;
+    final badgeLabel = model.contentType.toLowerCase() == 'notes'
+        ? '${model.courseCode.toUpperCase()}: ${model.lessonNo}'
+        : model.courseCode.toUpperCase();
+    return Expanded(
+      child: SizedBox(
+        height: _kContentHeight,
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            SizedBox(
+              height: _kTopRowHeight,
+              child: Row(
+                crossAxisAlignment: .stretch,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                          : context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      border: Border.all(color: context.colors.surfaceAlt),
+                    ),
+                    child: Text(
+                      badgeLabel,
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: FontSizeToken.xxs,
+                        fontWeight: .bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  if (isProContent) ...[
+                    const SizedBox(width: Spacing.xs),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.sm,
+                      ),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: context.colors.warning.withValues(alpha: .15),
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      ),
+                      child: Row(
+                        mainAxisSize: .min,
+                        children: [
+                          Icon(
+                            LucideIcons.crown,
+                            size: 10,
+                            color: context.colors.warning,
+                          ),
+                          const SizedBox(width: Spacing.xxs),
+                          Text(
+                            'PRO',
+                            style: TextStyle(
+                              height: 1,
+                              fontSize: FontSizeToken.xxs,
+                              fontWeight: .bold,
+                              color: context.colors.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: Spacing.xs),
+            Text(
+              model.contentTitle,
+              maxLines: 2,
+              overflow: .ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: .bold,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: Spacing.xs),
+            Text(
+              model.contentSubtitle,
+              maxLines: 1,
+              overflow: .ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: .w500,
+                color: context.colors.textMuted,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: Spacing.sm),
+            const Spacer(),
+            Row(
+              children: [
+                _buildMiniInfoTile(
+                  context,
+                  LucideIcons.hardDrive,
+                  _getFileSizeStr(model.metadata?['fileSizeBytes']),
+                ),
+                const SizedBox(width: Spacing.sm),
+                _buildMiniInfoTile(
+                  context,
+                  LucideIcons.layers,
+                  '${model.metadata?['pageCount'] ?? 0} Page',
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -323,12 +371,13 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     return PopupMenuButton<String>(
       padding: EdgeInsets.zero,
       color: theme.cardColor,
-      style: IconButton.styleFrom(
-        padding: EdgeInsets.zero,
-        visualDensity: VisualDensity.compact,
-      ),
+      tooltip: 'More options',
       constraints: const BoxConstraints(minWidth: 140),
-      icon: const Icon(LucideIcons.ellipsisVertical, size: 16),
+      child: const SizedBox(
+        width: _kMenuTapSize,
+        height: _kMenuTapSize,
+        child: Center(child: Icon(LucideIcons.ellipsisVertical, size: 18)),
+      ),
       onSelected: (value) async {
         switch (value) {
           case 'download':
@@ -500,10 +549,10 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     final theme = Theme.of(context);
     if (_isLoading || _isPaused) {
       return Container(
-        padding: .only(right: 10),
+        padding: const EdgeInsets.only(right: Spacing.md),
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.sm),
+          borderRadius: BorderRadius.circular(RadiusToken.md),
           border: Border.all(color: context.colors.surfaceAlt),
           boxShadow: [BoxShadow(color: context.colors.shadow, blurRadius: 8)],
         ),
@@ -588,33 +637,15 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   Widget _buildBookmark() {
     final theme = Theme.of(context);
     return IconButton(
-      style: IconButton.styleFrom(
-        padding: EdgeInsets.zero,
-        visualDensity: VisualDensity.compact,
-      ),
+      constraints: const BoxConstraints(minWidth: 22, minHeight: 22),
+      padding: EdgeInsets.zero,
       onPressed: _handleBookmarkToggle,
       icon: Icon(
         _isBookmarked ? LucideIcons.bookmarkCheck : LucideIcons.bookmark,
         color: _isBookmarked
             ? context.colors.primary
             : theme.colorScheme.onSurface.withValues(alpha: 0.4),
-        size: 18,
-      ),
-    );
-  }
-
-  Widget _buildInfoButton() {
-    final theme = Theme.of(context);
-    return IconButton(
-      style: IconButton.styleFrom(
-        padding: EdgeInsets.zero,
-        visualDensity: VisualDensity.compact,
-      ),
-      onPressed: _showInfoBottomSheet,
-      icon: Icon(
-        LucideIcons.info,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-        size: 18,
+        size: 20,
       ),
     );
   }
@@ -927,7 +958,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
         start = await file.length();
       }
 
-      final response = await Dio().get<ResponseBody>(
+      final response = await downloadClient.get<ResponseBody>(
         url,
         cancelToken: _cancelToken,
         options: Options(

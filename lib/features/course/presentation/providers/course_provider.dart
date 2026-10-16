@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
@@ -7,6 +8,7 @@ import '../../../../core/providers/app_refresh_provider.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/repositories/course_repository.dart';
 import '../../data/repositories/course_repository_impl.dart';
+import '../../../../core/providers/cache_for.dart';
 
 part 'course_provider.g.dart';
 
@@ -22,44 +24,49 @@ CourseRepository courseRepository(Ref ref) {
   );
 }
 
-@Riverpod(keepAlive: true)
-Future<List<Course>> courses(
+@riverpod
+Stream<List<Course>> courses(
   Ref ref, {
   required String universityId,
   required String departmentId,
   String? semesterId,
   String? batchId,
-}) async {
+}) {
+  ref.cacheFor(kParamProviderCacheTime);
   ref.watch(appRefreshProvider);
   debugPrint('[courses] Fetching: semesterId=$semesterId batchId=$batchId');
   final repo = ref.watch(courseRepositoryProvider);
-  final result = await repo.getCourses(
+  return repo.watchCourses(
     universityId: universityId,
     departmentId: departmentId,
     semesterId: semesterId,
     batchId: batchId,
   );
-  return result.fold((failure) => throw failure, (courses) => courses);
 }
 
-@Riverpod(keepAlive: true)
-Future<Course?> courseByCode(
+@riverpod
+Stream<Course?> courseByCode(
   Ref ref, {
   required String universityId,
   required String departmentId,
   required String courseCode,
   String? batchId,
   String? semesterId,
-}) async {
+}) async* {
+  ref.cacheFor(kParamProviderCacheTime);
   final repo = ref.watch(courseRepositoryProvider);
-  final result = await repo.getCourseByCode(
-    universityId: universityId,
-    departmentId: departmentId,
-    courseCode: courseCode,
-    batchId: batchId,
-    semesterId: semesterId,
-  );
-  return result.fold((failure) => null, (course) => course);
+  try {
+    yield* repo.watchCourseByCode(
+      universityId: universityId,
+      departmentId: departmentId,
+      courseCode: courseCode,
+      batchId: batchId,
+      semesterId: semesterId,
+    );
+  } catch (_) {
+    // The details page treats "no course" and "couldn't load" the same.
+    yield null;
+  }
 }
 
 @riverpod

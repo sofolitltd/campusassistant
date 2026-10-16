@@ -18,6 +18,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class MarketplaceHomeScreen extends ConsumerWidget {
   const MarketplaceHomeScreen({super.key});
@@ -56,204 +57,210 @@ class MarketplaceHomeScreen extends ConsumerWidget {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
-            child: RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(categoriesListProvider);
-                ref.invalidate(featuredProductsProvider);
-                ref.invalidate(productsListProvider);
-                await ref.read(
-                  productsListProvider((
-                    universityId: user.university,
-                    departmentId: user.department,
-                  )).future,
-                );
-              },
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  const SliverToBoxAdapter(child: _SearchBar()),
-                  const SliverToBoxAdapter(child: _HeroBanner()),
-                  const SliverToBoxAdapter(child: _TrustStrip()),
+              constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(categoriesListProvider);
+                  ref.invalidate(featuredProductsProvider);
+                  ref.invalidate(productsListProvider);
+                  await ref.read(
+                    productsListProvider((
+                      universityId: user.university,
+                      departmentId: user.department,
+                    )).future,
+                  );
+                },
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    const SliverToBoxAdapter(child: _SearchBar()),
+                    const SliverToBoxAdapter(child: _HeroBanner()),
+                    const SliverToBoxAdapter(child: _TrustStrip()),
 
-                  // Featured
-                  SliverToBoxAdapter(
-                    child: ref
-                        .watch(
-                          featuredProductsProvider((
-                            universityId: user.university,
-                            departmentId: user.department,
-                          )),
-                        )
-                        .maybeWhen(
-                          data: (featured) {
-                            if (featured.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const _SectionHeader(
-                                  title: 'Featured',
-                                  subtitle: 'Hand-picked on campus',
-                                ),
-                                SizedBox(
-                                  height: 236,
-                                  child: ListView.separated(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: featured.length,
-                                    separatorBuilder: (_, _) =>
-                                        const SizedBox(width: 12),
-                                    itemBuilder: (context, i) => SizedBox(
-                                      width: 156,
-                                      child: MarketProductCard(
-                                        product: featured[i],
-                                        imageHeight: 132,
+                    // Featured
+                    SliverToBoxAdapter(
+                      child: ref
+                          .watch(
+                            featuredProductsProvider((
+                              universityId: user.university,
+                              departmentId: user.department,
+                            )),
+                          )
+                          .maybeWhen(
+                            data: (featured) {
+                              if (featured.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const _SectionHeader(
+                                    title: 'Featured',
+                                    subtitle: 'Hand-picked on campus',
+                                  ),
+                                  SizedBox(
+                                    height: 236,
+                                    child: ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: featured.length,
+                                      separatorBuilder: (_, _) =>
+                                          const SizedBox(width: 12),
+                                      itemBuilder: (context, i) => SizedBox(
+                                        width: 156,
+                                        child: MarketProductCard(
+                                          product: featured[i],
+                                          imageHeight: 132,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
-                          orElse: () => const SizedBox.shrink(),
-                        ),
-                  ),
+                                ],
+                              );
+                            },
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+                    ),
 
-                  // Categories
-                  SliverToBoxAdapter(
-                    child: categoriesAsync.when(
-                      data: (categories) {
-                        if (categories.isEmpty) return const SizedBox.shrink();
-                        return Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            const _SectionHeader(title: 'Shop by category'),
-                            SizedBox(
-                              height: 92,
-                              child: ListView.separated(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: Spacing.lg,
+                    // Categories
+                    SliverToBoxAdapter(
+                      child: categoriesAsync.when(
+                        data: (categories) {
+                          if (categories.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+                          return Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              const _SectionHeader(title: 'Shop by category'),
+                              SizedBox(
+                                height: 92,
+                                child: ListView.separated(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Spacing.lg,
+                                  ),
+                                  scrollDirection: .horizontal,
+                                  itemCount: categories.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(width: Spacing.lg),
+                                  itemBuilder: (context, i) => _CategoryItem(
+                                    category: categories[i],
+                                    onTap: () => context.push(
+                                      '/campusmarket/category/${categories[i].id}',
+                                      extra: {
+                                        'category': categories[i],
+                                        'universityId': user.university,
+                                        'departmentId': user.department,
+                                      },
+                                    ),
+                                  ),
                                 ),
-                                scrollDirection: .horizontal,
-                                itemCount: categories.length,
-                                separatorBuilder: (_, _) =>
-                                    const SizedBox(width: Spacing.lg),
-                                itemBuilder: (context, i) => _CategoryItem(
-                                  category: categories[i],
-                                  onTap: () => context.push(
-                                    '/campusmarket/category/${categories[i].id}',
-                                    extra: {
-                                      'category': categories[i],
-                                      'universityId': user.university,
-                                      'departmentId': user.department,
-                                    },
+                              ),
+                            ],
+                          );
+                        },
+                        loading: () => const SizedBox(
+                          height: 92,
+                          child: Center(child: CupertinoActivityIndicator()),
+                        ),
+                        error: (e, _) => const SizedBox.shrink(),
+                      ),
+                    ),
+
+                    ...productsAsync.when(
+                      data: (products) {
+                        if (products.isEmpty) {
+                          return [
+                            const SliverToBoxAdapter(child: _EmptyState()),
+                          ];
+                        }
+                        final fresh = products.take(8).toList();
+                        return [
+                          if (products.length > 3) ...[
+                            const SliverToBoxAdapter(
+                              child: _SectionHeader(
+                                title: 'Just added',
+                                subtitle: 'Fresh listings from campus sellers',
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: SizedBox(
+                                height: 236,
+                                child: ListView.separated(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Spacing.lg,
+                                  ),
+                                  scrollDirection: .horizontal,
+                                  itemCount: fresh.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(width: Spacing.md),
+                                  itemBuilder: (context, i) => SizedBox(
+                                    width: 156,
+                                    child: MarketProductCard(
+                                      product: fresh[i],
+                                      imageHeight: 132,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ],
-                        );
-                      },
-                      loading: () => const SizedBox(
-                        height: 92,
-                        child: Center(child: CupertinoActivityIndicator()),
-                      ),
-                      error: (e, _) => const SizedBox.shrink(),
-                    ),
-                  ),
-
-                  ...productsAsync.when(
-                    data: (products) {
-                      if (products.isEmpty) {
-                        return [const SliverToBoxAdapter(child: _EmptyState())];
-                      }
-                      final fresh = products.take(8).toList();
-                      return [
-                        if (products.length > 3) ...[
-                          const SliverToBoxAdapter(
+                          SliverToBoxAdapter(
                             child: _SectionHeader(
-                              title: 'Just added',
-                              subtitle: 'Fresh listings from campus sellers',
+                              title: 'All products',
+                              subtitle: '${products.length} items on campus',
                             ),
                           ),
-                          SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 236,
-                              child: ListView.separated(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: Spacing.lg,
-                                ),
-                                scrollDirection: .horizontal,
-                                itemCount: fresh.length,
-                                separatorBuilder: (_, _) =>
-                                    const SizedBox(width: Spacing.md),
-                                itemBuilder: (context, i) => SizedBox(
-                                  width: 156,
-                                  child: MarketProductCard(
-                                    product: fresh[i],
-                                    imageHeight: 132,
-                                  ),
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(
+                              Spacing.lg,
+                              0,
+                              Spacing.lg,
+                              Spacing.xxxl,
+                            ),
+                            sliver: SliverMasonryGrid.extent(
+                              maxCrossAxisExtent: 180,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childCount: products.length,
+                              itemBuilder: (context, i) =>
+                                  MarketProductCard(product: products[i]),
+                            ),
+                          ),
+                        ];
+                      },
+                      loading: () => [
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 200,
+                            child: Center(child: CupertinoActivityIndicator()),
+                          ),
+                        ),
+                      ],
+                      error: (e, _) => [
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 200,
+                            child: Center(
+                              child: Text(
+                                'Could not load products.',
+                                style: TextStyle(
+                                  color: context.colors.textMuted,
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                        SliverToBoxAdapter(
-                          child: _SectionHeader(
-                            title: 'All products',
-                            subtitle: '${products.length} items on campus',
-                          ),
                         ),
-                        SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(
-                            Spacing.lg,
-                            0,
-                            Spacing.lg,
-                            Spacing.xxxl,
-                          ),
-                          sliver: SliverMasonryGrid.extent(
-                            maxCrossAxisExtent: 180,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childCount: products.length,
-                            itemBuilder: (context, i) =>
-                                MarketProductCard(product: products[i]),
-                          ),
-                        ),
-                      ];
-                    },
-                    loading: () => [
-                      const SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 200,
-                          child: Center(child: CupertinoActivityIndicator()),
-                        ),
-                      ),
-                    ],
-                    error: (e, _) => [
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 200,
-                          child: Center(
-                            child: Text(
-                              'Could not load products.',
-                              style: TextStyle(color: context.colors.textMuted),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -636,7 +643,7 @@ class _CategoryItem extends StatelessWidget {
               ),
               clipBehavior: .antiAlias,
               child: category.imageUrl.isNotEmpty
-                  ? Image.network(
+                  ? AppNetworkImage(
                       ApiEndpoints.resolveImageUrl(category.imageUrl),
                       fit: .cover,
                       errorBuilder: (_, _, _) =>

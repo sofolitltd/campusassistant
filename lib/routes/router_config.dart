@@ -1,5 +1,6 @@
 import '/core/theme/tokens/app_layout.dart';
 import '/core/widgets/content_column.dart';
+import '/core/widgets/deferred_page.dart';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,8 +73,10 @@ import '/features/skill/data/models/skill.dart';
 import '/features/skill/presentation/screens/skill_details_page.dart';
 import '/features/career/circular/presentation/screens/circular_detail_screen.dart';
 import '/features/career/jobs/data/models/career_job.dart';
-import '/features/career/jobs/presentation/screens/create_job_screen.dart';
-import '/features/career/jobs/presentation/screens/edit_job_screen.dart';
+import '/features/career/jobs/presentation/screens/create_job_screen.dart'
+    deferred as create_job;
+import '/features/career/jobs/presentation/screens/edit_job_screen.dart'
+    deferred as edit_job;
 import '/features/career/jobs/presentation/screens/job_detail_screen.dart';
 import '/features/lost_found/presentation/screens/create_lost_found_screen.dart';
 import '/features/lost_found/presentation/screens/lost_found_detail_screen.dart';
@@ -83,9 +86,12 @@ import '/features/marketplace/presentation/widgets/marketplace_shell.dart';
 import '/features/marketplace/presentation/widgets/market_theme.dart';
 import '/features/marketplace/presentation/screens/product_detail_screen.dart';
 import '/features/marketplace/data/models/merchant.dart';
-import '/features/marketplace/presentation/screens/merchant_apply_screen.dart';
-import '/features/marketplace/presentation/screens/merchant_manage_screen.dart';
-import '/features/marketplace/presentation/screens/merchant_manage_loader.dart';
+import '/features/marketplace/presentation/screens/merchant_apply_screen.dart'
+    deferred as merchant_apply;
+import '/features/marketplace/presentation/screens/merchant_manage_screen.dart'
+    deferred as merchant_manage;
+import '/features/marketplace/presentation/screens/merchant_manage_loader.dart'
+    deferred as merchant_manage_loader;
 import '/features/marketplace/presentation/screens/market_search_screen.dart';
 import '/features/marketplace/presentation/screens/wishlist_screen.dart';
 import '/features/marketplace/presentation/screens/invoices_screen.dart';
@@ -100,7 +106,8 @@ import '/features/marketplace/presentation/screens/cart_screen.dart';
 import '/features/marketplace/presentation/screens/merchant_profile_screen.dart';
 import '/features/marketplace/presentation/screens/marketplace_info_screen.dart';
 import '/features/marketplace/data/models/category.dart';
-import '/features/resource/presentation/screens/add_edit_resource_screen.dart';
+import '/features/resource/presentation/screens/add_edit_resource_screen.dart'
+    deferred as add_edit_resource;
 import '/widgets/image_viewer.dart';
 import '/features/club/domain/entities/club.dart';
 import '/features/auth/presentation/screens/get_verification_code_screen.dart';
@@ -116,8 +123,10 @@ import '/features/profile/presentation/screens/manage_devices_page.dart';
 import '/features/profile/presentation/screens/notification_settings_page.dart';
 import '/features/profile/presentation/screens/my_submissions_page.dart';
 import '/features/profile/presentation/screens/profile_page.dart';
-import '/features/developer/presentation/screens/developer_page.dart';
-import '/features/contributor/presentation/screens/contributor_page.dart';
+import '/features/developer/presentation/screens/developer_page.dart'
+    deferred as developer;
+import '/features/contributor/presentation/screens/contributor_page.dart'
+    deferred as contributor;
 import '/features/notification/presentation/screens/notification_detail_screen.dart';
 import '/features/notification/presentation/screens/notification_screen.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
@@ -127,13 +136,15 @@ import '/features/onboarding/presentation/providers/onboarding_provider.dart';
 import '/features/onboarding/presentation/screens/onboarding_screen.dart';
 import '/features/app_update/presentation/providers/app_update_provider.dart';
 import '/features/app_update/presentation/screens/force_update_screen.dart';
-import '/features/cache/presentation/cache_management_page.dart';
+import '/features/cache/presentation/cache_management_page.dart'
+    deferred as cache_management;
 import '/features/reward/presentation/screens/reward_page.dart';
 import '/features/member_card/presentation/screens/member_card_page.dart';
 import '/features/referral/referral_page.dart';
 import '/features/feedback/presentation/screens/feedback_page.dart';
 import '/features/feedback/presentation/screens/create_feedback_page.dart';
 import 'app_route.dart';
+import 'route_guard.dart';
 import 'scaffold_with_navbar.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -160,101 +171,27 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: notifier,
     redirect: (BuildContext context, GoRouterState state) {
       final userAsync = ref.read(currentUserProvider);
-      final bool isLoggedIn = userAsync.value != null;
-      final bool isLoading = userAsync.isLoading || userAsync.isRefreshing;
-      final bool hasError = userAsync.hasError;
-
       final onboardingAsync = ref.read(onboardingSeenProvider);
-      final bool isOnboardingResolving =
-          onboardingAsync.isLoading || onboardingAsync.isRefreshing;
-      // Default to "seen" on error so a storage hiccup never traps a
-      // returning user on the onboarding screen forever.
-      final bool hasSeenOnboarding = onboardingAsync.value ?? true;
-
-      final matchedLocation = state.matchedLocation;
-
-      // ── Force update: overrides every other gate, including auth/onboarding.
-      // Fails open while the config is still loading or failed to load (the
-      // provider itself swallows errors to `null`), so a backend hiccup never
-      // locks out the whole user base.
       final appConfig = ref.read(appUpdateConfigProvider).value;
-      final installedVersionCode = int.tryParse(
-        ref.read(packageInfoProvider).value?.buildNumber ?? '',
+      return resolveRedirect(
+        RouteGuardState(
+          isLoggedIn: userAsync.value != null,
+          isAuthResolving:
+              userAsync.isLoading ||
+              userAsync.isRefreshing ||
+              userAsync.hasError,
+          isOnboardingResolving:
+              onboardingAsync.isLoading || onboardingAsync.isRefreshing,
+          // Default to "seen" on error so a storage hiccup never traps a
+          // returning user on the onboarding screen forever.
+          hasSeenOnboarding: onboardingAsync.value ?? true,
+          minSupportedVersionCode: appConfig?.minSupportedVersionCode,
+          installedVersionCode: int.tryParse(
+            ref.read(packageInfoProvider).value?.buildNumber ?? '',
+          ),
+        ),
+        state.matchedLocation,
       );
-      final bool requiresForceUpdate =
-          appConfig != null &&
-          installedVersionCode != null &&
-          installedVersionCode < appConfig.minSupportedVersionCode;
-      if (requiresForceUpdate) {
-        return matchedLocation == AppRoute.forceUpdate.path
-            ? null
-            : AppRoute.forceUpdate.path;
-      }
-      if (matchedLocation == AppRoute.forceUpdate.path) {
-        return '/splash'; // no longer required — re-run the normal flow
-      }
-
-      // ── Splash screen: wait for auth + onboarding resolution ──
-      if (matchedLocation == '/splash') {
-        if (isLoading || hasError || isOnboardingResolving) {
-          return null; // stay on splash while checking state or on network error
-        }
-        if (!hasSeenOnboarding) return AppRoute.onboarding.path;
-        if (!isLoggedIn) return AppRoute.login.path;
-        return AppRoute.home.path; // logged in → go to home
-      }
-
-      // ── During auth/onboarding loading on any other route, just wait ──
-      if (isLoading || hasError || isOnboardingResolving) return null;
-
-      // ── First launch: force onboarding before anything else ──
-      if (!hasSeenOnboarding) {
-        return matchedLocation == AppRoute.onboarding.path
-            ? null
-            : AppRoute.onboarding.path;
-      }
-      if (matchedLocation == AppRoute.onboarding.path) {
-        // Onboarding already seen — don't allow navigating back to it.
-        return isLoggedIn ? AppRoute.home.path : AppRoute.login.path;
-      }
-
-      final isGuestRoute =
-          matchedLocation == AppRoute.login.path ||
-          matchedLocation == AppRoute.forgotPassword.path ||
-          matchedLocation == AppRoute.resetPassword.path ||
-          matchedLocation == AppRoute.newPassword.path ||
-          matchedLocation == AppRoute.verification.path ||
-          matchedLocation.startsWith('/register') ||
-          matchedLocation.startsWith('/create-account') ||
-          matchedLocation.startsWith('/teacher-signup') ||
-          matchedLocation.startsWith('/staff-signup') ||
-          matchedLocation == AppRoute.studentVerificationPlacement.path ||
-          matchedLocation == AppRoute.documentSignup.path;
-
-      // Help pages reachable from login, and fine to view signed in too.
-      final isPublicRoute =
-          matchedLocation == AppRoute.getVerificationCode.path ||
-          matchedLocation == AppRoute.contactWithCR.path;
-      if (isPublicRoute) return null;
-
-      if (!isLoggedIn) {
-        if (!isGuestRoute) {
-          return AppRoute.login.path;
-        }
-        return null; // Stay on guest routes
-      }
-
-      // Just signed up without a code — continue to document verification.
-      if (matchedLocation == AppRoute.documentSignup.path) {
-        return AppRoute.studentVerificationRequest.path;
-      }
-
-      // Logged in — redirect away from guest routes
-      if (isLoggedIn && isGuestRoute) {
-        return AppRoute.home.path;
-      }
-
-      return null;
     },
     routes: [
       // Splash screen shown during initial auth check
@@ -1208,7 +1145,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.careerJobCreate.name,
         path: AppRoute.careerJobCreate.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const CreateJobScreen(),
+        builder: (context, state) => DeferredPage(
+          create_job.loadLibrary,
+          () => create_job.CreateJobScreen(),
+        ),
       ),
       GoRoute(
         name: AppRoute.careerJobDetails.name,
@@ -1225,7 +1165,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final job = state.extra as CareerJob;
-          return EditJobScreen(job: job);
+          return DeferredPage(
+            edit_job.loadLibrary,
+            () => edit_job.EditJobScreen(job: job),
+          );
         },
       ),
       GoRoute(
@@ -1251,8 +1194,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.merchantApply.name,
         path: AppRoute.merchantApply.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            MarketTheme(child: const MerchantApplyScreen()),
+        builder: (context, state) => MarketTheme(
+          child: DeferredPage(
+            merchant_apply.loadLibrary,
+            () => merchant_apply.MerchantApplyScreen(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.merchantManage.name,
@@ -1261,12 +1208,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final extra = state.extra;
           if (extra is Merchant) {
-            return MarketTheme(child: MerchantManageScreen(merchant: extra));
+            return MarketTheme(
+              child: DeferredPage(
+                merchant_manage.loadLibrary,
+                () => merchant_manage.MerchantManageScreen(merchant: extra),
+              ),
+            );
           }
           // Opened from a push notification: only the id is known.
           return MarketTheme(
-            child: MerchantManageLoader(
-              merchantId: state.pathParameters['merchantId'] ?? '',
+            child: DeferredPage(
+              merchant_manage_loader.loadLibrary,
+              () => merchant_manage_loader.MerchantManageLoader(
+                merchantId: state.pathParameters['merchantId'] ?? '',
+              ),
             ),
           );
         },
@@ -1413,13 +1368,16 @@ final routerProvider = Provider<GoRouter>((ref) {
               state.uri.queryParameters['initialBatchName'];
 
           return NoTransitionPage(
-            child: AddEditResourceScreen(
-              universityId: universityId,
-              departmentId: departmentId,
-              courseCode: courseCode,
-              lessonNo: lessonNo,
-              type: type,
-              initialBatchName: initialBatchName,
+            child: DeferredPage(
+              add_edit_resource.loadLibrary,
+              () => add_edit_resource.AddEditResourceScreen(
+                universityId: universityId,
+                departmentId: departmentId,
+                courseCode: courseCode,
+                lessonNo: lessonNo,
+                type: type,
+                initialBatchName: initialBatchName,
+              ),
             ),
           );
         },
@@ -1435,13 +1393,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           final resource = state.extra as Resource?;
 
           return NoTransitionPage(
-            child: AddEditResourceScreen(
-              resource: resource,
-              universityId: universityId,
-              departmentId: departmentId,
-              courseCode: courseCode,
-              lessonNo: resource?.lessonNo ?? 0,
-              type: resource?.type ?? 'note',
+            child: DeferredPage(
+              add_edit_resource.loadLibrary,
+              () => add_edit_resource.AddEditResourceScreen(
+                resource: resource,
+                universityId: universityId,
+                departmentId: departmentId,
+                courseCode: courseCode,
+                lessonNo: resource?.lessonNo ?? 0,
+                type: resource?.type ?? 'note',
+              ),
             ),
           );
         },
@@ -1450,22 +1411,34 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.developer.name,
         path: AppRoute.developer.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: DeveloperPage()),
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: DeferredPage(
+            developer.loadLibrary,
+            () => developer.DeveloperPage(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.contributors.name,
         path: AppRoute.contributors.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: ContributorPage()),
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: DeferredPage(
+            contributor.loadLibrary,
+            () => contributor.ContributorPage(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.cacheManagement.name,
         path: AppRoute.cacheManagement.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: CacheManagementPage()),
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: DeferredPage(
+            cache_management.loadLibrary,
+            () => cache_management.CacheManagementPage(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.reward.name,

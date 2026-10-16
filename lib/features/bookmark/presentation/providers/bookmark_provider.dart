@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
@@ -7,6 +8,7 @@ import '/features/resource/domain/entities/resource.dart';
 import '../../domain/entities/bookmark.dart';
 import '../../domain/repositories/bookmark_repository.dart';
 import '../../data/repositories/bookmark_repository_impl.dart';
+import '../../../../core/providers/cache_for.dart';
 
 final bookmarkRepositoryProvider = Provider<BookmarkRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -19,20 +21,30 @@ final bookmarkRepositoryProvider = Provider<BookmarkRepository>((ref) {
   );
 });
 
-final userBookmarksProvider = FutureProvider.family<List<Bookmark>, String>((
-  ref,
-  userId,
-) async {
-  final repo = ref.watch(bookmarkRepositoryProvider);
-  final result = await repo.getBookmarks(userId);
-  return result.fold((failure) => [], (bookmarks) => bookmarks);
-});
+final userBookmarksProvider = FutureProvider.autoDispose
+    .family<List<Bookmark>, String>((ref, userId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final repo = ref.watch(bookmarkRepositoryProvider);
+      final result = await repo.getBookmarks(userId);
+      return result.fold((failure) => [], (bookmarks) => bookmarks);
+    });
 
-final entityDetailProvider =
-    FutureProvider.family<dynamic, ({String type, String id})>((
-      ref,
-      arg,
-    ) async {
+/// The user's resource bookmarks as entityId → bookmarkId, for cards that
+/// need "is this one bookmarked, and under which id". Watch it with
+/// `.select((ids) => ids[resourceId])` so a list of cards doesn't rebuild
+/// every card, or rescan the whole list per card, when one bookmark changes.
+final resourceBookmarkIdsProvider = Provider.autoDispose
+    .family<Map<String, String>, String>((ref, userId) {
+      final bookmarks = ref.watch(userBookmarksProvider(userId)).value ?? [];
+      return {
+        for (final b in bookmarks)
+          if (b.entityType == 'resource') b.entityId: b.id,
+      };
+    });
+
+final entityDetailProvider = FutureProvider.autoDispose
+    .family<dynamic, ({String type, String id})>((ref, arg) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(bookmarkRepositoryProvider);
       final result = await repo.getEntityDetail(arg.type, arg.id);
       return result.fold((failure) => null, (detail) => detail);

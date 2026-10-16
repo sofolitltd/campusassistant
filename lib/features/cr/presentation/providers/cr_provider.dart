@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '/core/di.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/features/department/presentation/providers/department_provider.dart';
 import '../../data/models/cr_model.dart';
+import '/core/providers/cache_for.dart';
 
 final crProvider = FutureProvider<List<CrModel>>((ref) async {
   final apiClient = ref.watch(apiClientProvider);
@@ -27,11 +29,12 @@ final crProvider = FutureProvider<List<CrModel>>((ref) async {
 });
 
 // Admin providers
-final crsByDepartmentAdminProvider =
-    FutureProvider.family<
-      List<CrModel>,
-      ({String universityId, String departmentId})
-    >((ref, arg) async {
+final crsByDepartmentAdminProvider = FutureProvider.autoDispose
+    .family<List<CrModel>, ({String universityId, String departmentId})>((
+      ref,
+      arg,
+    ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
 
       final response = await apiClient.get(

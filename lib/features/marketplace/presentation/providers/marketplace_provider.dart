@@ -7,12 +7,14 @@ import '../../data/models/address.dart';
 import '../../data/models/category.dart';
 import '../../data/models/merchant.dart';
 import '../../data/models/product.dart';
+import '/core/providers/cache_for.dart';
 
-final productsListProvider =
-    FutureProvider.family<
-      List<Product>,
-      ({String universityId, String departmentId})
-    >((ref, params) async {
+final productsListProvider = FutureProvider.autoDispose
+    .family<List<Product>, ({String universityId, String departmentId})>((
+      ref,
+      params,
+    ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         '/products-by-location',
@@ -28,11 +30,12 @@ final productsListProvider =
     });
 
 /// Admin-featured products for the home carousel.
-final featuredProductsProvider =
-    FutureProvider.family<
-      List<Product>,
-      ({String universityId, String departmentId})
-    >((ref, params) async {
+final featuredProductsProvider = FutureProvider.autoDispose
+    .family<List<Product>, ({String universityId, String departmentId})>((
+      ref,
+      params,
+    ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         '/products-by-location',
@@ -49,11 +52,12 @@ final featuredProductsProvider =
           .toList();
     });
 
-final productsListByCategoryProvider =
-    FutureProvider.family<
+final productsListByCategoryProvider = FutureProvider.autoDispose
+    .family<
       List<Product>,
       ({String universityId, String departmentId, String categoryId})
     >((ref, params) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         '/products-by-location',
@@ -69,14 +73,13 @@ final productsListByCategoryProvider =
           .toList();
     });
 
-final productDetailsProvider = FutureProvider.family<Product, String>((
-  ref,
-  productId,
-) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.get('/products/$productId');
-  return Product.fromJson(response.data as Map<String, dynamic>);
-});
+final productDetailsProvider = FutureProvider.autoDispose
+    .family<Product, String>((ref, productId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get('/products/$productId');
+      return Product.fromJson(response.data as Map<String, dynamic>);
+    });
 
 final categoriesListProvider = FutureProvider<List<Category>>((ref) async {
   final apiClient = ref.watch(apiClientProvider);
@@ -106,52 +109,54 @@ final merchantsListProvider = FutureProvider<List<Merchant>>((ref) async {
   return merchants;
 });
 
-final merchantByIdProvider = FutureProvider.family<Merchant, String>((
-  ref,
-  merchantId,
-) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.get('/merchants/$merchantId');
-  return Merchant.fromJson(response.data as Map<String, dynamic>);
-});
+final merchantByIdProvider = FutureProvider.autoDispose
+    .family<Merchant, String>((ref, merchantId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get('/merchants/$merchantId');
+      return Merchant.fromJson(response.data as Map<String, dynamic>);
+    });
 
 /// Public storefront view of one merchant: published products visible to this
 /// student's university/department (same endpoint the market home uses).
-final merchantProductsProvider = FutureProvider.family<List<Product>, String>((
-  ref,
-  merchantId,
-) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final user = await ref.watch(userProvider.future);
-  final response = await apiClient.get(
-    '/products-by-location',
-    queryParameters: {
-      'merchant_id': merchantId,
-      'university_id': user.university,
-      'department_id': user.department,
-    },
-  );
-  final data = response.data as List;
-  return data.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
-});
+final merchantProductsProvider = FutureProvider.autoDispose
+    .family<List<Product>, String>((ref, merchantId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final user = await ref.watch(userProvider.future);
+      final response = await apiClient.get(
+        '/products-by-location',
+        queryParameters: {
+          'merchant_id': merchantId,
+          'university_id': user.university,
+          'department_id': user.department,
+        },
+      );
+      final data = response.data as List;
+      return data
+          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
 /// The owner's own view of their business's products — unlike
 /// `merchantProductsProvider` (the public storefront view), this includes
 /// unpublished/draft products, since the owner needs to see and manage
 /// everything, not just what's live.
-final myMerchantProductsProvider = FutureProvider.family<List<Product>, String>(
-  (ref, merchantId) async {
-    final apiClient = ref.watch(apiClientProvider);
-    final response = await apiClient.get('/my/merchants/$merchantId/products');
-    final rawData = response.data;
-    final items = rawData is List
-        ? rawData
-        : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
-    return items
-        .map((e) => Product.fromJson(e as Map<String, dynamic>))
-        .toList();
-  },
-);
+final myMerchantProductsProvider = FutureProvider.autoDispose
+    .family<List<Product>, String>((ref, merchantId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get(
+        '/my/merchants/$merchantId/products',
+      );
+      final rawData = response.data;
+      final items = rawData is List
+          ? rawData
+          : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
+      return items
+          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
 Future<Product> createMyProduct(
   WidgetRef ref, {

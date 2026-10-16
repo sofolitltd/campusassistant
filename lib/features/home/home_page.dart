@@ -28,6 +28,18 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  static const _sections = <Widget>[
+    StudentVerificationBanner(),
+    HomeSection(child: ShortcutStrip()),
+    DailyRewardBanner(),
+    SubscriptionSection(),
+    QuickFavoritesSection(),
+    BannerAdWidget(margin: EdgeInsets.only(bottom: Spacing.lg)),
+    BannerSection(),
+    SkillUpSection(),
+    MarketplaceSection(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -44,25 +56,21 @@ class _HomePageState extends ConsumerState<HomePage> {
                 onOpenMenu: () =>
                     ScaffoldWithNavBar.scaffoldKey.currentState?.openDrawer(),
               ),
-              SliverToBoxAdapter(
-                child: ColoredBox(
-                  color: colors.bg,
-                  child: const Column(
-                    children: [
-                      StudentVerificationBanner(),
-                      HomeSection(child: ShortcutStrip()),
-                      DailyRewardBanner(),
-                      SubscriptionSection(),
-                      QuickFavoritesSection(),
-                      BannerAdWidget(
-                        margin: EdgeInsets.only(bottom: Spacing.lg),
-                      ),
-                      BannerSection(),
-                      SkillUpSection(),
-                      MarketplaceSection(),
-                    ],
-                  ),
-                ),
+              // Lazy so sections below the fold (and their API calls) wait
+              // until they're scrolled near; KeepAlive so a section that has
+              // built isn't torn down and refetched (or its ad reloaded) each
+              // time it scrolls off-screen. The two auto-wrappers are off
+              // because KeepAlive must be the list's direct child.
+              SliverList.list(
+                addAutomaticKeepAlives: false,
+                addRepaintBoundaries: false,
+                children: [
+                  for (final section in _sections)
+                    KeepAlive(
+                      keepAlive: true,
+                      child: RepaintBoundary(child: section),
+                    ),
+                ],
               ),
             ],
           ),

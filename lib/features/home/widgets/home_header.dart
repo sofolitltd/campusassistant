@@ -12,6 +12,7 @@ import '/features/notification/presentation/widgets/notification_badge.dart';
 import '/routes/app_route.dart';
 import 'home_section.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Gradient header: profile avatar, search / notifications / menu actions and
 /// the greeting. The action row and the sheet's rounded top edge are pinned, so
@@ -196,7 +197,7 @@ class _Avatar extends StatelessWidget {
             width: 40,
             height: 40,
             child: imageUrl != null
-                ? Image.network(
+                ? AppNetworkImage(
                     imageUrl!,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => fallback,

@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '/core/network/api_endpoints.dart';
 import 'job_image_gallery.dart' show PdfThumbnailWidget;
 import '/core/theme/tokens/app_radius.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// A card-sized leading thumbnail for a job/circular: the first attachment
 /// (image, or a PDF's first page via [PdfThumbnailWidget]) if one exists,
@@ -52,11 +52,11 @@ class AttachmentThumbnail extends StatelessWidget {
         height: size,
         child: isPdf
             ? PdfThumbnailWidget(url: resolvedUrl)
-            : CachedNetworkImage(
-                imageUrl: resolvedUrl,
+            : AppNetworkImage(
+                resolvedUrl,
                 fit: .cover,
-                placeholder: (context, url) => Container(color: background),
-                errorWidget: (context, url, error) => _fallback(),
+                placeholder: (context) => Container(color: background),
+                errorBuilder: (context, error, _) => _fallback(),
               ),
       ),
     );

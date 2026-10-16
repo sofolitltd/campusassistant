@@ -16,6 +16,7 @@ import '../widgets/wishlist_button.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final Product? product;
@@ -104,7 +105,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               itemCount: images.length,
                               onPageChanged: (i) =>
                                   setState(() => _imageIndex = i),
-                              itemBuilder: (context, i) => Image.network(
+                              itemBuilder: (context, i) => AppNetworkImage(
                                 ApiEndpoints.resolveImageUrl(images[i]),
                                 fit: .cover,
                                 errorBuilder: (context, error, stackTrace) =>

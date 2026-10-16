@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/student/domain/entities/student.dart';
 import '/features/student/domain/usecases/get_students.dart';
 import '/features/student/presentation/providers/student_provider.dart';
+import '../../../../core/providers/cache_for.dart';
 
 // Search Query
 final bloodBankSearchQueryProvider =
@@ -47,27 +49,29 @@ const int bloodBankPageSize = 20;
 /// One page (numbered, not infinite-scroll) of blood bank results, keyed by
 /// page number — matches the tab/page-number pagination used on the All
 /// Students page instead of a cumulative loadMore() list.
-final bloodBankPageProvider = FutureProvider.family<BloodBankState, int>((
-  ref,
-  page,
-) async {
-  final search = ref.watch(bloodBankSearchQueryProvider);
-  final scope = ref.watch(bloodBankScopeProvider);
-  final bloodGroup = ref.watch(bloodBankSelectedGroupProvider);
-  final profile = await ref.watch(userProvider.future);
+final bloodBankPageProvider = FutureProvider.autoDispose
+    .family<BloodBankState, int>((ref, page) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final search = ref.watch(bloodBankSearchQueryProvider);
+      final scope = ref.watch(bloodBankScopeProvider);
+      final bloodGroup = ref.watch(bloodBankSelectedGroupProvider);
+      final profile = await ref.watch(userProvider.future);
 
-  final params = GetStudentsParams(
-    universityId: scope <= 2 ? profile.information.universityId : null,
-    departmentId: scope <= 1 ? profile.information.departmentId : null,
-    batch: scope == 0 ? profile.information.batchId : null,
-    search: search.isEmpty ? null : search,
-    bloodGroup: bloodGroup,
-    limit: bloodBankPageSize,
-    offset: (page - 1) * bloodBankPageSize,
-  );
+      final params = GetStudentsParams(
+        universityId: scope <= 2 ? profile.information.universityId : null,
+        departmentId: scope <= 1 ? profile.information.departmentId : null,
+        batch: scope == 0 ? profile.information.batchId : null,
+        search: search.isEmpty ? null : search,
+        bloodGroup: bloodGroup,
+        limit: bloodBankPageSize,
+        offset: (page - 1) * bloodBankPageSize,
+      );
 
-  final useCase = GetStudents(ref.read(studentRepositoryProvider));
-  final paginated = await useCase(params);
+      final useCase = GetStudents(ref.read(studentRepositoryProvider));
+      final paginated = await useCase(params);
 
-  return BloodBankState(students: paginated.students, total: paginated.total);
-});
+      return BloodBankState(
+        students: paginated.students,
+        total: paginated.total,
+      );
+    });

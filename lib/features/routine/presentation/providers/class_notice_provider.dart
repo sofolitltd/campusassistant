@@ -4,16 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di.dart';
 import '../../data/models/class_notice.dart';
+import '../../../../core/providers/cache_for.dart';
 
 typedef ClassNoticeScope = ({String departmentId, String? batchId});
 
 /// Notices for the user's batch plus department-wide ones. The server drops
 /// expired rows, so what comes back is what should be shown.
-final classNoticesProvider =
-    FutureProvider.family<List<ClassNotice>, ClassNoticeScope>((
-      ref,
-      scope,
-    ) async {
+final classNoticesProvider = FutureProvider.autoDispose
+    .family<List<ClassNotice>, ClassNoticeScope>((ref, scope) async {
+      ref.cacheFor(kParamProviderCacheTime);
       if (scope.departmentId.isEmpty) return [];
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(

@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import '/core/widgets/custom_header_layout.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,7 @@ import '../widgets/report_bottom_sheet.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/app_network_image.dart';
 
 class LostFoundDetailScreen extends ConsumerWidget {
   final String itemId;
@@ -59,8 +61,8 @@ class LostFoundDetailScreen extends ConsumerWidget {
                     child: PageView(
                       children: item.imageUrls
                           .map(
-                            (url) => CachedNetworkImage(
-                              imageUrl: ApiEndpoints.resolveImageUrl(url),
+                            (url) => AppNetworkImage(
+                              ApiEndpoints.resolveImageUrl(url),
                               fit: .cover,
                             ),
                           )

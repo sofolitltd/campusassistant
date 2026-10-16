@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '/features/resource/domain/entities/resource.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
@@ -16,6 +16,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/features/reward/presentation/widgets/reward_cost_indicator.dart';
 import '/utils/date_formatters.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class ResourceInfoSheet extends ConsumerStatefulWidget {
   final Resource resource;
@@ -230,19 +231,17 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(RadiusToken.sm - 1),
                   child: resource.thumbnailUrl.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: ApiEndpoints.resolveImageUrl(
-                            resource.thumbnailUrl,
-                          ),
+                      ? AppNetworkImage(
+                          ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
                           fit: .cover,
-                          placeholder: (context, _) => Center(
+                          placeholder: (context) => Center(
                             child: Icon(
                               _getIconForType(resource.type),
                               size: 44,
                               color: context.colors.primary,
                             ),
                           ),
-                          errorWidget: (context, _, _) => Center(
+                          errorBuilder: (context, _, _) => Center(
                             child: Icon(
                               _getIconForType(resource.type),
                               size: 44,
@@ -268,9 +267,8 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
                     children: [
                       Text(
                         resource.title,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: .bold),
                       ),
                       const SizedBox(height: Spacing.xs),
                       IntrinsicHeight(
@@ -314,9 +312,7 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
                                 ),
                                 border: isProContent
                                     ? null
-                                    : Border.all(
-                                        color: context.colors.border,
-                                      ),
+                                    : Border.all(color: context.colors.border),
                               ),
                               child: Row(
                                 mainAxisSize: .min,
@@ -550,9 +546,7 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
                 FilledButton(
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(0, 32),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Spacing.lg,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   onPressed: _submittingRating
@@ -611,7 +605,9 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
       if (widget.onDownload != null)
         _quickAction(
           context,
-          icon: widget.isDownloaded ? LucideIcons.fileText : LucideIcons.download,
+          icon: widget.isDownloaded
+              ? LucideIcons.fileText
+              : LucideIcons.download,
           label: widget.isDownloaded ? 'Open' : 'Download',
           onPressed: widget.onDownload!,
         ),
@@ -690,10 +686,8 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
       padding: EdgeInsets.only(bottom: bottomSpacing),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          fontWeight: .bold,
-          color: context.colors.text,
-        ),
+        style: Theme.of(context).textTheme.titleSmall
+            ?.copyWith(fontWeight: .bold, color: context.colors.text),
       ),
     );
   }
@@ -719,9 +713,8 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
               width: 100,
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colors.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.colors.textMuted),
               ),
             ),
             Expanded(

@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'auth/token_store.dart';
 import 'network/api_client.dart';
 import 'network/api_endpoints.dart';
-import '../features/auth/data/datasources/auth_local_data_source.dart';
-import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/career/circular/data/repositories/circular_repository.dart';
 import '../features/career/jobs/data/repositories/career_job_repository.dart';
 import '../features/career/reminders/data/repositories/career_reminder_repository.dart';
@@ -12,26 +12,23 @@ import '../features/lost_found/data/repositories/lost_found_repository.dart';
 import '../features/search/data/repositories/search_repository.dart';
 import 'cache/cache_manager.dart';
 import 'cache/connectivity_service.dart';
-import 'websocket/websocket_service.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) {
-  final storage = ref.watch(secureStorageProvider);
+  final tokens = TokenStore.instance;
 
   return ApiClient(
     baseUrl: ApiEndpoints.baseUrl,
-    getToken: () async {
-      return await storage.read(key: AuthLocalDataSourceImpl.cachedTokenKey);
-    },
+    getToken: tokens.getAccessToken,
     onUnauthorized: () async {
-      final refreshToken = await storage.read(
-        key: AuthLocalDataSourceImpl.cachedRefreshTokenKey,
-      );
+      final refreshToken = await tokens.getRefreshToken();
       if (refreshToken == null || refreshToken.isEmpty) return false;
       try {
         final dio = Dio(
           BaseOptions(
             baseUrl: ApiEndpoints.baseUrl,
             headers: {'Content-Type': 'application/json'},
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 15),
           ),
         );
         final response = await dio.post(
@@ -40,10 +37,13 @@ final apiClientProvider = Provider<ApiClient>((ref) {
         );
         final newToken = response.data['access_token']?.toString();
         if (newToken == null || newToken.isEmpty) return false;
-        await storage.write(
-          key: AuthLocalDataSourceImpl.cachedTokenKey,
-          value: newToken,
-        );
+        await tokens.setAccessToken(newToken);
+        // The server may rotate the refresh token; keeping the old one would
+        // fail the next refresh and log the user out.
+        final newRefresh = response.data['refresh_token']?.toString();
+        if (newRefresh != null && newRefresh.isNotEmpty) {
+          await tokens.setRefreshToken(newRefresh);
+        }
         return true;
       } catch (_) {
         return false;
@@ -56,13 +56,10 @@ final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final cacheManager = ref.watch(cacheManagerProvider);
   final connectivity = ref.watch(connectivityServiceProvider);
-  final wsService = ref.watch(websocketServiceProvider);
-
   return CommunityRepository(
     apiClient,
     cacheManager: cacheManager,
     connectivity: connectivity,
-    webSocketService: wsService,
   );
 });
 

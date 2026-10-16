@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
@@ -38,6 +37,8 @@ import 'resource_info_sheet.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
+import '/core/network/download_client.dart';
 
 /// Height of the card's top row (course badge / reward cost). The overflow
 /// menu is centred on this row so the three line up.
@@ -76,6 +77,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   bool _isDownloaded = false;
   bool _isBookmarked = false;
   String? _bookmarkId;
+  String? _savedBookmarkId;
   String _localPath = '';
   CancelToken? _cancelToken;
 
@@ -120,8 +122,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final profileAsync = ref.watch(userProvider);
-    final profileData = profileAsync.value;
 
     List<String> contentBatches = List<String>.from(widget.resource.batches);
     contentBatches.sort((a, b) => b.compareTo(a));
@@ -129,50 +129,24 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     final isProUser = ref.watch(isProUserProvider);
     final isProContent = widget.resource.accessLevel == 'pro';
 
-    final userId = profileData?.uid ?? '';
-    if (userId.isNotEmpty) {
-      final bookmarksValue = ref.watch(userBookmarksProvider(userId));
-      bookmarksValue.whenOrNull(
-        data: (bookmarks) {
-          final match = bookmarks.where(
-            (b) =>
-                b.entityType == 'resource' && b.entityId == widget.resource.id,
+    // Select only the uid: the rest of the profile changing shouldn't
+    // rebuild every card on screen.
+    final userId = ref.watch(
+      userProvider.select((profile) => profile.value?.uid ?? ''),
+    );
+    final savedBookmarkId = userId.isEmpty
+        ? null
+        : ref.watch(
+            resourceBookmarkIdsProvider(userId)
+                .select((ids) => ids[widget.resource.id]),
           );
-          final found = match.isNotEmpty;
-          if (found != _isBookmarked ||
-              (found && _bookmarkId != match.first.id)) {
-            if (mounted) {
-              setState(() {
-                _isBookmarked = found;
-                _bookmarkId = found ? match.first.id : null;
-              });
-            }
-          }
-        },
-      );
+    // Adopt the server's answer when it changes; between changes the local
+    // fields hold the optimistic result of a toggle.
+    if (savedBookmarkId != _savedBookmarkId) {
+      _savedBookmarkId = savedBookmarkId;
+      _bookmarkId = savedBookmarkId;
+      _isBookmarked = savedBookmarkId != null;
     }
-
-    ref.listen(userBookmarksProvider(userId), (_, next) {
-      if (userId.isEmpty) return;
-      next.whenOrNull(
-        data: (bookmarks) {
-          final match = bookmarks.where(
-            (b) =>
-                b.entityType == 'resource' && b.entityId == widget.resource.id,
-          );
-          final found = match.isNotEmpty;
-          if (found != _isBookmarked ||
-              (found && _bookmarkId != match.first.id)) {
-            if (mounted) {
-              setState(() {
-                _isBookmarked = found;
-                _bookmarkId = found ? match.first.id : null;
-              });
-            }
-          }
-        },
-      );
-    });
 
     return Container(
       decoration: BoxDecoration(
@@ -204,7 +178,6 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                     // one line or two.
                     crossAxisAlignment: .end,
                     children: [
-
                       //
                       GestureDetector(
                         onTap: _showInfoBottomSheet,
@@ -243,7 +216,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   Positioned(
                     bottom: 0,
                     right: 12,
-                  
+
                     child: Row(
                       mainAxisSize: .min,
                       children: [
@@ -287,17 +260,15 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   size: 30,
                 )
-              : CachedNetworkImage(
-                  imageUrl: ApiEndpoints.resolveImageUrl(
-                    widget.resource.thumbnailUrl,
-                  ),
+              : AppNetworkImage(
+                  ApiEndpoints.resolveImageUrl(widget.resource.thumbnailUrl),
                   fit: .cover,
-                  placeholder: (context, _) => Icon(
+                  placeholder: (context) => Icon(
                     LucideIcons.fileText,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     size: 30,
                   ),
-                  errorWidget: (context, _, _) => Icon(
+                  errorBuilder: (context, _, _) => Icon(
                     LucideIcons.fileText,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     size: 30,
@@ -382,9 +353,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                     decoration: BoxDecoration(
                       // Same fill as the file-size / page tiles below.
                       color: Theme.of(context).brightness == Brightness.dark
-                          ? Theme.of(
-                              context,
-                            ).colorScheme.surface.withValues(alpha: 0.5)
+                          ? Theme.of(context).colorScheme.surface
+                                .withValues(alpha: 0.5)
                           : context.colors.surfaceAlt,
                       borderRadius: BorderRadius.circular(RadiusToken.xs),
                       border: Border.all(color: context.colors.surfaceAlt),
@@ -448,9 +418,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               widget.resource.title,
               maxLines: 2,
               overflow: .ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: .bold, height: 1.2),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(fontWeight: .bold, height: 1.2),
             ),
             const SizedBox(height: Spacing.xs),
             Text(
@@ -481,9 +450,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   LucideIcons.layers,
                   '${widget.resource.pageCount} Page',
                 ),
-              
-              //
 
+                //
               ],
             ),
           ],
@@ -645,9 +613,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           child: CircularProgressIndicator(
             value: _downloadProgress,
             strokeWidth: 3,
-            backgroundColor: Theme.of(
-              context,
-            ).colorScheme.surface.withValues(alpha: 0.5),
+            backgroundColor: Theme.of(context).colorScheme.surface
+                .withValues(alpha: 0.5),
           ),
         ),
         Text(
@@ -867,9 +834,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               const SizedBox(height: Spacing.lg),
               Text(
                 'Unlock to Download',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: .bold),
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: .bold),
               ),
               const SizedBox(height: Spacing.xs),
               Text(
@@ -877,9 +843,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                 textAlign: .center,
                 maxLines: 2,
                 overflow: .ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: context.colors.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: context.colors.textMuted),
               ),
               const SizedBox(height: Spacing.lg),
               Container(
@@ -919,9 +884,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                     ? 'Ads aren\'t available on web. Go Pro for unlimited downloads.'
                     : 'Watch a short ad to earn 1 coin, or go Pro for unlimited downloads.',
                 textAlign: .center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colors.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.colors.textMuted),
               ),
               const SizedBox(height: Spacing.xl),
               if (!kIsWeb) ...[
@@ -963,7 +927,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               const SizedBox(height: Spacing.xs),
               TextButton(
                 style: ButtonStyle(
-                  minimumSize: WidgetStateProperty.all(const Size.fromHeight(32)),
+                  minimumSize: WidgetStateProperty.all(
+                    const Size.fromHeight(32),
+                  ),
                 ),
                 onPressed: () => Navigator.of(ctx).pop(false),
                 child: Text(
@@ -1105,7 +1071,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
   Future<bool> _downloadFile(String url, String path) async {
     try {
-      await Dio().download(
+      await downloadClient.download(
         url,
         path,
         cancelToken: _cancelToken,

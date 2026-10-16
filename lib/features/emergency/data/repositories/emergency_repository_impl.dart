@@ -52,10 +52,12 @@ class EmergencyRepositoryImpl implements EmergencyRepository {
 
         // Cache the result
         final cacheItems = model.contacts.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: 'emergency_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.emergency,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: 'emergency_$cacheKey',
+            items: cacheItems,
+            ttl: CacheTTL.emergency,
+          ),
         );
 
         return Right(

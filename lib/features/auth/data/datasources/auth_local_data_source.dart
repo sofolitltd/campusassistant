@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../../../core/auth/token_store.dart';
 import '../models/user_model.dart';
 
 abstract class AuthLocalDataSource {
@@ -18,40 +19,40 @@ abstract class AuthLocalDataSource {
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final FlutterSecureStorage secureStorage;
-  static const String cachedTokenKey = 'CACHED_AUTH_TOKEN';
-  static const String cachedRefreshTokenKey = 'CACHED_REFRESH_TOKEN';
+  static const String cachedTokenKey = TokenStore.accessTokenKey;
+  static const String cachedRefreshTokenKey = TokenStore.refreshTokenKey;
   static const String cachedUserKey = 'CACHED_USER_PROFILE';
 
   AuthLocalDataSourceImpl({required this.secureStorage});
 
   @override
   Future<void> cacheToken(String token) {
-    return secureStorage.write(key: cachedTokenKey, value: token);
+    return TokenStore.instance.setAccessToken(token);
   }
 
   @override
   Future<String?> getToken() {
-    return secureStorage.read(key: cachedTokenKey);
+    return TokenStore.instance.getAccessToken();
   }
 
   @override
   Future<void> deleteToken() {
-    return secureStorage.delete(key: cachedTokenKey);
+    return TokenStore.instance.clearAccessToken();
   }
 
   @override
   Future<void> cacheRefreshToken(String token) {
-    return secureStorage.write(key: cachedRefreshTokenKey, value: token);
+    return TokenStore.instance.setRefreshToken(token);
   }
 
   @override
   Future<String?> getRefreshToken() {
-    return secureStorage.read(key: cachedRefreshTokenKey);
+    return TokenStore.instance.getRefreshToken();
   }
 
   @override
   Future<void> deleteRefreshToken() {
-    return secureStorage.delete(key: cachedRefreshTokenKey);
+    return TokenStore.instance.clearRefreshToken();
   }
 
   @override

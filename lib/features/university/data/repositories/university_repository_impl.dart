@@ -34,10 +34,12 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
         // Cache the result
         final cacheItems = remoteUniversities.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: cacheItems,
-          ttl: CacheTTL.university,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: cacheItems,
+            ttl: CacheTTL.university,
+          ),
         );
 
         return Right(entities);
@@ -152,10 +154,12 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
         // Cache the result
         final cacheItems = halls.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: cacheItems,
-          ttl: CacheTTL.hall,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: cacheItems,
+            ttl: CacheTTL.hall,
+          ),
         );
 
         return Right(entities);

@@ -5,6 +5,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '/features/community/data/models/community_comment.dart';
 import '/core/di.dart';
+import '/core/widgets/text_controller_scope.dart';
 import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import '/core/theme/tokens/app_radius.dart';
@@ -12,6 +13,7 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class CommentItem extends ConsumerStatefulWidget {
   final CommunityComment comment;
@@ -57,39 +59,41 @@ class _CommentItemState extends ConsumerState<CommentItem> {
   }
 
   void _showEditDialog() {
-    final controller = TextEditingController(text: widget.comment.content);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Edit Comment',
-          style: GoogleFonts.outfit(fontWeight: .bold),
-        ),
-        content: TextField(
-          controller: controller,
-          maxLines: 3,
-          decoration: InputDecoration(hintText: 'Update your comment...'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder: (context) => TextControllerScope(
+        initialText: widget.comment.content,
+        builder: (context, controller) => AlertDialog(
+          title: Text(
+            'Edit Comment',
+            style: GoogleFonts.outfit(fontWeight: .bold),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (controller.text.isNotEmpty) {
-                await ref
-                    .read(communityRepositoryProvider)
-                    .updateComment(widget.comment.id, controller.text.trim());
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  widget.onRefresh();
+          content: TextField(
+            controller: controller,
+            maxLines: 3,
+            decoration: InputDecoration(hintText: 'Update your comment...'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (controller.text.isNotEmpty) {
+                  await ref
+                      .read(communityRepositoryProvider)
+                      .updateComment(widget.comment.id, controller.text.trim());
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    widget.onRefresh();
+                  }
                 }
-              }
-            },
-            child: const Text('Update'),
-          ),
-        ],
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -141,11 +145,10 @@ class _CommentItemState extends ConsumerState<CommentItem> {
             children: [
               CircleAvatar(
                 radius: widget.isReply ? 12 : 14,
-                backgroundColor: Theme.of(
-                  context,
-                ).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(context).primaryColor
+                    .withValues(alpha: 0.1),
                 backgroundImage: widget.comment.authorAvatar != null
-                    ? NetworkImage(
+                    ? AppNetworkImage.provider(
                         ApiEndpoints.resolveImageUrl(
                           widget.comment.authorAvatar,
                         ),

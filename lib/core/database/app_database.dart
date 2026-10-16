@@ -50,7 +50,9 @@ class SyncQueue extends Table {
 
 @DriftDatabase(tables: [CacheEntries, SyncQueue])
 class OfflineDatabase extends _$OfflineDatabase {
-  OfflineDatabase() : super(_openConnection());
+  /// [executor] is for tests (e.g. `NativeDatabase.memory()`).
+  OfflineDatabase([QueryExecutor? executor])
+    : super(executor ?? _openConnection());
 
   // Bump version when changing schema
   @override
@@ -124,7 +126,10 @@ class OfflineDatabase extends _$OfflineDatabase {
       );
     final result = await query.getSingleOrNull();
     if (result == null) return null;
-    return jsonDecode(result.data) as Map<String, dynamic>;
+    if (result.data.length < _isolateDecodeThreshold) {
+      return jsonDecode(result.data) as Map<String, dynamic>;
+    }
+    return compute(_decodeObject, result.data);
   }
 
   /// Get all cached entities of a type that haven't expired.
@@ -142,9 +147,10 @@ class OfflineDatabase extends _$OfflineDatabase {
       // in (entityType, entityKey) index order, i.e. shuffled by UUID.
       ..orderBy([(t) => OrderingTerm.asc(t.id)]);
     final results = await query.get();
-    return results
-        .map((r) => jsonDecode(r.data) as Map<String, dynamic>)
-        .toList();
+    final rows = [for (final r in results) r.data];
+    final bytes = rows.fold<int>(0, (n, r) => n + r.length);
+    if (bytes < _isolateDecodeThreshold) return _decodeObjects(rows);
+    return compute(_decodeObjects, rows);
   }
 
   /// Check if a cache entry exists and is fresh (not expired).
@@ -281,7 +287,9 @@ class OfflineDatabase extends _$OfflineDatabase {
   /// Get all pending sync operations, ordered by creation time.
   Future<List<SyncQueueData>> getPendingSyncs() async {
     final query = select(syncQueue)
-      ..where((t) => t.status.equals('pending'))
+      // 'failed' is the pre-dead-letter status, which nothing ever retried;
+      // picking those rows up lets them finish or dead-letter normally.
+      ..where((t) => t.status.isIn(const ['pending', 'failed']))
       ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]);
     return query.get();
   }
@@ -291,24 +299,30 @@ class OfflineDatabase extends _$OfflineDatabase {
     await (delete(syncQueue)..where((t) => t.id.equals(id))).go();
   }
 
-  /// Mark a sync operation as failed and increment retry count.
-  Future<void> failSync(int id) async {
+  /// Record a failed attempt. The operation stays `pending` (retried on the
+  /// next pass) until it has failed [maxRetries] times, then moves to `dead`
+  /// so it stops being retried. Returns whether it was dead-lettered.
+  Future<bool> failSync(int id, {required int maxRetries}) async {
     final query = select(syncQueue)..where((t) => t.id.equals(id));
     final result = await query.getSingleOrNull();
-    if (result != null) {
-      await (update(syncQueue)..where((t) => t.id.equals(id))).write(
-        SyncQueueCompanion(
-          status: const Value('failed'),
-          retryCount: Value(result.retryCount + 1),
-        ),
-      );
-    }
+    if (result == null) return false;
+    final retries = result.retryCount + 1;
+    final dead = retries >= maxRetries;
+    await (update(syncQueue)..where((t) => t.id.equals(id))).write(
+      SyncQueueCompanion(
+        status: Value(dead ? 'dead' : 'pending'),
+        retryCount: Value(retries),
+      ),
+    );
+    return dead;
   }
 
-  /// Reset failed operations back to pending for retry.
-  Future<void> retryFailedSyncs() async {
-    await (update(syncQueue)..where((t) => t.status.equals('failed'))).write(
-      const SyncQueueCompanion(status: Value('pending')),
+  /// Give dead-lettered operations another full set of retries.
+  Future<void> retryDeadSyncs() async {
+    await (update(
+      syncQueue,
+    )..where((t) => t.status.isIn(const ['dead', 'failed']))).write(
+      const SyncQueueCompanion(status: Value('pending'), retryCount: Value(0)),
     );
   }
 
@@ -347,6 +361,17 @@ class CacheStat {
 }
 
 QueryExecutor _openConnection() => db_connection.openConnection();
+
+/// Same cut-off Dio uses for response bodies: below ~50 KB, decoding takes a
+/// few ms and isn't worth the cost of spawning an isolate.
+const _isolateDecodeThreshold = 50 * 1024;
+
+Map<String, dynamic> _decodeObject(String json) =>
+    jsonDecode(json) as Map<String, dynamic>;
+
+List<Map<String, dynamic>> _decodeObjects(List<String> rows) => [
+  for (final r in rows) jsonDecode(r) as Map<String, dynamic>,
+];
 
 // ─── Existing Chat Database (sqflite) ───
 
@@ -527,17 +552,28 @@ class ChatDatabase {
 
   // ── Messages ──
 
+  /// One page of a conversation, oldest first. Keyset-paginated on
+  /// `created_at` (served by `idx_messages_conv`): pass the oldest loaded
+  /// message's `created_at` as [before] to get the page above it.
   static Future<List<Map<String, dynamic>>> getMessages(
-    String conversationId,
-  ) async {
+    String conversationId, {
+    String? before,
+    int limit = messagePageSize,
+  }) async {
     final db = await instance;
-    return db.query(
+    final rows = await db.query(
       'messages',
-      where: 'conversation_id = ?',
-      whereArgs: [conversationId],
-      orderBy: 'created_at ASC',
+      where: before == null
+          ? 'conversation_id = ?'
+          : 'conversation_id = ? AND created_at < ?',
+      whereArgs: [conversationId, ?before],
+      orderBy: 'created_at DESC',
+      limit: limit,
     );
+    return rows.reversed.toList();
   }
+
+  static const messagePageSize = 50;
 
   static Future<Map<String, dynamic>?> getLastMessage(
     String conversationId,

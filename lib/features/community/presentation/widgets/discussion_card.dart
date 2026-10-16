@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 import 'package:timeago/timeago.dart' as timeago;
 
 import '/core/di.dart';
+import '/core/widgets/text_controller_scope.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/community/data/models/community_post.dart';
 import '/features/community/presentation/widgets/comments_sheet.dart';
@@ -22,6 +21,8 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
+import '/core/network/download_client.dart';
 
 class DiscussionCard extends ConsumerStatefulWidget {
   final CommunityPost post;
@@ -96,11 +97,10 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                       children: [
                         CircleAvatar(
                           radius: 16,
-                          backgroundColor: Theme.of(
-                            context,
-                          ).primaryColor.withValues(alpha: 0.1),
+                          backgroundColor: Theme.of(context).primaryColor
+                              .withValues(alpha: 0.1),
                           backgroundImage: widget.post.authorAvatar != null
-                              ? NetworkImage(
+                              ? AppNetworkImage.provider(
                                   ApiEndpoints.resolveImageUrl(
                                     widget.post.authorAvatar,
                                   ),
@@ -169,12 +169,12 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                           final url = widget.post.imageUrls[index];
                           return ClipRRect(
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
-                            child: CachedNetworkImage(
-                              imageUrl: ApiEndpoints.resolveImageUrl(url),
+                            child: AppNetworkImage(
+                              ApiEndpoints.resolveImageUrl(url),
                               fit: .cover,
-                              placeholder: (_, _) =>
+                              placeholder: (_) =>
                                   Container(color: context.colors.border),
-                              errorWidget: (_, _, _) =>
+                              errorBuilder: (_, _, _) =>
                                   const Icon(Icons.broken_image),
                             ),
                           );
@@ -328,11 +328,10 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
             children: [
               CircleAvatar(
                 radius: 36,
-                backgroundColor: Theme.of(
-                  context,
-                ).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(context).primaryColor
+                    .withValues(alpha: 0.1),
                 backgroundImage: post.authorAvatar != null
-                    ? NetworkImage(
+                    ? AppNetworkImage.provider(
                         ApiEndpoints.resolveImageUrl(post.authorAvatar),
                       )
                     : null,
@@ -541,120 +540,121 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
   }
 
   void _showEditSheet(BuildContext context) {
-    final controller = TextEditingController(text: widget.post.content);
     bool isSaving = false;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (sheetContext, setSheetState) => Container(
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(RadiusToken.xxl),
+      builder: (sheetContext) => TextControllerScope(
+        initialText: widget.post.content,
+        builder: (_, controller) => StatefulBuilder(
+          builder: (sheetContext, setSheetState) => Container(
+            decoration: BoxDecoration(
+              color: context.colors.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(RadiusToken.xxl),
+              ),
             ),
-          ),
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: .min,
-            crossAxisAlignment: .start,
-            children: [
-              Text(
-                'Edit Post',
-                style: GoogleFonts.outfit(
-                  fontWeight: .bold,
-                  fontSize: FontSizeToken.lg,
-                ),
-              ),
-              const SizedBox(height: Spacing.md),
-              TextField(
-                controller: controller,
-                maxLines: 5,
-                minLines: 3,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: context.colors.surfaceAlt,
-                  hintText: 'Write something...',
-                ),
-              ),
-              const SizedBox(height: Spacing.md),
-              Row(
-                mainAxisAlignment: .end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(sheetContext),
-                    child: const Text('Cancel'),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
+            ),
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  'Edit Post',
+                  style: GoogleFonts.outfit(
+                    fontWeight: .bold,
+                    fontSize: FontSizeToken.lg,
                   ),
-                  const SizedBox(width: Spacing.sm),
-                  ElevatedButton(
-                    onPressed: isSaving
-                        ? null
-                        : () async {
-                            final content = controller.text.trim();
-                            if (content.isEmpty) return;
-                            setSheetState(() => isSaving = true);
-                            try {
-                              final updated = await ref
-                                  .read(communityRepositoryProvider)
-                                  .updatePost(widget.post.id, content);
-                              if (!context.mounted) return;
-                              setState(() {
-                                _displayContent = updated.content;
-                              });
-                              Navigator.pop(sheetContext);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Post updated'),
-                                  duration: Duration(seconds: 1),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                              ref
-                                  .read(
-                                    communityPostsProvider(
-                                      _providerScope,
-                                    ).notifier,
-                                  )
-                                  .fetch();
-                              ref
-                                  .read(communityRefreshProvider.notifier)
-                                  .increment();
-                            } catch (e) {
-                              setSheetState(() => isSaving = false);
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Failed to update post: $e'),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            }
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: context.colors.onPrimary,
+                ),
+                const SizedBox(height: Spacing.md),
+                TextField(
+                  controller: controller,
+                  maxLines: 5,
+                  minLines: 3,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: context.colors.surfaceAlt,
+                    hintText: 'Write something...',
+                  ),
+                ),
+                const SizedBox(height: Spacing.md),
+                Row(
+                  mainAxisAlignment: .end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(sheetContext),
+                      child: const Text('Cancel'),
                     ),
-                    child: isSaving
-                        ? SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CupertinoActivityIndicator(
-                              color: context.colors.onPrimary,
-                            ),
-                          )
-                        : const Text('Save'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: Spacing.sm),
-            ],
+                    const SizedBox(width: Spacing.sm),
+                    ElevatedButton(
+                      onPressed: isSaving
+                          ? null
+                          : () async {
+                              final content = controller.text.trim();
+                              if (content.isEmpty) return;
+                              setSheetState(() => isSaving = true);
+                              try {
+                                final updated = await ref
+                                    .read(communityRepositoryProvider)
+                                    .updatePost(widget.post.id, content);
+                                if (!context.mounted) return;
+                                setState(() {
+                                  _displayContent = updated.content;
+                                });
+                                Navigator.pop(sheetContext);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Post updated'),
+                                    duration: Duration(seconds: 1),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                                ref
+                                    .read(
+                                      communityPostsProvider(_providerScope)
+                                          .notifier,
+                                    )
+                                    .fetch();
+                                ref
+                                    .read(communityRefreshProvider.notifier)
+                                    .increment();
+                              } catch (e) {
+                                setSheetState(() => isSaving = false);
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to update post: $e'),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: context.colors.onPrimary,
+                      ),
+                      child: isSaving
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CupertinoActivityIndicator(
+                                color: context.colors.onPrimary,
+                              ),
+                            )
+                          : const Text('Save'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: Spacing.sm),
+              ],
+            ),
           ),
         ),
       ),
@@ -689,19 +689,15 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     }
 
     try {
-      final dio = Dio();
       final files = <XFile>[];
       for (final url in post.imageUrls) {
-        final response = await dio.get(
-          url,
-          options: Options(responseType: ResponseType.bytes),
-        );
+        final bytes = await downloadBytes(url);
         final tempDir = await getTemporaryDirectory();
         final ext = url.split('.').last.split('?').first;
         final file = File(
           '${tempDir.path}/share_${post.id}_${files.length}.$ext',
         );
-        await file.writeAsBytes(response.data);
+        await file.writeAsBytes(bytes);
         files.add(XFile(file.path));
       }
       await SharePlus.instance.share(

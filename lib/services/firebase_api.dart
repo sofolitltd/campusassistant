@@ -7,19 +7,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '/core/config/env.dart';
 import '/core/network/api_client.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/providers/app_refresh_provider.dart';
-import '/features/auth/data/datasources/auth_local_data_source.dart';
+import '/core/auth/token_store.dart';
 import '/routes/app_route.dart';
 import '/routes/router_config.dart' show rootNavigatorKey;
 import 'device_repository.dart';
+import '/core/network/download_client.dart';
 
 /// Must be a top-level (or static) function — firebase_messaging runs it in
 /// a separate isolate when a push arrives while the app is backgrounded/killed.
@@ -70,10 +69,9 @@ class FirebaseApi {
   String? get currentToken => _currentToken;
 
   DeviceRepository get _deviceRepository {
-    const storage = FlutterSecureStorage();
     final apiClient = ApiClient(
       baseUrl: ApiEndpoints.baseUrl,
-      getToken: () => storage.read(key: AuthLocalDataSourceImpl.cachedTokenKey),
+      getToken: TokenStore.instance.getAccessToken,
     );
     return DeviceRepository(apiClient: apiClient);
   }
@@ -253,8 +251,7 @@ class FirebaseApi {
   Future<Uint8List?> _downloadImage(String? url) async {
     if (url == null || url.isEmpty) return null;
     try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) return response.bodyBytes;
+      return await downloadBytes(url);
     } catch (e) {
       log('[FCM] failed to fetch notification image: $e');
     }

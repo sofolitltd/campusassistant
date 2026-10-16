@@ -7,6 +7,7 @@ import '../../../presentation/models/career_feed_item.dart';
 import '../../../presentation/providers/career_refresh_provider.dart';
 import '../../data/models/career_circular.dart';
 import '../../data/models/circular_category.dart';
+import '/core/providers/cache_for.dart';
 
 final circularCategoriesProvider = FutureProvider<List<CircularCategory>>((
   ref,
@@ -15,11 +16,12 @@ final circularCategoriesProvider = FutureProvider<List<CircularCategory>>((
   return repo.getCategories();
 });
 
-final circularFeedProvider =
-    FutureProvider.family<
-      List<CareerCircular>,
-      ({String? categoryId, String? search})
-    >((ref, params) async {
+final circularFeedProvider = FutureProvider.autoDispose
+    .family<List<CareerCircular>, ({String? categoryId, String? search})>((
+      ref,
+      params,
+    ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(circularRepositoryProvider);
       final profile = await ref.watch(userProvider.future);
       return repo.getCircularsByLocation(
@@ -34,11 +36,12 @@ final circularFeedProvider =
 /// every peer-shared Job, sorted newest-first — one list instead of two
 /// separate sections, each card indicating its own origin (Official vs.
 /// Shared by a student).
-final careerFeedProvider =
-    FutureProvider.family<
-      List<CareerFeedItem>,
-      ({String? categoryId, String? search})
-    >((ref, params) async {
+final careerFeedProvider = FutureProvider.autoDispose
+    .family<List<CareerFeedItem>, ({String? categoryId, String? search})>((
+      ref,
+      params,
+    ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final circulars = await ref.watch(circularFeedProvider(params).future);
       final jobs = await ref.watch(allSharedJobsProvider.future);
       final items = <CareerFeedItem>[
@@ -49,13 +52,12 @@ final careerFeedProvider =
       return items;
     });
 
-final circularDetailProvider = FutureProvider.family<CareerCircular, String>((
-  ref,
-  id,
-) async {
-  final repo = ref.watch(circularRepositoryProvider);
-  return repo.getCircularById(id);
-});
+final circularDetailProvider = FutureProvider.autoDispose
+    .family<CareerCircular, String>((ref, id) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final repo = ref.watch(circularRepositoryProvider);
+      return repo.getCircularById(id);
+    });
 
 class CircularActions {
   final Ref ref;

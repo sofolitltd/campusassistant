@@ -59,24 +59,28 @@ class SyllabusRepositoryImpl implements SyllabusRepository {
         final int count = envelope['count'] ?? 0;
         final list = data
             .map(
-              (json) => SyllabusModel.fromJson(
-                json as Map<String, dynamic>,
-              ).toEntity(),
+              (json) =>
+                  SyllabusModel.fromJson(json as Map<String, dynamic>)
+                      .toEntity(),
             )
             .toList();
 
         // Cache first page list
         if (offset == null || offset == 0) {
-          await cacheManager.cacheList(
-            entityType: cacheKey,
-            items: data.cast<Map<String, dynamic>>(),
-            ttl: CacheTTL.syllabus,
+          unawaitedCacheWrite(
+            cacheManager.cacheList(
+              entityType: cacheKey,
+              items: data.cast<Map<String, dynamic>>(),
+              ttl: CacheTTL.syllabus,
+            ),
           );
-          await cacheManager.cacheSingle(
-            entityType: totalCacheKey,
-            entityKey: 'total',
-            data: {'total': count},
-            ttl: CacheTTL.syllabus,
+          unawaitedCacheWrite(
+            cacheManager.cacheSingle(
+              entityType: totalCacheKey,
+              entityKey: 'total',
+              data: {'total': count},
+              ttl: CacheTTL.syllabus,
+            ),
           );
         }
 

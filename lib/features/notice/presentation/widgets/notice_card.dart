@@ -11,9 +11,12 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/routes/app_route.dart';
+
 import 'package:go_router/go_router.dart';
+
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 void _openImage(BuildContext context, NoticeModel notice, String rawImage) {
   context.pushNamed(
@@ -36,9 +39,8 @@ Future<void> _shareNotice(NoticeModel notice) async {
 String _formatExact(String dateString) {
   if (dateString.isEmpty) return '';
   try {
-    return DateFormat(
-      'd MMM yyyy • h:mm a',
-    ).format(DateTime.parse(dateString).toLocal());
+    return DateFormat('d MMM yyyy • h:mm a')
+        .format(DateTime.parse(dateString).toLocal());
   } catch (_) {
     return dateString;
   }
@@ -101,9 +103,8 @@ void showNoticeDetails(
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).appColors.primary.withValues(alpha: 0.1),
+                        color: Theme.of(context).appColors.primary
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(RadiusToken.sm),
                       ),
                       child: Icon(
@@ -156,7 +157,7 @@ void showNoticeDetails(
                         onTap: () => _openImage(context, notice, url),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(RadiusToken.sm),
-                          child: Image.network(
+                          child: AppNetworkImage(
                             ApiEndpoints.resolveImageUrl(url),
                             width: double.infinity,
                             fit: .cover,
@@ -286,9 +287,8 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).appColors.primary.withValues(alpha: 0.1),
+                    color: Theme.of(context).appColors.primary
+                        .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(RadiusToken.sm),
                   ),
                   child: Icon(
@@ -368,7 +368,7 @@ class _NoticeCardState extends ConsumerState<NoticeCard> {
                       onTap: () => _openImage(context, notice, rawUrl),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(RadiusToken.sm),
-                        child: Image.network(
+                        child: AppNetworkImage(
                           ApiEndpoints.resolveImageUrl(rawUrl),
                           width: 200,
                           fit: .cover,

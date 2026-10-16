@@ -8,6 +8,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/pdf_tabs/domain/pdf_tab.dart';
 import '/features/pdf_tabs/presentation/providers/pdf_tabs_provider.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Chrome-style "tab group" switcher — a bottom sheet with one large card
 /// per open PDF tab (preview + title + close button). Replaces the always-
@@ -154,7 +155,7 @@ class _TabCard extends ConsumerWidget {
                   children: [
                     Positioned.fill(
                       child: (tab.thumbnailUrl?.isNotEmpty ?? false)
-                          ? Image.network(
+                          ? AppNetworkImage(
                               tab.thumbnailUrl!,
                               fit: BoxFit.cover,
                               errorBuilder: (_, _, _) =>
@@ -177,9 +178,7 @@ class _TabCard extends ConsumerWidget {
                           final isLastTab =
                               ref.read(pdfTabsProvider).tabs.length <= 1;
                           if (isLastTab) Navigator.of(context).pop();
-                          ref
-                              .read(pdfTabsProvider.notifier)
-                              .closeTab(tab.url);
+                          ref.read(pdfTabsProvider.notifier).closeTab(tab.url);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(4),

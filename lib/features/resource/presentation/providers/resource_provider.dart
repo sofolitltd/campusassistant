@@ -7,6 +7,7 @@ import '../../../../core/di.dart';
 import '../../domain/entities/resource.dart';
 import '../../domain/repositories/resource_repository.dart';
 import '../../data/repositories/resource_repository_impl.dart';
+import '../../../../core/providers/cache_for.dart';
 
 part 'resource_provider.g.dart';
 
@@ -39,7 +40,7 @@ typedef ResourceParams = ({
   int? offset,
 });
 
-@Riverpod(keepAlive: true)
+@riverpod
 Future<List<Resource>> resourcesList(
   Ref ref, {
   required String universityId,
@@ -54,6 +55,7 @@ Future<List<Resource>> resourcesList(
   int? limit,
   int? offset,
 }) async {
+  ref.cacheFor(kParamProviderCacheTime);
   final repo = ref.watch(resourceRepositoryProvider);
   final result = await repo.getResources(
     universityId: universityId,

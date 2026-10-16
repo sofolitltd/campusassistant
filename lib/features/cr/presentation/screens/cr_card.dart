@@ -53,6 +53,8 @@ class CrCard extends StatelessWidget {
                   ),
                   child: CachedNetworkImage(
                     imageUrl: ApiEndpoints.resolveImageUrl(cr.imageUrl),
+                    // Decode at ~display size (3x), not the upload's full resolution.
+                    memCacheWidth: 384,
                     fadeInDuration: const Duration(milliseconds: 500),
                     imageBuilder: (_, imageProvider) => Container(
                       decoration: BoxDecoration(

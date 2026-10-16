@@ -5,9 +5,11 @@ import '/core/network/api_endpoints.dart';
 import '/features/department/data/models/department_model.dart';
 import '/features/department/domain/entities/department.dart';
 import '../../data/models/faculty.dart';
+import '/core/providers/cache_for.dart';
 
-final facultiesByUniversityProvider =
-    FutureProvider.family<List<Faculty>, String>((ref, universityId) async {
+final facultiesByUniversityProvider = FutureProvider.autoDispose
+    .family<List<Faculty>, String>((ref, universityId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         '/faculties',
@@ -20,8 +22,9 @@ final facultiesByUniversityProvider =
           .toList();
     });
 
-final departmentsByFacultyProvider =
-    FutureProvider.family<List<Department>, String>((ref, facultyId) async {
+final departmentsByFacultyProvider = FutureProvider.autoDispose
+    .family<List<Department>, String>((ref, facultyId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         ApiEndpoints.departments,

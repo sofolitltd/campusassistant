@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/di.dart';
 import '../../data/models/order.dart';
+import '/core/providers/cache_for.dart';
 
 enum MarketplacePaymentMethod {
   bkash('bkash'),
@@ -19,10 +20,11 @@ final ordersListProvider = FutureProvider<List<Order>>((ref) async {
   return data.map((e) => Order.fromJson(e as Map<String, dynamic>)).toList();
 });
 
-final orderDetailsProvider = FutureProvider.family<Order, String>((
+final orderDetailsProvider = FutureProvider.autoDispose.family<Order, String>((
   ref,
   orderId,
 ) async {
+  ref.cacheFor(kParamProviderCacheTime);
   final apiClient = ref.watch(apiClientProvider);
   final response = await apiClient.get('/my/orders/$orderId');
   return Order.fromJson(response.data as Map<String, dynamic>);
@@ -38,18 +40,19 @@ Future<void> cancelOrder(WidgetRef ref, String orderId) async {
 
 /// Orders containing at least one item sold by the given merchant — the
 /// seller-facing view, distinct from `ordersListProvider` (the buyer view).
-final merchantOrdersProvider = FutureProvider.family<List<Order>, String>((
-  ref,
-  merchantId,
-) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.get('/my/merchants/$merchantId/orders');
-  final rawData = response.data;
-  final items = rawData is List
-      ? rawData
-      : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
-  return items.map((e) => Order.fromJson(e as Map<String, dynamic>)).toList();
-});
+final merchantOrdersProvider = FutureProvider.autoDispose
+    .family<List<Order>, String>((ref, merchantId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get('/my/merchants/$merchantId/orders');
+      final rawData = response.data;
+      final items = rawData is List
+          ? rawData
+          : (rawData as Map<String, dynamic>)['data'] as List? ?? [];
+      return items
+          .map((e) => Order.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
 /// Lets a merchant progress fulfillment on one of their own orders. The
 /// backend only allows "shipped"/"delivered" here — payment/cancellation

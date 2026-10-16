@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/core/database/app_database.dart';
 import '/core/di.dart';
 import '/features/inbox/data/repositories/chat_repository.dart';
+import '/core/providers/cache_for.dart';
 
 class _ScrollOffsetsNotifier extends Notifier<Map<String, double>> {
   @override
@@ -94,11 +95,9 @@ final conversationsProvider = FutureProvider<List<Map<String, dynamic>>>((
   return data;
 });
 
-final messagesProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>((
-      ref,
-      conversationId,
-    ) async {
+final messagesProvider = FutureProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>((ref, conversationId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       ref.watch(messagesRefreshProvider);
 
       final cached = await ChatDatabase.tryDb(
@@ -217,14 +216,40 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
     }
   }
 
+  /// Older page: from the local DB while it has rows above the oldest loaded
+  /// message, then from the server.
   Future<void> loadMore() async {
     if (state.loadingMore || !state.hasMore) return;
     state = state.copyWith(loadingMore: true);
     try {
+      final oldest = state.messages.isEmpty
+          ? null
+          : state.messages.first['createdAt'] as String?;
+
+      if (oldest != null) {
+        final local = await ChatDatabase.tryDb(
+          () => ChatDatabase.getMessages(conversationId, before: oldest),
+        );
+        if (local != null && local.isNotEmpty) {
+          state = state.copyWith(
+            messages: _prependUnique(
+              local.map(ChatDatabase.expandMessage).toList(),
+            ),
+            loadingMore: false,
+          );
+          return;
+        }
+      }
+
+      // The server's cursor is just the oldest message's createdAt, but
+      // formatted to whole seconds, which would skip same-second messages.
+      // Derive it from the loaded list instead; that also stops a
+      // cache-seeded list (no server cursor) from refetching the newest page.
+      final cursor = _toUtcCursor(oldest) ?? state.nextCursor;
       final repo = ref.read(chatRepositoryProvider);
       final result = await repo.getMessages(
         conversationId,
-        cursor: state.nextCursor,
+        cursor: cursor,
         limit: 30,
       );
       var msgs =
@@ -237,15 +262,27 @@ class ConversationMessagesNotifier extends Notifier<ConversationMessagesState> {
             msgs;
         await ChatDatabase.tryDbVoid(() => ChatDatabase.upsertMessages(msgs));
       }
-      state = state.copyWith(
-        messages: [...msgs, ...state.messages],
-        nextCursor: result['nextCursor'] as String?,
-        hasMore: result['nextCursor'] != null,
-        loadingMore: false,
+      final next = result['nextCursor'] as String?;
+      state = ConversationMessagesState(
+        messages: _prependUnique(msgs),
+        initialLoading: false,
+        hasMore: next != null,
+        nextCursor: next,
+        error: state.error,
       );
     } catch (e) {
       state = state.copyWith(loadingMore: false);
     }
+  }
+
+  List<Map<String, dynamic>> _prependUnique(List<Map<String, dynamic>> older) {
+    final have = {for (final m in state.messages) m['id']};
+    return [...older.where((m) => !have.contains(m['id'])), ...state.messages];
+  }
+
+  static String? _toUtcCursor(String? createdAt) {
+    final t = createdAt == null ? null : DateTime.tryParse(createdAt);
+    return t?.toUtc().toIso8601String();
   }
 
   void addMessage(Map<String, dynamic> msg) {

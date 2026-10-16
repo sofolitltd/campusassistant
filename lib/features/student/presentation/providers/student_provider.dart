@@ -16,6 +16,8 @@ import '/features/student/domain/repositories/student_repository.dart';
 
 import 'package:collection/collection.dart';
 
+import '../../../../core/providers/cache_for.dart';
+
 part 'student_provider.g.dart';
 
 @Riverpod(keepAlive: true)
@@ -151,8 +153,9 @@ Future<List<Student>> studentsByBatch(Ref ref, String batchId) async {
   return _enrichStudents(ref, paginated.students);
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Future<Student?> studentByUserId(Ref ref, String userId) async {
+  ref.cacheFor(kParamProviderCacheTime);
   final repository = ref.watch(studentRepositoryProvider);
   final paginated = await repository.getStudents(userId: userId);
   final student = paginated.students.isNotEmpty
@@ -262,12 +265,13 @@ Future<Student> studentByCode(Ref ref, String code) async {
   );
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Future<List<Student>> allStudents(
   Ref ref, {
   String? universityId,
   String? departmentId,
 }) async {
+  ref.cacheFor(kParamProviderCacheTime);
   final repository = ref.watch(studentRepositoryProvider);
   final paginated = await repository.getStudents(
     universityId: universityId,

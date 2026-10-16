@@ -1,6 +1,7 @@
+import 'dart:async' show unawaited;
 import 'dart:io' show File;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -32,6 +33,19 @@ class CacheTTL {
   static const batch = Duration(hours: 12);
   static const session = Duration(hours: 12);
   static const defaultTTL = Duration(hours: 1);
+}
+
+/// Fires a read-through cache write without making the caller wait on disk.
+///
+/// Repositories return fresh network data as soon as it arrives; persisting
+/// it is best-effort, so a failed write only costs a log line (and the next
+/// cold start falls back to the network).
+void unawaitedCacheWrite(Future<void> write) {
+  unawaited(
+    write.catchError(
+      (Object e) => debugPrint('[CacheManager] Write failed: $e'),
+    ),
+  );
 }
 
 /// Manages reading and writing data to the Drift cache.

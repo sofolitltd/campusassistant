@@ -9,6 +9,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
 
 class NotificationTile extends StatelessWidget {
   final AppNotification notification;
@@ -104,7 +105,7 @@ class NotificationTile extends StatelessWidget {
                 notification.imageUrl != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(RadiusToken.md),
-                        child: Image.network(
+                        child: AppNetworkImage(
                           ApiEndpoints.resolveImageUrl(notification.imageUrl),
                           width: 40,
                           height: 40,

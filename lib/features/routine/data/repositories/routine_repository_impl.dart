@@ -46,18 +46,20 @@ class RoutineRepositoryImpl
         final List<dynamic> data = envelope['data'] ?? [];
         final routines = data
             .map(
-              (json) => RoutineModel.fromJson(
-                json as Map<String, dynamic>,
-              ).toEntity(),
+              (json) =>
+                  RoutineModel.fromJson(json as Map<String, dynamic>)
+                      .toEntity(),
             )
             .toList();
 
         // Cache the result
         final cacheItems = data.cast<Map<String, dynamic>>();
-        await cacheManager.cacheList(
-          entityType: 'routine_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.routine,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: 'routine_$cacheKey',
+            items: cacheItems,
+            ttl: CacheTTL.routine,
+          ),
         );
 
         return Right(routines);

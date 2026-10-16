@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+
 import '/core/cache/cache_manager.dart';
 import '/core/cache/connectivity_service.dart';
 import '/core/error/failures.dart';
@@ -52,10 +53,12 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
 
         // Cache the result (post-filter, so stale/foreign entity types
         // never get cached either)
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: bookmarks.map((b) => b.toJson()).toList(),
-          ttl: CacheTTL.bookmark,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: bookmarks.map((b) => b.toJson()).toList(),
+            ttl: CacheTTL.bookmark,
+          ),
         );
 
         return Right(bookmarks.map((m) => m.toEntity()).toList());

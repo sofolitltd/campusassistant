@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
+
 import '/widgets/open_app.dart';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +18,8 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
+import '/core/network/download_client.dart';
 
 class TeacherDetailsScreen extends ConsumerStatefulWidget {
   const TeacherDetailsScreen({super.key, required this.teacherId});
@@ -113,14 +115,10 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
       XFile? imageFile;
       final url = ApiEndpoints.resolveImageUrl(teacherModel.imageUrl);
       if (url.isNotEmpty) {
-        final dio = Dio();
-        final response = await dio.get(
-          url,
-          options: Options(responseType: ResponseType.bytes),
-        );
+        final bytes = await downloadBytes(url);
         final tempDir = await getTemporaryDirectory();
         final file = File('${tempDir.path}/${teacherModel.name}.png');
-        await file.writeAsBytes(response.data);
+        await file.writeAsBytes(bytes);
         imageFile = XFile(file.path);
       }
 
@@ -298,13 +296,13 @@ class _HeaderCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(RadiusToken.sm),
-                child: CachedNetworkImage(
-                  imageUrl: ApiEndpoints.resolveImageUrl(teacher.imageUrl),
+                child: AppNetworkImage(
+                  ApiEndpoints.resolveImageUrl(teacher.imageUrl),
                   fit: .cover,
-                  placeholder: (context, url) => const Center(
+                  placeholder: (context) => const Center(
                     child: CupertinoActivityIndicator(radius: 6),
                   ),
-                  errorWidget: (context, url, error) => Icon(
+                  errorBuilder: (context, error, _) => Icon(
                     LucideIcons.user,
                     color: context.colors.borderStrong,
                     size: 24,

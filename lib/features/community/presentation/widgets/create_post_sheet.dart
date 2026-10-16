@@ -18,6 +18,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_control.dart';
+import '/core/widgets/app_network_image.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
   final int tabIndex;
@@ -188,14 +189,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Theme.of(
-                  context,
-                ).primaryColor.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(context).primaryColor
+                    .withValues(alpha: 0.1),
                 backgroundImage: ref
                     .watch(currentUserProvider)
                     .maybeWhen(
                       data: (user) => user?.profileImage != null
-                          ? NetworkImage(
+                          ? AppNetworkImage.provider(
                               ApiEndpoints.resolveImageUrl(user!.profileImage),
                             )
                           : null,

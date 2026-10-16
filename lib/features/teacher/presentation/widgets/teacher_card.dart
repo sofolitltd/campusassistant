@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +10,7 @@ import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// A single teacher — public, drop-in card. Tap navigates to the teacher
 /// details route (built in, no external onTap wiring needed). Used by both
@@ -123,12 +123,12 @@ class TeacherCard extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(RadiusToken.sm),
-            child: CachedNetworkImage(
-              imageUrl: ApiEndpoints.resolveImageUrl(teacher.imageUrl),
+            child: AppNetworkImage(
+              ApiEndpoints.resolveImageUrl(teacher.imageUrl),
               fit: .cover,
-              placeholder: (context, url) =>
+              placeholder: (context) =>
                   const Center(child: CupertinoActivityIndicator(radius: 6)),
-              errorWidget: (context, url, error) => Icon(
+              errorBuilder: (context, error, _) => Icon(
                 LucideIcons.user,
                 color: context.colors.borderStrong,
                 size: 24,

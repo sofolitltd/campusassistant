@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,8 +11,8 @@ import '../network/api_client.dart';
 import 'cache_manager.dart';
 import 'connectivity_service.dart';
 
-/// Processes pending offline write operations when connection is restored.
-/// Also handles periodic background refresh of stale data.
+/// Processes pending offline write operations when connection is restored,
+/// and periodically prunes expired cache entries.
 ///
 /// [_db] is null on web (no Drift/sqlite3 support there — see
 /// app_database.dart's connection split). The offline write queue simply
@@ -60,16 +61,23 @@ class SyncManager {
             case 'DELETE':
               await _apiClient.delete(sync.endpoint);
             case 'PATCH':
-              await _apiClient.put(sync.endpoint, data: payload);
+              await _apiClient.patch(sync.endpoint, data: payload);
           }
 
           await db.completeSync(sync.id);
           debugPrint(
             '[SyncManager] Synced ${sync.entityType}/${sync.entityKey}',
           );
+        } on DioException catch (e) {
+          if (_isNetworkFailure(e)) {
+            // Offline again: the rest would fail the same way, and it isn't
+            // this operation's fault, so don't count an attempt.
+            debugPrint('[SyncManager] Network lost; stopping this pass');
+            break;
+          }
+          await _recordFailure(db, sync, e, permanent: _isPermanent(e));
         } catch (e) {
-          debugPrint('[SyncManager] Failed to sync ${sync.entityKey}: $e');
-          await db.failSync(sync.id);
+          await _recordFailure(db, sync, e, permanent: false);
         }
       }
     } finally {
@@ -77,13 +85,45 @@ class SyncManager {
     }
   }
 
-  /// Start periodic background refresh.
-  /// Checks for stale data every [interval] and refreshes it.
+  /// Attempts before an operation is moved to the dead-letter status.
+  static const maxRetries = 5;
+
+  Future<void> _recordFailure(
+    OfflineDatabase db,
+    SyncQueueData sync,
+    Object error, {
+    required bool permanent,
+  }) async {
+    final dead = await db.failSync(
+      sync.id,
+      maxRetries: permanent ? 0 : maxRetries,
+    );
+    debugPrint(
+      '[SyncManager] Failed to sync ${sync.entityType}/${sync.entityKey}'
+      '${dead ? ' — giving up (dead-lettered)' : ''}: $error',
+    );
+  }
+
+  static bool _isNetworkFailure(DioException e) => switch (e.type) {
+    DioExceptionType.connectionTimeout ||
+    DioExceptionType.sendTimeout ||
+    DioExceptionType.receiveTimeout ||
+    DioExceptionType.connectionError => true,
+    _ => false,
+  };
+
+  /// A 4xx (other than timeout/rate-limit) means the server rejected the
+  /// request itself; resending the same body won't change that.
+  static bool _isPermanent(DioException e) {
+    final status = e.response?.statusCode;
+    if (status == null) return false;
+    return status >= 400 && status < 500 && status != 408 && status != 429;
+  }
+
+  /// Start the periodic cache prune, every [interval].
   void startPeriodicRefresh({Duration interval = const Duration(minutes: 15)}) {
     _refreshTimer?.cancel();
-    _refreshTimer = Timer.periodic(interval, (_) {
-      refreshStaleData();
-    });
+    _refreshTimer = Timer.periodic(interval, (_) => _pruneExpiredCache());
   }
 
   /// Stop periodic refresh.
@@ -92,43 +132,17 @@ class SyncManager {
     _refreshTimer = null;
   }
 
-  /// Refresh stale data in the background.
-  /// Each entity type has its own staleness threshold.
-  Future<void> refreshStaleData() async {
-    if (!_connectivity.isConnected) return;
-
-    debugPrint('[SyncManager] Checking for stale data...');
-
-    final staleChecks = [
-      ('banner', CacheTTL.banner),
-      ('teacher', CacheTTL.teacher),
-      ('routine', CacheTTL.routine),
-      ('resource', CacheTTL.resource),
-      ('student', CacheTTL.student),
-      ('emergency', CacheTTL.emergency),
-      ('club', CacheTTL.club),
-      ('transport', CacheTTL.transport),
-    ];
-
-    for (final (entityType, maxAge) in staleChecks) {
-      try {
-        final isFresh = await _cacheManager.isFresh(entityType: entityType);
-        if (!isFresh) {
-          debugPrint(
-            '[SyncManager] $entityType cache is stale (TTL: $maxAge), refreshing...',
-          );
-          // The actual refresh is handled by the repository layer.
-          // We just signal that a refresh is needed.
-        }
-      } catch (e) {
-        debugPrint('[SyncManager] Error checking $entityType: $e');
+  // Repositories refresh their own data (stale-while-revalidate, #9); a
+  // periodic "is it stale?" check here could only log, so all that's left is
+  // keeping the cache table from growing with dead rows.
+  Future<void> _pruneExpiredCache() async {
+    try {
+      final pruned = await _cacheManager.pruneExpired();
+      if (pruned > 0) {
+        debugPrint('[SyncManager] Pruned $pruned expired cache entries');
       }
-    }
-
-    // Prune expired cache entries
-    final pruned = await _cacheManager.pruneExpired();
-    if (pruned > 0) {
-      debugPrint('[SyncManager] Pruned $pruned expired cache entries');
+    } catch (e) {
+      debugPrint('[SyncManager] Cache prune failed: $e');
     }
   }
 

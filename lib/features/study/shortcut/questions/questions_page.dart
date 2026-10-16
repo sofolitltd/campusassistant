@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/features/study/widgets/content_card.dart';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../presentation/providers/questions_provider.dart';
 import '/core/widgets/glass_search_bar.dart';
+import '/core/widgets/inline_search_bar.dart';
 import '/features/study/widgets/batch_tile.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
@@ -53,161 +55,102 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
   }
 
   void _showYearFilterSheet(BuildContext context) {
-    final years = ref.read(questionYearsProvider);
-    final selectedYear = ref.read(questionsSelectedYearProvider);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.colors.surfaceInverse.withValues(alpha: 0.5),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: context.colors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: Spacing.md),
-                  Container(
-                    width: 40,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: context.colors.borderStrong,
-                      borderRadius: BorderRadius.circular(RadiusToken.md),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        Text(
-                          'Select Year',
-                          style: TextStyle(
-                            fontSize: FontSizeToken.xl,
-                            fontWeight: .bold,
-                            color: context.colors.text,
-                          ),
-                        ),
-                        if (selectedYear != null)
-                          TextButton(
-                            onPressed: () {
-                              ref
-                                      .read(
-                                        questionsSelectedYearProvider.notifier,
-                                      )
-                                      .state =
-                                  null;
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Clear Filter',
-                              style: TextStyle(
-                                fontWeight: .w600,
-                                color: context.colors.danger,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.md),
-                  Expanded(
-                    child: GridView.builder(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(
-                        Spacing.xl,
-                        0,
-                        Spacing.xl,
-                        Spacing.xl,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: Spacing.sm,
-                            crossAxisSpacing: Spacing.sm,
-                            childAspectRatio: 4.2,
-                          ),
-                      itemCount: years.length + 1,
-                      itemBuilder: (context, index) {
-                        final isAll = index == 0;
-                        final year = isAll ? null : years[index - 1];
-                        return BatchTile(
-                          grid: true,
-                          title: isAll ? 'All Years' : year!,
-                          isSelected: selectedYear == year,
-                          onTap: () {
-                            ref
-                                    .read(
-                                      questionsSelectedYearProvider.notifier,
-                                    )
-                                    .state =
-                                year;
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+    _showPickerSheet(
+      context,
+      title: 'Select Year',
+      searchHint: 'Search year...',
+      allLabel: 'All Years',
+      options: ref.read(questionYearsProvider),
+      selected: ref.read(questionsSelectedYearProvider),
+      onSelected: (year) =>
+          ref.read(questionsSelectedYearProvider.notifier).state = year,
     );
   }
 
   void _showCourseFilterSheet(BuildContext context) {
-    final selectedCourse = ref.read(questionsSelectedCourseProvider);
     final docs = ref.read(questionsPaginationProvider).asData?.value.docs ?? [];
     final courses =
         docs
-            .map((d) => d.courseCode)
+            .map((d) => d.courseCode.trim().toUpperCase())
             .where((c) => c.isNotEmpty)
             .toSet()
             .toList()
           ..sort();
+    final selected = ref.read(questionsSelectedCourseProvider);
+
+    _showPickerSheet(
+      context,
+      title: 'Select Course',
+      searchHint: 'Search course...',
+      allLabel: 'All Courses',
+      options: courses,
+      selected: selected?.toUpperCase(),
+      // Pass back the code exactly as the data has it, so filtering by
+      // course still matches whatever casing the backend stores.
+      onSelected: (code) {
+        final raw = code == null
+            ? null
+            : docs
+                  .map((d) => d.courseCode.trim())
+                  .firstWhere(
+                    (c) => c.toUpperCase() == code,
+                    orElse: () => code,
+                  );
+        ref.read(questionsSelectedCourseProvider.notifier).state = raw;
+      },
+    );
+  }
+
+  /// Same layout as the study page's batch picker ([BatchDropdown]): title +
+  /// close, search bar, then a two-column grid with an "All" tile first.
+  void _showPickerSheet(
+    BuildContext context, {
+    required String title,
+    required String searchHint,
+    required String allLabel,
+    required List<String> options,
+    required String? selected,
+    required ValueChanged<String?> onSelected,
+  }) {
+    final theme = Theme.of(context);
+    String searchText = '';
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.colors.surfaceInverse.withValues(alpha: 0.5),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.3,
-          maxChildSize: 0.6,
-          expand: false,
-          builder: (context, scrollController) {
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(RadiusToken.xxl),
+        ),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final q = searchText.trim().toLowerCase();
+            final filtered = q.isEmpty
+                ? options
+                : options.where((o) => o.toLowerCase().contains(q)).toList();
+
+            void pick(String? value) {
+              onSelected(value);
+              Navigator.pop(context);
+            }
+
             return Container(
-              decoration: BoxDecoration(
-                color: context.colors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(RadiusToken.xxxl),
-                ),
-              ),
+              height: MediaQuery.of(context).size.height * 0.75,
+              padding: const EdgeInsets.only(top: Spacing.md),
               child: Column(
+                crossAxisAlignment: .start,
                 children: [
-                  const SizedBox(height: Spacing.md),
-                  Container(
-                    width: 40,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: context.colors.borderStrong,
-                      borderRadius: BorderRadius.circular(RadiusToken.md),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: context.colors.borderStrong,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
+                      ),
                     ),
                   ),
                   const SizedBox(height: Spacing.lg),
@@ -217,87 +160,70 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                       mainAxisAlignment: .spaceBetween,
                       children: [
                         Text(
-                          'Select Course',
+                          title,
                           style: TextStyle(
                             fontSize: FontSizeToken.xl,
                             fontWeight: .bold,
-                            color: context.colors.text,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
-                        if (selectedCourse != null)
-                          TextButton(
-                            onPressed: () {
-                              ref
-                                      .read(
-                                        questionsSelectedCourseProvider
-                                            .notifier,
-                                      )
-                                      .state =
-                                  null;
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Clear Filter',
-                              style: TextStyle(
-                                fontWeight: .w600,
-                                color: context.colors.danger,
-                              ),
-                            ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Icon(
+                            LucideIcons.x,
+                            size: 20,
+                            color: theme.colorScheme.onSurface,
                           ),
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: Spacing.md),
-                  Expanded(
-                    child: ListView.separated(
-                      controller: scrollController,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.xl,
-                      ),
-                      itemCount: courses.length + 1,
-                      separatorBuilder: (_, _) =>
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                      itemBuilder: (context, index) {
-                        final isAll = index == 0;
-                        final course = isAll ? null : courses[index - 1];
-                        final isSelected = selectedCourse == course;
-                        final primary = Theme.of(context).appColors.primary;
-                        final selectedColor = primary;
-                        final selectedBg = context.colors.primarySubtle;
-
-                        return ListTile(
-                          selected: isSelected,
-                          selectedTileColor: selectedBg,
-                          title: Text(
-                            isAll ? 'All Courses' : course!,
-                            style: TextStyle(
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: isSelected
-                                  ? selectedColor
-                                  : (context.colors.text),
-                            ),
-                          ),
-                          trailing: isSelected
-                              ? Icon(
-                                  LucideIcons.check,
-                                  color: selectedColor,
-                                  size: 20,
-                                )
-                              : null,
-                          onTap: () {
-                            ref
-                                    .read(
-                                      questionsSelectedCourseProvider.notifier,
-                                    )
-                                    .state =
-                                course;
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
+                  const SizedBox(height: Spacing.lg),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
+                    child: InlineSearchBar(
+                      hintText: searchHint,
+                      onChanged: (v) => setState(() => searchText = v),
                     ),
+                  ),
+                  const SizedBox(height: Spacing.lg),
+                  Expanded(
+                    child: filtered.isEmpty && q.isNotEmpty
+                        ? Center(
+                            child: Text(
+                              'No matches',
+                              style: TextStyle(color: context.colors.textMuted),
+                            ),
+                          )
+                        : GridView.count(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: Spacing.sm,
+                            crossAxisSpacing: Spacing.sm,
+                            childAspectRatio: 4.2,
+                            padding: const EdgeInsets.fromLTRB(
+                              Spacing.xl,
+                              0,
+                              Spacing.xl,
+                              Spacing.xl,
+                            ),
+                            children: [
+                              if (q.isEmpty)
+                                BatchTile(
+                                  grid: true,
+                                  title: allLabel,
+                                  isSelected: selected == null,
+                                  onTap: () => pick(null),
+                                ),
+                              ...filtered.map(
+                                (o) => BatchTile(
+                                  grid: true,
+                                  title: o,
+                                  isSelected: selected == o,
+                                  onTap: () => pick(o),
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ],
               ),
@@ -369,6 +295,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
+              titleSpacing: 0,
               scrolledUnderElevation: 0,
               iconTheme: IconThemeData(color: context.colors.onPrimary),
               title: Text(
@@ -379,7 +306,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                   fontSize: FontSizeToken.xl,
                 ),
               ),
-              centerTitle: true,
+              centerTitle: false,
             ),
             body: Column(
               children: [
@@ -389,7 +316,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                   child: Row(
                     children: [
                       _buildFilterChip(
-                        label: selectedCourse ?? 'Course',
+                        label: selectedCourse?.toUpperCase() ?? 'Course',
                         isActive: selectedCourse != null,
                         onTap: () => _showCourseFilterSheet(context),
                       ),
@@ -440,26 +367,11 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
 
                                 return Column(
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: Spacing.lg,
-                                        vertical: Spacing.sm,
-                                      ),
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        'Showing ${state.docs.length} / ${state.totalCount}',
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              fontWeight: .bold,
-                                              color: context.colors.textMuted,
-                                            ),
-                                      ),
-                                    ),
                                     Expanded(
                                       child: ListView.separated(
                                         padding: const EdgeInsets.fromLTRB(
                                           Spacing.lg,
-                                          0,
+                                          Spacing.sm,
                                           Spacing.lg,
                                           Spacing.lg,
                                         ),

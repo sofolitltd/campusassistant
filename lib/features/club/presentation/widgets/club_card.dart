@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -10,6 +9,7 @@ import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// A single club — public, drop-in card. Tap navigates to the club details
 /// route (built in, no external onTap wiring needed). Used by both
@@ -50,11 +50,11 @@ class ClubCard extends StatelessWidget {
             crossAxisAlignment: .stretch,
             children: [
               club.bannerUrl != null && club.bannerUrl!.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: ApiEndpoints.resolveImageUrl(club.bannerUrl),
+                  ? AppNetworkImage(
+                      ApiEndpoints.resolveImageUrl(club.bannerUrl),
                       height: 120,
                       fit: .cover,
-                      errorWidget: (context, url, error) => Container(
+                      errorBuilder: (context, error, _) => Container(
                         height: 120,
                         color: primaryColor.withValues(alpha: 0.08),
                         child: Icon(
@@ -96,12 +96,10 @@ class ClubCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(
                                 RadiusToken.xxxl,
                               ),
-                              child: CachedNetworkImage(
-                                imageUrl: ApiEndpoints.resolveImageUrl(
-                                  club.logoUrl,
-                                ),
+                              child: AppNetworkImage(
+                                ApiEndpoints.resolveImageUrl(club.logoUrl),
                                 fit: .cover,
-                                errorWidget: (context, url, error) => Icon(
+                                errorBuilder: (context, error, _) => Icon(
                                   LucideIcons.users,
                                   color: context.colors.textSubtle,
                                   size: 22,

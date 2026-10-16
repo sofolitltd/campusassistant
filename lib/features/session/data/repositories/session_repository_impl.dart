@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/error/failures.dart';
@@ -35,10 +36,12 @@ class SessionRepositoryImpl implements SessionRepository {
 
         // Cache the result
         final cacheItems = remoteSessions.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: cacheItems,
-          ttl: CacheTTL.session,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: cacheItems,
+            ttl: CacheTTL.session,
+          ),
         );
 
         return Right(entities);

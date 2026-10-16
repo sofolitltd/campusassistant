@@ -85,11 +85,13 @@ class StudentRepositoryImpl implements StudentRepository {
     // Every distinct search string would otherwise leave a row behind.
     if (!_isSearch(search)) {
       try {
-        await cacheManager.cacheSingle(
-          entityType: _pageType,
-          entityKey: cacheKey,
-          data: {'total': total, 'items': data},
-          ttl: _pageTtl,
+        unawaitedCacheWrite(
+          cacheManager.cacheSingle(
+            entityType: _pageType,
+            entityKey: cacheKey,
+            data: {'total': total, 'items': data},
+            ttl: _pageTtl,
+          ),
         );
       } catch (e) {
         debugPrint('[StudentRepo] Cache write failed: $e');
@@ -197,11 +199,13 @@ class StudentRepositoryImpl implements StudentRepository {
         final student = StudentModel.fromJson(data.first).toEntity();
 
         // Cache this specific student
-        await cacheManager.cacheSingle(
-          entityType: 'student_detail',
-          entityKey: studentId,
-          data: data.first as Map<String, dynamic>,
-          ttl: CacheTTL.student,
+        unawaitedCacheWrite(
+          cacheManager.cacheSingle(
+            entityType: 'student_detail',
+            entityKey: studentId,
+            data: data.first as Map<String, dynamic>,
+            ttl: CacheTTL.student,
+          ),
         );
 
         return student;

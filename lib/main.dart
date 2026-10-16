@@ -1,4 +1,6 @@
-import '/features/auth/data/datasources/auth_local_data_source.dart';
+import 'dart:async';
+
+import '/core/auth/token_store.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -32,7 +34,10 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseApi().initBackgroundHandler();
   if (!kIsWeb) {
-    await MobileAds.instance.initialize();
+    // Not awaited: adapter init can take seconds on a cold start and nothing
+    // before the first frame needs it — ad requests made before it finishes
+    // are queued by the SDK.
+    unawaited(MobileAds.instance.initialize());
   }
 
   if (kIsWeb) {
@@ -46,6 +51,11 @@ Future<void> main() async {
 
   runApp(ProviderScope(child: const MyApp()));
 }
+
+// Built once: a fresh ThemeData on every MyApp rebuild makes every
+// Theme.of(context) dependent in the app rebuild too.
+final ThemeData _lightTheme = buildLightTheme();
+final ThemeData _darkTheme = buildDarkTheme();
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
@@ -118,10 +128,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   Future<void> _connectWebSocket() async {
     try {
-      final storage = ref.read(secureStorageProvider);
-      final token = await storage.read(
-        key: AuthLocalDataSourceImpl.cachedTokenKey,
-      );
+      final token = await TokenStore.instance.getAccessToken();
       if (token != null && token.isNotEmpty) {
         final wsService = ref.read(websocketServiceProvider);
         await wsService.connect(token);
@@ -168,48 +175,21 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final router = ref.watch(routerProvider);
     final themeModeAsync = ref.watch(themeProvider);
 
-    return themeModeAsync.when(
-      data: (themeMode) => MaterialApp.router(
-        title: 'Campus Assistant',
-        debugShowCheckedModeBanner: false,
-        scrollBehavior: AppScrollBehavior(),
-        themeMode: themeMode,
-        theme: buildLightTheme(),
-        darkTheme: buildDarkTheme(),
-        routerConfig: router,
-        // Temporary: third-party deps still import flutter/material.dart.
-        // ignore: deprecated_member_use
-        builder: (context, child) => MaterialUiCompatibilityBridge(
-          child: OfflineBanner(child: child ?? const SizedBox.shrink()),
-        ),
-      ),
-      loading: () => MaterialApp.router(
-        title: 'Campus Assistant',
-        debugShowCheckedModeBanner: false,
-        scrollBehavior: AppScrollBehavior(),
-        themeMode: ThemeMode.system,
-        theme: buildLightTheme(),
-        darkTheme: buildDarkTheme(),
-        routerConfig: router,
-        // Temporary: third-party deps still import flutter/material.dart.
-        // ignore: deprecated_member_use
-        builder: (context, child) => MaterialUiCompatibilityBridge(
-          child: OfflineBanner(child: child ?? const SizedBox.shrink()),
-        ),
-      ),
-      error: (_, _) => MaterialApp.router(
-        title: 'Campus Assistant',
-        debugShowCheckedModeBanner: false,
-        scrollBehavior: AppScrollBehavior(),
-        themeMode: ThemeMode.system,
-        theme: buildLightTheme(),
-        darkTheme: buildDarkTheme(),
-        routerConfig: router,
-        // Temporary: third-party deps still import flutter/material.dart.
-        // ignore: deprecated_member_use
-        builder: (context, child) => MaterialUiCompatibilityBridge(
-          child: OfflineBanner(child: child ?? const SizedBox.shrink()),
-        ),
+    // One MaterialApp for every state: system mode while the saved preference
+    // loads (or fails to), then the saved one. Swapping between three
+    // MaterialApp instances rebuilt the whole tree for no reason.
+    return MaterialApp.router(
+      title: 'Campus Assistant',
+      debugShowCheckedModeBanner: false,
+      scrollBehavior: AppScrollBehavior(),
+      themeMode: themeModeAsync.value ?? ThemeMode.system,
+      theme: _lightTheme,
+      darkTheme: _darkTheme,
+      routerConfig: router,
+      // Temporary: third-party deps still import flutter/material.dart.
+      // ignore: deprecated_member_use
+      builder: (context, child) => MaterialUiCompatibilityBridge(
+        child: OfflineBanner(child: child ?? const SizedBox.shrink()),
       ),
     );
   }

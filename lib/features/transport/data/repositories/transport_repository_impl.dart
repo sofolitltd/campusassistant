@@ -36,10 +36,12 @@ class TransportRepositoryImpl implements TransportRepository {
 
         // Cache the result
         final cacheItems = remoteTransports.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: 'transport_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.transport,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: 'transport_$cacheKey',
+            items: cacheItems,
+            ttl: CacheTTL.transport,
+          ),
         );
 
         return Right(entities);

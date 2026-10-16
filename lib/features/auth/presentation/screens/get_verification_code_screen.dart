@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +22,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/widgets/open_app.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 enum _VerifyRole { student, teacher, staff }
 
@@ -1150,20 +1150,19 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                                               RadiusToken.sm,
                                             ),
                                             child: cr.imageUrl.isNotEmpty
-                                                ? CachedNetworkImage(
-                                                    imageUrl:
-                                                        ApiEndpoints.resolveImageUrl(
-                                                          cr.imageUrl,
-                                                        ),
+                                                ? AppNetworkImage(
+                                                    ApiEndpoints.resolveImageUrl(
+                                                      cr.imageUrl,
+                                                    ),
                                                     fit: .cover,
-                                                    placeholder: (_, _) =>
+                                                    placeholder: (_) =>
                                                         const Center(
                                                           child:
                                                               CupertinoActivityIndicator(
                                                                 radius: 6,
                                                               ),
                                                         ),
-                                                    errorWidget: (_, _, _) =>
+                                                    errorBuilder: (_, _, _) =>
                                                         Icon(
                                                           LucideIcons.user,
                                                           color: context

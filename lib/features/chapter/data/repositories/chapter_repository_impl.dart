@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+
 import '/core/cache/cache_manager.dart';
 import '/core/cache/connectivity_service.dart';
 import '/core/error/failures.dart';
@@ -12,8 +13,6 @@ class ChapterRepositoryImpl implements ChapterRepository {
   final ChapterRemoteDataSource remoteDataSource;
   final CacheManager cacheManager;
   final ConnectivityService connectivity;
-
-  final Map<String, List<Chapter>> _chaptersCache = {};
 
   ChapterRepositoryImpl({
     required this.remoteDataSource,
@@ -28,14 +27,6 @@ class ChapterRepositoryImpl implements ChapterRepository {
   }) async {
     final cacheKey = 'chapter_${courseCode}_batch_${batchId ?? 'all'}';
 
-    // 0. In-memory cache (instant)
-    if (_chaptersCache.containsKey(cacheKey)) {
-      debugPrint(
-        '[ChapterRepo] Returning ${_chaptersCache[cacheKey]!.length} chapters from in-memory cache',
-      );
-      return Right(_chaptersCache[cacheKey]!);
-    }
-
     // 1. Try DB cache
     try {
       final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
@@ -43,7 +34,6 @@ class ChapterRepositoryImpl implements ChapterRepository {
         final chapters = cachedData
             .map((json) => ChapterModel.fromJson(json).toEntity())
             .toList();
-        _chaptersCache[cacheKey] = chapters;
         debugPrint(
           '[ChapterRepo] Returning ${chapters.length} cached chapters',
         );
@@ -63,12 +53,13 @@ class ChapterRepositoryImpl implements ChapterRepository {
         final entities = chapters.map((m) => m.toEntity()).toList();
 
         final cacheItems = chapters.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: cacheItems,
-          ttl: CacheTTL.chapter,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: cacheItems,
+            ttl: CacheTTL.chapter,
+          ),
         );
-        _chaptersCache[cacheKey] = entities;
 
         return Right(entities);
       } catch (e) {

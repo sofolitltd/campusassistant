@@ -63,9 +63,9 @@ final class CoursesProvider
         $FunctionalProvider<
           AsyncValue<List<Course>>,
           List<Course>,
-          FutureOr<List<Course>>
+          Stream<List<Course>>
         >
-    with $FutureModifier<List<Course>>, $FutureProvider<List<Course>> {
+    with $FutureModifier<List<Course>>, $StreamProvider<List<Course>> {
   CoursesProvider._({
     required CoursesFamily super.from,
     required ({
@@ -78,7 +78,7 @@ final class CoursesProvider
   }) : super(
          retry: null,
          name: r'coursesProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -95,12 +95,12 @@ final class CoursesProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Course>> $createElement(
+  $StreamProviderElement<List<Course>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<Course>> create(Ref ref) {
+  Stream<List<Course>> create(Ref ref) {
     final argument =
         this.argument
             as ({
@@ -129,12 +129,12 @@ final class CoursesProvider
   }
 }
 
-String _$coursesHash() => r'3ac4b2139d8a79518336ae66e7e49074bc36fa86';
+String _$coursesHash() => r'00e708355bbe2238e47d3b641c87ed8a51dcdc97';
 
 final class CoursesFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<List<Course>>,
+          Stream<List<Course>>,
           ({
             String universityId,
             String departmentId,
@@ -148,7 +148,7 @@ final class CoursesFamily extends $Family
         name: r'coursesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   CoursesProvider call({
@@ -174,8 +174,8 @@ final class CoursesFamily extends $Family
 final courseByCodeProvider = CourseByCodeFamily._();
 
 final class CourseByCodeProvider
-    extends $FunctionalProvider<AsyncValue<Course?>, Course?, FutureOr<Course?>>
-    with $FutureModifier<Course?>, $FutureProvider<Course?> {
+    extends $FunctionalProvider<AsyncValue<Course?>, Course?, Stream<Course?>>
+    with $FutureModifier<Course?>, $StreamProvider<Course?> {
   CourseByCodeProvider._({
     required CourseByCodeFamily super.from,
     required ({
@@ -189,7 +189,7 @@ final class CourseByCodeProvider
   }) : super(
          retry: null,
          name: r'courseByCodeProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -206,11 +206,11 @@ final class CourseByCodeProvider
 
   @$internal
   @override
-  $FutureProviderElement<Course?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $StreamProviderElement<Course?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
 
   @override
-  FutureOr<Course?> create(Ref ref) {
+  Stream<Course?> create(Ref ref) {
     final argument =
         this.argument
             as ({
@@ -241,12 +241,12 @@ final class CourseByCodeProvider
   }
 }
 
-String _$courseByCodeHash() => r'd27c3c319a459aa7094465e211765862b25e4f39';
+String _$courseByCodeHash() => r'56fba3d6dc263167c42e1d23129712bb1655af51';
 
 final class CourseByCodeFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<Course?>,
+          Stream<Course?>,
           ({
             String universityId,
             String departmentId,
@@ -261,7 +261,7 @@ final class CourseByCodeFamily extends $Family
         name: r'courseByCodeProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   CourseByCodeProvider call({

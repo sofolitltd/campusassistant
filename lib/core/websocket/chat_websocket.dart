@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '/core/network/api_endpoints.dart';
-import '/features/auth/data/datasources/auth_local_data_source.dart';
+import '/core/auth/token_store.dart';
 
 class ChatWebSocketEvent {
   final String type;
@@ -61,18 +60,14 @@ class ChatWebSocketService {
         .replaceFirst('/api/v1', '');
     final isSecure = base.startsWith('https://');
     final scheme = isSecure ? 'wss' : 'ws';
-    return Uri.parse(
-      '$scheme://$host/ws/chat/$conversationId',
-    ).replace(queryParameters: {'token': token});
+    return Uri.parse('$scheme://$host/ws/chat/$conversationId')
+        .replace(queryParameters: {'token': token});
   }
 
   Future<void> connect(String conversationId) async {
     await disconnect();
 
-    final storage = FlutterSecureStorage();
-    final token = await storage.read(
-      key: AuthLocalDataSourceImpl.cachedTokenKey,
-    );
+    final token = await TokenStore.instance.getAccessToken();
     if (token == null || token.isEmpty) return;
 
     final uri = _wsUri(conversationId, token);

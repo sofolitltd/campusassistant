@@ -76,6 +76,14 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   bool isUpload = false;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _referralController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

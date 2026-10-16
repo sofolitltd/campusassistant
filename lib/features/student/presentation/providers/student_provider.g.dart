@@ -488,7 +488,7 @@ final class StudentByUserIdProvider
   }) : super(
          retry: null,
          name: r'studentByUserIdProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -525,7 +525,7 @@ final class StudentByUserIdProvider
   }
 }
 
-String _$studentByUserIdHash() => r'ac1e7e4c3300017b15d31dec7b87827356ec1c4c';
+String _$studentByUserIdHash() => r'd9d4821f3b2f6951bf02a0502de7b7c5015ec418';
 
 final class StudentByUserIdFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Student?>, String> {
@@ -535,7 +535,7 @@ final class StudentByUserIdFamily extends $Family
         name: r'studentByUserIdProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   StudentByUserIdProvider call(String userId) =>
@@ -736,7 +736,7 @@ final class AllStudentsProvider
   }) : super(
          retry: null,
          name: r'allStudentsProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -779,7 +779,7 @@ final class AllStudentsProvider
   }
 }
 
-String _$allStudentsHash() => r'fd0bc0f8634bdee458f55384b07facd68a420226';
+String _$allStudentsHash() => r'493455e2b5a2a061aa411e547179ac3e4c2fd195';
 
 final class AllStudentsFamily extends $Family
     with
@@ -793,7 +793,7 @@ final class AllStudentsFamily extends $Family
         name: r'allStudentsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   AllStudentsProvider call({String? universityId, String? departmentId}) =>

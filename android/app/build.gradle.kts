@@ -1,3 +1,4 @@
+import java.util.Base64
 import java.util.Properties
 import java.io.FileInputStream
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -17,6 +18,22 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
+
+// Values from `flutter run/build --dart-define(-from-file)` reach Gradle as
+// the `dart-defines` property: a comma-separated list of base64 "KEY=VALUE".
+val dartDefines: Map<String, String> =
+    (project.findProperty("dart-defines") as String?)
+        ?.split(",")
+        ?.mapNotNull { entry ->
+            val decoded = String(Base64.getDecoder().decode(entry))
+            val eq = decoded.indexOf('=')
+            if (eq > 0) decoded.substring(0, eq) to decoded.substring(eq + 1) else null
+        }
+        ?.toMap()
+        ?: emptyMap()
+
+// Google's public test App ID — mirrors the fallback in lib/core/ads/ad_config.dart.
+val admobTestAppId = "ca-app-pub-3940256099942544~3347511713"
 
 android {
     namespace = "com.sofolit.campusassistant"
@@ -39,6 +56,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["admobAppId"] =
+            dartDefines["ADMOB_ANDROID_APP_ID"]?.takeIf { it.isNotBlank() } ?: admobTestAppId
     }
 
     signingConfigs {

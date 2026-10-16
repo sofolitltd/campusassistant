@@ -16,8 +16,6 @@ class ResourceRepositoryImpl implements ResourceRepository {
   final ConnectivityService connectivity;
   final SyncManager syncManager;
 
-  final Map<String, PaginatedResources> _resourcesCache = {};
-
   ResourceRepositoryImpl({
     required this.apiClient,
     required this.cacheManager,
@@ -57,12 +55,6 @@ class ResourceRepositoryImpl implements ResourceRepository {
       year: year,
     );
 
-    // 0. In-memory cache (instant)
-    if (_resourcesCache.containsKey(cacheKey)) {
-      debugPrint('[ResourceRepo] Returning resources from in-memory cache');
-      return Right(_resourcesCache[cacheKey]!);
-    }
-
     // 1. Try DB cache
     try {
       final cachedData = await cacheManager.getCachedList(
@@ -94,7 +86,6 @@ class ResourceRepositoryImpl implements ResourceRepository {
           '[ResourceRepo] Returning ${resources.length} cached resources',
         );
         final result = PaginatedResources(resources: resources, total: total);
-        _resourcesCache[cacheKey] = result;
         return Right(result);
       }
     } catch (e) {
@@ -140,16 +131,20 @@ class ResourceRepositoryImpl implements ResourceRepository {
           }
         }
         try {
-          await cacheManager.cacheList(
-            entityType: 'resource_$cacheKey',
-            items: cacheItems,
-            ttl: CacheTTL.resource,
+          unawaitedCacheWrite(
+            cacheManager.cacheList(
+              entityType: 'resource_$cacheKey',
+              items: cacheItems,
+              ttl: CacheTTL.resource,
+            ),
           );
-          await cacheManager.cacheSingle(
-            entityType: 'resource_total_$cacheKey',
-            entityKey: 'total',
-            data: {'total': totalCount},
-            ttl: CacheTTL.resource,
+          unawaitedCacheWrite(
+            cacheManager.cacheSingle(
+              entityType: 'resource_total_$cacheKey',
+              entityKey: 'total',
+              data: {'total': totalCount},
+              ttl: CacheTTL.resource,
+            ),
           );
         } catch (e) {
           debugPrint('[ResourceRepo] Cache write failed (non-fatal): $e');
@@ -159,7 +154,6 @@ class ResourceRepositoryImpl implements ResourceRepository {
           resources: resources,
           total: totalCount,
         );
-        _resourcesCache[cacheKey] = result;
         return Right(result);
       } catch (e) {
         debugPrint('[ResourceRepo] Remote fetch failed: $e');
@@ -200,9 +194,8 @@ class ResourceRepositoryImpl implements ResourceRepository {
       try {
         final response = await apiClient.get('/resources/$id');
         return Right(
-          ResourceModel.fromJson(
-            response.data as Map<String, dynamic>,
-          ).toEntity(),
+          ResourceModel.fromJson(response.data as Map<String, dynamic>)
+              .toEntity(),
         );
       } catch (e) {
         debugPrint('[ResourceRepo] Remote getResourceById failed: $e');

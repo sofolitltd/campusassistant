@@ -2,11 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:http/http.dart' as http;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
@@ -19,6 +17,8 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../screens/full_media_viewer.dart';
 import 'app_pdf_viewer.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
+import '/core/network/download_client.dart';
 
 /// In-memory cache for rendered PDF thumbnails so scrolling back doesn't re-download.
 final Map<String, Uint8List> _pdfThumbnailCache = {};
@@ -63,12 +63,8 @@ class _PdfThumbnailWidgetState extends State<PdfThumbnailWidget> {
       final file = File('${dir.path}/$fileName');
 
       if (!await file.exists()) {
-        final response = await http.get(Uri.parse(widget.url));
-        if (response.statusCode != 200) {
-          if (mounted) setState(() => _isLoading = false);
-          return;
-        }
-        await file.writeAsBytes(response.bodyBytes);
+        // Throws on non-2xx; the catch below clears the spinner.
+        await file.writeAsBytes(await downloadBytes(widget.url));
       }
 
       document = await PdfDocument.openFile(file.path);
@@ -359,10 +355,10 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                         if (pdf)
                           PdfThumbnailWidget(url: _resolveUrl(url))
                         else
-                          CachedNetworkImage(
-                            imageUrl: _resolveUrl(url),
+                          AppNetworkImage(
+                            _resolveUrl(url),
                             fit: .cover,
-                            placeholder: (c, u) =>
+                            placeholder: (c) =>
                                 Container(color: cs.surfaceContainerHighest),
                           ),
                         if (pdf)
@@ -400,14 +396,10 @@ class _JobImageGalleryState extends State<JobImageGallery> {
     final fileName =
         '${widget.title.replaceAll(RegExp(r'[^\w]'), '_')}_$index.$ext';
     try {
-      final dio = Dio();
-      final response = await dio.get(
-        url,
-        options: Options(responseType: ResponseType.bytes),
-      );
+      final bytes = await downloadBytes(url);
       final directory = await getTemporaryDirectory();
       final file = File('${directory.path}/$fileName');
-      await file.writeAsBytes(response.data);
+      await file.writeAsBytes(bytes);
       if (context.mounted) {
         await SharePlus.instance.share(
           ShareParams(files: [XFile(file.path)], text: widget.title),
@@ -415,9 +407,8 @@ class _JobImageGalleryState extends State<JobImageGallery> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Download error: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Download error: $e')));
       }
     }
   }

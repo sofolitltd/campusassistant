@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,6 +12,7 @@ import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class CircularDetailScreen extends ConsumerStatefulWidget {
   final String circularId;
@@ -64,15 +64,13 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
     try {
       await ref.read(circularActionsProvider).saveToMyJobs(widget.circularId);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Saved to My Jobs')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Saved to My Jobs')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to save: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -110,127 +108,151 @@ class _CircularDetailScreenState extends ConsumerState<CircularDetailScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
-                    child: circularAsync.when(
-            data: (circular) {
-              if (!_viewRecorded) {
-                _viewRecorded = true;
-                ref.read(circularActionsProvider).recordView(circular.id);
-              }
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    if (circular.attachmentUrls.isNotEmpty)
-                      AspectRatio(
-                        aspectRatio: 16 / 10,
-                        child: PageView(
-                          children: circular.attachmentUrls
-                              .map(
-                                (url) => CachedNetworkImage(
-                                  imageUrl: ApiEndpoints.resolveImageUrl(url),
-                                  fit: .cover,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(Spacing.lg),
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          if (circular.category != null)
-                            Chip(label: Text(circular.category!.name)),
-                          const SizedBox(height: Spacing.sm),
-                          Text(
-                            circular.title,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          if (circular.organization.isNotEmpty) ...[
-                            const SizedBox(height: Spacing.xs),
-                            Text(
-                              circular.organization,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ],
-                          const SizedBox(height: Spacing.md),
-                          if (circular.description.isNotEmpty)
-                            Text(circular.description),
-                          const SizedBox(height: Spacing.lg),
-                          if (circular.publishDate != null)
-                            _InfoRow(
-                              icon: Icons.calendar_today_outlined,
-                              label: 'Published',
-                              value: _shortDate(circular.publishDate!),
-                            ),
-                          if (circular.deadlineDate != null)
-                            _InfoRow(
-                              icon: Icons.access_time,
-                              label: 'Deadline',
-                              value:
-                                  '${_shortDate(circular.deadlineDate!)} (${_countdown(circular.deadlineDate!)})',
-                              urgent: circular.isPastDeadline,
-                            ),
-                          const SizedBox(height: Spacing.md),
-                          if (circular.postLink.isNotEmpty)
-                            _LinkTile(
-                              label: 'Job Posting',
-                              url: circular.postLink,
-                              onTap: () => _openLink(circular.postLink),
-                            ),
-                          if (circular.resourceLink.isNotEmpty)
-                            _LinkTile(
-                              label: 'Resources',
-                              url: circular.resourceLink,
-                              onTap: () => _openLink(circular.resourceLink),
-                            ),
-                          const SizedBox(height: Spacing.xl),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              clipBehavior: Clip.antiAlias,
-                              onPressed: _saving ? null : _saveToMyJobs,
-                              icon: _saving
-                                  ? const SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Icon(Icons.bookmark_add_outlined),
-                              label: const Text('Save To My Jobs'),
-                            ),
-                          ),
-                          const SizedBox(height: Spacing.sm),
-                          if (circular.deadlineDate != null)
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton.icon(
-                                onPressed: () => showSetReminderSheet(
-                                  context,
-                                  ref,
-                                  suggestedTitle: 'Deadline: ${circular.title}',
-                                  suggestedTime: circular.deadlineDate!
-                                      .subtract(const Duration(hours: 8)),
-                                ),
-                                icon: const Icon(
-                                  Icons.notifications_active_outlined,
-                                ),
-                                label: const Text('Set Reminder'),
-                              ),
-                            ),
-                        ],
-                      ),
+                    constraints: const BoxConstraints(
+                      maxWidth: AppLayout.pageWidth,
                     ),
-                  ],
-                ),
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) =>
-                Center(child: Text('Failed to load circular: $err')),
+                    child: circularAsync.when(
+                      data: (circular) {
+                        if (!_viewRecorded) {
+                          _viewRecorded = true;
+                          ref
+                              .read(circularActionsProvider)
+                              .recordView(circular.id);
+                        }
+                        return SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              if (circular.attachmentUrls.isNotEmpty)
+                                AspectRatio(
+                                  aspectRatio: 16 / 10,
+                                  child: PageView(
+                                    children: circular.attachmentUrls
+                                        .map(
+                                          (url) => AppNetworkImage(
+                                            ApiEndpoints.resolveImageUrl(url),
+                                            fit: .cover,
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
+                              Padding(
+                                padding: const EdgeInsets.all(Spacing.lg),
+                                child: Column(
+                                  crossAxisAlignment: .start,
+                                  children: [
+                                    if (circular.category != null)
+                                      Chip(
+                                        label: Text(circular.category!.name),
+                                      ),
+                                    const SizedBox(height: Spacing.sm),
+                                    Text(
+                                      circular.title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                    ),
+                                    if (circular.organization.isNotEmpty) ...[
+                                      const SizedBox(height: Spacing.xs),
+                                      Text(
+                                        circular.organization,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                    ],
+                                    const SizedBox(height: Spacing.md),
+                                    if (circular.description.isNotEmpty)
+                                      Text(circular.description),
+                                    const SizedBox(height: Spacing.lg),
+                                    if (circular.publishDate != null)
+                                      _InfoRow(
+                                        icon: Icons.calendar_today_outlined,
+                                        label: 'Published',
+                                        value: _shortDate(
+                                          circular.publishDate!,
+                                        ),
+                                      ),
+                                    if (circular.deadlineDate != null)
+                                      _InfoRow(
+                                        icon: Icons.access_time,
+                                        label: 'Deadline',
+                                        value:
+                                            '${_shortDate(circular.deadlineDate!)} (${_countdown(circular.deadlineDate!)})',
+                                        urgent: circular.isPastDeadline,
+                                      ),
+                                    const SizedBox(height: Spacing.md),
+                                    if (circular.postLink.isNotEmpty)
+                                      _LinkTile(
+                                        label: 'Job Posting',
+                                        url: circular.postLink,
+                                        onTap: () =>
+                                            _openLink(circular.postLink),
+                                      ),
+                                    if (circular.resourceLink.isNotEmpty)
+                                      _LinkTile(
+                                        label: 'Resources',
+                                        url: circular.resourceLink,
+                                        onTap: () =>
+                                            _openLink(circular.resourceLink),
+                                      ),
+                                    const SizedBox(height: Spacing.xl),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton.icon(
+                                        clipBehavior: Clip.antiAlias,
+                                        onPressed: _saving
+                                            ? null
+                                            : _saveToMyJobs,
+                                        icon: _saving
+                                            ? const SizedBox(
+                                                height: 16,
+                                                width: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                            : const Icon(
+                                                Icons.bookmark_add_outlined,
+                                              ),
+                                        label: const Text('Save To My Jobs'),
+                                      ),
+                                    ),
+                                    const SizedBox(height: Spacing.sm),
+                                    if (circular.deadlineDate != null)
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: OutlinedButton.icon(
+                                          onPressed: () => showSetReminderSheet(
+                                            context,
+                                            ref,
+                                            suggestedTitle:
+                                                'Deadline: ${circular.title}',
+                                            suggestedTime: circular
+                                                .deadlineDate!
+                                                .subtract(
+                                                  const Duration(hours: 8),
+                                                ),
+                                          ),
+                                          icon: const Icon(
+                                            Icons.notifications_active_outlined,
+                                          ),
+                                          label: const Text('Set Reminder'),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, _) =>
+                          Center(child: Text('Failed to load circular: $err')),
                     ),
                   ),
                 ),

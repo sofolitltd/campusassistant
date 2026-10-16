@@ -61,6 +61,15 @@ class _NewStaffSignupScreenState extends ConsumerState<NewStaffSignupScreen> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _mobileController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return HeaderGradientBackdrop(
       child: Scaffold(

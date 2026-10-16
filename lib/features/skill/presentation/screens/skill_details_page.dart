@@ -17,6 +17,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class SkillDetailsPage extends ConsumerWidget {
   final Skill? skill;
@@ -109,7 +110,7 @@ class SkillDetailsPage extends ConsumerWidget {
                 iconTheme: const IconThemeData(color: Colors.white),
                 flexibleSpace: FlexibleSpaceBar(
                   background: skill.thumbnailUrl.isNotEmpty
-                      ? Image.network(
+                      ? AppNetworkImage(
                           ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
                           fit: .cover,
                           errorBuilder: (context, error, stackTrace) =>
@@ -126,9 +127,8 @@ class SkillDetailsPage extends ConsumerWidget {
                     children: [
                       Text(
                         skill.title,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.headlineSmall?.copyWith(fontWeight: .bold),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: .bold),
                       ),
                       if (skill.description.isNotEmpty) ...[
                         const SizedBox(height: Spacing.sm),
@@ -246,7 +246,7 @@ class _SkillVideoRow extends StatelessWidget {
                       bottomLeft: Radius.circular(RadiusToken.md),
                     ),
                     child: thumb.isNotEmpty
-                        ? Image.network(
+                        ? AppNetworkImage(
                             ApiEndpoints.resolveImageUrl(thumb),
                             fit: .cover,
                             errorBuilder: (context, error, stackTrace) =>

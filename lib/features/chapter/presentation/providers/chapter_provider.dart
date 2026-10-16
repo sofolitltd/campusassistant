@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/chapter.dart';
 import '../../data/datasources/chapter_remote_data_source.dart';
 import '../../data/repositories/chapter_repository_impl.dart';
@@ -6,6 +7,7 @@ import '../../domain/repositories/chapter_repository.dart';
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
+import '../../../../core/providers/cache_for.dart';
 
 part 'chapter_provider.g.dart';
 
@@ -27,7 +29,7 @@ ChapterRepository chapterRepository(Ref ref) {
   );
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Future<List<Chapter>> chaptersForCourse(
   Ref ref, {
   required String universityId,
@@ -35,6 +37,7 @@ Future<List<Chapter>> chaptersForCourse(
   required String courseCode,
   String? batchId,
 }) async {
+  ref.cacheFor(kParamProviderCacheTime);
   final repository = ref.watch(chapterRepositoryProvider);
   final result = await repository.getChapters(courseCode, batchId: batchId);
   return result.fold((failure) => throw failure, (chapters) => chapters);

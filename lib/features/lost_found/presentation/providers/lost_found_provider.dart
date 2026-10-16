@@ -7,6 +7,7 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '../../data/models/lost_found_category.dart';
 import '../../data/models/lost_found_claim.dart';
 import '../../data/models/lost_found_item.dart';
+import '/core/providers/cache_for.dart';
 
 enum LostFoundFeedTab { lost, found, myPosts }
 
@@ -20,11 +21,12 @@ final lostFoundCategoriesProvider = FutureProvider<List<LostFoundCategory>>((
 /// Narrows the feed to the viewer's own university/department (same
 /// global-or-targeted scoping model as Product/Skill), plus an optional
 /// category filter.
-final lostFoundFeedProvider =
-    FutureProvider.family<
+final lostFoundFeedProvider = FutureProvider.autoDispose
+    .family<
       List<LostFoundItem>,
       ({LostFoundFeedTab tab, String? categoryId, String? search})
     >((ref, params) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(lostFoundRepositoryProvider);
 
       if (params.tab == LostFoundFeedTab.myPosts) {
@@ -41,14 +43,16 @@ final lostFoundFeedProvider =
       );
     });
 
-final lostFoundItemDetailProvider =
-    FutureProvider.family<LostFoundItem, String>((ref, itemId) async {
+final lostFoundItemDetailProvider = FutureProvider.autoDispose
+    .family<LostFoundItem, String>((ref, itemId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(lostFoundRepositoryProvider);
       return repo.getItemById(itemId);
     });
 
-final lostFoundClaimsProvider =
-    FutureProvider.family<List<LostFoundClaim>, String>((ref, itemId) async {
+final lostFoundClaimsProvider = FutureProvider.autoDispose
+    .family<List<LostFoundClaim>, String>((ref, itemId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(lostFoundRepositoryProvider);
       return repo.getClaimsForItem(itemId);
     });

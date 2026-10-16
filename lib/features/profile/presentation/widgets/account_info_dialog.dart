@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +15,7 @@ import '/features/subscription/domain/entities/subscription.dart';
 import '/features/subscription/presentation/providers/subscription_provider.dart'
     show userSubscriptionProvider;
 import '/routes/app_route.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Shows the account's plan details: join date for Basic users, purchase date
 /// and remaining time for Pro users.
@@ -104,9 +104,7 @@ class AccountInfoDialog extends ConsumerWidget {
                 else ...[
                   for (final row in rows)
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Spacing.xs,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
                       child: Row(
                         children: [
                           Expanded(
@@ -117,9 +115,7 @@ class AccountInfoDialog extends ConsumerWidget {
                           ),
                           Text(
                             row.value,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -227,11 +223,7 @@ class _BkmeProSection extends StatelessWidget {
             ),
           ),
           if (!isPro)
-            Icon(
-              LucideIcons.chevronRight,
-              size: 18,
-              color: colors.primary,
-            ),
+            Icon(LucideIcons.chevronRight, size: 18, color: colors.primary),
         ],
       ),
     );
@@ -277,11 +269,11 @@ class _Avatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: imageUrl.isEmpty
           ? Center(child: placeholder)
-          : CachedNetworkImage(
-              imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
+          : AppNetworkImage(
+              ApiEndpoints.resolveImageUrl(imageUrl),
               fit: BoxFit.cover,
-              placeholder: (_, _) => Center(child: placeholder),
-              errorWidget: (_, _, _) => Center(child: placeholder),
+              placeholder: (_) => Center(child: placeholder),
+              errorBuilder: (_, _, _) => Center(child: placeholder),
             ),
     );
   }

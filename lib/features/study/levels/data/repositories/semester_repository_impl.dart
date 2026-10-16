@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../../../../core/cache/cache_manager.dart';
 import '../../../../../core/cache/connectivity_service.dart';
 import '../../../../../core/network/api_client.dart';
@@ -13,8 +14,6 @@ class SemesterRepositoryImpl implements SemesterRepository {
   final ApiClient apiClient;
   final CacheManager cacheManager;
   final ConnectivityService connectivity;
-
-  final Map<String, List<Semester>> _semestersCache = {};
 
   SemesterRepositoryImpl({
     required this.apiClient,
@@ -30,14 +29,6 @@ class SemesterRepositoryImpl implements SemesterRepository {
   }) async {
     final cacheKey = 'semester_uni_${universityId}_dept_$departmentId';
 
-    // 0. In-memory cache (instant)
-    if (_semestersCache.containsKey(cacheKey)) {
-      debugPrint(
-        '[SemesterRepo] Returning ${_semestersCache[cacheKey]!.length} semesters from in-memory cache',
-      );
-      return Right(_semestersCache[cacheKey]!);
-    }
-
     // 1. Try DB cache
     try {
       final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
@@ -45,7 +36,6 @@ class SemesterRepositoryImpl implements SemesterRepository {
         final semesters = cachedData
             .map((json) => SemesterModel.fromJson(json).toEntity())
             .toList();
-        _semestersCache[cacheKey] = semesters;
         debugPrint(
           '[SemesterRepo] Returning ${semesters.length} cached semesters',
         );
@@ -74,12 +64,13 @@ class SemesterRepositoryImpl implements SemesterRepository {
             .map((json) => SemesterModel.fromJson(json).toEntity())
             .toList();
 
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: rawData.cast<Map<String, dynamic>>(),
-          ttl: CacheTTL.semester,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: rawData.cast<Map<String, dynamic>>(),
+            ttl: CacheTTL.semester,
+          ),
         );
-        _semestersCache[cacheKey] = semesters;
 
         return Right(semesters);
       } catch (e) {

@@ -1,8 +1,9 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
+
 import '/core/widgets/custom_header_layout.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 
 import '/core/network/api_endpoints.dart';
@@ -14,6 +15,7 @@ import '/features/club/presentation/widgets/contact_admin_banner.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Clubs the current user requested (suggested) or co-manages. Tapping any
 /// of them — pending or active — opens Manage Club, since the requester is
@@ -101,8 +103,8 @@ class _MyClubCard extends StatelessWidget {
               child: club.logoUrl != null && club.logoUrl!.isNotEmpty
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(RadiusToken.xxxl),
-                      child: CachedNetworkImage(
-                        imageUrl: ApiEndpoints.resolveImageUrl(club.logoUrl),
+                      child: AppNetworkImage(
+                        ApiEndpoints.resolveImageUrl(club.logoUrl),
                         fit: .cover,
                       ),
                     )

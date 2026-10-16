@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/core/di.dart';
 import '../../../presentation/providers/career_refresh_provider.dart';
 import '../../data/models/career_job.dart';
+import '/core/providers/cache_for.dart';
 
 final myCareerJobsProvider = FutureProvider<List<CareerJob>>((ref) async {
   ref.watch(careerRefreshProvider);
@@ -10,21 +11,21 @@ final myCareerJobsProvider = FutureProvider<List<CareerJob>>((ref) async {
   return repo.getMyJobs();
 });
 
-final careerJobByIdProvider = FutureProvider.family<CareerJob?, String>((
-  ref,
-  id,
-) async {
-  final jobs = await ref.watch(myCareerJobsProvider.future);
-  for (final job in jobs) {
-    if (job.id == id) return job;
-  }
-  return null;
-});
+final careerJobByIdProvider = FutureProvider.autoDispose
+    .family<CareerJob?, String>((ref, id) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final jobs = await ref.watch(myCareerJobsProvider.future);
+      for (final job in jobs) {
+        if (job.id == id) return job;
+      }
+      return null;
+    });
 
 /// Peer-shared jobs at the given scope, refetched whenever a mutation bumps
 /// careerRefreshProvider (e.g. someone shares a new job).
-final sharedJobsByScopeProvider =
-    FutureProvider.family<List<CareerJob>, CareerJobScope>((ref, scope) async {
+final sharedJobsByScopeProvider = FutureProvider.autoDispose
+    .family<List<CareerJob>, CareerJobScope>((ref, scope) async {
+      ref.cacheFor(kParamProviderCacheTime);
       ref.watch(careerRefreshProvider);
       final repo = ref.watch(careerJobRepositoryProvider);
       return repo.getSharedJobs(scope);

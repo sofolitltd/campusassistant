@@ -2,7 +2,6 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/app_choice_chip.dart';
@@ -15,6 +14,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class AssociationsPage extends ConsumerStatefulWidget {
   const AssociationsPage({super.key});
@@ -100,9 +100,8 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
                 Icon(
                   LucideIcons.landmark,
                   size: 64,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.outline
+                      .withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: Spacing.lg),
                 Text(
@@ -115,9 +114,8 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
                 const SizedBox(height: Spacing.sm),
                 Text(
                   'Be the first to add one!',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
               ],
             ),
@@ -211,9 +209,8 @@ class _SuggestedAssociationsRow extends ConsumerWidget {
                     const SizedBox(width: Spacing.xs),
                     Text(
                       'Suggested for you',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(fontWeight: .bold),
                     ),
                   ],
                 ),
@@ -268,10 +265,7 @@ class _SuggestedAssociationTile extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              context.colors.primarySubtle,
-              context.colors.surface,
-            ],
+            colors: [context.colors.primarySubtle, context.colors.surface],
           ),
           borderRadius: BorderRadius.circular(RadiusToken.lg),
           border: Border.all(
@@ -436,13 +430,11 @@ class AssociationCard extends StatelessWidget {
             crossAxisAlignment: .stretch,
             children: [
               association.bannerUrl != null && association.bannerUrl!.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: ApiEndpoints.resolveImageUrl(
-                        association.bannerUrl,
-                      ),
+                  ? AppNetworkImage(
+                      ApiEndpoints.resolveImageUrl(association.bannerUrl),
                       height: 120,
                       fit: .cover,
-                      errorWidget: (context, url, error) => Container(
+                      errorBuilder: (context, error, _) => Container(
                         height: 120,
                         color: primaryColor.withValues(alpha: 0.08),
                         child: Icon(
@@ -561,10 +553,10 @@ class _AssociationLogo extends StatelessWidget {
       ),
       child: logoUrl != null && logoUrl!.isNotEmpty
           ? ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: ApiEndpoints.resolveImageUrl(logoUrl),
+              child: AppNetworkImage(
+                ApiEndpoints.resolveImageUrl(logoUrl),
                 fit: BoxFit.cover,
-                errorWidget: (_, _, _) => fallback,
+                errorBuilder: (_, _, _) => fallback,
               ),
             )
           : fallback,

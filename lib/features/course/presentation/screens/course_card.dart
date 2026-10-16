@@ -117,6 +117,8 @@ class CourseCardContent extends StatelessWidget {
             height: 90,
             child: CachedNetworkImage(
               imageUrl: ApiEndpoints.resolveImageUrl(courseModel.thumbnailURL),
+              // Decode at ~display size (3x), not the upload's full resolution.
+              memCacheWidth: 384,
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
                   color: isDark

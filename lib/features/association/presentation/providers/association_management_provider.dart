@@ -6,17 +6,16 @@ import '/features/club/data/models/club_user_summary.dart';
 import '../../data/models/association_event.dart';
 import '../../data/models/association_post.dart';
 import '../../domain/entities/association.dart';
+import '/core/providers/cache_for.dart';
 
 /// Public, read-only association sub-resources — mirrors clubPostsProvider/
 /// clubMembersProvider. Reuses ClubUserSummary directly since the backend's
 /// /associations/:id/members and /my/associations/:id/managers return the
 /// exact same {user_id, first_name, last_name, avatar_url, role} shape as
 /// clubs — no association-specific fields, so no reason to duplicate it.
-final associationPostsProvider =
-    FutureProvider.family<List<AssociationPost>, String>((
-      ref,
-      associationId,
-    ) async {
+final associationPostsProvider = FutureProvider.autoDispose
+    .family<List<AssociationPost>, String>((ref, associationId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         '${ApiEndpoints.associations}/$associationId/posts',
@@ -27,11 +26,9 @@ final associationPostsProvider =
           .toList();
     });
 
-final associationMembersProvider =
-    FutureProvider.family<List<ClubUserSummary>, String>((
-      ref,
-      associationId,
-    ) async {
+final associationMembersProvider = FutureProvider.autoDispose
+    .family<List<ClubUserSummary>, String>((ref, associationId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final apiClient = ref.watch(apiClientProvider);
       final response = await apiClient.get(
         '${ApiEndpoints.associations}/$associationId/members',

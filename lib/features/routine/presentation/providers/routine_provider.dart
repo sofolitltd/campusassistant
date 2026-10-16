@@ -6,6 +6,7 @@ import '../../../../core/di.dart';
 import '../../domain/entities/routine.dart';
 import '../../domain/repositories/routine_repository.dart';
 import '../../data/repositories/routine_repository_impl.dart';
+import '../../../../core/providers/cache_for.dart';
 
 final routineRepositoryProvider = Provider<RoutineRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -19,11 +20,12 @@ final routineRepositoryProvider = Provider<RoutineRepository>((ref) {
   );
 });
 
-final routinesProvider =
-    FutureProvider.family<
-      List<Routine>,
-      ({String universityId, String departmentId})
-    >((ref, params) async {
+final routinesProvider = FutureProvider.autoDispose
+    .family<List<Routine>, ({String universityId, String departmentId})>((
+      ref,
+      params,
+    ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(routineRepositoryProvider);
       final result = await repo.getRoutines(
         universityId: params.universityId,

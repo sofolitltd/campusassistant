@@ -87,7 +87,7 @@ final class ResourcesListProvider
   }) : super(
          retry: null,
          name: r'resourcesListProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -152,7 +152,7 @@ final class ResourcesListProvider
   }
 }
 
-String _$resourcesListHash() => r'e9348a4426666f61b4ccc5418688f0ddfcb33b70';
+String _$resourcesListHash() => r'2c4a87d4fbe0820ed75f4f26f14a2506be8b339f';
 
 final class ResourcesListFamily extends $Family
     with
@@ -178,7 +178,7 @@ final class ResourcesListFamily extends $Family
         name: r'resourcesListProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   ResourcesListProvider call({

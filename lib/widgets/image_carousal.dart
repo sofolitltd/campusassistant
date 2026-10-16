@@ -1,15 +1,16 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '/core/theme/app_colors.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '/features/banner/domain/entities/banner.dart' as entity show Banner;
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/app_network_image.dart';
 
 class ImageCarousel extends StatefulWidget {
   final List<entity.Banner> images;
@@ -95,12 +96,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
   Widget _buildImage(entity.Banner banner) {
     return GestureDetector(
       onTap: () => _handleBannerTap(banner),
-      child: CachedNetworkImage(
-        imageUrl: ApiEndpoints.resolveImageUrl(banner.imageUrl),
+      child: AppNetworkImage(
+        ApiEndpoints.resolveImageUrl(banner.imageUrl),
         fit: .cover,
-        placeholder: (context, url) =>
-            Container(color: context.colors.surfaceAlt),
-        errorWidget: (context, url, error) => Container(
+        placeholder: (context) => Container(color: context.colors.surfaceAlt),
+        errorBuilder: (context, error, _) => Container(
           color: context.colors.surfaceAlt,
           child: Icon(
             Icons.broken_image_outlined,

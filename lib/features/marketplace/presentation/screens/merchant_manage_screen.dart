@@ -22,6 +22,7 @@ import 'seller/seller_reviews_tab.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_control.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// The owner's self-service view of a single business they run: profile
 /// (with edit/delete), the products they sell, and order/delivery/revenue
@@ -184,7 +185,7 @@ class _AboutTab extends StatelessWidget {
               ),
               child: merchant.logoUrl.isNotEmpty
                   ? ClipOval(
-                      child: Image.network(
+                      child: AppNetworkImage(
                         ApiEndpoints.resolveImageUrl(merchant.logoUrl),
                         fit: .cover,
                         errorBuilder: (_, _, _) => Icon(
@@ -531,7 +532,7 @@ class _ProductCard extends StatelessWidget {
                       top: Radius.circular(RadiusToken.lg),
                     ),
                     child: imageUrl.isNotEmpty
-                        ? Image.network(
+                        ? AppNetworkImage(
                             ApiEndpoints.resolveImageUrl(imageUrl),
                             fit: .cover,
                             errorBuilder: (_, _, _) => Container(

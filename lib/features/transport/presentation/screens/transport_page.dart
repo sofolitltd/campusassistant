@@ -145,6 +145,8 @@ class TransportPage extends ConsumerWidget {
                                 .withValues(alpha: 0.3),
                             child: CachedNetworkImage(
                               imageUrl: resolvedUrl,
+                              // Full-width preview: cap the decode near a 3x phone width.
+                              memCacheWidth: 1440,
                               fadeInDuration: const Duration(milliseconds: 300),
                               imageBuilder: (context, imageProvider) =>
                                   Container(

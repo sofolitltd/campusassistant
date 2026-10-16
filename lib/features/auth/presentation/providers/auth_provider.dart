@@ -63,53 +63,83 @@ class CurrentUser extends _$CurrentUser {
   // LateInitializationError ("already initialized") on that second run.
   late AuthRepository _repository;
 
+  // Bumped on every build/login/logout so a background `/me` refresh that
+  // finishes after the session changed doesn't overwrite the newer state.
+  int _generation = 0;
+
   @override
   Future<User?> build() async {
     _repository = ref.watch(authRepositoryProvider);
-    final user = await _checkAuthStatus();
+    final generation = ++_generation;
+    final user = await _checkAuthStatus(generation);
     if (user != null) {
       unawaited(FirebaseApi().initNotifications());
     }
     return user;
   }
 
-  Future<User?> _checkAuthStatus() async {
-    final isAuthenticated = await _repository.isAuthenticated();
-    if (isAuthenticated) {
-      final result = await _repository.getCurrentUser();
-      return result.fold((failure) async {
-        if (_isNetworkError(failure)) {
-          // Offline: try to return cached user profile so the app
-          // can still show profile data with cached info.
-          final cached = await _repository.getCachedUser();
-          return cached.fold((_) => null, (user) => user);
-        }
+  /// Resolves the signed-in user for startup.
+  ///
+  /// With a token and a cached profile, returns the cache immediately and
+  /// refreshes `/me` in the background — the splash screen used to block on
+  /// that call for 2–15 s on slow networks. Only a first launch (no cached
+  /// profile) waits on the network.
+  Future<User?> _checkAuthStatus(int generation) async {
+    if (!await _repository.isAuthenticated()) return null;
 
-        final refreshResult = await _repository.refreshAccessToken();
-        return refreshResult.fold(
-          (refreshFailure) {
-            if (!_isNetworkError(refreshFailure)) {
-              _repository.logout();
-            }
-            return null;
-          },
-          (_) async {
-            final retryResult = await _repository.getCurrentUser();
-            return retryResult.fold((e) {
-              if (!_isNetworkError(e)) {
-                _repository.logout();
-              }
-              return null;
-            }, (user) => user);
-          },
-        );
-      }, (user) => user);
-    } else {
-      return null;
+    final cached = (await _repository.getCachedUser()).fold(
+      (_) => null,
+      (user) => user,
+    );
+    if (cached != null) {
+      unawaited(_revalidate(generation));
+      return cached;
     }
+
+    // No cached profile to show, so offline here means signed-out UI.
+    return (await _fetchCurrentUser()).user;
+  }
+
+  Future<void> _revalidate(int generation) async {
+    final fetched = await _fetchCurrentUser();
+    // Session changed (logout, login, invalidation) while we were waiting.
+    if (generation != _generation || !ref.mounted) return;
+    // Offline: keep showing the cached profile.
+    if (fetched.isOffline) return;
+    state = AsyncValue.data(fetched.user);
+  }
+
+  /// Fetches `/me`, refreshing the access token once on an auth failure.
+  /// Logs out (and returns a null user) when the session is definitively
+  /// invalid; network failures are reported as offline and never log out.
+  Future<({User? user, bool isOffline})> _fetchCurrentUser() async {
+    final result = await _repository.getCurrentUser();
+    return result.fold((failure) async {
+      if (_isNetworkError(failure)) return (user: null, isOffline: true);
+
+      final refreshResult = await _repository.refreshAccessToken();
+      return refreshResult.fold(
+        (refreshFailure) async {
+          if (_isNetworkError(refreshFailure)) {
+            return (user: null, isOffline: true);
+          }
+          await _repository.logout();
+          return (user: null, isOffline: false);
+        },
+        (_) async {
+          final retryResult = await _repository.getCurrentUser();
+          return retryResult.fold((e) async {
+            if (_isNetworkError(e)) return (user: null, isOffline: true);
+            await _repository.logout();
+            return (user: null, isOffline: false);
+          }, (user) => (user: user, isOffline: false));
+        },
+      );
+    }, (user) => (user: user, isOffline: false));
   }
 
   Future<void> login(String email, String password) async {
+    _generation++;
     state = const AsyncValue.loading();
     final result = await _repository.login(email: email, password: password);
     result.fold(
@@ -122,6 +152,7 @@ class CurrentUser extends _$CurrentUser {
   }
 
   Future<void> logout() async {
+    _generation++;
     state = const AsyncValue.loading();
     // Clear the local session first and resolve immediately — the router
     // and ProfilePage both watch this state, and gating it behind the

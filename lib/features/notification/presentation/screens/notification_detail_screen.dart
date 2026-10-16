@@ -15,6 +15,7 @@ import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_control.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class NotificationDetailScreen extends ConsumerWidget {
   final dynamic notification;
@@ -138,7 +139,7 @@ class NotificationDetailScreen extends ConsumerWidget {
                     fit: StackFit.expand,
                     children: [
                       if (notif.imageUrl != null)
-                        Image.network(
+                        AppNetworkImage(
                           ApiEndpoints.resolveImageUrl(notif.imageUrl),
                           fit: .cover,
                           errorBuilder: (_, _, _) => _gradientBg(color),

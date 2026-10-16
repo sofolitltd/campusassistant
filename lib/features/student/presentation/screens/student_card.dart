@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '/features/student/domain/entities/student.dart';
@@ -7,6 +6,7 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class StudentCard extends StatelessWidget {
   const StudentCard({
@@ -46,14 +46,12 @@ class StudentCard extends StatelessWidget {
                             width: 80,
                           ),
                         )
-                      : CachedNetworkImage(
+                      : AppNetworkImage(
                           fit: .cover,
                           height: 88,
                           width: 80,
-                          imageUrl: ApiEndpoints.resolveImageUrl(
-                            studentModel.imageUrl,
-                          ),
-                          placeholder: (context, url) => ClipRRect(
+                          ApiEndpoints.resolveImageUrl(studentModel.imageUrl),
+                          placeholder: (context) => ClipRRect(
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(
                               'assets/images/pp_placeholder.png',
@@ -62,7 +60,7 @@ class StudentCard extends StatelessWidget {
                               width: 80,
                             ),
                           ),
-                          errorWidget: (context, url, error) => ClipRRect(
+                          errorBuilder: (context, error, _) => ClipRRect(
                             borderRadius: BorderRadius.circular(RadiusToken.sm),
                             child: Image.asset(
                               'assets/images/pp_placeholder.png',

@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+
 import '/core/cache/cache_manager.dart';
 import '/core/cache/connectivity_service.dart';
 import '/core/network/api_client.dart';
 import '/core/network/api_endpoints.dart';
-import '/core/websocket/websocket_service.dart';
 import '/features/community/data/models/community_post.dart';
 import '/features/community/data/models/community_comment.dart';
 
@@ -14,33 +12,12 @@ class CommunityRepository {
   final ApiClient apiClient;
   final CacheManager cacheManager;
   final ConnectivityService connectivity;
-  final WebSocketService? webSocketService;
 
   CommunityRepository(
     this.apiClient, {
     required this.cacheManager,
     required this.connectivity,
-    this.webSocketService,
   });
-
-  /// Stream controller for real-time post updates.
-  final _postUpdateController = StreamController<CommunityPost>.broadcast();
-  Stream<CommunityPost> get onPostUpdate => _postUpdateController.stream;
-
-  /// Subscribe to real-time community updates via WebSocket.
-  void subscribeToRealtime() {
-    webSocketService?.messages.listen((msg) {
-      if (msg.type == 'new_post' && msg.data != null) {
-        try {
-          final post = CommunityPost.fromJson(msg.data!);
-          _postUpdateController.add(post);
-        } catch (e) {
-          debugPrint('[CommunityRepo] Failed to parse WS post: $e');
-        }
-      }
-    });
-    webSocketService?.subscribe('community');
-  }
 
   Future<List<CommunityPost>> getPosts(String scope, {int page = 1}) async {
     final cacheKey = 'community_${scope}_page_$page';
@@ -59,10 +36,12 @@ class CommunityRepository {
 
         // Cache first page only
         if (cacheable && page == 1) {
-          await cacheManager.cacheList(
-            entityType: cacheKey,
-            items: data.cast<Map<String, dynamic>>(),
-            ttl: CacheTTL.community,
+          unawaitedCacheWrite(
+            cacheManager.cacheList(
+              entityType: cacheKey,
+              items: data.cast<Map<String, dynamic>>(),
+              ttl: CacheTTL.community,
+            ),
           );
         }
 
@@ -269,9 +248,5 @@ class CommunityRepository {
       data: {'content': content},
     );
     return CommunityPost.fromJson(response.data);
-  }
-
-  void dispose() {
-    _postUpdateController.close();
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
@@ -19,6 +18,7 @@ import '../providers/career_job_provider.dart';
 import '../widgets/job_form_helpers.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Ported "same to same" from personalassistant's EditJobScreen: same
 /// sectioned layout as Add Job, plus an "Application Status" dropdown card
@@ -157,9 +157,8 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -197,122 +196,134 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+                    constraints: const BoxConstraints(
+                      maxWidth: AppLayout.pageWidth,
+                    ),
                     child: Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(Spacing.xxl),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      buildSectionTitle(context, 'Job Identity'),
-                      buildCustomField(
-                        context,
-                        'Job Title *',
-                        _titleController,
-                        LucideIcons.briefcase,
-                        (v) => v!.isEmpty ? 'Required' : null,
-                      ),
-                      buildCustomField(
-                        context,
-                        'Organization *',
-                        _orgController,
-                        LucideIcons.building,
-                        (v) => v!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildStatusSelector(),
-
-                      const SizedBox(height: Spacing.xl),
-                      buildSectionTitle(context, 'Connections'),
-                      buildCustomField(
-                        context,
-                        'Resource Link (URL)',
-                        _resourceLinkController,
-                        LucideIcons.link,
-                      ),
-                      buildCustomField(
-                        context,
-                        'Job Post Link (URL)',
-                        _postLinkController,
-                        LucideIcons.externalLink,
-                      ),
-
-                      const SizedBox(height: Spacing.xl),
-                      buildSectionTitle(context, 'Important Dates'),
-                      buildModernDateTile(
-                        context,
-                        'Publish Date',
-                        _publishDate,
-                        LucideIcons.calendar,
-                        _selectPublishDate,
-                      ),
-                      buildModernDateTile(
-                        context,
-                        'Deadline Date & Time',
-                        _deadlineDate,
-                        LucideIcons.clock,
-                        _selectDeadline,
-                        isUrgent: true,
-                      ),
-
-                      const SizedBox(height: Spacing.xl),
-                      Row(
-                        mainAxisAlignment: .spaceBetween,
-                        children: [
-                          buildSectionTitle(context, 'Attachments'),
-                          TextButton.icon(
-                            onPressed: _pickFiles,
-                            icon: const Icon(LucideIcons.filePlus, size: 16),
-                            label: const Text('Add Files'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: Spacing.xs),
-                      if (_existingAttachmentUrls.isNotEmpty ||
-                          _newFiles.isNotEmpty)
-                        SizedBox(
-                          height: 160,
-                          child: ListView(
-                            scrollDirection: .horizontal,
-                            children: [
-                              for (
-                                var i = 0;
-                                i < _existingAttachmentUrls.length;
-                                i++
-                              )
-                                _buildExistingFileCard(
-                                  _existingAttachmentUrls[i],
-                                  i,
+                      children: [
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(Spacing.xxl),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                buildSectionTitle(context, 'Job Identity'),
+                                buildCustomField(
+                                  context,
+                                  'Job Title *',
+                                  _titleController,
+                                  LucideIcons.briefcase,
+                                  (v) => v!.isEmpty ? 'Required' : null,
                                 ),
-                              for (var i = 0; i < _newFiles.length; i++)
-                                _buildNewFileCard(_newFiles[i], i),
-                            ],
-                          ),
-                        )
-                      else
-                        buildEmptyAttachmentPlaceholder(context),
+                                buildCustomField(
+                                  context,
+                                  'Organization *',
+                                  _orgController,
+                                  LucideIcons.building,
+                                  (v) => v!.isEmpty ? 'Required' : null,
+                                ),
+                                _buildStatusSelector(),
 
-                      const SizedBox(height: Spacing.xxl),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isUploading ? null : _saveChanges,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: cs.primary,
-                            foregroundColor: cs.onPrimary,
+                                const SizedBox(height: Spacing.xl),
+                                buildSectionTitle(context, 'Connections'),
+                                buildCustomField(
+                                  context,
+                                  'Resource Link (URL)',
+                                  _resourceLinkController,
+                                  LucideIcons.link,
+                                ),
+                                buildCustomField(
+                                  context,
+                                  'Job Post Link (URL)',
+                                  _postLinkController,
+                                  LucideIcons.externalLink,
+                                ),
+
+                                const SizedBox(height: Spacing.xl),
+                                buildSectionTitle(context, 'Important Dates'),
+                                buildModernDateTile(
+                                  context,
+                                  'Publish Date',
+                                  _publishDate,
+                                  LucideIcons.calendar,
+                                  _selectPublishDate,
+                                ),
+                                buildModernDateTile(
+                                  context,
+                                  'Deadline Date & Time',
+                                  _deadlineDate,
+                                  LucideIcons.clock,
+                                  _selectDeadline,
+                                  isUrgent: true,
+                                ),
+
+                                const SizedBox(height: Spacing.xl),
+                                Row(
+                                  mainAxisAlignment: .spaceBetween,
+                                  children: [
+                                    buildSectionTitle(context, 'Attachments'),
+                                    TextButton.icon(
+                                      onPressed: _pickFiles,
+                                      icon: const Icon(
+                                        LucideIcons.filePlus,
+                                        size: 16,
+                                      ),
+                                      label: const Text('Add Files'),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: Spacing.xs),
+                                if (_existingAttachmentUrls.isNotEmpty ||
+                                    _newFiles.isNotEmpty)
+                                  SizedBox(
+                                    height: 160,
+                                    child: ListView(
+                                      scrollDirection: .horizontal,
+                                      children: [
+                                        for (
+                                          var i = 0;
+                                          i < _existingAttachmentUrls.length;
+                                          i++
+                                        )
+                                          _buildExistingFileCard(
+                                            _existingAttachmentUrls[i],
+                                            i,
+                                          ),
+                                        for (
+                                          var i = 0;
+                                          i < _newFiles.length;
+                                          i++
+                                        )
+                                          _buildNewFileCard(_newFiles[i], i),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  buildEmptyAttachmentPlaceholder(context),
+
+                                const SizedBox(height: Spacing.xxl),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: _isUploading
+                                        ? null
+                                        : _saveChanges,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: cs.primary,
+                                      foregroundColor: cs.onPrimary,
+                                    ),
+                                    child: const Text('Save Changes'),
+                                  ),
+                                ),
+                                const SizedBox(height: Spacing.lg),
+                              ],
+                            ),
                           ),
-                          child: const Text('Save Changes'),
                         ),
-                      ),
-                      const SizedBox(height: Spacing.lg),
-                    ],
-                  ),
-                ),
-              ),
-              if (_isUploading) buildLoadingOverlay(context, _uploadProgress),
-            ],
+                        if (_isUploading)
+                          buildLoadingOverlay(context, _uploadProgress),
+                      ],
                     ),
                   ),
                 ),
@@ -382,12 +393,12 @@ class _EditJobScreenState extends ConsumerState<EditJobScreen> {
         children: [
           ClipRRect(
             borderRadius: RadiusToken.circular(RadiusToken.sm),
-            child: CachedNetworkImage(
-              imageUrl: ApiEndpoints.resolveImageUrl(url),
+            child: AppNetworkImage(
+              ApiEndpoints.resolveImageUrl(url),
               width: 120,
               height: 160,
               fit: .cover,
-              errorWidget: (context, url, error) => Container(
+              errorBuilder: (context, error, _) => Container(
                 width: 120,
                 height: 160,
                 color: cs.surfaceContainerHighest,

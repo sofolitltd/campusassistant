@@ -11,6 +11,7 @@ import '/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class NoticeCommentItem extends ConsumerWidget {
   final NoticeCommentModel comment;
@@ -67,11 +68,10 @@ class NoticeCommentItem extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: 14,
-            backgroundColor: Theme.of(
-              context,
-            ).primaryColor.withValues(alpha: 0.1),
+            backgroundColor: Theme.of(context).primaryColor
+                .withValues(alpha: 0.1),
             backgroundImage: comment.authorAvatar != null
-                ? NetworkImage(
+                ? AppNetworkImage.provider(
                     ApiEndpoints.resolveImageUrl(comment.authorAvatar),
                   )
                 : null,

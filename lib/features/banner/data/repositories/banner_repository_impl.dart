@@ -48,10 +48,12 @@ class BannerRepositoryImpl with OfflineFirstMixin implements BannerRepository {
 
         // Cache the result
         final cacheItems = remoteBanners.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: cacheItems,
-          ttl: CacheTTL.banner,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: cacheItems,
+            ttl: CacheTTL.banner,
+          ),
         );
 
         return Right(entities);

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import '/core/widgets/custom_header_layout.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +24,7 @@ import 'suggest_club_page.dart' show clubCategories;
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Self-service club management: a club's owner/manager edits its info and
 /// posts events/updates from here, no admin panel needed. Gated server-side
@@ -285,9 +286,8 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
         const SizedBox(height: Spacing.lg),
         Text(
           'Contact',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         TextField(
@@ -302,9 +302,8 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
         const SizedBox(height: Spacing.lg),
         Text(
           'Social Links',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         TextField(
@@ -360,8 +359,8 @@ class _ImageTile extends StatelessWidget {
     if (file != null) {
       content = Image.file(file!, fit: .cover);
     } else if (existingUrl != null && existingUrl!.isNotEmpty) {
-      content = CachedNetworkImage(
-        imageUrl: ApiEndpoints.resolveImageUrl(existingUrl),
+      content = AppNetworkImage(
+        ApiEndpoints.resolveImageUrl(existingUrl),
         fit: .cover,
       );
     } else {
@@ -571,9 +570,8 @@ class _EventsTabState extends ConsumerState<_EventsTab> {
         const Divider(height: 32),
         Text(
           'Upcoming Published Events',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         eventsAsync.when(
@@ -824,9 +822,8 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
       children: [
         Text(
           'Current Managers',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.sm),
         if (managers.isEmpty)
@@ -840,7 +837,9 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
                 backgroundImage: m.avatarUrl.isNotEmpty
-                    ? NetworkImage(ApiEndpoints.resolveImageUrl(m.avatarUrl))
+                    ? AppNetworkImage.provider(
+                        ApiEndpoints.resolveImageUrl(m.avatarUrl),
+                      )
                     : null,
                 child: m.avatarUrl.isEmpty
                     ? Text(m.fullName.isNotEmpty ? m.fullName[0] : '?')
@@ -859,9 +858,8 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
         const Divider(height: 32),
         Text(
           'Promote a Follower',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: .bold),
         ),
         Text(
           'Only people already following this club can be promoted. '
@@ -883,7 +881,9 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
                 backgroundImage: f.avatarUrl.isNotEmpty
-                    ? NetworkImage(ApiEndpoints.resolveImageUrl(f.avatarUrl))
+                    ? AppNetworkImage.provider(
+                        ApiEndpoints.resolveImageUrl(f.avatarUrl),
+                      )
                     : null,
                 child: f.avatarUrl.isEmpty
                     ? Text(f.fullName.isNotEmpty ? f.fullName[0] : '?')

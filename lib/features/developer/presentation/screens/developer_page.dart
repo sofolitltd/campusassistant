@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+
 import '/core/widgets/header_gradient_backdrop.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -13,6 +15,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class DeveloperPage extends ConsumerWidget {
   const DeveloperPage({super.key});
@@ -94,9 +97,8 @@ class DeveloperPage extends ConsumerWidget {
                           const SizedBox(height: Spacing.lg),
                           Text(
                             kDeveloperName,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleLarge?.copyWith(fontWeight: .bold),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: .bold),
                           ),
                           const SizedBox(height: Spacing.xs),
                           Text(
@@ -164,9 +166,8 @@ class DeveloperPage extends ConsumerWidget {
                           const SizedBox(height: Spacing.xxs),
                           Text(
                             'University of Chittagong',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: .bold),
                           ),
                           const SizedBox(height: Spacing.lg),
                           Row(
@@ -225,9 +226,8 @@ class DeveloperPage extends ConsumerWidget {
                     // ── About the App ──
                     Text(
                       'About the app',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.md),
                     Text(
@@ -261,9 +261,8 @@ class DeveloperPage extends ConsumerWidget {
                     // ── Development Team ──
                     Text(
                       'Development team',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.md),
                     Container(
@@ -276,7 +275,7 @@ class DeveloperPage extends ConsumerWidget {
                       ),
                       child: Column(
                         children: [
-                          Image.network(
+                          AppNetworkImage(
                             kDevLogo,
                             height: 40,
                             errorBuilder: (_, _, _) => Text(
@@ -328,9 +327,8 @@ class DeveloperPage extends ConsumerWidget {
                     // ── Links ──
                     Text(
                       'Links',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.md),
                     _LinkTile(

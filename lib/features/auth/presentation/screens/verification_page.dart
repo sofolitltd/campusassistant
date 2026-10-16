@@ -33,6 +33,12 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
   _AccountRole _role = _AccountRole.student;
 
   @override
+  void dispose() {
+    _verificationCodeController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return HeaderGradientBackdrop(
       child: Scaffold(

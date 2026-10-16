@@ -37,10 +37,12 @@ class StaffRepositoryImpl implements StaffRepository {
           universityId: universityId,
           departmentId: departmentId,
         );
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: result.map((m) => m.toJson()).toList(),
-          ttl: CacheTTL.department,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: result.map((m) => m.toJson()).toList(),
+            ttl: CacheTTL.department,
+          ),
         );
         return Right(result.map((m) => m.toEntity()).toList());
       } catch (e) {

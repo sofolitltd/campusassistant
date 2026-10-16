@@ -8,6 +8,7 @@ import '/routes/app_route.dart';
 import '../../domain/entities/resource.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Compact tile for a `type: 'video'` [Resource] — video lectures embed a
 /// YouTube URL in `fileUrl` rather than a PDF, so they can't use
@@ -62,7 +63,7 @@ class ResourceVideoTile extends StatelessWidget {
                       topLeft: Radius.circular(RadiusToken.md),
                       bottomLeft: Radius.circular(RadiusToken.md),
                     ),
-                    child: Image.network(
+                    child: AppNetworkImage(
                       thumb,
                       fit: .cover,
                       errorBuilder: (context, error, stackTrace) => Container(

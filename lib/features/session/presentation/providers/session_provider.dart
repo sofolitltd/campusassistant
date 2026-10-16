@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
@@ -10,6 +11,7 @@ import '../../domain/repositories/session_repository.dart';
 import '../../domain/usecases/create_session.dart';
 import '../../domain/usecases/update_session.dart';
 import '../../domain/usecases/delete_session.dart';
+import '../../../../core/providers/cache_for.dart';
 
 final sessionRemoteDataSourceProvider = Provider<SessionRemoteDataSource>((
   ref,
@@ -44,19 +46,18 @@ final deleteSessionProvider = Provider<DeleteSession>((ref) {
   return DeleteSession(repository);
 });
 
-final sessionsByUniversityProvider =
-    FutureProvider.family<List<Session>, String>((ref, universityId) async {
+final sessionsByUniversityProvider = FutureProvider.autoDispose
+    .family<List<Session>, String>((ref, universityId) async {
+      ref.cacheFor(kParamProviderCacheTime);
       ref.watch(appRefreshProvider);
       final repository = ref.watch(sessionRepositoryProvider);
       final result = await repository.getSessions(universityId: universityId);
       return result.fold((failure) => throw failure, (sessions) => sessions);
     });
 
-final sessionByIdProvider =
-    FutureProvider.family<Session?, ({String universityId, String id})>((
-      ref,
-      arg,
-    ) async {
+final sessionByIdProvider = FutureProvider.autoDispose
+    .family<Session?, ({String universityId, String id})>((ref, arg) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final sessions = await ref.watch(
         sessionsByUniversityProvider(arg.universityId).future,
       );

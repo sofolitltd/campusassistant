@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '/core/di.dart';
 import '../../data/datasources/reward_remote_data_source.dart';
 import '../../data/models/reward_balance.dart';
 import '../../data/models/reward_transaction.dart';
 import '../../data/repositories/reward_repository.dart';
+import '/core/providers/cache_for.dart';
 
 final rewardRemoteDataSourceProvider = Provider<RewardRemoteDataSource>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -33,11 +35,12 @@ final rewardEarnProvider = FutureProvider<RewardBalance>((ref) async {
   );
 });
 
-final rewardTransactionsProvider =
-    FutureProvider.family<({List<RewardTransaction> data, int count}), int>((
+final rewardTransactionsProvider = FutureProvider.autoDispose
+    .family<({List<RewardTransaction> data, int count}), int>((
       ref,
       offset,
     ) async {
+      ref.cacheFor(kParamProviderCacheTime);
       final repo = ref.watch(rewardRepositoryProvider);
       final result = await repo.getTransactions(limit: 20, offset: offset);
       return result.fold(
@@ -46,10 +49,11 @@ final rewardTransactionsProvider =
       );
     });
 
-final rewardCostProvider = FutureProvider.family<int, String>((
+final rewardCostProvider = FutureProvider.autoDispose.family<int, String>((
   ref,
   resourceId,
 ) async {
+  ref.cacheFor(kParamProviderCacheTime);
   final repo = ref.watch(rewardRepositoryProvider);
   final result = await repo.getCost(resourceId);
   return result.fold((_) => 1, (cost) => cost);

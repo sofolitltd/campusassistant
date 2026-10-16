@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +14,7 @@ import '/features/skill/presentation/providers/skill_provider.dart';
 import '/routes/app_route.dart';
 import '../widgets/home_section.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class SkillUpSection extends ConsumerWidget {
   const SkillUpSection({super.key});
@@ -103,11 +103,11 @@ class _SkillCard extends StatelessWidget {
             width: double.infinity,
             child: skill.thumbnailUrl.isEmpty
                 ? placeholder
-                : CachedNetworkImage(
-                    imageUrl: ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
+                : AppNetworkImage(
+                    ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
                     fit: .contain,
-                    placeholder: (_, _) => placeholder,
-                    errorWidget: (_, _, _) => placeholder,
+                    placeholder: (_) => placeholder,
+                    errorBuilder: (_, _, _) => placeholder,
                   ),
           ),
           Padding(

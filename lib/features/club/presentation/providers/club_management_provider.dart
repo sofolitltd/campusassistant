@@ -6,31 +6,32 @@ import '../../data/models/club_model.dart';
 import '../../data/models/club_post.dart';
 import '../../data/models/club_user_summary.dart';
 import '../../domain/entities/club.dart';
+import '/core/providers/cache_for.dart';
 
 /// Public, read-only club sub-resources — light `FutureProvider`s, same
 /// shape as `clubEventsProvider`, no dartz/repository ceremony needed since
 /// these are simple GETs.
-final clubPostsProvider = FutureProvider.family<List<ClubPost>, String>((
-  ref,
-  clubId,
-) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.get('/clubs/$clubId/posts');
-  final data = response.data as List;
-  return data.map((e) => ClubPost.fromJson(e as Map<String, dynamic>)).toList();
-});
+final clubPostsProvider = FutureProvider.autoDispose
+    .family<List<ClubPost>, String>((ref, clubId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get('/clubs/$clubId/posts');
+      final data = response.data as List;
+      return data
+          .map((e) => ClubPost.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
-final clubMembersProvider = FutureProvider.family<List<ClubUserSummary>, String>((
-  ref,
-  clubId,
-) async {
-  final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.get('/clubs/$clubId/members');
-  final data = response.data as List;
-  return data
-      .map((e) => ClubUserSummary.fromJson(e as Map<String, dynamic>))
-      .toList();
-});
+final clubMembersProvider = FutureProvider.autoDispose
+    .family<List<ClubUserSummary>, String>((ref, clubId) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      final apiClient = ref.watch(apiClientProvider);
+      final response = await apiClient.get('/clubs/$clubId/members');
+      final data = response.data as List;
+      return data
+          .map((e) => ClubUserSummary.fromJson(e as Map<String, dynamic>))
+          .toList();
+    });
 
 /// Clubs the current user created or co-manages — powers "My Clubs".
 /// `autoDispose` (default for `@riverpod`-less `FutureProvider`) is fine

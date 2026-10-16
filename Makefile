@@ -4,7 +4,7 @@ DEFINE := --dart-define-from-file=$(ENV_FILE)
 # Optional: make run DEVICE=chrome / DEVICE=<device-id from `flutter devices`)
 DEVICE_FLAG := $(if $(DEVICE),-d $(DEVICE),)
 
-.PHONY: devices run run-local run-lan build-web deploy build-apk build-appbundle build-ios clean
+.PHONY: devices run run-local run-lan build-web deploy build-apk build-apk-split build-appbundle build-ios clean
 
 devices: ## list available devices (simulators, emulators, phones, chrome)
 	flutter devices
@@ -24,8 +24,11 @@ build-web: ## release web build
 deploy: build-web ## build web + deploy to Firebase Hosting
 	firebase deploy --only hosting
 
-build-apk: ## release APK
+build-apk: ## release APK (universal: every ABI in one file, largest)
 	flutter build apk --release $(DEFINE)
+
+build-apk-split: ## release APKs, one per ABI (for sideloading; ~1/3 the size of the universal APK)
+	flutter build apk --release --split-per-abi $(DEFINE)
 
 build-appbundle: ## release App Bundle (Play Store)
 	flutter build appbundle --release $(DEFINE)

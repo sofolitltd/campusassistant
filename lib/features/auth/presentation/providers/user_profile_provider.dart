@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/profile/data/models/profile_model.dart';
 import '/features/student/presentation/providers/student_provider.dart';
+import '../../../../core/providers/cache_for.dart';
 
 final userProvider = FutureProvider<ProfileModel>((ref) async {
   final user = await ref
@@ -43,40 +44,39 @@ final userProvider = FutureProvider<ProfileModel>((ref) async {
   );
 });
 
-final userProfileByUidProvider = FutureProvider.family<ProfileModel, String>((
-  ref,
-  uid,
-) async {
-  // Use studentByUserIdProvider to get student info which includes more details
-  final student = await ref.watch(studentByUserIdProvider(uid).future);
+final userProfileByUidProvider = FutureProvider.autoDispose
+    .family<ProfileModel, String>((ref, uid) async {
+      ref.cacheFor(kParamProviderCacheTime);
+      // Use studentByUserIdProvider to get student info which includes more details
+      final student = await ref.watch(studentByUserIdProvider(uid).future);
 
-  if (student == null) {
-    throw Exception('User profile not found');
-  }
+      if (student == null) {
+        throw Exception('User profile not found');
+      }
 
-  return ProfileModel(
-    uid: uid,
-    university: student.universityId,
-    department: student.departmentId,
-    profession: 'student',
-    name: student.name,
-    mobile: student.phone ?? '',
-    email: student.email ?? '',
-    image: student.imageUrl,
-    token: student.verificationCode,
-    information: Information(
-      batch: student.batchName,
-      batchId: student.batchId,
-      id: student.studentId,
-      session: student.sessionId,
-      hall: student.hallName,
-      blood: student.bloodGroup,
-      status: Status(
-        subscriber: 'basic',
-        moderator: false,
-        admin: false,
-        cr: false,
-      ),
-    ),
-  );
-});
+      return ProfileModel(
+        uid: uid,
+        university: student.universityId,
+        department: student.departmentId,
+        profession: 'student',
+        name: student.name,
+        mobile: student.phone ?? '',
+        email: student.email ?? '',
+        image: student.imageUrl,
+        token: student.verificationCode,
+        information: Information(
+          batch: student.batchName,
+          batchId: student.batchId,
+          id: student.studentId,
+          session: student.sessionId,
+          hall: student.hallName,
+          blood: student.bloodGroup,
+          status: Status(
+            subscriber: 'basic',
+            moderator: false,
+            admin: false,
+            cr: false,
+          ),
+        ),
+      );
+    });

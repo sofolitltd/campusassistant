@@ -14,6 +14,7 @@ import '../../data/models/merchant.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/market_theme.dart';
 import '../widgets/rating_widgets.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Every approved merchant selling on campus; tap one to open its storefront.
 class MerchantsTab extends ConsumerWidget {
@@ -111,7 +112,7 @@ class _MerchantCard extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: merchant.logoUrl.isNotEmpty
-                  ? Image.network(
+                  ? AppNetworkImage(
                       ApiEndpoints.resolveImageUrl(merchant.logoUrl),
                       fit: BoxFit.cover,
                       errorBuilder: (_, _, _) =>

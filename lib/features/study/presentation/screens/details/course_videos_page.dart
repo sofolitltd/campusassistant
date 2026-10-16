@@ -17,6 +17,7 @@ import '/utils/constants.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
+import '/core/widgets/app_network_image.dart';
 
 class CourseVideos extends ConsumerStatefulWidget {
   const CourseVideos({
@@ -220,7 +221,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                                 topLeft: Radius.circular(RadiusToken.md),
                                 bottomLeft: Radius.circular(RadiusToken.md),
                               ),
-                              child: Image.network(
+                              child: AppNetworkImage(
                                 thumb,
                                 fit: .cover,
                                 errorBuilder: (context, error, stackTrace) =>

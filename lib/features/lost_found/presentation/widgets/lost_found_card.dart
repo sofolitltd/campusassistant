@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -8,6 +7,7 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class LostFoundCard extends StatelessWidget {
   final LostFoundItem item;
@@ -60,12 +60,10 @@ class LostFoundCard extends StatelessWidget {
                   width: 92,
                   height: 92,
                   child: item.imageUrls.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: ApiEndpoints.resolveImageUrl(
-                            item.imageUrls.first,
-                          ),
+                      ? AppNetworkImage(
+                          ApiEndpoints.resolveImageUrl(item.imageUrls.first),
                           fit: .cover,
-                          errorWidget: (context, url, error) => Container(
+                          errorBuilder: (context, error, _) => Container(
                             color: c.surfaceAlt,
                             child: Icon(
                               Icons.image_not_supported_outlined,

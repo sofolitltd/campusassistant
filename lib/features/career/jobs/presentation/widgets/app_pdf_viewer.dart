@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
-import 'package:http/http.dart' as http;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/download_client.dart';
 
 class AppPdfViewer extends StatefulWidget {
   final String url;
@@ -51,11 +51,8 @@ class _AppPdfViewerState extends State<AppPdfViewer> {
     if (await file.exists()) return file;
 
     try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        await file.writeAsBytes(response.bodyBytes);
-        return file;
-      }
+      await file.writeAsBytes(await downloadBytes(url));
+      return file;
     } catch (e) {
       debugPrint("Error downloading PDF: $e");
     }

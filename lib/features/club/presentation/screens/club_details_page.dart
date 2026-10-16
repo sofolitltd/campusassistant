@@ -1,7 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:intl/intl.dart';
@@ -22,6 +21,7 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// [club], if provided (a list-card tap), is rendered immediately with no
 /// network round-trip. If null (a deep link, e.g. a club-event push
@@ -147,8 +147,8 @@ class _ClubDetailsViewState extends ConsumerState<_ClubDetailsView>
           if (club.bannerUrl != null && club.bannerUrl!.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(RadiusToken.md),
-              child: CachedNetworkImage(
-                imageUrl: ApiEndpoints.resolveImageUrl(club.bannerUrl),
+              child: AppNetworkImage(
+                ApiEndpoints.resolveImageUrl(club.bannerUrl),
                 height: 160,
                 width: double.infinity,
                 fit: .cover,
@@ -174,10 +174,8 @@ class _ClubDetailsViewState extends ConsumerState<_ClubDetailsView>
                   child: club.logoUrl != null && club.logoUrl!.isNotEmpty
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(RadiusToken.xxxl),
-                          child: CachedNetworkImage(
-                            imageUrl: ApiEndpoints.resolveImageUrl(
-                              club.logoUrl,
-                            ),
+                          child: AppNetworkImage(
+                            ApiEndpoints.resolveImageUrl(club.logoUrl),
                             fit: .cover,
                           ),
                         )
@@ -562,7 +560,9 @@ class _MemberRow extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         backgroundImage: member.avatarUrl.isNotEmpty
-            ? NetworkImage(ApiEndpoints.resolveImageUrl(member.avatarUrl))
+            ? AppNetworkImage.provider(
+                ApiEndpoints.resolveImageUrl(member.avatarUrl),
+              )
             : null,
         child: member.avatarUrl.isEmpty
             ? Text(member.fullName.isNotEmpty ? member.fullName[0] : '?')

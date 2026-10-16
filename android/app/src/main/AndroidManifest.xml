@@ -62,15 +62,14 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
 
-        <!-- AdMob app ID — this is Google's official PUBLIC TEST App ID
-             (ca-app-pub-3940256099942544~3347511713), safe to build/run
-             with indefinitely. Replace with the real App ID from your own
-             AdMob console ONLY when ready to ship to production — see
-             lib/core/ads/ad_config.dart for the matching ad-unit-ID rule. -->
+        <!-- AdMob app ID — injected by build.gradle.kts from the
+             ADMOB_ANDROID_APP_ID dart-define (the same .env that supplies the
+             ad unit IDs to lib/core/ads/ad_config.dart), falling back to
+             Google's public test App ID when unset. Keeps the App ID and the
+             unit IDs always both real or both test. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
-            <!-- ca-app-pub-2392427719761726~4483671614 -->
+            android:value="${admobAppId}" />
 
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

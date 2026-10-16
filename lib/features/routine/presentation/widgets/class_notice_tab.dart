@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +14,7 @@ import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/routes/app_route.dart';
 import '../../data/models/class_notice.dart';
 import '../providers/class_notice_provider.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Notices for the user's batch (plus department-wide ones), newest first.
 class ClassNoticeTab extends ConsumerWidget {
@@ -103,9 +103,8 @@ class _EmptyNotices extends StatelessWidget {
         Center(
           child: Text(
             'Class updates from your CR will show up here.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: colors.textMuted),
           ),
         ),
       ],
@@ -178,16 +177,16 @@ class _NoticeCard extends ConsumerWidget {
                   'image': notice.fileUrl,
                 },
               ),
-              child: CachedNetworkImage(
-                imageUrl: url,
+              child: AppNetworkImage(
+                url,
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                placeholder: (_, _) => const SizedBox(
+                placeholder: (_) => const SizedBox(
                   height: 200,
                   child: Center(child: CupertinoActivityIndicator()),
                 ),
-                errorWidget: (_, _, _) => SizedBox(
+                errorBuilder: (_, _, _) => SizedBox(
                   height: 120,
                   child: Center(
                     child: Icon(LucideIcons.image, color: colors.textSubtle),

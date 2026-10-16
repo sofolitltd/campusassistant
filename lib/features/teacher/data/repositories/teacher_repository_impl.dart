@@ -40,10 +40,12 @@ class TeacherRepositoryImpl implements TeacherRepository {
 
         // Cache the result
         final cacheItems = remoteTeachers.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: 'teacher_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.teacher,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: 'teacher_$cacheKey',
+            items: cacheItems,
+            ttl: CacheTTL.teacher,
+          ),
         );
 
         return Right(entities);
@@ -123,10 +125,12 @@ class TeacherRepositoryImpl implements TeacherRepository {
         final entities = remoteTeachers.map((m) => m.toEntity()).toList();
 
         final cacheItems = remoteTeachers.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: 'teacher_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.teacher,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: 'teacher_$cacheKey',
+            items: cacheItems,
+            ttl: CacheTTL.teacher,
+          ),
         );
 
         yield Right(entities);
@@ -198,11 +202,13 @@ class TeacherRepositoryImpl implements TeacherRepository {
         );
 
         // Cache this specific teacher
-        await cacheManager.cacheSingle(
-          entityType: 'teacher_detail',
-          entityKey: teacherId,
-          data: remoteTeacher.toJson(),
-          ttl: CacheTTL.teacher,
+        unawaitedCacheWrite(
+          cacheManager.cacheSingle(
+            entityType: 'teacher_detail',
+            entityKey: teacherId,
+            data: remoteTeacher.toJson(),
+            ttl: CacheTTL.teacher,
+          ),
         );
 
         return Right(remoteTeacher.toEntity());

@@ -41,10 +41,12 @@ class ClubRepositoryImpl implements ClubRepository {
 
         // Cache the result
         final cacheItems = remoteClubs.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: 'club_$cacheKey',
-          items: cacheItems,
-          ttl: CacheTTL.club,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: 'club_$cacheKey',
+            items: cacheItems,
+            ttl: CacheTTL.club,
+          ),
         );
 
         return Right(entities);

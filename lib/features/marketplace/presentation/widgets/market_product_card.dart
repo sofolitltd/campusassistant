@@ -13,6 +13,7 @@ import 'rating_widgets.dart';
 import 'wishlist_button.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// The marketplace product card used by the home, search and wishlist screens:
 /// photo with stock badge and save heart, seller (with trust marks), rating,
@@ -20,12 +21,18 @@ import '/core/theme/tokens/app_font_size.dart';
 class MarketProductCard extends ConsumerWidget {
   final Product product;
   final double imageHeight;
-  const MarketProductCard({super.key, required this.product, this.imageHeight = 156});
+  const MarketProductCard({
+    super.key,
+    required this.product,
+    this.imageHeight = 156,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
-    final imageUrl = product.imageUrls.isNotEmpty ? product.imageUrls.first : '';
+    final imageUrl = product.imageUrls.isNotEmpty
+        ? product.imageUrls.first
+        : '';
     final soldOut = product.stock <= 0;
     final lowStock = !soldOut && product.stock <= 5;
     final merchant = product.merchant;
@@ -63,7 +70,7 @@ class MarketProductCard extends ConsumerWidget {
                   fit: StackFit.expand,
                   children: [
                     imageUrl.isNotEmpty
-                        ? Image.network(
+                        ? AppNetworkImage(
                             ApiEndpoints.resolveImageUrl(imageUrl),
                             fit: .cover,
                             errorBuilder: (_, _, _) => _ImagePlaceholder(c: c),
@@ -93,15 +100,32 @@ class MarketProductCard extends ConsumerWidget {
                       Positioned(
                         left: 8,
                         bottom: 8,
-                        child: _Badge(label: '★ Featured', bg: c.primary, fg: c.onPrimary),
+                        child: _Badge(
+                          label: '★ Featured',
+                          bg: c.primary,
+                          fg: c.onPrimary,
+                        ),
                       ),
-                    Positioned(right: 6, top: 6, child: WishlistButton(productId: product.id, overlay: true, size: 16)),
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: WishlistButton(
+                        productId: product.id,
+                        overlay: true,
+                        size: 16,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(Spacing.md, Spacing.md, Spacing.sm, Spacing.md),
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.md,
+                Spacing.md,
+                Spacing.sm,
+                Spacing.md,
+              ),
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
@@ -120,9 +144,14 @@ class MarketProductCard extends ConsumerWidget {
                             ),
                           ),
                         ),
-                        if (merchant.isPlatform || merchant.status == 'approved') ...[
+                        if (merchant.isPlatform ||
+                            merchant.status == 'approved') ...[
                           const SizedBox(width: Spacing.xs),
-                          Icon(LucideIcons.badgeCheck, size: 12, color: c.primary),
+                          Icon(
+                            LucideIcons.badgeCheck,
+                            size: 12,
+                            color: c.primary,
+                          ),
                         ],
                         if (merchant.isFastShipper) ...[
                           const SizedBox(width: Spacing.xs),
@@ -145,7 +174,10 @@ class MarketProductCard extends ConsumerWidget {
                   ),
                   if (product.ratingCount > 0) ...[
                     const SizedBox(height: Spacing.xs),
-                    RatingBadge(average: product.ratingAvg, count: product.ratingCount),
+                    RatingBadge(
+                      average: product.ratingAvg,
+                      count: product.ratingCount,
+                    ),
                   ],
                   const SizedBox(height: Spacing.sm),
                   Row(
@@ -168,7 +200,9 @@ class MarketProductCard extends ConsumerWidget {
                               ..hideCurrentSnackBar()
                               ..showSnackBar(
                                 SnackBar(
-                                  content: Text('Added "${product.title}" to cart'),
+                                  content: Text(
+                                    'Added "${product.title}" to cart',
+                                  ),
                                   duration: const Duration(seconds: 2),
                                 ),
                               );
@@ -220,14 +254,21 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.sm,
+        vertical: Spacing.xs,
+      ),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(RadiusToken.full),
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: FontSizeToken.xxs, fontWeight: .w700, color: fg),
+        style: TextStyle(
+          fontSize: FontSizeToken.xxs,
+          fontWeight: .w700,
+          color: fg,
+        ),
       ),
     );
   }

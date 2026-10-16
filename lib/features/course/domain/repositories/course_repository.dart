@@ -1,16 +1,22 @@
 import 'package:dartz/dartz.dart';
+
 import '../../../../core/error/failures.dart';
 import '../entities/course.dart';
 
 abstract class CourseRepository {
-  Future<Either<Failure, List<Course>>> getCourses({
+  /// Stale-while-revalidate: emits cached courses first (if any), then the
+  /// fresh list from the API when it differs. Errors only when there's
+  /// neither cache nor network.
+  Stream<List<Course>> watchCourses({
     required String universityId,
     required String departmentId,
     String? semesterId,
     String? batchId,
   });
 
-  Future<Either<Failure, Course>> getCourseByCode({
+  /// Stale-while-revalidate, like [watchCourses]. Emits null when the API
+  /// has no course with this code.
+  Stream<Course?> watchCourseByCode({
     required String universityId,
     required String departmentId,
     required String courseCode,

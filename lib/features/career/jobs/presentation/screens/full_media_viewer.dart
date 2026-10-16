@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,6 +9,7 @@ import 'package:share_plus/share_plus.dart' hide Share;
 import '/core/network/api_endpoints.dart';
 import '../widgets/app_pdf_viewer.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/network/download_client.dart';
 
 class FullPageMediaViewer extends StatefulWidget {
   final List<String> urls;
@@ -54,14 +54,10 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
     final fileName =
         '${widget.title.replaceAll(RegExp(r'[^\w]'), '_')}_$_currentIndex.$ext';
     try {
-      final dio = Dio();
-      final response = await dio.get(
-        url,
-        options: Options(responseType: ResponseType.bytes),
-      );
+      final bytes = await downloadBytes(url);
       final directory = await getTemporaryDirectory();
       final file = File('${directory.path}/$fileName');
-      await file.writeAsBytes(response.data);
+      await file.writeAsBytes(bytes);
       if (!mounted) return;
       if (!context.mounted) return;
       await SharePlus.instance.share(

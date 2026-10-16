@@ -13,6 +13,7 @@ import '/core/theme/tokens/app_font_size.dart';
 import '../widgets/market_theme.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -209,7 +210,7 @@ class _MerchantGroup extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(RadiusToken.sm),
                         child: logoUrl != null && logoUrl!.isNotEmpty
-                            ? Image.network(
+                            ? AppNetworkImage(
                                 logoUrl!,
                                 width: 28,
                                 height: 28,
@@ -289,7 +290,7 @@ class _CartItemTile extends StatelessWidget {
               width: 56,
               height: 56,
               child: item.product.imageUrls.isNotEmpty
-                  ? Image.network(
+                  ? AppNetworkImage(
                       item.product.imageUrls.first,
                       fit: .cover,
                       errorBuilder: (context, error, stackTrace) => Icon(

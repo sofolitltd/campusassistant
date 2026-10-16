@@ -12,6 +12,7 @@ import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
 
 class ContributorPage extends ConsumerWidget {
   const ContributorPage({super.key});
@@ -172,8 +173,9 @@ class _ContributorAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: context.colors.primary,
-      backgroundImage: NetworkImage(
+      backgroundImage: AppNetworkImage.provider(
         ApiEndpoints.resolveImageUrl(contributor.imageUrl),
+        maxSize: 384,
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -13,6 +12,7 @@ import '../../../../core/theme/tokens/app_spacing.dart';
 import 'account_info_dialog.dart';
 import 'profile_completion_card.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/app_network_image.dart';
 
 class HeaderCard extends StatelessWidget {
   final user_entity.User user;
@@ -145,16 +145,16 @@ class HeaderCard extends StatelessWidget {
                         margin: const EdgeInsets.only(right: Spacing.xs),
                         padding: const EdgeInsets.all(Spacing.xs),
                         decoration:
-                        //  isProfileComplete ?
-                             BoxDecoration(
-                                color: context.colors.surface,
-                                border: Border.all(
-                                  color: context.colors.borderStrong,
-                                ),
-                                borderRadius:
-                                    BorderRadius.circular(RadiusToken.xxl),
-                              )
-                             ,
+                            //  isProfileComplete ?
+                            BoxDecoration(
+                              color: context.colors.surface,
+                              border: Border.all(
+                                color: context.colors.borderStrong,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.xxl,
+                              ),
+                            ),
                         child: Icon(
                           LucideIcons.pencil,
                           size: 16,
@@ -199,17 +199,17 @@ class _ProfileImage extends StatelessWidget {
                     color: context.colors.onPrimary,
                   ),
                 )
-              : CachedNetworkImage(
-                  imageUrl: ApiEndpoints.resolveImageUrl(imageUrl),
+              : AppNetworkImage(
+                  ApiEndpoints.resolveImageUrl(imageUrl),
                   fit: .cover,
-                  placeholder: (context, url) => Center(
+                  placeholder: (context) => Center(
                     child: Icon(
                       Icons.person_outline,
                       size: 40,
                       color: context.colors.onPrimary,
                     ),
                   ),
-                  errorWidget: (context, url, error) => Center(
+                  errorBuilder: (context, error, _) => Center(
                     child: Icon(
                       Icons.person_outline,
                       size: 40,
@@ -222,12 +222,12 @@ class _ProfileImage extends StatelessWidget {
           bottom: 0,
           right: 0,
           child: GestureDetector(
-                  onTap: () {
-                        context.pushNamed(
-                          AppRoute.editProfile.name,
-                          queryParameters: {'uid': userId},
-                        );
-                      },
+            onTap: () {
+              context.pushNamed(
+                AppRoute.editProfile.name,
+                queryParameters: {'uid': userId},
+              );
+            },
             child: Container(
               padding: const EdgeInsets.all(Spacing.xs),
               decoration: BoxDecoration(

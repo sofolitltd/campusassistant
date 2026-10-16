@@ -44,6 +44,13 @@ class _NewStudentSignUpScreenState
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _mobileController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final studentAsync = ref.watch(studentByCodeProvider(widget.studentId));
 

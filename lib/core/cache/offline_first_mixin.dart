@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 
@@ -6,6 +7,10 @@ import 'cache_manager.dart';
 import 'connectivity_service.dart';
 
 /// A reusable mixin that wraps fetch calls with cache-or-network logic.
+///
+/// Prefer [watchListWithCache] / [watchSingleWithCache] (stale-while-
+/// revalidate) for new reads. [fetchListWithCache] / [fetchSingleWithCache]
+/// are the older network-first variants, kept for existing callers.
 ///
 /// Usage: mix this into a repository implementation and use [fetchWithCache]
 /// in your fetch methods.
@@ -60,10 +65,12 @@ mixin OfflineFirstMixin {
 
         // Cache the fresh data
         final cacheItems = remoteData.map(toCacheItem).toList();
-        await cacheManager.cacheList(
-          entityType: entityType,
-          items: cacheItems,
-          ttl: cacheTTL,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: entityType,
+            items: cacheItems,
+            ttl: cacheTTL,
+          ),
         );
 
         return Right(remoteData);
@@ -112,11 +119,13 @@ mixin OfflineFirstMixin {
         final remoteData = await fetchFromRemote();
 
         // Cache the fresh data
-        await cacheManager.cacheSingle(
-          entityType: entityType,
-          entityKey: entityKey,
-          data: toCacheItem(remoteData),
-          ttl: cacheTTL,
+        unawaitedCacheWrite(
+          cacheManager.cacheSingle(
+            entityType: entityType,
+            entityKey: entityKey,
+            data: toCacheItem(remoteData),
+            ttl: cacheTTL,
+          ),
         );
 
         return Right(remoteData);
@@ -151,6 +160,126 @@ mixin OfflineFirstMixin {
     }
 
     return Right(null);
+  }
+
+  /// Stale-while-revalidate list fetch — the preferred strategy for reads.
+  ///
+  /// 1. Emits the cached list straight away, if there is one.
+  /// 2. If online, fetches from remote, emits the fresh list (skipped when it
+  ///    matches the cache, so the UI doesn't rebuild for nothing) and writes
+  ///    it to the cache in the background.
+  ///
+  /// A failed fetch is only an error when nothing was emitted: then the
+  /// stream throws a [NetworkFailure] (offline) or [ServerFailure]. Riverpod
+  /// providers can `yield*` this; `.future` resolves with the first value.
+  ///
+  /// [fetchFromRemote] returns raw JSON so the cache stores exactly what the
+  /// API sent, rather than a model's `toJson()` round-trip.
+  Stream<List<T>> watchListWithCache<T>({
+    required String entityType,
+    required Duration cacheTTL,
+    required Future<List<Map<String, dynamic>>> Function() fetchFromRemote,
+    required T Function(Map<String, dynamic> json) fromJson,
+  }) async* {
+    List<Map<String, dynamic>>? cached;
+    try {
+      final rows = await cacheManager.getCachedList(entityType: entityType);
+      if (rows.isNotEmpty) cached = rows;
+    } catch (e) {
+      debugPrint('[OfflineFirst] Cache read failed for $entityType: $e');
+    }
+    if (cached != null) yield cached.map(fromJson).toList();
+
+    if (!connectivity.isConnected) {
+      if (cached == null) {
+        throw const NetworkFailure(
+          'No internet connection and no cached data available',
+        );
+      }
+      return;
+    }
+
+    final List<Map<String, dynamic>> fresh;
+    try {
+      fresh = await fetchFromRemote();
+    } catch (e) {
+      debugPrint('[OfflineFirst] Remote fetch failed for $entityType: $e');
+      if (cached == null) {
+        throw ServerFailure('Failed to fetch $entityType data');
+      }
+      return;
+    }
+
+    unawaitedCacheWrite(
+      cacheManager.cacheList(
+        entityType: entityType,
+        items: fresh,
+        ttl: cacheTTL,
+      ),
+    );
+    if (!const DeepCollectionEquality().equals(cached, fresh)) {
+      yield fresh.map(fromJson).toList();
+    }
+  }
+
+  /// Stale-while-revalidate single-entity fetch. Same contract as
+  /// [watchListWithCache]; a remote `null` (not found) is emitted as-is and
+  /// not cached.
+  Stream<T?> watchSingleWithCache<T>({
+    required String entityType,
+    required String entityKey,
+    required Duration cacheTTL,
+    required Future<Map<String, dynamic>?> Function() fetchFromRemote,
+    required T Function(Map<String, dynamic> json) fromJson,
+  }) async* {
+    Map<String, dynamic>? cached;
+    try {
+      cached = await cacheManager.getCachedSingle(
+        entityType: entityType,
+        entityKey: entityKey,
+      );
+    } catch (e) {
+      debugPrint(
+        '[OfflineFirst] Cache read failed for $entityType/$entityKey: $e',
+      );
+    }
+    if (cached != null) yield fromJson(cached);
+
+    if (!connectivity.isConnected) {
+      if (cached == null) {
+        throw const NetworkFailure(
+          'No internet connection and no cached data available',
+        );
+      }
+      return;
+    }
+
+    final Map<String, dynamic>? fresh;
+    try {
+      fresh = await fetchFromRemote();
+    } catch (e) {
+      debugPrint(
+        '[OfflineFirst] Remote fetch failed for $entityType/$entityKey: $e',
+      );
+      if (cached == null) throw ServerFailure('Failed to fetch $entityType');
+      return;
+    }
+
+    if (fresh == null) {
+      yield null;
+      return;
+    }
+    unawaitedCacheWrite(
+      cacheManager.cacheSingle(
+        entityType: entityType,
+        entityKey: entityKey,
+        data: fresh,
+        ttl: cacheTTL,
+      ),
+    );
+    if (!const DeepCollectionEquality().equals(cached, fresh)) {
+      yield fromJson(fresh);
+    }
   }
 
   /// Write operation that queues for sync if offline.

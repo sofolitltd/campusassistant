@@ -26,6 +26,7 @@ import '/widgets/district_sub_district_picker.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_layout.dart';
+import '/core/widgets/app_network_image.dart';
 
 const kGenderOptions = <String>['Male', 'Female'];
 
@@ -277,9 +278,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                         onChanged: (val) => setState(
                                           () => _selectedGender = val,
                                         ),
-                                        dropdownColor: Theme.of(
-                                          context,
-                                        ).cardColor,
+                                        dropdownColor: Theme.of(context)
+                                            .cardColor,
                                         items: kGenderOptions
                                             .map(
                                               (g) => DropdownMenuItem(
@@ -311,9 +311,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                         validator: (val) => val == null
                                             ? 'Select your blood group'
                                             : null,
-                                        dropdownColor: Theme.of(
-                                          context,
-                                        ).cardColor,
+                                        dropdownColor: Theme.of(context)
+                                            .cardColor,
                                         items: kBloodGroup
                                             .map(
                                               (bg) => DropdownMenuItem(
@@ -559,8 +558,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
           ? MemoryImage(_webImage)
           : FileImage(_pickedMobileImage!);
     } else if (widget.profile.image.isNotEmpty) {
-      imageProvider = NetworkImage(
+      imageProvider = AppNetworkImage.provider(
         ApiEndpoints.resolveImageUrl(widget.profile.image),
+        maxSize: 384,
       );
     } else {
       imageProvider = null;

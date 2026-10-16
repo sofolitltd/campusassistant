@@ -36,10 +36,12 @@ class DepartmentRepositoryImpl implements DepartmentRepository {
 
         // Cache the result
         final cacheItems = remoteDepartments.map((m) => m.toJson()).toList();
-        await cacheManager.cacheList(
-          entityType: cacheKey,
-          items: cacheItems,
-          ttl: CacheTTL.department,
+        unawaitedCacheWrite(
+          cacheManager.cacheList(
+            entityType: cacheKey,
+            items: cacheItems,
+            ttl: CacheTTL.department,
+          ),
         );
 
         return Right(entities);

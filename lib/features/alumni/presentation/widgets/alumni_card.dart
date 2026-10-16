@@ -1,6 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
 
@@ -12,6 +11,7 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
+import '/core/widgets/app_network_image.dart';
 
 class AlumniCard extends StatelessWidget {
   final Alumni alumni;
@@ -200,12 +200,12 @@ class AlumniCard extends StatelessWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(40),
                                 child: a.profileImage.isNotEmpty
-                                    ? CachedNetworkImage(
-                                        imageUrl: ApiEndpoints.resolveImageUrl(
+                                    ? AppNetworkImage(
+                                        ApiEndpoints.resolveImageUrl(
                                           a.profileImage,
                                         ),
                                         fit: .cover,
-                                        errorWidget: (context, url, error) {
+                                        errorBuilder: (context, error, _) {
                                           final h =
                                               (a.fullName.hashCode.abs() % 360)
                                                   .toDouble();
@@ -692,12 +692,10 @@ class AlumniCard extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(RadiusToken.xxxl),
                           child: a.profileImage.isNotEmpty
-                              ? CachedNetworkImage(
-                                  imageUrl: ApiEndpoints.resolveImageUrl(
-                                    a.profileImage,
-                                  ),
+                              ? AppNetworkImage(
+                                  ApiEndpoints.resolveImageUrl(a.profileImage),
                                   fit: .cover,
-                                  placeholder: (context, url) => Container(
+                                  placeholder: (context) => Container(
                                     color: context.colors.surfaceAlt,
                                     child: Center(
                                       child: SizedBox(
@@ -707,7 +705,7 @@ class AlumniCard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  errorWidget: (context, url, error) {
+                                  errorBuilder: (context, error, _) {
                                     final h = (a.fullName.hashCode.abs() % 360)
                                         .toDouble();
                                     final gStart = HSLColor.fromAHSL(
@@ -838,14 +836,14 @@ class AlumniCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(
                                     RadiusToken.xs,
                                   ),
-                                  child: CachedNetworkImage(
-                                    imageUrl: ApiEndpoints.resolveImageUrl(
+                                  child: AppNetworkImage(
+                                    ApiEndpoints.resolveImageUrl(
                                       a.organizationRef!.logoUrl,
                                     ),
                                     width: 14,
                                     height: 14,
                                     fit: .cover,
-                                    errorWidget: (context, url, error) =>
+                                    errorBuilder: (context, error, _) =>
                                         const SizedBox.shrink(),
                                   ),
                                 ),

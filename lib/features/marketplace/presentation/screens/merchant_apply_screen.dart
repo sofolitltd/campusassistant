@@ -21,6 +21,7 @@ import '../providers/marketplace_provider.dart';
 import '../providers/seller_provider.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_control.dart';
+import '/core/widgets/app_network_image.dart';
 
 /// Lets a student apply to become a marketplace merchant. Submits with
 /// status "pending" server-side; an admin reviews and approves/rejects it
@@ -541,7 +542,7 @@ class _MerchantCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: RadiusToken.circular(RadiusToken.md),
                 child: merchant.logoUrl.isNotEmpty
-                    ? Image.network(
+                    ? AppNetworkImage(
                         ApiEndpoints.resolveImageUrl(merchant.logoUrl),
                         width: 52,
                         height: 52,

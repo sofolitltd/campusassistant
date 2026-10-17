@@ -74,14 +74,13 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           child: Form(
             key: _formKey,
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width > 800
-                    ? MediaQuery.of(context).size.width * .3
-                    : Spacing.lg,
-                vertical: Spacing.lg,
-              ),
+              // Fixed padding + maxWidth, not a fraction of
+              // MediaQuery width: on web this page renders inside a pane
+              // narrower than the window, and window-relative padding
+              // squeezed the card to zero width.
+              padding: const EdgeInsets.all(Spacing.lg),
               child: Container(
-                constraints: const BoxConstraints(minWidth: 350, maxWidth: 400),
+                constraints: const BoxConstraints(maxWidth: 400),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,

@@ -59,11 +59,15 @@ class _HomePageState extends ConsumerState<HomePage> {
               // Lazy so sections below the fold (and their API calls) wait
               // until they're scrolled near; KeepAlive so a section that has
               // built isn't torn down and refetched (or its ad reloaded) each
-              // time it scrolls off-screen. The two auto-wrappers are off
-              // because KeepAlive must be the list's direct child.
+              // time it scrolls off-screen. All three auto-wrappers are off
+              // because KeepAlive must be the list's direct child — the
+              // semantic-index one inserts an IndexedSemantics render object
+              // above it, which is a ParentDataWidget error (grey screen in
+              // release).
               SliverList.list(
                 addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
+                addSemanticIndexes: false,
                 children: [
                   for (final section in _sections)
                     KeepAlive(

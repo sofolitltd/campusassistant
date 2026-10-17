@@ -19,7 +19,7 @@ incidents on the web deploy:
    the Android-emulator loopback address) and broke over HTTPS with a mixed
    content error.
 2. **It was a public, downloadable file.** Once actually deployed, anyone
-   could run `curl https://campusassistantbd.web.app/assets/.env` and read
+   could run `curl https://campusassistant.web.app/assets/.env` and read
    the whole file in plaintext — no auth, no DevTools needed. At one point
    this included live bKash sandbox credentials.
 

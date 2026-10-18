@@ -9,6 +9,7 @@ import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/resource/presentation/widgets/user_profile_dialog.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/providers/is_pro_provider.dart';
+import '/core/providers/perks_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -125,6 +126,7 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
     final scrollController = widget.scrollController;
     final isProContent = resource.accessLevel == 'pro';
     final isProUser = ref.watch(isProUserProvider);
+    final isCoinFree = ref.watch(isCoinFreeProvider);
     final batchesAsync = ref.watch(
       batchesByDepartmentProvider(resource.departmentId),
     );
@@ -339,7 +341,7 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
                               ),
                             ),
                             const SizedBox(width: Spacing.xs),
-                            if (isProUser)
+                            if (isCoinFree)
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: Spacing.sm,
@@ -361,7 +363,7 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
                                     ),
                                     const SizedBox(width: Spacing.xs),
                                     Text(
-                                      'FREE WITH PRO',
+                                      isProUser ? 'FREE WITH PRO' : 'FREE NOW',
                                       style: TextStyle(
                                         fontSize: FontSizeToken.xxs,
                                         fontWeight: .bold,

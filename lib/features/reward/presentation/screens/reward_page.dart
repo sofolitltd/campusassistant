@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
+import '/core/providers/perks_provider.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
 import '/core/widgets/custom_header_layout.dart';
@@ -61,7 +62,7 @@ class _RewardPageState extends ConsumerState<RewardPage> {
           ref.invalidate(rewardBalanceProvider);
           ref.invalidate(rewardTransactionsProvider);
           messenger.showSnackBar(
-            const SnackBar(content: Text('You earned 2 reward coins!')),
+            const SnackBar(content: Text('You earned 1 reward coin!')),
           );
         },
       );
@@ -98,7 +99,7 @@ class _RewardPageState extends ConsumerState<RewardPage> {
           ),
           const SizedBox(height: Spacing.lg),
           const DailyRewardBanner(padded: false),
-          if (!kIsWeb && !ref.watch(isProUserProvider)) ...[
+          if (!kIsWeb && !ref.watch(isAdFreeProvider)) ...[
             const SizedBox(height: Spacing.lg),
             _WatchAdCard(isLoading: _isClaiming, onPressed: _watchAdForReward),
           ],
@@ -328,13 +329,13 @@ class _WatchAdCard extends StatelessWidget {
             crossAxisAlignment: .start,
             children: [
               Text(
-                'Watch a video, earn 2 coins',
+                'Watch a video, earn 1 coin',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
               ),
               Text(
-                'Up to 4 videos a day. Coins skip the ad on downloads.',
+                'Up to 5 videos a day. Coins skip the ad on downloads.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: context.colors.textSubtle,
                 ),

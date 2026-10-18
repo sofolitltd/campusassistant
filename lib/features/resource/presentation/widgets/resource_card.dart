@@ -20,6 +20,7 @@ import '/core/ads/download_ad_gate.dart';
 import '/core/ads/interstitial_ad_manager.dart';
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
+import '/core/providers/perks_provider.dart';
 import '/features/reward/presentation/providers/reward_providers.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/core/cache/cache_manager.dart';
@@ -85,7 +86,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   @override
   void initState() {
     super.initState();
-    if (!ref.read(isProUserProvider)) {
+    if (!ref.read(isAdFreeProvider)) {
       ref.read(interstitialAdManagerProvider).preload();
     }
     final statusChecked = _checkFileStatus();
@@ -130,7 +131,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     List<String> contentBatches = List<String>.from(widget.resource.batches);
     contentBatches.sort((a, b) => b.compareTo(a));
 
-    final isProUser = ref.watch(isProUserProvider);
+    final isCoinFree = ref.watch(isCoinFreeProvider);
     final isProContent = widget.resource.accessLevel == 'pro';
 
     // Select only the uid: the rest of the profile changing shouldn't
@@ -187,14 +188,14 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                         onTap: _showInfoBottomSheet,
                         child: _buildThumbnail(
                           isProContent,
-                          showRewardCost: !isProUser,
+                          showRewardCost: !isCoinFree,
                         ),
                       ),
                       const SizedBox(width: Spacing.md),
                       _buildDetails(
                         context,
                         isProContent,
-                        showRewardCost: !isProUser,
+                        showRewardCost: !isCoinFree,
                       ),
                     ],
                   ),
@@ -773,8 +774,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<bool> _checkRewardGate() async {
-    final isPro = ref.read(isProUserProvider);
-    if (isPro) return true;
+    // Pro or a coin-free access grant: nothing to spend (the API agrees and
+    // returns free for these users too).
+    if (ref.read(isCoinFreeProvider)) return true;
 
     final result = await ref
         .read(rewardRepositoryProvider)
@@ -799,6 +801,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
 
     if (!mounted) return false;
+    // Ad-free grant without coin-free: no ad to fall back on, so running out
+    // of coins just means downloading free.
+    if (ref.read(isAdFreeProvider)) return true;
     return _showOutOfCoinsDialog(
       cost: r['required'] as int? ?? 1,
       balance: r['balance'] as int? ?? 0,
@@ -894,7 +899,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               Text(
                 kIsWeb
                     ? 'Downloads without coins need the mobile app. Go Pro for unlimited downloads.'
-                    : 'Download now with a short ad, or watch a video to also earn $_videoRewardCoins coins.',
+                    : 'Download now with a short ad, or watch a video to also earn 1 coin.',
                 textAlign: .center,
                 style: Theme.of(context).textTheme.bodySmall
                     ?.copyWith(color: context.colors.textMuted),
@@ -929,7 +934,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                     onPressed: () =>
                         Navigator.of(ctx).pop(_UnlockChoice.watchVideo),
                     icon: const Icon(LucideIcons.circlePlay, size: 18),
-                    label: Text('Watch video • +$_videoRewardCoins coins'),
+                    label: const Text('Watch video • +1 coin'),
                   ),
                 ),
                 const SizedBox(height: Spacing.xs),
@@ -999,7 +1004,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       (balance) {
         ref.invalidate(rewardBalanceProvider);
         Fluttertoast.showToast(
-          msg: '+$_videoRewardCoins coins! You now have ${balance.balance}.',
+          msg: '+1 coin! You now have ${balance.balance}.',
         );
       },
     );
@@ -1343,7 +1348,3 @@ class _PopupItem extends StatelessWidget {
 }
 
 enum _UnlockChoice { download, watchVideo, pro }
-
-/// Coins credited per rewarded video — mirrors adRewardAmount in
-/// campusassistant-api's reward_handler.go.
-const _videoRewardCoins = 2;

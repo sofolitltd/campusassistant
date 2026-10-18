@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import '/core/providers/is_pro_provider.dart';
+import '/core/providers/perks_provider.dart';
 import 'ad_config.dart';
 import 'ads_initializer.dart';
 
@@ -30,11 +30,11 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
   @override
   void initState() {
     super.initState();
-    if (!kIsWeb && !ref.read(isProUserProvider)) {
+    if (!kIsWeb && !ref.read(isAdFreeProvider)) {
       // Wait for the deferred SDK init so this banner's WebView isn't created
       // in the same burst as Home's first frames.
       AdsInitializer.ready.then((_) {
-        if (mounted && !ref.read(isProUserProvider)) _loadAd();
+        if (mounted && !ref.read(isAdFreeProvider)) _loadAd();
       });
     }
   }
@@ -73,7 +73,7 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
     // Reactive hide: if the user upgrades to Pro mid-session, stop showing
     // an already-loaded ad immediately, even though the one request that
     // loaded it already happened before they upgraded.
-    if (kIsWeb || ref.watch(isProUserProvider)) {
+    if (kIsWeb || ref.watch(isAdFreeProvider)) {
       return const SizedBox.shrink();
     }
 

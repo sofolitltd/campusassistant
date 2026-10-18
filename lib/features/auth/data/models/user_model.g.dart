@@ -34,6 +34,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   createdAt: json['created_at'] == null
       ? null
       : DateTime.parse(json['created_at'] as String),
+  perks: json['perks'] as Map<String, dynamic>?,
 );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -63,4 +64,5 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'university_id': ?instance.universityId,
       'department_id': ?instance.departmentId,
       'created_at': ?instance.createdAt?.toIso8601String(),
+      'perks': ?instance.perks,
     };

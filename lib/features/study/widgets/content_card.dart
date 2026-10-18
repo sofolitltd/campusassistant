@@ -18,6 +18,7 @@ import '/widgets/pdf_viewer_page.dart';
 import '/core/ads/download_ad_gate.dart';
 import '/core/ads/interstitial_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
+import '/core/providers/perks_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
@@ -67,7 +68,7 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   @override
   void initState() {
     super.initState();
-    if (!ref.read(isProUserProvider)) {
+    if (!ref.read(isAdFreeProvider)) {
       ref.read(interstitialAdManagerProvider).preload();
     }
     _checkFileStatus();

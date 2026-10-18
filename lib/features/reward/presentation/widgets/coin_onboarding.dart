@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '/core/providers/is_pro_provider.dart';
+import '/core/providers/perks_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -53,7 +53,9 @@ class _CoinWelcomeGateState extends ConsumerState<CoinWelcomeGate> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_checked && !ref.watch(isProUserProvider)) {
+    // Coins don't matter while Pro or coin-free; the intro waits (unseen)
+    // until a grant ends, which is exactly when it's needed.
+    if (!_checked && !ref.watch(isCoinFreeProvider)) {
       final userId = ref.watch(currentUserProvider).value?.id;
       final balance = ref.watch(rewardBalanceProvider).value;
       if (userId != null && balance != null) {
@@ -115,7 +117,7 @@ class _CoinWelcomeSheet extends StatelessWidget {
             ),
             const _Point(
               icon: LucideIcons.circlePlay,
-              text: 'Watch a video for +2 coins, up to 4 times a day.',
+              text: 'Watch a video for +1 coin, up to 5 times a day.',
             ),
             const _Point(
               icon: LucideIcons.info,

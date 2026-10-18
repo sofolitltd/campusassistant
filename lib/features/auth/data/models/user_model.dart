@@ -42,6 +42,7 @@ abstract class UserModel with _$UserModel {
     String? universityId,
     String? departmentId,
     DateTime? createdAt,
+    Map<String, dynamic>? perks,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -73,6 +74,7 @@ abstract class UserModel with _$UserModel {
     universityId: universityId,
     departmentId: departmentId,
     createdAt: createdAt,
+    perks: perks,
   );
 
   factory UserModel.fromEntity(User user) => UserModel(
@@ -101,5 +103,6 @@ abstract class UserModel with _$UserModel {
     universityId: user.universityId,
     departmentId: user.departmentId,
     createdAt: user.createdAt,
+    perks: user.perks,
   );
 }

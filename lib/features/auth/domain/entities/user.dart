@@ -32,6 +32,8 @@ abstract class User with _$User {
     String? universityId,
     String? departmentId,
     DateTime? createdAt,
+    // Raw access-grant perks from /me (see core/providers/perks_provider.dart).
+    Map<String, dynamic>? perks,
   }) = _User;
 
   String get fullName => '$firstName $lastName';

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User {
 
- String get id; String get email; String get firstName; String get lastName; String get role; String? get profileImage; String? get phone; String? get gender; String? get batch; String? get batchId; String? get profession; String? get session; String? get hall; String? get blood; bool get isActive; bool get isVerified; bool get isPhonePublic; bool get isEmailPublic; String? get subscriptionStatus; bool get isModerator; bool get isAdmin; bool get isCr; String? get universityId; String? get departmentId; DateTime? get createdAt;
+ String get id; String get email; String get firstName; String get lastName; String get role; String? get profileImage; String? get phone; String? get gender; String? get batch; String? get batchId; String? get profession; String? get session; String? get hall; String? get blood; bool get isActive; bool get isVerified; bool get isPhonePublic; bool get isEmailPublic; String? get subscriptionStatus; bool get isModerator; bool get isAdmin; bool get isCr; String? get universityId; String? get departmentId; DateTime? get createdAt; Map<String, dynamic>? get perks;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $UserCopyWith<User> get copyWith => _$UserCopyWithImpl<User>(this as User, _$ide
 @override
 bool operator ==(Object other) {
   final _this = this as User;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.firstName, _this.firstName) || other.firstName == _this.firstName)&&(identical(other.lastName, _this.lastName) || other.lastName == _this.lastName)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.profileImage, _this.profileImage) || other.profileImage == _this.profileImage)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.batchId, _this.batchId) || other.batchId == _this.batchId)&&(identical(other.profession, _this.profession) || other.profession == _this.profession)&&(identical(other.session, _this.session) || other.session == _this.session)&&(identical(other.hall, _this.hall) || other.hall == _this.hall)&&(identical(other.blood, _this.blood) || other.blood == _this.blood)&&(identical(other.isActive, _this.isActive) || other.isActive == _this.isActive)&&(identical(other.isVerified, _this.isVerified) || other.isVerified == _this.isVerified)&&(identical(other.isPhonePublic, _this.isPhonePublic) || other.isPhonePublic == _this.isPhonePublic)&&(identical(other.isEmailPublic, _this.isEmailPublic) || other.isEmailPublic == _this.isEmailPublic)&&(identical(other.subscriptionStatus, _this.subscriptionStatus) || other.subscriptionStatus == _this.subscriptionStatus)&&(identical(other.isModerator, _this.isModerator) || other.isModerator == _this.isModerator)&&(identical(other.isAdmin, _this.isAdmin) || other.isAdmin == _this.isAdmin)&&(identical(other.isCr, _this.isCr) || other.isCr == _this.isCr)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.firstName, _this.firstName) || other.firstName == _this.firstName)&&(identical(other.lastName, _this.lastName) || other.lastName == _this.lastName)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.profileImage, _this.profileImage) || other.profileImage == _this.profileImage)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.batchId, _this.batchId) || other.batchId == _this.batchId)&&(identical(other.profession, _this.profession) || other.profession == _this.profession)&&(identical(other.session, _this.session) || other.session == _this.session)&&(identical(other.hall, _this.hall) || other.hall == _this.hall)&&(identical(other.blood, _this.blood) || other.blood == _this.blood)&&(identical(other.isActive, _this.isActive) || other.isActive == _this.isActive)&&(identical(other.isVerified, _this.isVerified) || other.isVerified == _this.isVerified)&&(identical(other.isPhonePublic, _this.isPhonePublic) || other.isPhonePublic == _this.isPhonePublic)&&(identical(other.isEmailPublic, _this.isEmailPublic) || other.isEmailPublic == _this.isEmailPublic)&&(identical(other.subscriptionStatus, _this.subscriptionStatus) || other.subscriptionStatus == _this.subscriptionStatus)&&(identical(other.isModerator, _this.isModerator) || other.isModerator == _this.isModerator)&&(identical(other.isAdmin, _this.isAdmin) || other.isAdmin == _this.isAdmin)&&(identical(other.isCr, _this.isCr) || other.isCr == _this.isCr)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&const DeepCollectionEquality().equals(other.perks, _this.perks));
 }
 
 
 @override
 int get hashCode {
   final _this = this as User;
-  return Object.hashAll([runtimeType,_this.id,_this.email,_this.firstName,_this.lastName,_this.role,_this.profileImage,_this.phone,_this.gender,_this.batch,_this.batchId,_this.profession,_this.session,_this.hall,_this.blood,_this.isActive,_this.isVerified,_this.isPhonePublic,_this.isEmailPublic,_this.subscriptionStatus,_this.isModerator,_this.isAdmin,_this.isCr,_this.universityId,_this.departmentId,_this.createdAt]);
+  return Object.hashAll([runtimeType,_this.id,_this.email,_this.firstName,_this.lastName,_this.role,_this.profileImage,_this.phone,_this.gender,_this.batch,_this.batchId,_this.profession,_this.session,_this.hall,_this.blood,_this.isActive,_this.isVerified,_this.isPhonePublic,_this.isEmailPublic,_this.subscriptionStatus,_this.isModerator,_this.isAdmin,_this.isCr,_this.universityId,_this.departmentId,_this.createdAt,const DeepCollectionEquality().hash(_this.perks)]);
 }
 
 @override
 String toString() {
   final _this = this as User;
-  return 'User(id: ${_this.id}, email: ${_this.email}, firstName: ${_this.firstName}, lastName: ${_this.lastName}, role: ${_this.role}, profileImage: ${_this.profileImage}, phone: ${_this.phone}, gender: ${_this.gender}, batch: ${_this.batch}, batchId: ${_this.batchId}, profession: ${_this.profession}, session: ${_this.session}, hall: ${_this.hall}, blood: ${_this.blood}, isActive: ${_this.isActive}, isVerified: ${_this.isVerified}, isPhonePublic: ${_this.isPhonePublic}, isEmailPublic: ${_this.isEmailPublic}, subscriptionStatus: ${_this.subscriptionStatus}, isModerator: ${_this.isModerator}, isAdmin: ${_this.isAdmin}, isCr: ${_this.isCr}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, createdAt: ${_this.createdAt})';
+  return 'User(id: ${_this.id}, email: ${_this.email}, firstName: ${_this.firstName}, lastName: ${_this.lastName}, role: ${_this.role}, profileImage: ${_this.profileImage}, phone: ${_this.phone}, gender: ${_this.gender}, batch: ${_this.batch}, batchId: ${_this.batchId}, profession: ${_this.profession}, session: ${_this.session}, hall: ${_this.hall}, blood: ${_this.blood}, isActive: ${_this.isActive}, isVerified: ${_this.isVerified}, isPhonePublic: ${_this.isPhonePublic}, isEmailPublic: ${_this.isEmailPublic}, subscriptionStatus: ${_this.subscriptionStatus}, isModerator: ${_this.isModerator}, isAdmin: ${_this.isAdmin}, isCr: ${_this.isCr}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, createdAt: ${_this.createdAt}, perks: ${_this.perks})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String firstName, String lastName, String role, String? profileImage, String? phone, String? gender, String? batch, String? batchId, String? profession, String? session, String? hall, String? blood, bool isActive, bool isVerified, bool isPhonePublic, bool isEmailPublic, String? subscriptionStatus, bool isModerator, bool isAdmin, bool isCr, String? universityId, String? departmentId, DateTime? createdAt
+ String id, String email, String firstName, String lastName, String role, String? profileImage, String? phone, String? gender, String? batch, String? batchId, String? profession, String? session, String? hall, String? blood, bool isActive, bool isVerified, bool isPhonePublic, bool isEmailPublic, String? subscriptionStatus, bool isModerator, bool isAdmin, bool isCr, String? universityId, String? departmentId, DateTime? createdAt, Map<String, dynamic>? perks
 });
 
 
@@ -68,7 +68,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? firstName = null,Object? lastName = null,Object? role = null,Object? profileImage = freezed,Object? phone = freezed,Object? gender = freezed,Object? batch = freezed,Object? batchId = freezed,Object? profession = freezed,Object? session = freezed,Object? hall = freezed,Object? blood = freezed,Object? isActive = null,Object? isVerified = null,Object? isPhonePublic = null,Object? isEmailPublic = null,Object? subscriptionStatus = freezed,Object? isModerator = null,Object? isAdmin = null,Object? isCr = null,Object? universityId = freezed,Object? departmentId = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? firstName = null,Object? lastName = null,Object? role = null,Object? profileImage = freezed,Object? phone = freezed,Object? gender = freezed,Object? batch = freezed,Object? batchId = freezed,Object? profession = freezed,Object? session = freezed,Object? hall = freezed,Object? blood = freezed,Object? isActive = null,Object? isVerified = null,Object? isPhonePublic = null,Object? isEmailPublic = null,Object? subscriptionStatus = freezed,Object? isModerator = null,Object? isAdmin = null,Object? isCr = null,Object? universityId = freezed,Object? departmentId = freezed,Object? createdAt = freezed,Object? perks = freezed,}) {
   return _then(User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -95,7 +95,8 @@ as bool,isCr: null == isCr ? _self.isCr : isCr // ignore: cast_nullable_to_non_n
 as bool,universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String?,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,perks: freezed == perks ? _self.perks : perks // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
   ));
 }
 
@@ -180,10 +181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String firstName,  String lastName,  String role,  String? profileImage,  String? phone,  String? gender,  String? batch,  String? batchId,  String? profession,  String? session,  String? hall,  String? blood,  bool isActive,  bool isVerified,  bool isPhonePublic,  bool isEmailPublic,  String? subscriptionStatus,  bool isModerator,  bool isAdmin,  bool isCr,  String? universityId,  String? departmentId,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String firstName,  String lastName,  String role,  String? profileImage,  String? phone,  String? gender,  String? batch,  String? batchId,  String? profession,  String? session,  String? hall,  String? blood,  bool isActive,  bool isVerified,  bool isPhonePublic,  bool isEmailPublic,  String? subscriptionStatus,  bool isModerator,  bool isAdmin,  bool isCr,  String? universityId,  String? departmentId,  DateTime? createdAt,  Map<String, dynamic>? perks)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_that.profileImage,_that.phone,_that.gender,_that.batch,_that.batchId,_that.profession,_that.session,_that.hall,_that.blood,_that.isActive,_that.isVerified,_that.isPhonePublic,_that.isEmailPublic,_that.subscriptionStatus,_that.isModerator,_that.isAdmin,_that.isCr,_that.universityId,_that.departmentId,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_that.profileImage,_that.phone,_that.gender,_that.batch,_that.batchId,_that.profession,_that.session,_that.hall,_that.blood,_that.isActive,_that.isVerified,_that.isPhonePublic,_that.isEmailPublic,_that.subscriptionStatus,_that.isModerator,_that.isAdmin,_that.isCr,_that.universityId,_that.departmentId,_that.createdAt,_that.perks);case _:
   return orElse();
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String firstName,  String lastName,  String role,  String? profileImage,  String? phone,  String? gender,  String? batch,  String? batchId,  String? profession,  String? session,  String? hall,  String? blood,  bool isActive,  bool isVerified,  bool isPhonePublic,  bool isEmailPublic,  String? subscriptionStatus,  bool isModerator,  bool isAdmin,  bool isCr,  String? universityId,  String? departmentId,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String firstName,  String lastName,  String role,  String? profileImage,  String? phone,  String? gender,  String? batch,  String? batchId,  String? profession,  String? session,  String? hall,  String? blood,  bool isActive,  bool isVerified,  bool isPhonePublic,  bool isEmailPublic,  String? subscriptionStatus,  bool isModerator,  bool isAdmin,  bool isCr,  String? universityId,  String? departmentId,  DateTime? createdAt,  Map<String, dynamic>? perks)  $default,) {final _that = this;
 switch (_that) {
 case _User():
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_that.profileImage,_that.phone,_that.gender,_that.batch,_that.batchId,_that.profession,_that.session,_that.hall,_that.blood,_that.isActive,_that.isVerified,_that.isPhonePublic,_that.isEmailPublic,_that.subscriptionStatus,_that.isModerator,_that.isAdmin,_that.isCr,_that.universityId,_that.departmentId,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_that.profileImage,_that.phone,_that.gender,_that.batch,_that.batchId,_that.profession,_that.session,_that.hall,_that.blood,_that.isActive,_that.isVerified,_that.isPhonePublic,_that.isEmailPublic,_that.subscriptionStatus,_that.isModerator,_that.isAdmin,_that.isCr,_that.universityId,_that.departmentId,_that.createdAt,_that.perks);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -221,10 +222,10 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String firstName,  String lastName,  String role,  String? profileImage,  String? phone,  String? gender,  String? batch,  String? batchId,  String? profession,  String? session,  String? hall,  String? blood,  bool isActive,  bool isVerified,  bool isPhonePublic,  bool isEmailPublic,  String? subscriptionStatus,  bool isModerator,  bool isAdmin,  bool isCr,  String? universityId,  String? departmentId,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String firstName,  String lastName,  String role,  String? profileImage,  String? phone,  String? gender,  String? batch,  String? batchId,  String? profession,  String? session,  String? hall,  String? blood,  bool isActive,  bool isVerified,  bool isPhonePublic,  bool isEmailPublic,  String? subscriptionStatus,  bool isModerator,  bool isAdmin,  bool isCr,  String? universityId,  String? departmentId,  DateTime? createdAt,  Map<String, dynamic>? perks)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_that.profileImage,_that.phone,_that.gender,_that.batch,_that.batchId,_that.profession,_that.session,_that.hall,_that.blood,_that.isActive,_that.isVerified,_that.isPhonePublic,_that.isEmailPublic,_that.subscriptionStatus,_that.isModerator,_that.isAdmin,_that.isCr,_that.universityId,_that.departmentId,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_that.profileImage,_that.phone,_that.gender,_that.batch,_that.batchId,_that.profession,_that.session,_that.hall,_that.blood,_that.isActive,_that.isVerified,_that.isPhonePublic,_that.isEmailPublic,_that.subscriptionStatus,_that.isModerator,_that.isAdmin,_that.isCr,_that.universityId,_that.departmentId,_that.createdAt,_that.perks);case _:
   return null;
 
 }
@@ -236,7 +237,7 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.role,_
 
 
 class _User extends User {
-  const _User({required this.id, required this.email, required this.firstName, required this.lastName, required this.role, this.profileImage, this.phone, this.gender, this.batch, this.batchId, this.profession, this.session, this.hall, this.blood, this.isActive = true, this.isVerified = false, this.isPhonePublic = false, this.isEmailPublic = false, this.subscriptionStatus = 'basic', this.isModerator = false, this.isAdmin = false, this.isCr = false, this.universityId, this.departmentId, this.createdAt}): super._();
+  const _User({required this.id, required this.email, required this.firstName, required this.lastName, required this.role, this.profileImage, this.phone, this.gender, this.batch, this.batchId, this.profession, this.session, this.hall, this.blood, this.isActive = true, this.isVerified = false, this.isPhonePublic = false, this.isEmailPublic = false, this.subscriptionStatus = 'basic', this.isModerator = false, this.isAdmin = false, this.isCr = false, this.universityId, this.departmentId, this.createdAt,  Map<String, dynamic>? perks}): _perks = perks,super._();
   
 
 @override final  String id;
@@ -264,6 +265,15 @@ class _User extends User {
 @override final  String? universityId;
 @override final  String? departmentId;
 @override final  DateTime? createdAt;
+ final  Map<String, dynamic>? _perks;
+@override Map<String, dynamic>? get perks {
+  final value = _perks;
+  if (value == null) return null;
+  if (_perks is EqualUnmodifiableMapView) return _perks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
@@ -275,18 +285,18 @@ _$UserCopyWith<_User> get copyWith => __$UserCopyWithImpl<_User>(this, _$identit
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.role, role) || other.role == role)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.profession, profession) || other.profession == profession)&&(identical(other.session, session) || other.session == session)&&(identical(other.hall, hall) || other.hall == hall)&&(identical(other.blood, blood) || other.blood == blood)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.isPhonePublic, isPhonePublic) || other.isPhonePublic == isPhonePublic)&&(identical(other.isEmailPublic, isEmailPublic) || other.isEmailPublic == isEmailPublic)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.isModerator, isModerator) || other.isModerator == isModerator)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.isCr, isCr) || other.isCr == isCr)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.role, role) || other.role == role)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.profession, profession) || other.profession == profession)&&(identical(other.session, session) || other.session == session)&&(identical(other.hall, hall) || other.hall == hall)&&(identical(other.blood, blood) || other.blood == blood)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isVerified, isVerified) || other.isVerified == isVerified)&&(identical(other.isPhonePublic, isPhonePublic) || other.isPhonePublic == isPhonePublic)&&(identical(other.isEmailPublic, isEmailPublic) || other.isEmailPublic == isEmailPublic)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.isModerator, isModerator) || other.isModerator == isModerator)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.isCr, isCr) || other.isCr == isCr)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.perks, _perks));
 }
 
 
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,id,email,firstName,lastName,role,profileImage,phone,gender,batch,batchId,profession,session,hall,blood,isActive,isVerified,isPhonePublic,isEmailPublic,subscriptionStatus,isModerator,isAdmin,isCr,universityId,departmentId,createdAt]);
+    return Object.hashAll([runtimeType,id,email,firstName,lastName,role,profileImage,phone,gender,batch,batchId,profession,session,hall,blood,isActive,isVerified,isPhonePublic,isEmailPublic,subscriptionStatus,isModerator,isAdmin,isCr,universityId,departmentId,createdAt,const DeepCollectionEquality().hash(_perks)]);
 }
 
 @override
 String toString() {
-    return 'User(id: $id, email: $email, firstName: $firstName, lastName: $lastName, role: $role, profileImage: $profileImage, phone: $phone, gender: $gender, batch: $batch, batchId: $batchId, profession: $profession, session: $session, hall: $hall, blood: $blood, isActive: $isActive, isVerified: $isVerified, isPhonePublic: $isPhonePublic, isEmailPublic: $isEmailPublic, subscriptionStatus: $subscriptionStatus, isModerator: $isModerator, isAdmin: $isAdmin, isCr: $isCr, universityId: $universityId, departmentId: $departmentId, createdAt: $createdAt)';
+    return 'User(id: $id, email: $email, firstName: $firstName, lastName: $lastName, role: $role, profileImage: $profileImage, phone: $phone, gender: $gender, batch: $batch, batchId: $batchId, profession: $profession, session: $session, hall: $hall, blood: $blood, isActive: $isActive, isVerified: $isVerified, isPhonePublic: $isPhonePublic, isEmailPublic: $isEmailPublic, subscriptionStatus: $subscriptionStatus, isModerator: $isModerator, isAdmin: $isAdmin, isCr: $isCr, universityId: $universityId, departmentId: $departmentId, createdAt: $createdAt, perks: $perks)';
 }
 
 
@@ -297,7 +307,7 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String firstName, String lastName, String role, String? profileImage, String? phone, String? gender, String? batch, String? batchId, String? profession, String? session, String? hall, String? blood, bool isActive, bool isVerified, bool isPhonePublic, bool isEmailPublic, String? subscriptionStatus, bool isModerator, bool isAdmin, bool isCr, String? universityId, String? departmentId, DateTime? createdAt
+ String id, String email, String firstName, String lastName, String role, String? profileImage, String? phone, String? gender, String? batch, String? batchId, String? profession, String? session, String? hall, String? blood, bool isActive, bool isVerified, bool isPhonePublic, bool isEmailPublic, String? subscriptionStatus, bool isModerator, bool isAdmin, bool isCr, String? universityId, String? departmentId, DateTime? createdAt, Map<String, dynamic>? perks
 });
 
 
@@ -314,7 +324,7 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? firstName = null,Object? lastName = null,Object? role = null,Object? profileImage = freezed,Object? phone = freezed,Object? gender = freezed,Object? batch = freezed,Object? batchId = freezed,Object? profession = freezed,Object? session = freezed,Object? hall = freezed,Object? blood = freezed,Object? isActive = null,Object? isVerified = null,Object? isPhonePublic = null,Object? isEmailPublic = null,Object? subscriptionStatus = freezed,Object? isModerator = null,Object? isAdmin = null,Object? isCr = null,Object? universityId = freezed,Object? departmentId = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? firstName = null,Object? lastName = null,Object? role = null,Object? profileImage = freezed,Object? phone = freezed,Object? gender = freezed,Object? batch = freezed,Object? batchId = freezed,Object? profession = freezed,Object? session = freezed,Object? hall = freezed,Object? blood = freezed,Object? isActive = null,Object? isVerified = null,Object? isPhonePublic = null,Object? isEmailPublic = null,Object? subscriptionStatus = freezed,Object? isModerator = null,Object? isAdmin = null,Object? isCr = null,Object? universityId = freezed,Object? departmentId = freezed,Object? createdAt = freezed,Object? perks = freezed,}) {
   return _then(_User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -341,7 +351,8 @@ as bool,isCr: null == isCr ? _self.isCr : isCr // ignore: cast_nullable_to_non_n
 as bool,universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String?,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,perks: freezed == perks ? _self._perks : perks // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
   ));
 }
 

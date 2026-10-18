@@ -15,6 +15,7 @@ import 'sections/skill_up_section.dart';
 import 'sections/subscription_section.dart';
 import 'widgets/home_header.dart';
 import 'widgets/home_section.dart';
+import 'widgets/offer_badge.dart';
 import 'widgets/shortcut_strip.dart';
 import '/core/theme/tokens/app_layout.dart';
 
@@ -31,6 +32,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   static const _sections = <Widget>[
     CoinWelcomeGate(),
+    OfferBadge(),
     StudentVerificationBanner(),
     HomeSection(child: ShortcutStrip()),
     DailyRewardBanner(),

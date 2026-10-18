@@ -1,8 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/entities/syllabus.dart';
 
 part 'syllabus_model.freezed.dart';
 part 'syllabus_model.g.dart';
+
+// The API returns batches as objects ({id, name, ...}); older cached rows may
+// hold plain names.
+List<String>? _batchNames(List<dynamic>? json) => json
+    ?.map((e) => e is Map ? (e['name'] ?? '').toString() : e.toString())
+    .where((e) => e.isNotEmpty)
+    .toList();
 
 @freezed
 abstract class SyllabusModel with _$SyllabusModel {
@@ -15,9 +23,9 @@ abstract class SyllabusModel with _$SyllabusModel {
     @JsonKey(name: 'course_title') String? courseTitle,
     required String description,
     @JsonKey(name: 'file_url') required String fileUrl,
-    @JsonKey(name: 'uploader_name') required String uploaderName,
+    @JsonKey(name: 'uploader_name') @Default('') String uploaderName,
     @JsonKey(name: 'created_at') DateTime? createdAt,
-    List<String>? batches,
+    @JsonKey(fromJson: _batchNames) List<String>? batches,
     List<dynamic>? years,
     @JsonKey(name: 'university_id') required String universityId,
     @JsonKey(name: 'department_id') required String departmentId,

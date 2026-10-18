@@ -1,9 +1,12 @@
 import 'package:material_ui/material_ui.dart';
+
 import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/search_outline.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/widgets/search_clear_suffix.dart';
+
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -24,7 +27,10 @@ class CustomHeaderLayout extends StatefulWidget {
   final bool showSearchBar;
 
   /// Puts the search field in a floating glass capsule at the bottom of the
-  /// sheet (above the keyboard when it opens) instead of at the top.
+  /// sheet (above the keyboard when it opens) instead of at the top. The
+  /// capsule floats over the body — content scrolls behind the glass,
+  /// iOS-style — so the body's list must end its padding with
+  /// [GlassSearchBar.listBottomPadding] to let the last item clear it.
   final bool searchAtBottom;
 
   /// Uses the glass capsule style for the search field even when it stays at
@@ -251,17 +257,29 @@ class _CustomHeaderLayoutState extends State<CustomHeaderLayout> {
                               ),
                             ),
 
-                          Expanded(child: body),
-
                           if (showSearchBar && widget.searchAtBottom)
-                            GlassSearchBar(
-                              controller: controller,
-                              hint: searchHint,
-                              trailing: searchTrailing,
-                              action: widget.searchAction,
-                              onChanged: onSearchChanged,
-                              onClear: onClear,
-                            ),
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(child: body),
+                                  Positioned(
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    child: GlassSearchBar(
+                                      controller: controller,
+                                      hint: searchHint,
+                                      trailing: searchTrailing,
+                                      action: widget.searchAction,
+                                      onChanged: onSearchChanged,
+                                      onClear: onClear,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Expanded(child: body),
                         ],
                       ),
                     ),

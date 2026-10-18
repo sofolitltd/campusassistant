@@ -18,6 +18,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/widgets/app_network_image.dart';
+import '/widgets/youtube_player_page.dart';
 
 class CourseVideos extends ConsumerStatefulWidget {
   const CourseVideos({
@@ -158,6 +159,13 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
             return const Center(child: Text('No videos found!'));
           }
 
+          final playlist = [
+            for (final r in resources)
+              if (YoutubePlayerController.convertUrlToId(r.fileUrl)
+                  case final id?)
+                YoutubePlaylistItem(videoId: id, title: r.title),
+          ];
+
           return ListView.separated(
             physics: const BouncingScrollPhysics(),
             itemCount: resources.length,
@@ -205,6 +213,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                           }),
                           queryParameters: {'title': title},
                         ).toString(),
+                        extra: playlist,
                       );
                     }
                   },

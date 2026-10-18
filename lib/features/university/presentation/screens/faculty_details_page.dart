@@ -10,6 +10,7 @@ import '/features/university/presentation/providers/faculty_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class FacultyDetailsPage extends ConsumerStatefulWidget {
   final String facultyId;
@@ -83,7 +84,12 @@ class _DepartmentsList extends StatelessWidget {
               .toList();
 
     return ListView(
-      padding: const EdgeInsets.all(Spacing.lg),
+      padding: EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.lg,
+        GlassSearchBar.listBottomPadding(context),
+      ),
       physics: const BouncingScrollPhysics(),
       children: [
         Text(

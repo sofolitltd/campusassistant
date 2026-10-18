@@ -9,6 +9,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '../providers/university_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class UniversityHallsPage extends ConsumerStatefulWidget {
   const UniversityHallsPage({super.key});
@@ -41,13 +42,17 @@ class _UniversityHallsPageState extends ConsumerState<UniversityHallsPage> {
               : halls.where((h) => h.toLowerCase().contains(q)).toList();
 
           return ListView(
-            padding: const EdgeInsets.all(Spacing.lg),
+            padding: EdgeInsets.fromLTRB(
+              Spacing.lg,
+              Spacing.lg,
+              Spacing.lg,
+              GlassSearchBar.listBottomPadding(context),
+            ),
             children: [
               Text(
                 'Halls (${filtered.length})',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: .bold),
               ),
               const SizedBox(height: Spacing.lg),
               if (filtered.isEmpty)

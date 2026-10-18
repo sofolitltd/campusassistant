@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '/core/theme/app_colors.dart';
@@ -33,6 +34,9 @@ class ShortcutItem {
 /// Each tile is a small icon-over-label card (about 80px tall). The strip's
 /// height is derived from the tile content and the user's text scale, never
 /// hard-coded, so large text can't overflow it.
+///
+/// While more tiles are hidden off either edge, a small arrow button sits on
+/// that side as a hint; tapping it scrolls roughly one screen that way.
 class CompactShortcutStrip extends StatefulWidget {
   const CompactShortcutStrip({
     super.key,
@@ -40,6 +44,7 @@ class CompactShortcutStrip extends StatefulWidget {
     this.maxRows = 1,
     this.horizontalInset = Spacing.lg,
     this.topPad = _defaultVPad,
+    this.showScrollArrow = true,
   });
 
   final List<ShortcutItem> items;
@@ -51,6 +56,9 @@ class CompactShortcutStrip extends StatefulWidget {
   /// Space above the first row; the space below is always the default.
   final double topPad;
 
+  /// Show the left/right "more this way" arrows when the strip overflows.
+  final bool showScrollArrow;
+
   static const double _defaultVPad = Spacing.xs;
 
   @override
@@ -59,6 +67,8 @@ class CompactShortcutStrip extends StatefulWidget {
 
 class _CompactShortcutStripState extends State<CompactShortcutStrip> {
   final _controller = ScrollController();
+  final _canScrollLeft = ValueNotifier<bool>(false);
+  final _canScrollRight = ValueNotifier<bool>(false);
 
   // Narrowest a tile may get; the real width is stretched from this so a
   // whole number of tiles exactly fills the available width.
@@ -75,7 +85,29 @@ class _CompactShortcutStripState extends State<CompactShortcutStrip> {
   @override
   void dispose() {
     _controller.dispose();
+    _canScrollLeft.dispose();
+    _canScrollRight.dispose();
     super.dispose();
+  }
+
+  bool _updateArrow(ScrollMetrics m) {
+    _canScrollLeft.value = m.extentBefore > 1;
+    _canScrollRight.value = m.extentAfter > 1;
+    return false;
+  }
+
+  /// [direction] is 1 for right, -1 for left.
+  void _scrollBy(int direction) {
+    if (!_controller.hasClients) return;
+    final pos = _controller.position;
+    _controller.animateTo(
+      (pos.pixels + direction * pos.viewportDimension * 0.8).clamp(
+        pos.minScrollExtent,
+        pos.maxScrollExtent,
+      ),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   double _tileHeight(double textScale) {
@@ -88,9 +120,9 @@ class _CompactShortcutStripState extends State<CompactShortcutStrip> {
   @override
   Widget build(BuildContext context) {
     final textScale =
-        MediaQuery.textScalerOf(
-          context,
-        ).scale(_labelSize).clamp(_labelSize, _labelSize * 1.5) /
+        MediaQuery.textScalerOf(context)
+            .scale(_labelSize)
+            .clamp(_labelSize, _labelSize * 1.5) /
         _labelSize;
 
     return LayoutBuilder(
@@ -111,38 +143,129 @@ class _CompactShortcutStripState extends State<CompactShortcutStrip> {
           // Labels scale with the user's text size, but only up to the same
           // cap the height above is computed with.
           child: MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: TextScaler.linear(textScale)),
-            child: MouseWheelHorizontalScroll(
-              controller: _controller,
-              child: GridView.builder(
-                controller: _controller,
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.fromLTRB(
-                  widget.horizontalInset,
-                  widget.topPad,
-                  widget.horizontalInset,
-                  _vPad,
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(textScale)),
+            child: Stack(
+              children: [
+                NotificationListener<ScrollMetricsNotification>(
+                  onNotification: (n) => _updateArrow(n.metrics),
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (n) => _updateArrow(n.metrics),
+                    child: _buildGrid(rows, tileWidth),
+                  ),
                 ),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: rows,
-                  mainAxisSpacing: _gap,
-                  crossAxisSpacing: _gap,
-                  mainAxisExtent: tileWidth,
-                ),
-                itemCount: widget.items.length,
-                itemBuilder: (context, i) => _ShortcutTile(
-                  item: widget.items[i],
-                  iconCircle: _iconCircle,
-                  labelSize: _labelSize,
-                  labelHeight: _labelHeight,
-                ),
-              ),
+                if (widget.showScrollArrow) ...[
+                  Positioned(
+                    left: Spacing.xs,
+                    top: widget.topPad,
+                    bottom: _vPad,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _canScrollLeft,
+                      builder: (context, visible, _) => _ScrollArrow(
+                        visible: visible,
+                        icon: LucideIcons.chevronLeft,
+                        label: 'Scroll left',
+                        onTap: () => _scrollBy(-1),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: Spacing.xs,
+                    top: widget.topPad,
+                    bottom: _vPad,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _canScrollRight,
+                      builder: (context, visible, _) => _ScrollArrow(
+                        visible: visible,
+                        icon: LucideIcons.chevronRight,
+                        label: 'Scroll right for more',
+                        onTap: () => _scrollBy(1),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildGrid(int rows, double tileWidth) {
+    return MouseWheelHorizontalScroll(
+      controller: _controller,
+      child: GridView.builder(
+        controller: _controller,
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.fromLTRB(
+          widget.horizontalInset,
+          widget.topPad,
+          widget.horizontalInset,
+          _vPad,
+        ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: rows,
+          mainAxisSpacing: _gap,
+          crossAxisSpacing: _gap,
+          mainAxisExtent: tileWidth,
+        ),
+        itemCount: widget.items.length,
+        itemBuilder: (context, i) => _ShortcutTile(
+          item: widget.items[i],
+          iconCircle: _iconCircle,
+          labelSize: _labelSize,
+          labelHeight: _labelHeight,
+        ),
+      ),
+    );
+  }
+}
+
+class _ScrollArrow extends StatelessWidget {
+  const _ScrollArrow({
+    required this.visible,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final bool visible;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Center(
+      child: IgnorePointer(
+        ignoring: !visible,
+        child: AnimatedOpacity(
+          opacity: visible ? 1 : 0,
+          duration: const Duration(milliseconds: 200),
+          child: Semantics(
+            button: true,
+            label: label,
+            child: Material(
+              color: colors.surface,
+              shape: CircleBorder(side: BorderSide(color: colors.border)),
+              elevation: 2,
+              shadowColor: colors.shadow,
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: onTap,
+                child: SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: Icon(icon, size: 18, color: colors.primary),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

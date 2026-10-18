@@ -24,24 +24,47 @@ class TransactionHistoryPage extends ConsumerWidget {
       title: 'Transaction History',
       showSearchBar: false,
       body: transactionsAsync.when(
-        data: (transactions) => RefreshIndicator(
-          onRefresh: () async => ref.invalidate(transactionHistoryProvider),
-          child: transactions.isEmpty
-              ? _buildEmptyState(context)
-              : ListView.separated(
-                  padding: EdgeInsets.fromLTRB(
-                    Spacing.lg,
-                    Spacing.lg,
-                    Spacing.lg,
-                    Spacing.lg + MediaQuery.paddingOf(context).bottom,
+        data: (state) {
+          final transactions = state.transactions;
+          return RefreshIndicator(
+            onRefresh: () async => ref.invalidate(transactionHistoryProvider),
+            child: transactions.isEmpty
+                ? _buildEmptyState(context)
+                : ListView.separated(
+                    padding: EdgeInsets.fromLTRB(
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.lg + MediaQuery.paddingOf(context).bottom,
+                    ),
+                    // +1 for the footer: a loader while more pages remain,
+                    // else the end-of-list count.
+                    itemCount: transactions.length + 1,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: Spacing.sm + 2),
+                    itemBuilder: (context, index) {
+                      if (index >= transactions.length - 5 &&
+                          state.hasMore &&
+                          !state.isLoadingMore) {
+                        Future.microtask(
+                          () => ref
+                              .read(transactionHistoryProvider.notifier)
+                              .loadNextPage(),
+                        );
+                      }
+                      if (index < transactions.length) {
+                        return _TransactionTile(
+                          transaction: transactions[index],
+                        );
+                      }
+                      return _ListFooter(
+                        loading: state.hasMore,
+                        count: transactions.length,
+                      );
+                    },
                   ),
-                  itemCount: transactions.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: Spacing.sm + 2),
-                  itemBuilder: (context, index) =>
-                      _TransactionTile(transaction: transactions[index]),
-                ),
-        ),
+          );
+        },
         loading: () => const Center(child: CupertinoActivityIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
@@ -84,6 +107,38 @@ class TransactionHistoryPage extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ListFooter extends StatelessWidget {
+  final bool loading;
+  final int count;
+
+  const _ListFooter({required this.loading, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextStyle(
+      fontSize: FontSizeToken.sm,
+      color: context.colors.textMuted,
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
+      child: loading
+          ? Row(
+              mainAxisAlignment: .center,
+              children: [
+                const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CupertinoActivityIndicator(),
+                ),
+                const SizedBox(width: Spacing.sm),
+                Text('Loading more transactions...', style: style),
+              ],
+            )
+          : Center(child: Text('$count loaded', style: style)),
     );
   }
 }
@@ -144,9 +199,8 @@ class _TransactionTile extends StatelessWidget {
                 ),
                 const SizedBox(height: Spacing.xxs),
                 Text(
-                  DateFormat(
-                    'MMM dd, yyyy · hh:mm a',
-                  ).format(transaction.createdAt),
+                  DateFormat('MMM dd, yyyy · hh:mm a')
+                      .format(transaction.createdAt),
                   style: TextStyle(
                     fontSize: FontSizeToken.sm,
                     color: colors.textMuted,

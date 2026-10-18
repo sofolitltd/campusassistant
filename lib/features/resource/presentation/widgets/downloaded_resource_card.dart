@@ -14,6 +14,7 @@ import '../../../../core/theme/tokens/app_radius.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../pdf_tabs/presentation/open_pdf_tab.dart';
 import '../../domain/entities/downloaded_file.dart';
+import '../../data/models/resource_model.dart';
 import '../providers/downloads_provider.dart';
 import '../../../auth/presentation/providers/user_profile_provider.dart';
 import '../../../bookmark/domain/entities/bookmark.dart';
@@ -550,22 +551,40 @@ class DownloadedResourceCard extends ConsumerWidget {
         minChildSize: 0.4,
         maxChildSize: 0.9,
         expand: false,
-        builder: (_, scrollController) => ResourceInfoSheet(
-          resource: downloadedFile.resource,
-          scrollController: scrollController,
-          isDownloaded: true,
-          onDownload: () => _openFile(context, ref),
-          onSaveToDownloads: _saveToPublicDownloads,
-          onShare: () => SharePlus.instance.share(
-            ShareParams(
-              files: [XFile(downloadedFile.localPath)],
-              text: downloadedFile.resource.title,
-            ),
-          ),
-          onDeleteLocally: () => _deleteFile(context, ref),
-          isBookmarked: isBookmarked,
-          onBookmarkToggle: () =>
-              _handleBookmarkToggle(context, ref, isBookmarked),
+        // The cached copy is a snapshot from download time, so show the live
+        // resource (current stats, uploader) when online and fall back to the
+        // snapshot offline.
+        builder: (_, scrollController) => Consumer(
+          builder: (_, sheetRef, _) {
+            final fresh = sheetRef
+                .watch(
+                  entityDetailProvider((
+                    type: 'resource',
+                    id: downloadedFile.resource.id,
+                  )),
+                )
+                .value;
+            final resource = fresh is Map<String, dynamic>
+                ? ResourceModel.fromJson(fresh).toEntity()
+                : downloadedFile.resource;
+            return ResourceInfoSheet(
+              resource: resource,
+              scrollController: scrollController,
+              isDownloaded: true,
+              onDownload: () => _openFile(context, ref),
+              onSaveToDownloads: _saveToPublicDownloads,
+              onShare: () => SharePlus.instance.share(
+                ShareParams(
+                  files: [XFile(downloadedFile.localPath)],
+                  text: downloadedFile.resource.title,
+                ),
+              ),
+              onDeleteLocally: () => _deleteFile(context, ref),
+              isBookmarked: isBookmarked,
+              onBookmarkToggle: () =>
+                  _handleBookmarkToggle(context, ref, isBookmarked),
+            );
+          },
         ),
       ),
     );

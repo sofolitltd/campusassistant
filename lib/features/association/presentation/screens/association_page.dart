@@ -15,6 +15,7 @@ import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/app_network_image.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class AssociationsPage extends ConsumerStatefulWidget {
   const AssociationsPage({super.key});
@@ -160,11 +161,11 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
                       ),
                     )
                   : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         Spacing.lg,
                         0,
                         Spacing.lg,
-                        100,
+                        GlassSearchBar.listBottomPadding(context),
                       ),
                       itemCount: associations.length,
                       separatorBuilder: (_, _) =>

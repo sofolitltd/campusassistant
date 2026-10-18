@@ -8,6 +8,7 @@ import '/core/theme/app_colors.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import 'student_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class BatchStudentsPage extends ConsumerStatefulWidget {
   const BatchStudentsPage({super.key, required this.batch});
@@ -63,20 +64,19 @@ class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
                 ),
                 child: Text(
                   'Students (${filteredStudents.length})',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: .bold),
                 ),
               ),
               Expanded(
                 child: filteredStudents.isEmpty
                     ? const Center(child: Text('No students found!'))
                     : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(
+                        padding: EdgeInsets.fromLTRB(
                           Spacing.lg,
                           Spacing.sm,
                           Spacing.lg,
-                          Spacing.lg,
+                          GlassSearchBar.listBottomPadding(context),
                         ),
                         itemCount: filteredStudents.length,
                         separatorBuilder: (_, _) =>

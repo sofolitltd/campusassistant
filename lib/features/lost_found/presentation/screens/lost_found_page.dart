@@ -13,6 +13,7 @@ import '../../data/models/lost_found_item.dart';
 import '../providers/lost_found_provider.dart';
 import '../widgets/lost_found_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class LostFoundPage extends ConsumerStatefulWidget {
   const LostFoundPage({super.key});
@@ -175,7 +176,14 @@ class _ItemsList extends StatelessWidget {
       );
     }
     return ListView.separated(
-      padding: const EdgeInsets.all(Spacing.lg),
+      // Extra room so the last card also clears the "Post item" button,
+      // which sits just above the search capsule.
+      padding: EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.lg,
+        GlassSearchBar.listBottomPadding(context) + 64,
+      ),
       itemCount: items.length,
       separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
       itemBuilder: (context, index) {

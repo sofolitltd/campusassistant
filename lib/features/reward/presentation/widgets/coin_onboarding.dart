@@ -197,6 +197,9 @@ void showCoinSpentFeedback(
     messenger.showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 6),
+        // A SnackBar with an action persists by default; let it time out so
+        // it doesn't follow the user across pages.
+        persist: false,
         content: Text(
           '−$spent coins · only $balance left. When coins run out, '
           'downloads show a short ad first.',

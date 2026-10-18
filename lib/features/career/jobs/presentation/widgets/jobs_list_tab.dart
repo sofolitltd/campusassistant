@@ -1,7 +1,9 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:material_ui/material_ui.dart';
+
 import '/core/widgets/app_choice_chip.dart';
 import '/core/widgets/glass_search_bar.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -87,9 +89,8 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                     const SizedBox(height: Spacing.lg),
                     Text(
                       'Status',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.labelLarge
+                          ?.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.sm),
                     Wrap(
@@ -115,9 +116,8 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                     const SizedBox(height: Spacing.xl),
                     Text(
                       'Deadline',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.labelLarge
+                          ?.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.sm),
                     Wrap(
@@ -184,9 +184,11 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
     final jobsAsync = ref.watch(myCareerJobsProvider);
     final activeCount = _activeFilterCount;
 
-    return Column(
+    // The search capsule floats over the list (content scrolls behind the
+    // glass); the list's bottom padding lets its last item clear it.
+    return Stack(
       children: [
-        Expanded(
+        Positioned.fill(
           child: jobsAsync.when(
             data: (jobs) {
               final query = _search.toLowerCase();
@@ -219,7 +221,9 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80),
+                padding: EdgeInsets.only(
+                  bottom: GlassSearchBar.listBottomPadding(context),
+                ),
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
                   final job = filtered[index];
@@ -237,14 +241,19 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
             error: (err, _) => Center(child: Text('Failed to load jobs: $err')),
           ),
         ),
-        GlassSearchDock(
-          hint: 'Search jobs...',
-          onChanged: (value) => setState(() => _search = value.trim()),
-          action: GlassCircleButton(
-            icon: LucideIcons.slidersHorizontal,
-            tooltip: 'Filter',
-            active: activeCount > 0,
-            onTap: _openFilterSheet,
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: GlassSearchDock(
+            hint: 'Search jobs...',
+            onChanged: (value) => setState(() => _search = value.trim()),
+            action: GlassCircleButton(
+              icon: LucideIcons.slidersHorizontal,
+              tooltip: 'Filter',
+              active: activeCount > 0,
+              onTap: _openFilterSheet,
+            ),
           ),
         ),
       ],

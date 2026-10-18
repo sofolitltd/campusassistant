@@ -1099,7 +1099,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final videoId = state.pathParameters['videoId']!;
           final title = state.uri.queryParameters['title'] ?? 'Video Player';
-          return YoutubePlayerPage(videoId: videoId, title: title);
+          // Optional "Up next" list; lost if the router rebuilds, which only
+          // hides the list.
+          final playlist = state.extra is List<YoutubePlaylistItem>
+              ? state.extra as List<YoutubePlaylistItem>
+              : const <YoutubePlaylistItem>[];
+          return YoutubePlayerPage(
+            videoId: videoId,
+            title: title,
+            playlist: playlist,
+          );
         },
       ),
       GoRoute(

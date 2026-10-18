@@ -26,7 +26,14 @@ Future<void> cacheDownloadedResourceMetadata({
   required Resource resource,
 }) async {
   try {
-    final model = ResourceModel.fromEntity(resource);
+    // fromEntity drops the creator (it's only used to build API payloads),
+    // so keep the uploader's name here or the downloads page falls back to
+    // the legacy metadata uploader string.
+    final model = ResourceModel.fromEntity(resource).copyWith(
+      creator: resource.creator == null
+          ? null
+          : {'first_name': resource.creator},
+    );
     final shortId = resource.id.length > 5
         ? resource.id.substring(0, 5)
         : resource.id;

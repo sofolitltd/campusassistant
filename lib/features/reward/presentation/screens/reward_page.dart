@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
+
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/core/providers/perks_provider.dart';
@@ -15,6 +17,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '../providers/reward_providers.dart';
 import '../widgets/daily_reward_banner.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 
 class RewardPage extends ConsumerStatefulWidget {
   const RewardPage({super.key});
@@ -24,7 +27,6 @@ class RewardPage extends ConsumerStatefulWidget {
 }
 
 class _RewardPageState extends ConsumerState<RewardPage> {
-  int _offset = 0;
   bool _isClaiming = false;
 
   @override
@@ -58,7 +60,6 @@ class _RewardPageState extends ConsumerState<RewardPage> {
           SnackBar(content: Text('Could not add reward: ${failure.message}')),
         ),
         (_) {
-          _offset = 0;
           ref.invalidate(rewardBalanceProvider);
           ref.invalidate(rewardTransactionsProvider);
           messenger.showSnackBar(
@@ -74,106 +75,144 @@ class _RewardPageState extends ConsumerState<RewardPage> {
   @override
   Widget build(BuildContext context) {
     final balanceAsync = ref.watch(rewardBalanceProvider);
-    final transactionsAsync = ref.watch(rewardTransactionsProvider(_offset));
+    final transactionsAsync = ref.watch(rewardTransactionsProvider);
 
     return CustomHeaderLayout(
       title: 'Rewards',
       showSearchBar: false,
-      body: ListView(
-        padding: const EdgeInsets.all(Spacing.lg),
-        children: [
-          balanceAsync.when(
-            data: (balance) => _BalanceCard(balance: balance),
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(Spacing.xxxl),
-                child: CircularProgressIndicator(),
+      // Infinite scroll: fetch the next page of history as the list nears its
+      // end, the same way the library list does.
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (n) {
+          if (n.metrics.extentAfter < 400) {
+            ref.read(rewardTransactionsProvider.notifier).loadNextPage();
+          }
+          return false;
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(Spacing.lg),
+          children: [
+            balanceAsync.when(
+              data: (balance) => _BalanceCard(balance: balance),
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(Spacing.xxxl),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (err, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.xxxl),
+                  child: Text('Failed to load balance: $err'),
+                ),
               ),
             ),
-            error: (err, _) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(Spacing.xxxl),
-                child: Text('Failed to load balance: $err'),
-              ),
-            ),
-          ),
-          const SizedBox(height: Spacing.lg),
-          const DailyRewardBanner(padded: false),
-          if (!kIsWeb && !ref.watch(isAdFreeProvider)) ...[
             const SizedBox(height: Spacing.lg),
-            _WatchAdCard(isLoading: _isClaiming, onPressed: _watchAdForReward),
-          ],
-          if (!ref.watch(isProUserProvider)) ...[
-            const SizedBox(height: Spacing.md),
-            _GoProCard(
-              onPressed: () => context.pushNamed(AppRoute.subscription.name),
+            const DailyRewardBanner(padded: false),
+            if (!kIsWeb && !ref.watch(isAdFreeProvider)) ...[
+              const SizedBox(height: Spacing.lg),
+              _WatchAdCard(
+                isLoading: _isClaiming,
+                onPressed: _watchAdForReward,
+              ),
+            ],
+            if (!ref.watch(isProUserProvider)) ...[
+              const SizedBox(height: Spacing.md),
+              _GoProCard(
+                onPressed: () => context.pushNamed(AppRoute.subscription.name),
+              ),
+            ],
+            const SizedBox(height: Spacing.xxl),
+            Text(
+              'Transaction History',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: .w600),
             ),
-          ],
-          const SizedBox(height: Spacing.xxl),
-          Text(
-            'Transaction History',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: .w600),
-          ),
-          const SizedBox(height: Spacing.md),
-          transactionsAsync.when(
-            data: (result) {
-              if (result.data.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Spacing.xxxl),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          LucideIcons.receipt,
-                          size: 48,
-                          color: context.colors.textSubtle,
-                        ),
-                        const SizedBox(height: Spacing.sm),
-                        Text(
-                          'No transactions yet',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: context.colors.textSubtle),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-              return Column(
-                children: [
-                  ...result.data.map(
-                    (txn) => _TransactionTile(transaction: txn),
-                  ),
-                  if (result.data.length >= 20)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: Spacing.lg),
-                      child: TextButton(
-                        onPressed: () {
-                          setState(() => _offset += 20);
-                        },
-                        child: const Text('Load More'),
+            const SizedBox(height: Spacing.md),
+            transactionsAsync.when(
+              data: (state) {
+                if (state.transactions.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: Spacing.xxxl),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            LucideIcons.receipt,
+                            size: 48,
+                            color: context.colors.textSubtle,
+                          ),
+                          const SizedBox(height: Spacing.sm),
+                          Text(
+                            'No transactions yet',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: context.colors.textSubtle),
+                          ),
+                        ],
                       ),
                     ),
-                ],
-              );
-            },
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(Spacing.xxxl),
-                child: CircularProgressIndicator(),
+                  );
+                }
+                return Column(
+                  children: [
+                    ...state.transactions.map(
+                      (txn) => _TransactionTile(transaction: txn),
+                    ),
+                    _HistoryFooter(
+                      loading: state.hasMore,
+                      count: state.transactions.length,
+                    ),
+                  ],
+                );
+              },
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(Spacing.xxxl),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (err, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.xxxl),
+                  child: Text('Failed to load transactions: $err'),
+                ),
               ),
             ),
-            error: (err, _) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(Spacing.xxxl),
-                child: Text('Failed to load transactions: $err'),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _HistoryFooter extends StatelessWidget {
+  final bool loading;
+  final int count;
+
+  const _HistoryFooter({required this.loading, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextStyle(
+      fontSize: FontSizeToken.sm,
+      color: context.colors.textMuted,
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+      child: loading
+          ? Row(
+              mainAxisAlignment: .center,
+              children: [
+                const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CupertinoActivityIndicator(),
+                ),
+                const SizedBox(width: Spacing.sm),
+                Text('Loading more transactions...', style: style),
+              ],
+            )
+          : Center(child: Text('$count loaded', style: style)),
     );
   }
 }
@@ -330,15 +369,13 @@ class _WatchAdCard extends StatelessWidget {
             children: [
               Text(
                 'Watch a video, earn 1 coin',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(fontWeight: .w600),
               ),
               Text(
                 'Up to 5 videos a day. Coins skip the ad on downloads.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colors.textSubtle,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.colors.textSubtle),
               ),
             ],
           ),
@@ -393,15 +430,13 @@ class _GoProCard extends StatelessWidget {
             children: [
               Text(
                 'Skip the ads, go Pro',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(fontWeight: .w600),
               ),
               Text(
                 'Unlimited ad-free downloads, no coins needed.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colors.textSubtle,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.colors.textSubtle),
               ),
             ],
           ),
@@ -511,18 +546,16 @@ class _TransactionTile extends StatelessWidget {
                 children: [
                   Text(
                     transaction.description ?? '',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(fontWeight: .w500),
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(fontWeight: .w500),
                     maxLines: 1,
                     overflow: .ellipsis,
                   ),
                   if (dateStr.isNotEmpty)
                     Text(
                       dateStr,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.colors.textSubtle,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: context.colors.textSubtle),
                     ),
                 ],
               ),

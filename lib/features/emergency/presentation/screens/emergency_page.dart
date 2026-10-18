@@ -7,6 +7,7 @@ import '/core/widgets/section_tab_bar.dart';
 import '/features/emergency/presentation/providers/emergency_provider.dart';
 import '/features/emergency/presentation/widgets/contact_card.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class EmergencyPage extends ConsumerStatefulWidget {
   const EmergencyPage({super.key});
@@ -131,11 +132,11 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
         return ListView.separated(
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
             Spacing.lg,
             Spacing.sm,
             Spacing.lg,
-            100,
+            GlassSearchBar.listBottomPadding(context),
           ),
           itemCount: state.contacts.length + (state.hasMore ? 1 : 0),
           itemBuilder: (context, index) {

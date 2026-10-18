@@ -27,6 +27,22 @@ class GlassSearchBar extends StatelessWidget {
   /// Sits at the top of a page: no safe-area inset, and the gap is below.
   final bool atTop;
 
+  /// Total height of the bottom-docked bar (capsule, its gaps and the
+  /// safe-area inset). Reads the real system inset, so it gives the same
+  /// answer from any context on the page.
+  static double dockHeight(BuildContext context) {
+    final safe = MediaQuery.paddingOf(context).bottom;
+    return Spacing.sm +
+        44 +
+        Spacing.sm +
+        (safe > Spacing.sm ? safe : Spacing.sm);
+  }
+
+  /// Bottom padding for a list that scrolls behind the floating bar: the
+  /// bar's height plus a small gap, so the last item stops just above it.
+  static double listBottomPadding(BuildContext context) =>
+      dockHeight(context) + Spacing.sm;
+
   final TextEditingController controller;
   final String hint;
   final Widget? trailing;

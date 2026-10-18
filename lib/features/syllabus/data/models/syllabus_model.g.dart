@@ -14,13 +14,11 @@ _SyllabusModel _$SyllabusModelFromJson(Map<String, dynamic> json) =>
       courseTitle: json['course_title'] as String?,
       description: json['description'] as String,
       fileUrl: json['file_url'] as String,
-      uploaderName: json['uploader_name'] as String,
+      uploaderName: json['uploader_name'] as String? ?? '',
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
-      batches: (json['batches'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      batches: _batchNames(json['batches'] as List?),
       years: json['years'] as List<dynamic>?,
       universityId: json['university_id'] as String,
       departmentId: json['department_id'] as String,

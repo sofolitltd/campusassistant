@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SyllabusModel {
 
- String get id; String get title;@JsonKey(name: 'course_code') String get courseCode;@JsonKey(name: 'course_title') String? get courseTitle; String get description;@JsonKey(name: 'file_url') String get fileUrl;@JsonKey(name: 'uploader_name') String get uploaderName;@JsonKey(name: 'created_at') DateTime? get createdAt; List<String>? get batches; List<dynamic>? get years;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;
+ String get id; String get title;@JsonKey(name: 'course_code') String get courseCode;@JsonKey(name: 'course_title') String? get courseTitle; String get description;@JsonKey(name: 'file_url') String get fileUrl;@JsonKey(name: 'uploader_name') String get uploaderName;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(fromJson: _batchNames) List<String>? get batches; List<dynamic>? get years;@JsonKey(name: 'university_id') String get universityId;@JsonKey(name: 'department_id') String get departmentId;
 /// Create a copy of SyllabusModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $SyllabusModelCopyWith<$Res>  {
   factory $SyllabusModelCopyWith(SyllabusModel value, $Res Function(SyllabusModel) _then) = _$SyllabusModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String title,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String? courseTitle, String description,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'created_at') DateTime? createdAt, List<String>? batches, List<dynamic>? years,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId
+ String id, String title,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String? courseTitle, String description,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(fromJson: _batchNames) List<String>? batches, List<dynamic>? years,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId
 });
 
 
@@ -170,7 +170,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String? courseTitle,  String description, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String? courseTitle,  String description, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(fromJson: _batchNames)  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SyllabusModel() when $default != null:
 return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.description,_that.fileUrl,_that.uploaderName,_that.createdAt,_that.batches,_that.years,_that.universityId,_that.departmentId);case _:
@@ -191,7 +191,7 @@ return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.de
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String? courseTitle,  String description, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String? courseTitle,  String description, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(fromJson: _batchNames)  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId)  $default,) {final _that = this;
 switch (_that) {
 case _SyllabusModel():
 return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.description,_that.fileUrl,_that.uploaderName,_that.createdAt,_that.batches,_that.years,_that.universityId,_that.departmentId);case _:
@@ -211,7 +211,7 @@ return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.de
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String? courseTitle,  String description, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title, @JsonKey(name: 'course_code')  String courseCode, @JsonKey(name: 'course_title')  String? courseTitle,  String description, @JsonKey(name: 'file_url')  String fileUrl, @JsonKey(name: 'uploader_name')  String uploaderName, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(fromJson: _batchNames)  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id')  String universityId, @JsonKey(name: 'department_id')  String departmentId)?  $default,) {final _that = this;
 switch (_that) {
 case _SyllabusModel() when $default != null:
 return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.description,_that.fileUrl,_that.uploaderName,_that.createdAt,_that.batches,_that.years,_that.universityId,_that.departmentId);case _:
@@ -226,7 +226,7 @@ return $default(_that.id,_that.title,_that.courseCode,_that.courseTitle,_that.de
 @JsonSerializable()
 
 class _SyllabusModel extends SyllabusModel {
-  const _SyllabusModel({required this.id, required this.title, @JsonKey(name: 'course_code') required this.courseCode, @JsonKey(name: 'course_title') this.courseTitle, required this.description, @JsonKey(name: 'file_url') required this.fileUrl, @JsonKey(name: 'uploader_name') required this.uploaderName, @JsonKey(name: 'created_at') this.createdAt,  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId}): _batches = batches,_years = years,super._();
+  const _SyllabusModel({required this.id, required this.title, @JsonKey(name: 'course_code') required this.courseCode, @JsonKey(name: 'course_title') this.courseTitle, required this.description, @JsonKey(name: 'file_url') required this.fileUrl, @JsonKey(name: 'uploader_name') this.uploaderName = '', @JsonKey(name: 'created_at') this.createdAt, @JsonKey(fromJson: _batchNames)  List<String>? batches,  List<dynamic>? years, @JsonKey(name: 'university_id') required this.universityId, @JsonKey(name: 'department_id') required this.departmentId}): _batches = batches,_years = years,super._();
   factory _SyllabusModel.fromJson(Map<String, dynamic> json) => _$SyllabusModelFromJson(json);
 
 @override final  String id;
@@ -238,7 +238,7 @@ class _SyllabusModel extends SyllabusModel {
 @override@JsonKey(name: 'uploader_name') final  String uploaderName;
 @override@JsonKey(name: 'created_at') final  DateTime? createdAt;
  final  List<String>? _batches;
-@override List<String>? get batches {
+@override@JsonKey(fromJson: _batchNames) List<String>? get batches {
   final value = _batches;
   if (value == null) return null;
   if (_batches is EqualUnmodifiableListView) return _batches;
@@ -293,7 +293,7 @@ abstract mixin class _$SyllabusModelCopyWith<$Res> implements $SyllabusModelCopy
   factory _$SyllabusModelCopyWith(_SyllabusModel value, $Res Function(_SyllabusModel) _then) = __$SyllabusModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String? courseTitle, String description,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'created_at') DateTime? createdAt, List<String>? batches, List<dynamic>? years,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId
+ String id, String title,@JsonKey(name: 'course_code') String courseCode,@JsonKey(name: 'course_title') String? courseTitle, String description,@JsonKey(name: 'file_url') String fileUrl,@JsonKey(name: 'uploader_name') String uploaderName,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(fromJson: _batchNames) List<String>? batches, List<dynamic>? years,@JsonKey(name: 'university_id') String universityId,@JsonKey(name: 'department_id') String departmentId
 });
 
 

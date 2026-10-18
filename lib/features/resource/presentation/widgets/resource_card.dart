@@ -1136,6 +1136,10 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           resource: widget.resource,
         );
         ref.read(resourceRepositoryProvider).recordDownload(widget.resource.id);
+        // The downloads page and the study page's badge both list files on
+        // disk, so refresh them now the new file is there.
+        ref.invalidate(downloadedFilesProvider);
+        ref.invalidate(downloadCountProvider);
       }
       return true;
     } catch (e) {
@@ -1233,6 +1237,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           });
         }
         ref.invalidate(downloadCountProvider);
+        ref.invalidate(downloadedFilesProvider);
         Fluttertoast.showToast(msg: 'File deleted locally');
       }
     } catch (e) {

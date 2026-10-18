@@ -14,6 +14,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class UniversityDepartmentsPage extends ConsumerStatefulWidget {
   const UniversityDepartmentsPage({super.key});
@@ -165,14 +166,18 @@ class _DepartmentsList extends StatelessWidget {
               .toList();
 
     return ListView(
-      padding: const EdgeInsets.all(Spacing.lg),
+      padding: EdgeInsets.fromLTRB(
+        Spacing.lg,
+        Spacing.lg,
+        Spacing.lg,
+        GlassSearchBar.listBottomPadding(context),
+      ),
       physics: const BouncingScrollPhysics(),
       children: [
         Text(
           'Departments (${filtered.length})',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: .bold),
         ),
         const SizedBox(height: Spacing.lg),
         if (filtered.isEmpty)

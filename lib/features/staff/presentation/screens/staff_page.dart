@@ -8,6 +8,7 @@ import '/features/staff/presentation/providers/staff_provider.dart';
 import 'staff_card.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class StaffPage extends ConsumerStatefulWidget {
   const StaffPage({super.key});
@@ -71,11 +72,11 @@ class _StaffPageState extends ConsumerState<StaffPage> {
 
           return ListView.builder(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               Spacing.lg,
               Spacing.lg,
               Spacing.lg,
-              Spacing.sm,
+              GlassSearchBar.listBottomPadding(context),
             ),
             itemCount: filteredStaff.length,
             itemBuilder: (context, index) =>

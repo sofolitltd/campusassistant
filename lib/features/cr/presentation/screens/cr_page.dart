@@ -11,6 +11,7 @@ import '../providers/cr_provider.dart';
 import 'cr_card.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class CrPage extends ConsumerStatefulWidget {
   const CrPage({super.key});
@@ -152,8 +153,7 @@ class _CrList extends StatelessWidget {
         horizontal: MediaQuery.of(context).size.width > 800
             ? MediaQuery.of(context).size.width * .2
             : 16,
-        vertical: 16,
-      ),
+      ).copyWith(top: 16, bottom: GlassSearchBar.listBottomPadding(context)),
       itemCount: batches.length,
       itemBuilder: (context, index) {
         final batch = batches[index];
@@ -164,10 +164,8 @@ class _CrList extends StatelessWidget {
           children: [
             Text(
               batch,
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontWeight: .bold,
-                fontSize: FontSizeToken.xl,
-              ),
+              style: Theme.of(context).textTheme.titleLarge!
+                  .copyWith(fontWeight: .bold, fontSize: FontSizeToken.xl),
             ),
             const SizedBox(height: Spacing.md),
             ListView.separated(

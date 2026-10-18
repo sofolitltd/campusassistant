@@ -180,10 +180,13 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
           ),
         ],
       ),
-      floatingActionButton: _buildFAB(context, ref, resolvedBatch, params),
+      // "Add resource" FAB for admins/moderators/CRs — hidden for now, to be
+      // reworked in the next update.
+      // floatingActionButton: _buildFAB(context, ref, resolvedBatch, params),
     );
   }
 
+  // ignore: unused_element
   Widget? _buildFAB(
     BuildContext context,
     WidgetRef ref,

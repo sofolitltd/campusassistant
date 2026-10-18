@@ -73,9 +73,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                 children: [
                   Text(
                     'Blood group',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: Spacing.md),
                   Wrap(
@@ -169,7 +168,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
                           16,
                           0,
                           16,
-                          totalPages > 1 ? 0 : 16,
+                          GlassSearchBar.listBottomPadding(context),
                         ),
                         itemCount: totalPages > 1
                             ? state.students.length + 1
@@ -238,9 +237,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                 // Name — always shown
                 Text(
                   p.name,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: .bold),
+                  style: Theme.of(context).textTheme.titleSmall
+                      ?.copyWith(fontWeight: .bold),
                 ),
                 const SizedBox(height: Spacing.xs),
 
@@ -287,9 +285,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                     const SizedBox(height: Spacing.xxs),
                     Text(
                       p.batchName!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.colors.textMuted,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: context.colors.textMuted),
                     ),
                   ],
                 ],
@@ -317,9 +314,8 @@ class _BloodBankState extends ConsumerState<BloodBank>
                       p.departmentName!,
                       maxLines: 1,
                       overflow: .ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: context.colors.textMuted,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: context.colors.textMuted),
                     ),
                   ],
                 ],

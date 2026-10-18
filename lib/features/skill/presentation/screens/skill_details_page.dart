@@ -15,9 +15,10 @@ import '../providers/skill_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/custom_header_layout.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import '/core/theme/tokens/app_layout.dart';
 import '/core/widgets/app_network_image.dart';
+import '/widgets/youtube_player_page.dart';
 
 class SkillDetailsPage extends ConsumerWidget {
   final Skill? skill;
@@ -97,97 +98,128 @@ class SkillDetailsPage extends ConsumerWidget {
   }
 
   Widget _buildContent(BuildContext context, Skill skill) {
-    return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 220,
-                pinned: true,
-                // White on purpose: sits over the skill's cover image in both themes.
-                iconTheme: const IconThemeData(color: Colors.white),
-                flexibleSpace: FlexibleSpaceBar(
-                  background: skill.thumbnailUrl.isNotEmpty
-                      ? AppNetworkImage(
-                          ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
-                          fit: .cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(color: context.colors.borderStrong),
-                        )
-                      : Container(color: context.colors.borderStrong),
+    // The standard teal header, not the cover image: a header built on an
+    // arbitrary picture made the back button and title hard to read whenever
+    // the image was light or busy. The cover is shown as a card instead.
+    final playlist = [
+      for (final v in skill.videos)
+        if (YoutubePlayerController.convertUrlToId(v.youtubeUrl) case final id?)
+          YoutubePlaylistItem(videoId: id, title: v.title),
+    ];
+
+    return CustomHeaderLayout(
+      title: 'Skill Up',
+      showSearchBar: false,
+      body: CustomScrollView(
+        slivers: [
+          if (skill.thumbnailUrl.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.lg,
+                  Spacing.lg,
+                  Spacing.lg,
+                  0,
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(Spacing.lg),
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Text(
-                        skill.title,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: .bold),
-                      ),
-                      if (skill.description.isNotEmpty) ...[
-                        const SizedBox(height: Spacing.sm),
-                        Text(
-                          skill.description,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: context.colors.textMuted,
-                                height: 1.4,
-                              ),
+                // Hairline outline drawn over the image, so a white or pale
+                // cover still reads as a card against the page.
+                child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                  ),
+                  foregroundDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(RadiusToken.lg),
+                    border: Border.all(color: context.colors.border),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: AppNetworkImage(
+                      ApiEndpoints.resolveImageUrl(skill.thumbnailUrl),
+                      fit: .cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: context.colors.surfaceAlt,
+                        child: Icon(
+                          LucideIcons.image,
+                          color: context.colors.textSubtle,
                         ),
-                      ],
-                      const SizedBox(height: Spacing.sm),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.playCircle,
-                            size: 14,
-                            color: context.colors.textSubtle,
-                          ),
-                          const SizedBox(width: Spacing.xs),
-                          Text(
-                            '${skill.videos.length} videos',
-                            style: TextStyle(
-                              fontSize: FontSizeToken.sm,
-                              color: context.colors.textSubtle,
-                              fontWeight: .w600,
-                            ),
-                          ),
-                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              if (skill.videos.isEmpty)
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: Spacing.xxxxl),
-                    child: Center(child: Text('No videos in this skill yet.')),
-                  ),
-                )
-              else
-                SliverList.separated(
-                  itemCount: skill.videos.length,
-                  separatorBuilder: (context, i) =>
-                      const SizedBox(height: Spacing.md),
-                  itemBuilder: (context, i) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
-                    child: _SkillVideoRow(
-                      video: skill.videos[i],
-                      number: i + 1,
                     ),
                   ),
                 ),
-              const SliverToBoxAdapter(child: SizedBox(height: Spacing.xxl)),
-            ],
+              ),
+            ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(Spacing.lg),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    skill.title,
+                    style: Theme.of(context).textTheme.headlineSmall
+                        ?.copyWith(fontWeight: .bold),
+                  ),
+                  if (skill.description.isNotEmpty) ...[
+                    const SizedBox(height: Spacing.sm),
+                    Text(
+                      skill.description,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: context.colors.textMuted,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: Spacing.sm),
+                  Row(
+                    children: [
+                      Icon(
+                        LucideIcons.playCircle,
+                        size: 14,
+                        color: context.colors.textSubtle,
+                      ),
+                      const SizedBox(width: Spacing.xs),
+                      Text(
+                        '${skill.videos.length} videos',
+                        style: TextStyle(
+                          fontSize: FontSizeToken.sm,
+                          color: context.colors.textSubtle,
+                          fontWeight: .w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+          if (skill.videos.isEmpty)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: Spacing.xxxxl),
+                child: Center(child: Text('No videos in this skill yet.')),
+              ),
+            )
+          else
+            SliverList.separated(
+              itemCount: skill.videos.length,
+              separatorBuilder: (context, i) =>
+                  const SizedBox(height: Spacing.md),
+              itemBuilder: (context, i) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                child: _SkillVideoRow(
+                  video: skill.videos[i],
+                  number: i + 1,
+                  playlist: playlist,
+                ),
+              ),
+            ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: Spacing.xxl + MediaQuery.paddingOf(context).bottom,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -196,8 +228,13 @@ class SkillDetailsPage extends ConsumerWidget {
 class _SkillVideoRow extends StatelessWidget {
   final SkillVideo video;
   final int number;
+  final List<YoutubePlaylistItem> playlist;
 
-  const _SkillVideoRow({required this.video, required this.number});
+  const _SkillVideoRow({
+    required this.video,
+    required this.number,
+    required this.playlist,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -231,6 +268,7 @@ class _SkillVideoRow extends StatelessWidget {
                   path: AppRoute.youtubePlayer.toPath({'videoId': videoId}),
                   queryParameters: {'title': video.title},
                 ).toString(),
+                extra: playlist,
               ),
         child: Row(
           children: [

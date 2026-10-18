@@ -11,6 +11,7 @@ import '/features/club/presentation/providers/club_provider.dart';
 import '/features/club/presentation/widgets/club_card.dart';
 import '/routes/app_route.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class ClubsPage extends ConsumerStatefulWidget {
   const ClubsPage({super.key});
@@ -119,9 +120,8 @@ class _ClubsListState extends ConsumerState<ClubsList> {
                 Icon(
                   LucideIcons.users,
                   size: 64,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.outline
+                      .withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: Spacing.lg),
                 Text(
@@ -134,9 +134,8 @@ class _ClubsListState extends ConsumerState<ClubsList> {
                 const SizedBox(height: Spacing.sm),
                 Text(
                   'Be the first to add one!',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
               ],
             ),
@@ -177,11 +176,11 @@ class _ClubsListState extends ConsumerState<ClubsList> {
                       ),
                     )
                   : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         Spacing.lg,
                         0,
                         Spacing.lg,
-                        100,
+                        GlassSearchBar.listBottomPadding(context),
                       ),
                       itemCount: clubs.length,
                       separatorBuilder: (_, _) =>

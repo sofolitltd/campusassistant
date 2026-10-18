@@ -17,11 +17,13 @@ import '../data/models/content_model.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/core/ads/download_ad_gate.dart';
 import '/core/ads/interstitial_ad_manager.dart';
+import '/core/providers/download_counter_provider.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/core/providers/perks_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
+import '/features/resource/presentation/providers/downloads_provider.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
 import 'resource_info_sheet.dart';
@@ -833,6 +835,8 @@ class _ContentCardState extends ConsumerState<ContentCard> {
             _downloadProgress = 0;
           });
         }
+        ref.invalidate(downloadedFilesProvider);
+        ref.invalidate(downloadCountProvider);
         Fluttertoast.showToast(msg: 'File deleted locally');
       }
     } catch (e) {
@@ -1000,6 +1004,12 @@ class _ContentCardState extends ConsumerState<ContentCard> {
       }
 
       await raf.close();
+      // The downloads page and the study page's badge both list files on
+      // disk, so refresh them now the new file is there.
+      if (mounted) {
+        ref.invalidate(downloadedFilesProvider);
+        ref.invalidate(downloadCountProvider);
+      }
       return true;
     } catch (e) {
       if (raf != null) {

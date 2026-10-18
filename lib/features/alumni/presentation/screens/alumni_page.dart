@@ -158,11 +158,11 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
 
                 return ListView.separated(
                   controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     Spacing.lg,
                     Spacing.lg,
                     Spacing.lg,
-                    100,
+                    GlassSearchBar.listBottomPadding(context),
                   ),
                   itemCount: alumniList.length + (state.isLoadingMore ? 1 : 0),
                   separatorBuilder: (_, _) =>

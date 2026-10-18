@@ -1,7 +1,9 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:material_ui/material_ui.dart';
+
 import '/core/widgets/app_choice_chip.dart';
 import '/core/widgets/glass_search_bar.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -98,9 +100,8 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                         const SizedBox(height: Spacing.lg),
                         Text(
                           'Category',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(fontWeight: .bold),
                         ),
                         const SizedBox(height: Spacing.sm),
                         Wrap(
@@ -127,9 +128,8 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                       const SizedBox(height: Spacing.xl),
                       Text(
                         'Scope',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                        style: Theme.of(context).textTheme.labelLarge
+                            ?.copyWith(fontWeight: .bold),
                       ),
                       const SizedBox(height: Spacing.sm),
                       Wrap(
@@ -167,9 +167,8 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                       const SizedBox(height: Spacing.xl),
                       Text(
                         'Deadline',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelLarge?.copyWith(fontWeight: .bold),
+                        style: Theme.of(context).textTheme.labelLarge
+                            ?.copyWith(fontWeight: .bold),
                       ),
                       const SizedBox(height: Spacing.sm),
                       Wrap(
@@ -249,9 +248,11 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
     final cs = Theme.of(context).colorScheme;
     final activeCount = _activeFilterCount;
 
-    return Column(
+    // The search capsule floats over the list (content scrolls behind the
+    // glass); the list's bottom padding lets its last item clear it.
+    return Stack(
       children: [
-        Expanded(
+        Positioned.fill(
           child: feedAsync.when(
             data: (items) {
               final filtered = items.where((item) {
@@ -275,7 +276,9 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: Spacing.lg),
+                padding: EdgeInsets.only(
+                  bottom: GlassSearchBar.listBottomPadding(context),
+                ),
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
                   final item = filtered[index];
@@ -296,15 +299,20 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
             error: (err, _) => Center(child: Text('Failed to load: $err')),
           ),
         ),
-        GlassSearchDock(
-          hint: 'Search circulars...',
-          debounceMilliseconds: 500,
-          onChanged: (value) => setState(() => _search = value.trim()),
-          action: GlassCircleButton(
-            icon: LucideIcons.slidersHorizontal,
-            tooltip: 'Filter',
-            active: activeCount > 0,
-            onTap: _openFilterSheet,
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: GlassSearchDock(
+            hint: 'Search circulars...',
+            debounceMilliseconds: 500,
+            onChanged: (value) => setState(() => _search = value.trim()),
+            action: GlassCircleButton(
+              icon: LucideIcons.slidersHorizontal,
+              tooltip: 'Filter',
+              active: activeCount > 0,
+              onTap: _openFilterSheet,
+            ),
           ),
         ),
       ],

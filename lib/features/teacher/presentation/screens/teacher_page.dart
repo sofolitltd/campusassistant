@@ -10,6 +10,7 @@ import '/features/teacher/presentation/widgets/teacher_card.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class TeacherPage extends ConsumerStatefulWidget {
   const TeacherPage({super.key});
@@ -116,11 +117,11 @@ class TeacherListView extends ConsumerWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
             Spacing.lg,
             Spacing.sm,
             Spacing.lg,
-            Spacing.lg,
+            GlassSearchBar.listBottomPadding(context),
           ),
           physics: const BouncingScrollPhysics(),
           itemCount: filteredTeachers.length,

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '/features/batch/domain/entities/batch.dart';
 import '/features/student/domain/entities/student.dart';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+import '/core/widgets/glass_search_bar.dart';
 
 class AllStudentsPage extends ConsumerStatefulWidget {
   const AllStudentsPage({super.key});
@@ -445,7 +447,12 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
             onRefresh: _refresh,
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 8, 16, totalPages > 1 ? 0 : 8),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                8,
+                16,
+                GlassSearchBar.listBottomPadding(context),
+              ),
               itemCount: totalPages > 1 ? students.length + 1 : students.length,
               separatorBuilder: (_, index) {
                 if (index == students.length - 1 && totalPages > 1) {

@@ -1,91 +1,20 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '/routes/app_route.dart';
 import '/core/providers/is_pro_provider.dart';
-import 'rewarded_ad_manager.dart';
-import '/core/theme/tokens/app_spacing.dart';
+import 'interstitial_ad_manager.dart';
 
-/// Shows a "watch an ad to download" prompt before a resource's first
-/// download for Basic users. Returns true if the download should proceed.
+/// Shows an interstitial before every coin-less Basic user's download.
 ///
-/// Lenient by design: once the user opts in by tapping "Watch Ad," a failed
-/// load, an early close, or any other ad hiccup never blocks the download
-/// itself — only explicitly declining the prompt does. This avoids trapping
-/// a student behind a study resource because of a flaky ad network, which
-/// would violate the "never break the app experience" principle this
-/// feature was built under. Re-downloading after deleting a file from local
-/// cache goes through this same gate again, since it's keyed on the file's
-/// current on-disk state, not a one-time-ever flag.
+/// Not a gate: the download always proceeds afterwards, whether the ad
+/// showed, was skipped after a few seconds, or failed to load.
+/// That keeps it a natural pause rather than an "ad for access" trade,
+/// which AdMob only permits on rewarded formats — and it never traps a
+/// student behind a study resource because of a flaky ad network.
 ///
-/// Pro users and web always return true immediately (Pro: no ads anywhere;
-/// web: google_mobile_ads has no web implementation at all).
-Future<bool> showDownloadAdGate(BuildContext context, WidgetRef ref) async {
-  if (kIsWeb || ref.read(isProUserProvider)) return true;
-
-  final manager = ref.read(rewardedAdManagerProvider);
-  manager.preload(); // start warming up an ad while the user decides
-
-  if (!context.mounted) return true;
-  final wantsToWatch = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      titlePadding: const EdgeInsets.fromLTRB(
-        Spacing.xxl,
-        Spacing.lg,
-        Spacing.sm,
-        0,
-      ),
-      title: Row(
-        mainAxisAlignment: .spaceBetween,
-        children: [
-          Text(
-            'Unlock this download',
-            style: Theme.of(dialogContext).textTheme.titleMedium,
-          ),
-          IconButton(
-            icon: const Icon(Icons.close),
-            visualDensity: VisualDensity.compact,
-            onPressed: () => Navigator.pop(dialogContext, false),
-          ),
-        ],
-      ),
-      content: const Text(
-        'Watch a short ad to download this file, or upgrade to Pro for '
-        'unlimited ad-free downloads.\n\n'
-        'Ads and Pro help cover our server costs and keep Campus Assistant '
-        'running for everyone.',
-      ),
-      actions: [
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  Navigator.pop(dialogContext, false);
-                  GoRouter.of(dialogContext)
-                      .pushNamed(AppRoute.subscription.name);
-                },
-                child: const Text('Go Pro'),
-              ),
-            ),
-            const SizedBox(width: Spacing.sm),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(dialogContext, true),
-                child: const Text('Watch Ad'),
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-
-  if (wantsToWatch != true) return false;
-
-  await manager.show();
-  return true;
+/// Pro users and web return immediately (Pro: no ads anywhere; web:
+/// google_mobile_ads has no web implementation at all).
+Future<void> showDownloadInterstitial(WidgetRef ref) async {
+  if (kIsWeb || ref.read(isProUserProvider)) return;
+  await ref.read(interstitialAdManagerProvider).show();
 }

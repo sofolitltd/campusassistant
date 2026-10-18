@@ -16,6 +16,8 @@ class AdConfig {
       'ca-app-pub-3940256099942544/6300978111';
   static const _testAndroidRewardedUnitId =
       'ca-app-pub-3940256099942544/5224354917';
+  static const _testAndroidInterstitialUnitId =
+      'ca-app-pub-3940256099942544/1033173712';
 
   static String get androidAppId => Env.admobAndroidAppId.isNotEmpty
       ? Env.admobAndroidAppId
@@ -29,4 +31,9 @@ class AdConfig {
       Env.admobRewardedAdUnitIdAndroid.isNotEmpty
       ? Env.admobRewardedAdUnitIdAndroid
       : _testAndroidRewardedUnitId;
+
+  static String get interstitialAdUnitId =>
+      Env.admobInterstitialAdUnitIdAndroid.isNotEmpty
+      ? Env.admobInterstitialAdUnitIdAndroid
+      : _testAndroidInterstitialUnitId;
 }

@@ -23,4 +23,7 @@ class Env {
   static const String admobRewardedAdUnitIdAndroid = String.fromEnvironment(
     'ADMOB_REWARDED_AD_UNIT_ID_ANDROID',
   );
+
+  static const String admobInterstitialAdUnitIdAndroid =
+      String.fromEnvironment('ADMOB_INTERSTITIAL_AD_UNIT_ID_ANDROID');
 }

@@ -17,9 +17,9 @@ import 'package:uuid/uuid.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/pdf_tabs/presentation/open_pdf_tab.dart';
 import '/core/ads/download_ad_gate.dart';
+import '/core/ads/interstitial_ad_manager.dart';
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
-import '/features/reward/data/repositories/reward_repository.dart';
 import '/features/reward/presentation/providers/reward_providers.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/core/cache/cache_manager.dart';
@@ -31,6 +31,7 @@ import '/features/bookmark/domain/entities/bookmark.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
 import '/features/resource/presentation/providers/downloads_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
+import '/features/reward/presentation/widgets/coin_onboarding.dart';
 import '/features/reward/presentation/widgets/reward_cost_indicator.dart';
 import '/routes/app_route.dart';
 import 'resource_info_sheet.dart';
@@ -84,6 +85,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   @override
   void initState() {
     super.initState();
+    if (!ref.read(isProUserProvider)) {
+      ref.read(interstitialAdManagerProvider).preload();
+    }
     final statusChecked = _checkFileStatus();
     if (widget.autoOpen) {
       statusChecked.then((_) {
@@ -772,38 +776,50 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     final isPro = ref.read(isProUserProvider);
     if (isPro) return true;
 
-    final rewardRepo = ref.read(rewardRepositoryProvider);
+    final result = await ref
+        .read(rewardRepositoryProvider)
+        .spend(widget.resource.id);
+    final r = result.fold((_) => null, (r) => r);
+    // Backend unreachable — don't trap a student behind a flaky network.
+    if (r == null) return true;
 
-    final result = await rewardRepo.spend(widget.resource.id);
-
-    return result.fold((_) => true, (r) {
-      if (r['insufficient'] == true) {
-        if (!mounted) return false;
-        final cost = r['required'] as int? ?? 1;
-        final balance = r['balance'] as int? ?? 0;
-        _showUnlockDialog(rewardRepo, cost, balance);
-        return false;
+    if (r['insufficient'] != true) {
+      final granted = r['spent'] != null || r['is_pro'] == true;
+      if (granted && r['is_pro'] != true) {
+        ref.invalidate(rewardBalanceProvider);
+        if (mounted) {
+          showCoinSpentFeedback(
+            context,
+            spent: r['spent'] as int? ?? 0,
+            balance: r['balance'] as int? ?? 0,
+          );
+        }
       }
-      return r['spent'] != null || r['is_pro'] == true;
-    });
+      return granted;
+    }
+
+    if (!mounted) return false;
+    return _showOutOfCoinsDialog(
+      cost: r['required'] as int? ?? 1,
+      balance: r['balance'] as int? ?? 0,
+    );
   }
 
-  Future<void> _showUnlockDialog(
-    RewardRepository rewardRepo,
-    int cost,
-    int balance,
-  ) async {
-    final manager = ref.read(rewardedAdManagerProvider);
-    // google_mobile_ads has no web implementation — only preload (and later
-    // offer the "Watch Ad" button) off web.
-    if (!kIsWeb) manager.preload();
+  /// Out of coins: the default path downloads after a skippable
+  /// interstitial; watching a rewarded video instead also earns coins. The
+  /// coins are a bonus for next time, not spent on this file — a user who
+  /// sat through a full video shouldn't see them vanish immediately.
+  /// Returns true when the download should proceed (any ad already shown).
+  Future<bool> _showOutOfCoinsDialog({
+    required int cost,
+    required int balance,
+  }) async {
+    final rewardedManager = ref.read(rewardedAdManagerProvider);
+    // google_mobile_ads has no web implementation — web only offers Pro.
+    if (!kIsWeb) rewardedManager.preload();
 
-    final shortfall = cost - balance;
-    final hasEnough = shortfall <= 0;
-
-    final result = await showDialog<bool>(
+    final choice = await showDialog<_UnlockChoice>(
       context: context,
-      barrierDismissible: false,
       builder: (ctx) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(RadiusToken.xxl),
@@ -813,7 +829,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
             Spacing.xl,
             Spacing.xxl,
             Spacing.xl,
-            Spacing.xl,
+            Spacing.lg,
           ),
           child: Column(
             mainAxisSize: .min,
@@ -826,20 +842,20 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                   color: AccentToken.gold.withValues(alpha: .15),
                 ),
                 child: Icon(
-                  LucideIcons.lock,
+                  LucideIcons.coins,
                   size: 26,
                   color: AccentToken.gold,
                 ),
               ),
               const SizedBox(height: Spacing.lg),
               Text(
-                'Unlock to Download',
+                'Out of coins',
                 style: Theme.of(context).textTheme.titleLarge
                     ?.copyWith(fontWeight: .bold),
               ),
               const SizedBox(height: Spacing.xs),
               Text(
-                '"${widget.resource.title}" needs coins to unlock',
+                '"${widget.resource.title}"',
                 textAlign: .center,
                 maxLines: 2,
                 overflow: .ellipsis,
@@ -869,20 +885,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                       context,
                       label: 'You have',
                       value: balance,
-                      color: hasEnough
-                          ? context.colors.success
-                          : context.colors.danger,
+                      color: context.colors.danger,
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: Spacing.md),
               Text(
-                hasEnough
-                    ? 'You already have enough coins — tap below to unlock.'
-                    : kIsWeb
-                    ? 'Ads aren\'t available on web. Go Pro for unlimited downloads.'
-                    : 'Watch a short ad to earn 1 coin, or go Pro for unlimited downloads.',
+                kIsWeb
+                    ? 'Downloads without coins need the mobile app. Go Pro for unlimited downloads.'
+                    : 'Download now with a short ad, or watch a video to also earn $_videoRewardCoins coins.',
                 textAlign: .center,
                 style: Theme.of(context).textTheme.bodySmall
                     ?.copyWith(color: context.colors.textMuted),
@@ -898,44 +910,56 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
                         borderRadius: BorderRadius.circular(RadiusToken.lg),
                       ),
                     ),
-                    onPressed: () => Navigator.of(ctx).pop(true),
-                    icon: const Icon(LucideIcons.circlePlay, size: 18),
-                    label: const Text('Watch Ad • +1 Coin'),
+                    onPressed: () =>
+                        Navigator.of(ctx).pop(_UnlockChoice.download),
+                    icon: const Icon(LucideIcons.download, size: 18),
+                    label: const Text('Download'),
                   ),
                 ),
                 const SizedBox(height: Spacing.sm),
-              ],
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: Spacing.md),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(RadiusToken.lg),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(RadiusToken.lg),
+                      ),
                     ),
-                    side: BorderSide(color: AccentToken.gold),
-                    foregroundColor: AccentToken.gold,
-                  ),
-                  onPressed: () {
-                    Navigator.of(ctx).pop(false);
-                    context.push(AppRoute.subscription.path);
-                  },
-                  icon: const Icon(LucideIcons.crown, size: 16),
-                  label: const Text('Upgrade to Pro'),
-                ),
-              ),
-              const SizedBox(height: Spacing.xs),
-              TextButton(
-                style: ButtonStyle(
-                  minimumSize: WidgetStateProperty.all(
-                    const Size.fromHeight(32),
+                    onPressed: () =>
+                        Navigator.of(ctx).pop(_UnlockChoice.watchVideo),
+                    icon: const Icon(LucideIcons.circlePlay, size: 18),
+                    label: Text('Watch video • +$_videoRewardCoins coins'),
                   ),
                 ),
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: Text(
-                  'Not Now',
-                  style: TextStyle(color: context.colors.textMuted),
-                ),
+                const SizedBox(height: Spacing.xs),
+              ],
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: Text(
+                        'Not now',
+                        style: TextStyle(color: context.colors.textMuted),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton.icon(
+                      onPressed: () => Navigator.of(ctx).pop(_UnlockChoice.pro),
+                      icon: Icon(
+                        LucideIcons.crown,
+                        size: 16,
+                        color: AccentToken.gold,
+                      ),
+                      label: Text(
+                        'Go Pro',
+                        style: TextStyle(color: AccentToken.gold),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -943,23 +967,42 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       ),
     );
 
-    if (result != true) return;
+    if (!mounted) return false;
+    switch (choice) {
+      case _UnlockChoice.download:
+        await showDownloadInterstitial(ref);
+        return true;
+      case _UnlockChoice.watchVideo:
+        final watched = await rewardedManager.show();
+        if (watched) {
+          await _claimVideoReward();
+        } else {
+          // No video available (common on Bangladeshi fill rates) or closed
+          // early — fall back to the normal download path.
+          await showDownloadInterstitial(ref);
+        }
+        return true;
+      case _UnlockChoice.pro:
+        context.push(AppRoute.subscription.path);
+        return false;
+      case null:
+        return false;
+    }
+  }
 
-    final earned = await manager.show();
-    if (!earned || !mounted) return;
-
-    ref.invalidate(rewardBalanceProvider);
-    await ref.read(rewardEarnProvider.future);
-
-    final retryResult = await rewardRepo.spend(widget.resource.id);
-    retryResult.fold((_) {}, (r) {
-      if (r['insufficient'] != true &&
-          (r['spent'] != null || r['is_pro'] == true)) {
-        // Coin was just spent via the ad-earned reward above — skip the
-        // separate ad gate inside _downloadIfNeeded.
-        _handleOpenContent(gateAlreadyChecked: true);
-      }
-    });
+  Future<void> _claimVideoReward() async {
+    final result = await ref.read(rewardRepositoryProvider).earn();
+    if (!mounted) return;
+    result.fold(
+      // Daily video-reward limit reached — the download still goes ahead.
+      (_) {},
+      (balance) {
+        ref.invalidate(rewardBalanceProvider);
+        Fluttertoast.showToast(
+          msg: '+$_videoRewardCoins coins! You now have ${balance.balance}.',
+        );
+      },
+    );
   }
 
   Widget _buildCoinStat(
@@ -1047,13 +1090,10 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     if (kIsWeb) return;
     if (_isDownloaded || _isLoading) return;
 
-    // If a coin (or Pro) already granted access — e.g. via _checkRewardGate
-    // in onTap, or after a successful reward-ad in _showUnlockDialog — don't
-    // show the separate ad-only gate on top of it.
-    final shouldDownload = gateAlreadyChecked
-        ? true
-        : await showDownloadAdGate(context, ref);
-    if (!shouldDownload || !mounted) return;
+    // If coins, Pro, or the out-of-coins dialog already handled access (and
+    // any ad), don't show another interstitial on top of it.
+    if (!gateAlreadyChecked) await showDownloadInterstitial(ref);
+    if (!mounted) return;
 
     setState(() {
       _isLoading = true;
@@ -1301,3 +1341,9 @@ class _PopupItem extends StatelessWidget {
     ],
   );
 }
+
+enum _UnlockChoice { download, watchVideo, pro }
+
+/// Coins credited per rewarded video — mirrors adRewardAmount in
+/// campusassistant-api's reward_handler.go.
+const _videoRewardCoins = 2;

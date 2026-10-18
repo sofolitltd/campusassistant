@@ -26,15 +26,6 @@ final rewardBalanceProvider = FutureProvider<RewardBalance>((ref) async {
   );
 });
 
-final rewardEarnProvider = FutureProvider<RewardBalance>((ref) async {
-  final repo = ref.watch(rewardRepositoryProvider);
-  final result = await repo.earn();
-  return result.fold(
-    (failure) => throw Exception(failure.message),
-    (balance) => balance,
-  );
-});
-
 final rewardTransactionsProvider = FutureProvider.autoDispose
     .family<({List<RewardTransaction> data, int count}), int>((
       ref,

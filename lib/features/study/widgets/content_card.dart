@@ -16,6 +16,7 @@ import 'package:uuid/uuid.dart';
 import '../data/models/content_model.dart';
 import '/widgets/pdf_viewer_page.dart';
 import '/core/ads/download_ad_gate.dart';
+import '/core/ads/interstitial_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/domain/entities/bookmark.dart';
@@ -66,6 +67,9 @@ class _ContentCardState extends ConsumerState<ContentCard> {
   @override
   void initState() {
     super.initState();
+    if (!ref.read(isProUserProvider)) {
+      ref.read(interstitialAdManagerProvider).preload();
+    }
     _checkFileStatus();
   }
 
@@ -859,8 +863,8 @@ class _ContentCardState extends ConsumerState<ContentCard> {
     if (kIsWeb) return;
     if (_isDownloaded || _isLoading) return;
 
-    final shouldDownload = await showDownloadAdGate(context, ref);
-    if (!shouldDownload || !mounted) return;
+    await showDownloadInterstitial(ref);
+    if (!mounted) return;
 
     setState(() {
       _isLoading = true;

@@ -61,7 +61,7 @@ class _RewardPageState extends ConsumerState<RewardPage> {
           ref.invalidate(rewardBalanceProvider);
           ref.invalidate(rewardTransactionsProvider);
           messenger.showSnackBar(
-            const SnackBar(content: Text('You earned 1 reward coin!')),
+            const SnackBar(content: Text('You earned 2 reward coins!')),
           );
         },
       );
@@ -328,13 +328,13 @@ class _WatchAdCard extends StatelessWidget {
             crossAxisAlignment: .start,
             children: [
               Text(
-                'Watch an ad, earn 1 coin',
+                'Watch a video, earn 2 coins',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
               ),
               Text(
-                'Watch a short video to get a free reward coin.',
+                'Up to 4 videos a day. Coins skip the ad on downloads.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: context.colors.textSubtle,
                 ),

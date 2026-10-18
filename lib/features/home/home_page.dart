@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/core/ads/banner_ad_widget.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/features/reward/presentation/widgets/coin_onboarding.dart';
 import '/features/reward/presentation/widgets/daily_reward_banner.dart';
 import '/features/student_verification/presentation/widgets/student_verification_banner.dart';
 import '/routes/scaffold_with_navbar.dart';
@@ -29,6 +30,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   static const _sections = <Widget>[
+    CoinWelcomeGate(),
     StudentVerificationBanner(),
     HomeSection(child: ShortcutStrip()),
     DailyRewardBanner(),

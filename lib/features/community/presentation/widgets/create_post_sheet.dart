@@ -17,7 +17,6 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/tokens/app_font_size.dart';
-import '/core/theme/tokens/app_control.dart';
 import '/core/widgets/app_network_image.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
@@ -90,6 +89,35 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
   void _removeImage(int index) => setState(() => _images.removeAt(index));
 
+  Future<void> _submit() async {
+    if (_controller.text.trim().isEmpty && _images.isEmpty) return;
+
+    final scopes = ['batch', 'department', 'university'];
+    final currentScope = scopes[widget.tabIndex];
+
+    setState(() => _isUploading = true);
+    try {
+      await ref
+          .read(communityRepositoryProvider)
+          .createPost(_controller.text.trim(), currentScope, images: _images);
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      ref.read(communityRefreshProvider.notifier).increment();
+      Navigator.pop(context);
+      widget.onPostCreated();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Post published to community!')),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to post: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scopeLabels = ['Batch', 'Department', 'My University'];
@@ -108,78 +136,21 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: .spaceBetween,
             children: [
-              TextButton(
+              Expanded(
+                child: Text(
+                  'Create Post',
+                  style: GoogleFonts.outfit(
+                    fontWeight: .bold,
+                    fontSize: FontSizeToken.lg,
+                  ),
+                ),
+              ),
+              IconButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              Text(
-                'Create Post',
-                style: GoogleFonts.outfit(
-                  fontWeight: .bold,
-                  fontSize: FontSizeToken.lg,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: _isUploading
-                    ? null
-                    : () async {
-                        if (_controller.text.trim().isEmpty &&
-                            _images.isEmpty) {
-                          return;
-                        }
-
-                        final scopes = ['batch', 'department', 'university'];
-                        final currentScope = scopes[widget.tabIndex];
-
-                        setState(() => _isUploading = true);
-                        try {
-                          await ref
-                              .read(communityRepositoryProvider)
-                              .createPost(
-                                _controller.text.trim(),
-                                currentScope,
-                                images: _images,
-                              );
-                          if (context.mounted) {
-                            ref
-                                .read(communityRefreshProvider.notifier)
-                                .increment();
-                            Navigator.pop(context);
-                            widget.onPostCreated();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Post published to community!'),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to post: $e')),
-                            );
-                          }
-                        } finally {
-                          if (mounted) setState(() => _isUploading = false);
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(70, ControlToken.height),
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
-                ),
-                child: _isUploading
-                    ? SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CupertinoActivityIndicator(
-                          color: context.colors.onPrimary,
-                        ),
-                      )
-                    : const Text(
-                        'Post',
-                        style: TextStyle(fontSize: FontSizeToken.md),
-                      ),
+                icon: const Icon(LucideIcons.x, size: 22),
+                tooltip: 'Close',
+                visualDensity: VisualDensity.compact,
               ),
             ],
           ),
@@ -321,6 +292,27 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                   fontSize: FontSizeToken.sm,
                   color: context.colors.textSubtle,
                 ),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: _isUploading ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(80, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: _isUploading
+                    ? SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CupertinoActivityIndicator(
+                          color: context.colors.onPrimary,
+                        ),
+                      )
+                    : const Text(
+                        'Post',
+                        style: TextStyle(fontSize: FontSizeToken.md),
+                      ),
               ),
             ],
           ),

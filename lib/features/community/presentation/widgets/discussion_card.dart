@@ -426,7 +426,9 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
+      // The card's own context is used for the follow-up sheet/dialog: this
+      // sheet's context is gone once it pops.
+      builder: (sheetContext) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
           borderRadius: const BorderRadius.vertical(
@@ -454,7 +456,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                   style: TextStyle(fontSize: FontSizeToken.base),
                 ),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pop(sheetContext);
                   _showEditSheet(context);
                 },
               ),
@@ -472,7 +474,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pop(sheetContext);
                   _confirmDelete(context);
                 },
               ),
@@ -500,19 +502,20 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
           TextButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
+              // Read everything up front: removing the post disposes this
+              // card, so neither its context nor ref is usable afterwards.
+              final repo = ref.read(communityRepositoryProvider);
+              final posts = ref.read(
+                communityPostsProvider(_providerScope).notifier,
+              );
+              final refresh = ref.read(communityRefreshProvider.notifier);
+              final messenger = ScaffoldMessenger.of(context);
               try {
-                await ref
-                    .read(communityRepositoryProvider)
-                    .deletePost(widget.post.id);
-                if (!context.mounted) return;
-                ref
-                    .read(communityPostsProvider(_providerScope).notifier)
-                    .remove(widget.post.id);
-                ref
-                    .read(communityPostsProvider(_providerScope).notifier)
-                    .fetch();
-                ref.read(communityRefreshProvider.notifier).increment();
-                ScaffoldMessenger.of(context).showSnackBar(
+                await repo.deletePost(widget.post.id);
+                posts.remove(widget.post.id);
+                posts.fetch();
+                refresh.increment();
+                messenger.showSnackBar(
                   const SnackBar(
                     content: Text('Post deleted'),
                     duration: Duration(seconds: 1),
@@ -520,8 +523,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                   ),
                 );
               } catch (e) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text('Failed to delete post: $e'),
                     behavior: SnackBarBehavior.floating,

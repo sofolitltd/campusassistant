@@ -9,9 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../presentation/providers/questions_provider.dart';
+import '/features/study/levels/domain/entities/semester.dart';
+import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/core/widgets/glass_search_bar.dart';
-import '/core/widgets/inline_search_bar.dart';
-import '/features/study/widgets/batch_tile.dart';
+import '/features/study/widgets/filter_picker_sheet.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -54,8 +55,14 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     });
   }
 
+  void _clearFilters() {
+    ref.read(questionsSelectedLevelProvider.notifier).state = null;
+    ref.read(questionsSelectedCourseProvider.notifier).state = null;
+    ref.read(questionsSelectedYearProvider.notifier).state = null;
+  }
+
   void _showYearFilterSheet(BuildContext context) {
-    _showPickerSheet(
+    showFilterPickerSheet(
       context,
       title: 'Select Year',
       searchHint: 'Search year...',
@@ -67,18 +74,66 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     );
   }
 
-  void _showCourseFilterSheet(BuildContext context) {
+  Future<void> _showLevelFilterSheet(BuildContext context) async {
+    final levels = [
+      ...await ref
+          .read(semestersProvider.future)
+          .catchError((_) => <Semester>[]),
+    ]..sort((a, b) => a.order.compareTo(b.order));
+    if (!context.mounted) return;
+    final selectedId = ref.read(questionsSelectedLevelProvider);
+
+    showFilterPickerSheet(
+      context,
+      title: 'Select Level',
+      searchHint: 'Search level...',
+      allLabel: 'All Levels',
+      options: levels.map((l) => l.name).toList(),
+      selected: levels.where((l) => l.id == selectedId).firstOrNull?.name,
+      onSelected: (name) async {
+        final levelId = levels.where((l) => l.name == name).firstOrNull?.id;
+        ref.read(questionsSelectedLevelProvider.notifier).state = levelId;
+        // Drop a course that isn't in the new level.
+        final course = ref.read(questionsSelectedCourseProvider);
+        if (levelId == null || course == null) return;
+        final courses = await ref
+            .read(questionCourseCodesProvider.future)
+            .catchError((_) => <({String code, String levelId})>[]);
+        final inLevel = courses.any(
+          (c) => c.levelId == levelId && c.code == course,
+        );
+        if (!inLevel) {
+          ref.read(questionsSelectedCourseProvider.notifier).state = null;
+        }
+      },
+    );
+  }
+
+  Future<void> _showCourseFilterSheet(BuildContext context) async {
     final docs = ref.read(questionsPaginationProvider).asData?.value.docs ?? [];
+    final levelId = ref.read(questionsSelectedLevelProvider);
+    // The department's courses (only the selected level's, if any), plus any
+    // on loaded questions (university scope can show other departments').
+    final deptCourses = await ref
+        .read(questionCourseCodesProvider.future)
+        .catchError((_) => <({String code, String levelId})>[]);
+    if (!context.mounted) return;
+    final rawCodes = [
+      ...deptCourses
+          .where((c) => levelId == null || c.levelId == levelId)
+          .map((c) => c.code),
+      ...docs.map((d) => d.courseCode.trim()),
+    ];
     final courses =
-        docs
-            .map((d) => d.courseCode.trim().toUpperCase())
+        rawCodes
+            .map((c) => c.toUpperCase())
             .where((c) => c.isNotEmpty)
             .toSet()
             .toList()
           ..sort();
     final selected = ref.read(questionsSelectedCourseProvider);
 
-    _showPickerSheet(
+    showFilterPickerSheet(
       context,
       title: 'Select Course',
       searchHint: 'Search course...',
@@ -90,146 +145,11 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
       onSelected: (code) {
         final raw = code == null
             ? null
-            : docs
-                  .map((d) => d.courseCode.trim())
-                  .firstWhere(
-                    (c) => c.toUpperCase() == code,
-                    orElse: () => code,
-                  );
+            : rawCodes.firstWhere(
+                (c) => c.toUpperCase() == code,
+                orElse: () => code,
+              );
         ref.read(questionsSelectedCourseProvider.notifier).state = raw;
-      },
-    );
-  }
-
-  /// Same layout as the study page's batch picker ([BatchDropdown]): title +
-  /// close, search bar, then a two-column grid with an "All" tile first.
-  void _showPickerSheet(
-    BuildContext context, {
-    required String title,
-    required String searchHint,
-    required String allLabel,
-    required List<String> options,
-    required String? selected,
-    required ValueChanged<String?> onSelected,
-  }) {
-    final theme = Theme.of(context);
-    String searchText = '';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(RadiusToken.xxl),
-        ),
-      ),
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final q = searchText.trim().toLowerCase();
-            final filtered = q.isEmpty
-                ? options
-                : options.where((o) => o.toLowerCase().contains(q)).toList();
-
-            void pick(String? value) {
-              onSelected(value);
-              Navigator.pop(context);
-            }
-
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.75,
-              padding: const EdgeInsets.only(top: Spacing.md),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.colors.borderStrong,
-                        borderRadius: BorderRadius.circular(RadiusToken.xs),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: FontSizeToken.xl,
-                            fontWeight: .bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            LucideIcons.x,
-                            size: 20,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
-                    child: InlineSearchBar(
-                      hintText: searchHint,
-                      onChanged: (v) => setState(() => searchText = v),
-                    ),
-                  ),
-                  const SizedBox(height: Spacing.lg),
-                  Expanded(
-                    child: filtered.isEmpty && q.isNotEmpty
-                        ? Center(
-                            child: Text(
-                              'No matches',
-                              style: TextStyle(color: context.colors.textMuted),
-                            ),
-                          )
-                        : GridView.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: Spacing.sm,
-                            crossAxisSpacing: Spacing.sm,
-                            childAspectRatio: 4.2,
-                            padding: const EdgeInsets.fromLTRB(
-                              Spacing.xl,
-                              0,
-                              Spacing.xl,
-                              Spacing.xl,
-                            ),
-                            children: [
-                              if (q.isEmpty)
-                                BatchTile(
-                                  grid: true,
-                                  title: allLabel,
-                                  isSelected: selected == null,
-                                  onTap: () => pick(null),
-                                ),
-                              ...filtered.map(
-                                (o) => BatchTile(
-                                  grid: true,
-                                  title: o,
-                                  isSelected: selected == o,
-                                  onTap: () => pick(o),
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
       },
     );
   }
@@ -283,6 +203,13 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
     final questionsAsync = ref.watch(questionsPaginationProvider);
     final selectedCourse = ref.watch(questionsSelectedCourseProvider);
     final selectedYear = ref.watch(questionsSelectedYearProvider);
+    final selectedLevelId = ref.watch(questionsSelectedLevelProvider);
+    final selectedLevelName = selectedLevelId == null
+        ? null
+        : (ref.watch(semestersProvider).value ?? [])
+              .where((l) => l.id == selectedLevelId)
+              .firstOrNull
+              ?.name;
     final searchHint = 'Search questions...';
 
     return Center(
@@ -316,6 +243,12 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                   child: Row(
                     children: [
                       _buildFilterChip(
+                        label: selectedLevelName ?? 'Level',
+                        isActive: selectedLevelName != null,
+                        onTap: () => _showLevelFilterSheet(context),
+                      ),
+                      const SizedBox(width: Spacing.md),
+                      _buildFilterChip(
                         label: selectedCourse?.toUpperCase() ?? 'Course',
                         isActive: selectedCourse != null,
                         onTap: () => _showCourseFilterSheet(context),
@@ -326,6 +259,30 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                         isActive: selectedYear != null,
                         onTap: () => _showYearFilterSheet(context),
                       ),
+                      const Spacer(),
+                      if (selectedLevelId != null ||
+                          selectedCourse != null ||
+                          selectedYear != null)
+                        GestureDetector(
+                          onTap: _clearFilters,
+                          behavior: HitTestBehavior.opaque,
+                          child: Semantics(
+                            button: true,
+                            label: 'Clear filters',
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: Spacing.sm,
+                                top: Spacing.xs,
+                                bottom: Spacing.xs,
+                              ),
+                              child: Icon(
+                                LucideIcons.x,
+                                size: 18,
+                                color: context.colors.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

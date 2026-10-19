@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import '../../../../core/error/failures.dart';
 import '../entities/resource.dart';
 
@@ -23,6 +24,7 @@ abstract class ResourceRepository {
     int? offset,
     String? search,
     String? year,
+    String? levelId,
   });
 
   Future<Either<Failure, void>> deleteResource(String id);

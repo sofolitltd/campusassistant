@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/models/content_model.dart';
+import '/core/di.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
@@ -66,6 +68,20 @@ class QuestionsYearNotifier extends Notifier<String?> {
   set state(String? value) => super.state = value;
 }
 
+final questionsSelectedLevelProvider =
+    NotifierProvider<QuestionsLevelNotifier, String?>(
+      QuestionsLevelNotifier.new,
+    );
+
+/// Selected level (semester) id; narrows both the questions and the course
+/// picker.
+class QuestionsLevelNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+  @override
+  set state(String? value) => super.state = value;
+}
+
 final questionsSelectedCourseProvider =
     NotifierProvider<QuestionsCourseNotifier, String?>(
       QuestionsCourseNotifier.new,
@@ -77,6 +93,33 @@ class QuestionsCourseNotifier extends Notifier<String?> {
   @override
   set state(String? value) => super.state = value;
 }
+
+/// Course codes for the course filter: the department's whole course list,
+/// since the questions loaded so far are only the first page.
+final questionCourseCodesProvider =
+    FutureProvider<List<({String code, String levelId})>>((ref) async {
+      final user = ref.watch(userProvider).value;
+      final departmentId = user?.information.departmentId ?? '';
+      if (departmentId.isEmpty) return [];
+      final response = await ref
+          .read(apiClientProvider)
+          .get(
+            '/courses',
+            queryParameters: {'department_id': departmentId, 'limit': 100},
+          );
+      final data =
+          (response.data as Map<String, dynamic>)['data'] as List? ?? [];
+      return data
+          .cast<Map>()
+          .map(
+            (c) => (
+              code: (c['course_code'] ?? '').toString().trim(),
+              levelId: (c['level_id'] ?? '').toString(),
+            ),
+          )
+          .where((c) => c.code.isNotEmpty)
+          .toList();
+    });
 
 // Fixed list of years for now (Enterprise should ideally fetch this)
 final questionYearsProvider = Provider<List<String>>((ref) {
@@ -97,6 +140,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
     final isUni = ref.watch(questionsScopeUniversityProvider);
     final year = ref.watch(questionsSelectedYearProvider);
     final courseCode = ref.watch(questionsSelectedCourseProvider);
+    final levelId = ref.watch(questionsSelectedLevelProvider);
 
     return _fetchPage(
       offset: 0,
@@ -104,6 +148,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
       isUni: isUni,
       year: year,
       courseCode: courseCode,
+      levelId: levelId,
     );
   }
 
@@ -113,6 +158,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
     required bool isUni,
     String? year,
     String? courseCode,
+    String? levelId,
   }) async {
     final user = ref.read(userProvider).value;
     if (user == null) return QuestionsState(docs: [], totalCount: 0);
@@ -130,6 +176,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
       search: search.isEmpty ? null : search,
       year: year,
       courseCode: courseCode,
+      levelId: levelId,
       status: 'published',
     );
 
@@ -166,6 +213,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
     final isUni = ref.read(questionsScopeUniversityProvider);
     final year = ref.read(questionsSelectedYearProvider);
     final courseCode = ref.read(questionsSelectedCourseProvider);
+    final levelId = ref.read(questionsSelectedLevelProvider);
 
     final user = ref.read(userProvider).value;
     if (user == null) return;
@@ -183,6 +231,7 @@ class QuestionsPaginationNotifier extends AsyncNotifier<QuestionsState> {
       search: search.isEmpty ? null : search,
       year: year,
       courseCode: courseCode,
+      levelId: levelId,
       status: 'published',
     );
 

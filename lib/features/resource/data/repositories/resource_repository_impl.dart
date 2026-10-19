@@ -38,6 +38,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
     int? offset,
     String? search,
     String? year,
+    String? levelId,
   }) async {
     final cacheKey = _buildCacheKey(
       universityId: universityId,
@@ -53,6 +54,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
       createdById: createdById,
       status: status,
       year: year,
+      levelId: levelId,
     );
 
     // 1. Try DB cache
@@ -110,6 +112,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
         if (offset != null) queryParams['offset'] = offset.toString();
         if (search != null) queryParams['search'] = search;
         if (year != null) queryParams['year'] = year;
+        if (levelId != null) queryParams['level_id'] = levelId;
 
         final response = await apiClient.get(
           '/resources',
@@ -347,6 +350,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
     String? createdById,
     String? status,
     String? year,
+    String? levelId,
   }) {
     final parts = <String>[
       'uni_$universityId',
@@ -362,6 +366,7 @@ class ResourceRepositoryImpl implements ResourceRepository {
       if (createdById != null) 'creator_$createdById',
       if (status != null) 'status_$status',
       if (year != null) 'year_$year',
+      if (levelId != null) 'level_$levelId',
     ];
     return parts.join('_');
   }

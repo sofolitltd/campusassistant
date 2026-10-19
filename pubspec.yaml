@@ -2,7 +2,7 @@ name: campusassistant
 description: "Smart assistant on Campus"
 publish_to: 'none'
 
-version: 1.2.2+26
+version: 1.2.3+27
 
 environment:
   sdk: ^3.13.0

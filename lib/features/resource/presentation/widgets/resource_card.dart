@@ -352,28 +352,33 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               child: Row(
                 crossAxisAlignment: .stretch,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      // Same fill as the file-size / page tiles below.
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Theme.of(context).colorScheme.surface
-                                .withValues(alpha: 0.5)
-                          : context.colors.surfaceAlt,
-                      borderRadius: BorderRadius.circular(RadiusToken.xs),
-                      border: Border.all(color: context.colors.surfaceAlt),
-                    ),
-                    child: Text(
-                      '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
-                      style: TextStyle(
-                        height: 1,
-                        fontSize: FontSizeToken.xxs,
-                        fontWeight: .bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                  // Department-wide resources (e.g. a full syllabus) have no
+                  // course, so there's nothing to show here.
+                  if (widget.resource.courseCode.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.xs,
+                      ),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        // Same fill as the file-size / page tiles below.
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.surface
+                                  .withValues(alpha: 0.5)
+                            : context.colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(RadiusToken.xs),
+                        border: Border.all(color: context.colors.surfaceAlt),
+                      ),
+                      child: Text(
+                        '${widget.resource.courseCode.toUpperCase()}: ${widget.resource.lessonNo}',
+                        style: TextStyle(
+                          height: 1,
+                          fontSize: FontSizeToken.xxs,
+                          fontWeight: .bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
                   if (isProContent) ...[
                     const SizedBox(width: Spacing.xs),
                     Container(

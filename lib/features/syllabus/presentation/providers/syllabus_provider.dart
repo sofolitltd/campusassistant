@@ -1,9 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/cache/cache_manager.dart';
 import '../../../../core/cache/connectivity_service.dart';
 import '../../../../core/di.dart';
 import '../../../auth/presentation/providers/user_profile_provider.dart';
-import '../../domain/entities/syllabus.dart';
+import '../../../resource/domain/entities/resource.dart';
+import '../../../resource/presentation/providers/resource_provider.dart';
 import '../../domain/repositories/syllabus_repository.dart';
 import '../../data/repositories/syllabus_repository_impl.dart';
 
@@ -30,7 +32,7 @@ class SyllabusSearchQuery extends _$SyllabusSearchQuery {
 }
 
 class SyllabusState {
-  final List<Syllabus> syllabi;
+  final List<Resource> syllabi;
   final int total;
   final bool isLoadingMore;
   final bool hasMore;
@@ -43,7 +45,7 @@ class SyllabusState {
   });
 
   SyllabusState copyWith({
-    List<Syllabus>? syllabi,
+    List<Resource>? syllabi,
     int? total,
     bool? isLoadingMore,
     bool? hasMore,
@@ -66,10 +68,13 @@ class SyllabusPagination extends _$SyllabusPagination {
     final search = ref.watch(syllabusSearchQueryProvider);
     final profile = await ref.watch(userProvider.future);
 
-    final repo = ref.watch(syllabusRepositoryProvider);
-    final result = await repo.getSyllabi(
+    // Loaded as plain resources so the page can use the shared ResourceCard.
+    final repo = ref.watch(resourceRepositoryProvider);
+    final result = await repo.getResources(
       universityId: profile.information.universityId ?? '',
       departmentId: profile.information.departmentId ?? '',
+      type: 'syllabus',
+      status: 'published',
       search: search.isEmpty ? null : search,
       limit: _limit,
       offset: 0,
@@ -78,9 +83,9 @@ class SyllabusPagination extends _$SyllabusPagination {
     return result.fold(
       (failure) => throw failure,
       (paginated) => SyllabusState(
-        syllabi: paginated.syllabi,
+        syllabi: paginated.resources,
         total: paginated.total,
-        hasMore: paginated.syllabi.length < paginated.total,
+        hasMore: paginated.resources.length < paginated.total,
       ),
     );
   }
@@ -99,10 +104,12 @@ class SyllabusPagination extends _$SyllabusPagination {
     final profile = ref.read(userProvider).asData?.value;
     if (profile == null) return;
 
-    final repo = ref.read(syllabusRepositoryProvider);
-    final result = await repo.getSyllabi(
+    final repo = ref.read(resourceRepositoryProvider);
+    final result = await repo.getResources(
       universityId: profile.information.universityId ?? '',
       departmentId: profile.information.departmentId ?? '',
+      type: 'syllabus',
+      status: 'published',
       search: search.isEmpty ? null : search,
       limit: _limit,
       offset: currentState.syllabi.length,
@@ -111,7 +118,7 @@ class SyllabusPagination extends _$SyllabusPagination {
       (_) =>
           state = AsyncValue.data(currentState.copyWith(isLoadingMore: false)),
       (paginated) {
-        final newSyllabi = [...currentState.syllabi, ...paginated.syllabi];
+        final newSyllabi = [...currentState.syllabi, ...paginated.resources];
         state = AsyncValue.data(
           currentState.copyWith(
             syllabi: newSyllabi,

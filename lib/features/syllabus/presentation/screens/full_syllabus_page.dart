@@ -1,10 +1,11 @@
 import 'dart:async';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/syllabus_provider.dart';
-import '../../../study/shortcut/syllabus/syllabus_card.dart';
+import '/features/resource/presentation/widgets/resource_card.dart';
 import '/core/widgets/custom_header_layout.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -96,7 +97,7 @@ class _FullSyllabusPageState extends ConsumerState<FullSyllabusPage> {
               itemCount: state.syllabi.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index < state.syllabi.length) {
-                  return SyllabusCard(syllabus: state.syllabi[index]);
+                  return ResourceCard(resource: state.syllabi[index]);
                 }
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: Spacing.lg),

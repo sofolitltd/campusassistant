@@ -77,6 +77,10 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   bool _isPaused = false;
   double _downloadProgress = 0;
   bool _isDownloaded = false;
+  // Coins/Pro access already granted for this file in the current session.
+  // A download that fails *after* the spend must not re-charge the user on
+  // their next tap — the gate re-runs otherwise and spends coins again.
+  bool _accessGranted = false;
   bool _isBookmarked = false;
   String? _bookmarkId;
   String? _savedBookmarkId;
@@ -754,10 +758,13 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   /// → unlock-dialog logic instead of diverging into separate gates. Does
   /// NOT download or open anything itself — only decides access.
   Future<bool> _canAccessResource() async {
-    if (_isDownloaded) return true;
+    if (_isDownloaded || _accessGranted) return true;
 
     final isProUser = ref.read(isProUserProvider);
-    if (isProUser) return true;
+    if (isProUser) {
+      _accessGranted = true;
+      return true;
+    }
 
     final isProContent = widget.resource.accessLevel == 'pro';
     if (isProContent) {
@@ -765,7 +772,9 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       return false;
     }
 
-    return _checkRewardGate();
+    final granted = await _checkRewardGate();
+    if (granted) _accessGranted = true;
+    return granted;
   }
 
   Future<void> _handleDownloadTap() async {
@@ -1121,36 +1130,72 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
   Future<bool> _downloadFile(String url, String path) async {
     try {
-      await downloadClient.download(
-        url,
-        path,
-        cancelToken: _cancelToken,
-        onReceiveProgress: (count, total) {
-          if (total != -1 && mounted) {
-            setState(() {
-              _downloadProgress = count / total;
-            });
-          }
-        },
-      );
-      // Cache metadata for the downloads page
-      if (mounted) {
-        final cacheManager = ref.read(cacheManagerProvider);
-        await cacheDownloadedResourceMetadata(
-          cacheManager: cacheManager,
-          resource: widget.resource,
-        );
-        ref.read(resourceRepositoryProvider).recordDownload(widget.resource.id);
-        // The downloads page and the study page's badge both list files on
-        // disk, so refresh them now the new file is there.
-        ref.invalidate(downloadedFilesProvider);
-        ref.invalidate(downloadCountProvider);
-      }
-      return true;
+      await _fetchToFile(url, path);
     } catch (e) {
       log('Download error: $e');
-      return false;
+      // Devices on networks that can't reach R2's pub-*.r2.dev links (ISP /
+      // DNS filtering) fail instantly while the API server itself stays
+      // reachable — stream the same object through the backend's already
+      // existing, storage-host-whitelisted /proxy route as a fallback.
+      if (url.contains('r2.dev')) {
+        _cancelToken = CancelToken();
+        try {
+          await _fetchToFile(
+            '${ApiEndpoints.baseUrl}/proxy?url=${Uri.encodeComponent(url)}',
+            path,
+          );
+        } catch (proxyErr) {
+          log('Proxy download error: $proxyErr');
+          if (mounted) {
+            _showDownloadFailedToast();
+          }
+          return false;
+        }
+      } else {
+        if (mounted) {
+          _showDownloadFailedToast();
+        }
+        return false;
+      }
     }
+    // Cache metadata for the downloads page
+    if (mounted) {
+      final cacheManager = ref.read(cacheManagerProvider);
+      await cacheDownloadedResourceMetadata(
+        cacheManager: cacheManager,
+        resource: widget.resource,
+      );
+      ref.read(resourceRepositoryProvider).recordDownload(widget.resource.id);
+      // The downloads page and the study page's badge both list files on
+      // disk, so refresh them now the new file is there.
+      ref.invalidate(downloadedFilesProvider);
+      ref.invalidate(downloadCountProvider);
+    }
+    return true;
+  }
+
+  /// Never fail silently — a user who just paid coins for this file deserves
+  /// to know the download (not the payment) failed.
+  void _showDownloadFailedToast() {
+    Fluttertoast.showToast(
+      msg: 'Download failed. Tap the download icon to try again.',
+      gravity: ToastGravity.BOTTOM,
+    );
+  }
+
+  Future<void> _fetchToFile(String target, String path) async {
+    await downloadClient.download(
+      target,
+      path,
+      cancelToken: _cancelToken,
+      onReceiveProgress: (count, total) {
+        if (total != -1 && mounted) {
+          setState(() {
+            _downloadProgress = count / total;
+          });
+        }
+      },
+    );
   }
 
   void _pauseDownload() {
@@ -1238,6 +1283,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         if (mounted) {
           setState(() {
             _isDownloaded = false;
+            _accessGranted = false;
             _downloadProgress = 0;
           });
         }

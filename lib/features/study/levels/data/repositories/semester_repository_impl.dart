@@ -29,23 +29,10 @@ class SemesterRepositoryImpl implements SemesterRepository {
   }) async {
     final cacheKey = 'semester_uni_${universityId}_dept_$departmentId';
 
-    // 1. Try DB cache
-    try {
-      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
-      if (cachedData.isNotEmpty) {
-        final semesters = cachedData
-            .map((json) => SemesterModel.fromJson(json).toEntity())
-            .toList();
-        debugPrint(
-          '[SemesterRepo] Returning ${semesters.length} cached semesters',
-        );
-        return Right(semesters);
-      }
-    } catch (e) {
-      debugPrint('[SemesterRepo] Cache read failed: $e');
-    }
-
-    // 2. Try remote if online
+    // 1. Try remote first when online. The cache is an offline fallback, not
+    // the source of truth: cache-first hid freshly created semesters for up
+    // to CacheTTL.semester (12h), surviving app restarts and pull-to-refresh.
+    // Mirrors batch_repository_impl's getBatches pattern.
     if (connectivity.isConnected) {
       try {
         final queryParams = {
@@ -78,7 +65,22 @@ class SemesterRepositoryImpl implements SemesterRepository {
       }
     }
 
-    // 3. No data
+    // 2. Offline fallback: DB cache
+    try {
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
+      if (cachedData.isNotEmpty) {
+        final semesters = cachedData
+            .map((json) => SemesterModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint(
+          '[SemesterRepo] Offline: returning ${semesters.length} cached semesters',
+        );
+        return Right(semesters);
+      }
+    } catch (e) {
+      debugPrint('[SemesterRepo] Cache read failed: $e');
+    }
+
     if (!connectivity.isConnected) {
       return const Left(
         NetworkFailure(

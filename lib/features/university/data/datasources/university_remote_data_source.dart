@@ -27,7 +27,10 @@ class UniversityRemoteDataSourceImpl implements UniversityRemoteDataSource {
 
   @override
   Future<List<UniversityModel>> getUniversities() async {
-    final response = await apiClient.get(ApiEndpoints.universities);
+    final response = await apiClient.get(
+      ApiEndpoints.universities,
+      queryParameters: {'limit': 500},
+    );
 
     // The Go backend returns paginated response: {"count":N, "data":[...], "limit":10, "offset":0}
     final Map<String, dynamic> body = response.data;
@@ -92,7 +95,7 @@ class UniversityRemoteDataSourceImpl implements UniversityRemoteDataSource {
   Future<List<HallModel>> getHalls(String universityId) async {
     final response = await apiClient.get(
       ApiEndpoints.halls,
-      queryParameters: {'university_id': universityId},
+      queryParameters: {'university_id': universityId, 'limit': 500},
     );
 
     final Map<String, dynamic> body = response.data;

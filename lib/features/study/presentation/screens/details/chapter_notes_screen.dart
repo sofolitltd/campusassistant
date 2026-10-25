@@ -144,7 +144,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
         universityId: universityId,
         departmentId: departmentId,
         courseCode: widget.courseCode,
-        batchId: selectedBatch?.id,
+        batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
       ),
     );
 
@@ -178,7 +178,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
       type: _currentTab == 0 ? 'note' : 'video',
       courseCode: widget.courseCode,
       batch: null,
-      batchId: selectedBatch?.id,
+      batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
       lessonNo: int.tryParse(_selectedChapterNo ?? widget.chapterNo) ?? 0,
       createdById: null,
       status: null,

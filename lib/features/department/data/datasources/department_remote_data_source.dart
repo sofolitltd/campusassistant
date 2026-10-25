@@ -21,7 +21,7 @@ class DepartmentRemoteDataSourceImpl implements DepartmentRemoteDataSource {
   }) async {
     final response = await apiClient.get(
       ApiEndpoints.departments,
-      queryParameters: {'university_id': universityId},
+      queryParameters: {'university_id': universityId, 'limit': 500},
     );
 
     // The Go backend returns paginated response: {"count":N, "data":[...], "limit":10, "offset":0}

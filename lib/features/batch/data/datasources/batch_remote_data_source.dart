@@ -18,7 +18,7 @@ class BatchRemoteDataSourceImpl implements BatchRemoteDataSource {
   Future<List<BatchModel>> getBatches({required String departmentId}) async {
     final response = await apiClient.get(
       ApiEndpoints.batches,
-      queryParameters: {'department_id': departmentId},
+      queryParameters: {'department_id': departmentId, 'limit': 500},
     );
 
     final Map<String, dynamic> body = response.data;

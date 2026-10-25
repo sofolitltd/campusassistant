@@ -57,44 +57,10 @@ class ResourceRepositoryImpl implements ResourceRepository {
       levelId: levelId,
     );
 
-    // 1. Try DB cache
-    try {
-      final cachedData = await cacheManager.getCachedList(
-        entityType: 'resource_$cacheKey',
-      );
-
-      if (cachedData.isNotEmpty) {
-        final resources = <Resource>[];
-        for (final json in cachedData) {
-          try {
-            resources.add(ResourceModel.fromJson(json).toEntity());
-          } catch (e) {
-            debugPrint(
-              '[ResourceRepo] Skipping cached item due to parse error: $e',
-            );
-          }
-        }
-
-        int total = cachedData.length;
-        final totalEntry = await cacheManager.getCachedSingle(
-          entityType: 'resource_total_$cacheKey',
-          entityKey: 'total',
-        );
-        if (totalEntry != null && totalEntry['total'] is int) {
-          total = totalEntry['total'] as int;
-        }
-
-        debugPrint(
-          '[ResourceRepo] Returning ${resources.length} cached resources',
-        );
-        final result = PaginatedResources(resources: resources, total: total);
-        return Right(result);
-      }
-    } catch (e) {
-      debugPrint('[ResourceRepo] Cache read failed: $e');
-    }
-
-    // 2. Try remote if online
+    // 1. Try remote first when online. The cache is an offline fallback, not
+    // the source of truth: cache-first hid freshly uploaded/created resources
+    // for up to CacheTTL.resource, surviving restarts and pull-to-refresh.
+    // Mirrors batch_repository_impl's getBatches pattern.
     if (connectivity.isConnected) {
       try {
         final queryParams = {
@@ -161,6 +127,43 @@ class ResourceRepositoryImpl implements ResourceRepository {
       } catch (e) {
         debugPrint('[ResourceRepo] Remote fetch failed: $e');
       }
+    }
+
+    // 2. Offline fallback: DB cache
+    try {
+      final cachedData = await cacheManager.getCachedList(
+        entityType: 'resource_$cacheKey',
+      );
+
+      if (cachedData.isNotEmpty) {
+        final resources = <Resource>[];
+        for (final json in cachedData) {
+          try {
+            resources.add(ResourceModel.fromJson(json).toEntity());
+          } catch (e) {
+            debugPrint(
+              '[ResourceRepo] Skipping cached item due to parse error: $e',
+            );
+          }
+        }
+
+        int total = cachedData.length;
+        final totalEntry = await cacheManager.getCachedSingle(
+          entityType: 'resource_total_$cacheKey',
+          entityKey: 'total',
+        );
+        if (totalEntry != null && totalEntry['total'] is int) {
+          total = totalEntry['total'] as int;
+        }
+
+        debugPrint(
+          '[ResourceRepo] Offline: returning ${resources.length} cached resources',
+        );
+        final result = PaginatedResources(resources: resources, total: total);
+        return Right(result);
+      }
+    } catch (e) {
+      debugPrint('[ResourceRepo] Cache read failed: $e');
     }
 
     // 3. No data

@@ -27,23 +27,10 @@ class ChapterRepositoryImpl implements ChapterRepository {
   }) async {
     final cacheKey = 'chapter_${courseCode}_batch_${batchId ?? 'all'}';
 
-    // 1. Try DB cache
-    try {
-      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
-      if (cachedData.isNotEmpty) {
-        final chapters = cachedData
-            .map((json) => ChapterModel.fromJson(json).toEntity())
-            .toList();
-        debugPrint(
-          '[ChapterRepo] Returning ${chapters.length} cached chapters',
-        );
-        return Right(chapters);
-      }
-    } catch (e) {
-      debugPrint('[ChapterRepo] Cache read failed: $e');
-    }
-
-    // 2. Try remote if online
+    // 1. Try remote first when online. The cache is an offline fallback, not
+    // the source of truth: cache-first hid freshly created chapters for up to
+    // CacheTTL.chapter, surviving restarts and pull-to-refresh. Mirrors
+    // batch_repository_impl's getBatches pattern.
     if (connectivity.isConnected) {
       try {
         final chapters = await remoteDataSource.getChapters(
@@ -67,7 +54,22 @@ class ChapterRepositoryImpl implements ChapterRepository {
       }
     }
 
-    // 3. No data
+    // 2. Offline fallback: DB cache
+    try {
+      final cachedData = await cacheManager.getCachedList(entityType: cacheKey);
+      if (cachedData.isNotEmpty) {
+        final chapters = cachedData
+            .map((json) => ChapterModel.fromJson(json).toEntity())
+            .toList();
+        debugPrint(
+          '[ChapterRepo] Offline: returning ${chapters.length} cached chapters',
+        );
+        return Right(chapters);
+      }
+    } catch (e) {
+      debugPrint('[ChapterRepo] Cache read failed: $e');
+    }
+
     if (!connectivity.isConnected) {
       return const Left(
         NetworkFailure(

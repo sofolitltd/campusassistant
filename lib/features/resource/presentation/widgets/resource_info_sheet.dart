@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/resource/domain/entities/resource.dart';
@@ -15,6 +16,7 @@ import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/reward/presentation/widgets/reward_cost_indicator.dart';
+import '/routes/app_route.dart';
 import '/utils/date_formatters.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/widgets/app_network_image.dart';
@@ -220,44 +222,60 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
           Row(
             crossAxisAlignment: .start,
             children: [
-              Container(
-                width: 110,
-                height: 128,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(RadiusToken.sm),
-                  border: Border.all(
-                    color: context.colors.borderStrong,
-                    width: 1,
+              GestureDetector(
+                // Thumbnail → full-screen viewer (pinch-to-zoom); only
+                // tappable when there is an actual image to show.
+                onTap: resource.thumbnailUrl.isNotEmpty
+                    ? () => context.pushNamed(
+                        AppRoute.imageViewer.name,
+                        queryParameters: {
+                          'title': resource.title,
+                          'time': resource.createdAt != null
+                              ? formatDateDdMmYyyy(resource.createdAt!)
+                              : '',
+                          'image': resource.thumbnailUrl,
+                        },
+                      )
+                    : null,
+                child: Container(
+                  width: 110,
+                  height: 128,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
+                    border: Border.all(
+                      color: context.colors.borderStrong,
+                      width: 1,
+                    ),
                   ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(RadiusToken.sm - 1),
-                  child: resource.thumbnailUrl.isNotEmpty
-                      ? AppNetworkImage(
-                          ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
-                          fit: .cover,
-                          placeholder: (context) => Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.sm - 1),
+                    child: resource.thumbnailUrl.isNotEmpty
+                        ? AppNetworkImage(
+                            ApiEndpoints.resolveImageUrl(resource.thumbnailUrl),
+                            fit: .cover,
+                            placeholder: (context) => Center(
+                              child: Icon(
+                                _getIconForType(resource.type),
+                                size: 44,
+                                color: context.colors.primary,
+                              ),
+                            ),
+                            errorBuilder: (context, _, _) => Center(
+                              child: Icon(
+                                _getIconForType(resource.type),
+                                size: 44,
+                                color: context.colors.primary,
+                              ),
+                            ),
+                          )
+                        : Center(
                             child: Icon(
                               _getIconForType(resource.type),
                               size: 44,
                               color: context.colors.primary,
                             ),
                           ),
-                          errorBuilder: (context, _, _) => Center(
-                            child: Icon(
-                              _getIconForType(resource.type),
-                              size: 44,
-                              color: context.colors.primary,
-                            ),
-                          ),
-                        )
-                      : Center(
-                          child: Icon(
-                            _getIconForType(resource.type),
-                            size: 44,
-                            color: context.colors.primary,
-                          ),
-                        ),
+                  ),
                 ),
               ),
               const SizedBox(width: Spacing.lg),

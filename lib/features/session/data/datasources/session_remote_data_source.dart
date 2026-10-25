@@ -18,7 +18,7 @@ class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
   Future<List<SessionModel>> getSessions({required String universityId}) async {
     final response = await apiClient.get(
       ApiEndpoints.sessions,
-      queryParameters: {'university_id': universityId},
+      queryParameters: {'university_id': universityId, 'limit': 500},
     );
 
     final Map<String, dynamic> body = response.data;

@@ -38,6 +38,17 @@ class DeviceRepository {
     );
   }
 
+  /// Bumps this device's last_seen_at — called periodically while the app is
+  /// foregrounded so admin's "active users" stat reflects real-time usage.
+  /// Best-effort by design in [FirebaseApi]'s caller: a dropped heartbeat
+  /// just means this device looks idle a bit early, nothing breaks.
+  Future<void> heartbeat(String fcmToken) async {
+    await apiClient.post(
+      ApiEndpoints.devicesHeartbeat,
+      data: {'fcm_token': fcmToken},
+    );
+  }
+
   Future<void> unregisterDevice(String fcmToken) async {
     await apiClient.post(
       ApiEndpoints.devicesUnregister,

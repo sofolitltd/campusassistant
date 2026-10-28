@@ -166,6 +166,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         final wsService = ref.read(websocketServiceProvider);
         wsService.reconnectIfNeeded();
       }
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      // Stop the heartbeat while backgrounded — initNotifications() above
+      // restarts it on the next resume.
+      FirebaseApi().stopHeartbeat();
     }
   }
 

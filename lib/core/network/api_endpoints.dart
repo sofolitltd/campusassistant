@@ -1,5 +1,7 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+
 import '../config/env.dart';
 
 class ApiEndpoints {
@@ -120,6 +122,7 @@ class ApiEndpoints {
   static String deviceDetail(String id) => '/devices/$id';
   static const String devicesLogoutAll = '/devices/logout-all';
   static const String devicesLogoutOthers = '/devices/logout-others';
+  static const String devicesHeartbeat = '/devices/heartbeat';
 
   // Chat
   static const String conversations = '/conversations';

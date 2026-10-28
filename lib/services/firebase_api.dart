@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io' show File, Platform;
@@ -62,6 +63,12 @@ class FirebaseApi {
 
   String? _currentToken;
   bool _handlersRegistered = false;
+  Timer? _heartbeatTimer;
+
+  // Comfortably inside the backend's 5-minute "active now" window (see
+  // ActiveUserStats.Now), so a still-open app never reads as idle between
+  // beats even if one call is delayed or dropped.
+  static const _heartbeatInterval = Duration(minutes: 2);
 
   /// The current app install's FCM token, if it's been fetched yet — used to
   /// flag "this device" in the device-management screen and to exclude it
@@ -145,14 +152,46 @@ class FirebaseApi {
   Future<void> _registerToken(String token) async {
     try {
       await _deviceRepository.registerDevice(token, _platform);
+      _startHeartbeat();
     } catch (e) {
       log('[FCM] failed to register device token: $e');
+    }
+  }
+
+  /// Starts (or restarts) the periodic heartbeat that keeps this device's
+  /// last_seen_at fresh while the app is foregrounded. Safe to call
+  /// repeatedly — e.g. every app resume — since it cancels any existing
+  /// timer first.
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _sendHeartbeat();
+    _heartbeatTimer = Timer.periodic(
+      _heartbeatInterval,
+      (_) => _sendHeartbeat(),
+    );
+  }
+
+  /// Call when the app goes to background — no point spending battery/data
+  /// heartbeating a session nobody's looking at.
+  void stopHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+  }
+
+  Future<void> _sendHeartbeat() async {
+    final token = _currentToken;
+    if (token == null) return;
+    try {
+      await _deviceRepository.heartbeat(token);
+    } catch (e) {
+      log('[FCM] heartbeat failed: $e');
     }
   }
 
   /// Call before logging out so this device stops receiving push addressed
   /// to the account that's signing out. Best-effort — never blocks logout.
   Future<void> unregisterCurrentDevice() async {
+    stopHeartbeat();
     final token = _currentToken;
     if (token == null) return;
     try {

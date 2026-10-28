@@ -135,7 +135,7 @@ final class SyllabusPaginationProvider
 }
 
 String _$syllabusPaginationHash() =>
-    r'd6445c7285baa16abc9e5d4fcc53d80a62120786';
+    r'd632ce552b7cb444af637244ecb7a7a07a3fb7cd';
 
 abstract class _$SyllabusPagination extends $AsyncNotifier<SyllabusState> {
   FutureOr<SyllabusState> build();

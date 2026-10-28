@@ -47,6 +47,7 @@ app.*.map.json
 .env
 .env.local
 .env.lan
+.env.web
 
 # Service account credentials
 assets/data/campusassistantbd.json

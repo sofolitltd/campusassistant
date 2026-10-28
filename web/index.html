@@ -71,10 +71,27 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
+  <!-- cropperjs: image_cropper_for_web binds to this as a global `Cropper`
+       class (see its cropper_interop.dart @JS("Cropper") extension type).
+       Without these two tags the crop box/handles never render (no CSS)
+       and every cropper call (rotate, crop, ...) throws since the class
+       doesn't exist — the edit-profile photo cropper on web depends on
+       this. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
   <title>Campus Assistant — Smart assistant on Campus</title>
   <link rel="manifest" href="manifest.json">
 
   <style>
+    /* image_picker_for_web injects a raw <input type="file"> into a
+       <flt-image-picker-inputs> element on document.body for every pick
+       (gallery/camera) and leaves it there unstyled — it expects the host
+       page to hide it. Without this it renders as a stray "Choose File"
+       control in the corner of the page. */
+    flt-image-picker-inputs {
+      display: none !important;
+    }
     #app-loading {
       position: fixed;
       inset: 0;

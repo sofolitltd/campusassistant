@@ -33,7 +33,23 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final addressesAsync = ref.watch(addressesProvider);
     final cartItems = ref.watch(cartProvider);
-    final totalAmount = ref.read(cartProvider.notifier).totalAmount;
+
+    // Resolve the default address up front (same fallback the address block
+    // below applies) so the order summary's delivery charge matches what
+    // actually renders there, instead of lagging a build behind it.
+    final addresses = addressesAsync.value;
+    if (_selectedAddress == null && addresses != null) {
+      final defaultAddr = addresses.where((a) => a.isDefault).firstOrNull;
+      _selectedAddress = defaultAddr ?? addresses.firstOrNull;
+    }
+
+    final subtotal = ref.read(cartProvider.notifier).totalAmount;
+    final deliveryCharge = _selectedAddress == null
+        ? 0
+        : ref
+              .read(cartProvider.notifier)
+              .deliveryChargeFor(_selectedAddress!.city);
+    final totalAmount = subtotal + deliveryCharge;
 
     return HeaderGradientBackdrop(
       child: Scaffold(
@@ -46,216 +62,236 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
-            child: ListView(
-              padding: const EdgeInsets.all(Spacing.lg),
-              children: [
-                const Text(
-                  'Shipping Address',
-                  style: TextStyle(
-                    fontWeight: .bold,
-                    fontSize: FontSizeToken.lg,
+              constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+              child: ListView(
+                padding: const EdgeInsets.all(Spacing.lg),
+                children: [
+                  const Text(
+                    'Shipping Address',
+                    style: TextStyle(
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.lg,
+                    ),
                   ),
-                ),
-                const SizedBox(height: Spacing.sm),
-                addressesAsync.when(
-                  data: (addresses) {
-                    final defaultAddr = addresses
-                        .where((a) => a.isDefault)
-                        .firstOrNull;
-                    _selectedAddress ??= defaultAddr ?? addresses.firstOrNull;
+                  const SizedBox(height: Spacing.sm),
+                  addressesAsync.when(
+                    data: (addresses) {
+                      final defaultAddr = addresses
+                          .where((a) => a.isDefault)
+                          .firstOrNull;
+                      _selectedAddress ??= defaultAddr ?? addresses.firstOrNull;
 
-                    if (_selectedAddress == null) {
+                      if (_selectedAddress == null) {
+                        return GestureDetector(
+                          onTap: () => context
+                              .push(AppRoute.marketplaceAddressForm.path)
+                              .then((_) => ref.invalidate(addressesProvider)),
+                          child: Container(
+                            padding: const EdgeInsets.all(Spacing.lg),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: context.colors.borderStrong,
+                                style: BorderStyle.solid,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                RadiusToken.md,
+                              ),
+                              color: context.colors.surfaceAlt,
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(LucideIcons.plus, size: 20),
+                                SizedBox(width: Spacing.sm),
+                                Text('Add a shipping address'),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
                       return GestureDetector(
                         onTap: () => context
-                            .push(AppRoute.marketplaceAddressForm.path)
-                            .then((_) => ref.invalidate(addressesProvider)),
+                            .push(AppRoute.marketplaceAddresses.path)
+                            .then((_) {
+                              ref.invalidate(addressesProvider);
+                              setState(() {
+                                _selectedAddress = null;
+                              });
+                            }),
                         child: Container(
-                          padding: const EdgeInsets.all(Spacing.lg),
+                          padding: const EdgeInsets.all(Spacing.md),
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: context.colors.borderStrong,
-                              style: BorderStyle.solid,
                             ),
                             borderRadius: BorderRadius.circular(RadiusToken.md),
-                            color: context.colors.surfaceAlt,
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(LucideIcons.plus, size: 20),
-                              SizedBox(width: Spacing.sm),
-                              Text('Add a shipping address'),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: .start,
+                                  children: [
+                                    Text(
+                                      '${_selectedAddress!.label} — ${_selectedAddress!.recipientName}',
+                                      style: const TextStyle(fontWeight: .w600),
+                                    ),
+                                    Text(
+                                      _selectedAddress!.phone,
+                                      style: TextStyle(
+                                        color: context.colors.textSubtle,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${_selectedAddress!.addressLine}, ${_selectedAddress!.city}',
+                                      style: TextStyle(
+                                        color: context.colors.textSubtle,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Icon(LucideIcons.chevronRight),
                             ],
                           ),
                         ),
                       );
-                    }
-
-                    return GestureDetector(
-                      onTap: () => context
-                          .push(AppRoute.marketplaceAddresses.path)
-                          .then((_) {
-                            ref.invalidate(addressesProvider);
-                            setState(() {
-                              _selectedAddress = null;
-                            });
-                          }),
-                      child: Container(
-                        padding: const EdgeInsets.all(Spacing.md),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: context.colors.borderStrong,
-                          ),
-                          borderRadius: BorderRadius.circular(RadiusToken.md),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: .start,
-                                children: [
-                                  Text(
-                                    '${_selectedAddress!.label} — ${_selectedAddress!.recipientName}',
-                                    style: const TextStyle(fontWeight: .w600),
-                                  ),
-                                  Text(
-                                    _selectedAddress!.phone,
-                                    style: TextStyle(
-                                      color: context.colors.textSubtle,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${_selectedAddress!.addressLine}, ${_selectedAddress!.city}',
-                                    style: TextStyle(
-                                      color: context.colors.textSubtle,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Icon(LucideIcons.chevronRight),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  loading: () => const CupertinoActivityIndicator(),
-                  error: (e, _) => Text('Error: $e'),
-                ),
-                const SizedBox(height: Spacing.xxl),
-                const Text(
-                  'Order Summary',
-                  style: TextStyle(
-                    fontWeight: .bold,
-                    fontSize: FontSizeToken.lg,
+                    },
+                    loading: () => const CupertinoActivityIndicator(),
+                    error: (e, _) => Text('Error: $e'),
                   ),
-                ),
-                const SizedBox(height: Spacing.sm),
-                ...cartItems.map(
-                  (item) => Padding(
-                    padding: const EdgeInsets.only(bottom: Spacing.sm),
-                    child: Row(
+                  const SizedBox(height: Spacing.xxl),
+                  const Text(
+                    'Order Summary',
+                    style: TextStyle(
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.lg,
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.sm),
+                  ...cartItems.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: Spacing.sm),
+                      child: Row(
+                        mainAxisAlignment: .spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${item.product.title} x${item.quantity}',
+                              maxLines: 1,
+                              overflow: .ellipsis,
+                            ),
+                          ),
+                          Text(
+                            '৳${item.totalPrice}',
+                            style: const TextStyle(fontWeight: .bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (deliveryCharge > 0) ...[
+                    Row(
                       mainAxisAlignment: .spaceBetween,
                       children: [
-                        Expanded(
-                          child: Text(
-                            '${item.product.title} x${item.quantity}',
-                            maxLines: 1,
-                            overflow: .ellipsis,
-                          ),
+                        Text(
+                          'Delivery Charge',
+                          style: TextStyle(color: context.colors.textMuted),
                         ),
                         Text(
-                          '৳${item.totalPrice}',
+                          '৳$deliveryCharge',
                           style: const TextStyle(fontWeight: .bold),
                         ),
                       ],
                     ),
-                  ),
-                ),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    const Text(
-                      'Total',
-                      style: TextStyle(
-                        fontWeight: .bold,
-                        fontSize: FontSizeToken.lg,
-                      ),
-                    ),
-                    Text(
-                      '৳$totalAmount',
-                      style: const TextStyle(
-                        fontWeight: .bold,
-                        fontSize: FontSizeToken.lg,
-                      ),
-                    ),
+                    const SizedBox(height: Spacing.sm),
                   ],
-                ),
-                const SizedBox(height: Spacing.xxl),
-                const Text(
-                  'Payment Method',
-                  style: TextStyle(
-                    fontWeight: .bold,
-                    fontSize: FontSizeToken.lg,
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      const Text(
+                        'Total',
+                        style: TextStyle(
+                          fontWeight: .bold,
+                          fontSize: FontSizeToken.lg,
+                        ),
+                      ),
+                      Text(
+                        '৳$totalAmount',
+                        style: const TextStyle(
+                          fontWeight: .bold,
+                          fontSize: FontSizeToken.lg,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: Spacing.sm),
-                _PaymentMethodTile(
-                  icon: LucideIcons.smartphone,
-                  title: 'Pay with bKash',
-                  subtitle: 'Pay online now via bKash',
-                  selected: _paymentMethod == MarketplacePaymentMethod.bkash,
-                  onTap: _isProcessing
-                      ? null
-                      : () => setState(
-                          () => _paymentMethod = MarketplacePaymentMethod.bkash,
-                        ),
-                ),
-                const SizedBox(height: Spacing.md),
-                _PaymentMethodTile(
-                  icon: LucideIcons.banknote,
-                  title: 'Cash on Delivery',
-                  subtitle: 'Pay in cash when your order arrives',
-                  selected:
-                      _paymentMethod == MarketplacePaymentMethod.cashOnDelivery,
-                  onTap: _isProcessing
-                      ? null
-                      : () => setState(
-                          () => _paymentMethod =
-                              MarketplacePaymentMethod.cashOnDelivery,
-                        ),
-                ),
-                const SizedBox(height: Spacing.xxxl),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _selectedAddress == null || _isProcessing
+                  const SizedBox(height: Spacing.xxl),
+                  const Text(
+                    'Payment Method',
+                    style: TextStyle(
+                      fontWeight: .bold,
+                      fontSize: FontSizeToken.lg,
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.sm),
+                  _PaymentMethodTile(
+                    icon: LucideIcons.smartphone,
+                    title: 'Pay with bKash',
+                    subtitle: 'Pay online now via bKash',
+                    selected: _paymentMethod == MarketplacePaymentMethod.bkash,
+                    onTap: _isProcessing
                         ? null
-                        : _placeOrder,
-                    style: ElevatedButton.styleFrom(),
-                    child: _isProcessing
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CupertinoActivityIndicator(),
-                          )
-                        : Text(
-                            _paymentMethod == MarketplacePaymentMethod.bkash
-                                ? 'Place Order — Pay with bKash'
-                                : 'Place Order — Cash on Delivery',
-                            style: const TextStyle(
-                              fontWeight: .bold,
-                              fontSize: FontSizeToken.lg,
-                            ),
+                        : () => setState(
+                            () =>
+                                _paymentMethod = MarketplacePaymentMethod.bkash,
                           ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: Spacing.md),
+                  _PaymentMethodTile(
+                    icon: LucideIcons.banknote,
+                    title: 'Cash on Delivery',
+                    subtitle: 'Pay in cash when your order arrives',
+                    selected:
+                        _paymentMethod ==
+                        MarketplacePaymentMethod.cashOnDelivery,
+                    onTap: _isProcessing
+                        ? null
+                        : () => setState(
+                            () => _paymentMethod =
+                                MarketplacePaymentMethod.cashOnDelivery,
+                          ),
+                  ),
+                  const SizedBox(height: Spacing.xxxl),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _selectedAddress == null || _isProcessing
+                          ? null
+                          : _placeOrder,
+                      style: ElevatedButton.styleFrom(),
+                      child: _isProcessing
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CupertinoActivityIndicator(),
+                            )
+                          : Text(
+                              _paymentMethod == MarketplacePaymentMethod.bkash
+                                  ? 'Place Order — Pay with bKash'
+                                  : 'Place Order — Cash on Delivery',
+                              style: const TextStyle(
+                                fontWeight: .bold,
+                                fontSize: FontSizeToken.lg,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }

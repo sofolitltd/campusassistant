@@ -28,6 +28,13 @@ class Merchant {
   final int ratingCount;
   final double avgShipHours;
   final int shippedCount;
+  // Base city for delivery-charge zoning, and the two flat delivery fees
+  // (Taka) this merchant charges per order — deliveryChargeInside when the
+  // buyer's shipping city matches [city], deliveryChargeOutside otherwise.
+  // Both default to 0 (free delivery). Unlike phone/email these are public.
+  final String city;
+  final int deliveryChargeInside;
+  final int deliveryChargeOutside;
 
   Merchant({
     required this.id,
@@ -51,6 +58,9 @@ class Merchant {
     this.ratingCount = 0,
     this.avgShipHours = 0,
     this.shippedCount = 0,
+    this.city = '',
+    this.deliveryChargeInside = 0,
+    this.deliveryChargeOutside = 0,
   });
 
   /// Reliable shipper: at least 5 shipped orders averaging a day or less.
@@ -80,6 +90,9 @@ class Merchant {
       ratingCount: json['rating_count'] as int? ?? 0,
       avgShipHours: (json['avg_ship_hours'] as num?)?.toDouble() ?? 0,
       shippedCount: json['shipped_count'] as int? ?? 0,
+      city: json['city'] as String? ?? '',
+      deliveryChargeInside: json['delivery_charge_inside'] as int? ?? 0,
+      deliveryChargeOutside: json['delivery_charge_outside'] as int? ?? 0,
     );
   }
 }

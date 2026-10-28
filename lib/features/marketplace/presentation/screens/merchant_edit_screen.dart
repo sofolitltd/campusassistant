@@ -12,6 +12,7 @@ import '/core/di.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/core/theme/tokens/app_font_size.dart';
 import '../../data/models/merchant.dart';
 import '../providers/marketplace_provider.dart';
 import '../widgets/market_theme.dart';
@@ -55,6 +56,9 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
   late final TextEditingController _websiteController;
   late final TextEditingController _socialMediaController;
   late final TextEditingController _payoutAccountController;
+  late final TextEditingController _cityController;
+  late final TextEditingController _deliveryInsideController;
+  late final TextEditingController _deliveryOutsideController;
   String? _businessType;
   String? _payoutMethod;
 
@@ -76,6 +80,13 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
     _payoutAccountController = TextEditingController(
       text: m.payoutAccount ?? '',
     );
+    _cityController = TextEditingController(text: m.city);
+    _deliveryInsideController = TextEditingController(
+      text: m.deliveryChargeInside.toString(),
+    );
+    _deliveryOutsideController = TextEditingController(
+      text: m.deliveryChargeOutside.toString(),
+    );
     _businessType = m.businessType.isNotEmpty ? m.businessType : null;
     _payoutMethod = m.payoutMethod;
   }
@@ -89,6 +100,9 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
     _websiteController.dispose();
     _socialMediaController.dispose();
     _payoutAccountController.dispose();
+    _cityController.dispose();
+    _deliveryInsideController.dispose();
+    _deliveryOutsideController.dispose();
     super.dispose();
   }
 
@@ -136,6 +150,11 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
         nidProofUrl: widget.merchant.nidProofUrl,
         payoutMethod: _payoutMethod,
         payoutAccount: _payoutAccountController.text.trim(),
+        city: _cityController.text.trim(),
+        deliveryChargeInside:
+            int.tryParse(_deliveryInsideController.text.trim()) ?? 0,
+        deliveryChargeOutside:
+            int.tryParse(_deliveryOutsideController.text.trim()) ?? 0,
       );
 
       ref.invalidate(myMerchantsProvider);
@@ -316,6 +335,51 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                       ),
                       validator: (v) =>
                           (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    ),
+                    const SizedBox(height: Spacing.xl),
+                    const Text(
+                      'Delivery Charge',
+                      style: TextStyle(fontWeight: .w600),
+                    ),
+                    const SizedBox(height: Spacing.xxs),
+                    Text(
+                      'Flat fee you charge per order. Leave both at 0 for free delivery.',
+                      style: TextStyle(
+                        color: context.colors.textSubtle,
+                        fontSize: FontSizeToken.sm,
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.md),
+                    TextFormField(
+                      controller: _cityController,
+                      decoration: const InputDecoration(
+                        labelText: 'Base City',
+                        hintText: 'e.g. Dhaka',
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _deliveryInsideController,
+                            keyboardType: .number,
+                            decoration: const InputDecoration(
+                              labelText: 'Inside City (৳)',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: Spacing.md),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _deliveryOutsideController,
+                            keyboardType: .number,
+                            decoration: const InputDecoration(
+                              labelText: 'Outside City (৳)',
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: Spacing.xxl),
                     ElevatedButton.icon(

@@ -41,126 +41,153 @@ class OrderDetailScreen extends ConsumerWidget {
         body: MarketBody(
           child: Center(
             child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
-            child: orderAsync.when(
-              data: (order) => RefreshIndicator(
-                onRefresh: () async {
-                  ref.invalidate(orderDetailsProvider(orderId));
-                  await ref.read(orderDetailsProvider(orderId).future);
-                },
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(Spacing.lg),
-                  children: [
-                    _Timeline(order: order),
-                    const SizedBox(height: Spacing.md),
-                    if (order.status == 'delivered') ...[
-                      _RateItems(orderId: order.id),
+              constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+              child: orderAsync.when(
+                data: (order) => RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(orderDetailsProvider(orderId));
+                    await ref.read(orderDetailsProvider(orderId).future);
+                  },
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(Spacing.lg),
+                    children: [
+                      _Timeline(order: order),
                       const SizedBox(height: Spacing.md),
-                    ],
-                    _SectionCard(
-                      title: 'Shipping',
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            order.shippingRecipientName,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            order.shippingPhone,
-                            style: TextStyle(color: context.colors.textSubtle),
-                          ),
-                          Text(
-                            '${order.shippingAddressLine}, ${order.shippingCity}',
-                            style: TextStyle(color: context.colors.textSubtle),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.md),
-                    _SectionCard(
-                      title: 'Items',
-                      child: Column(
-                        children: [
-                          ...order.items.map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: Spacing.sm,
+                      if (order.status == 'delivered') ...[
+                        _RateItems(orderId: order.id),
+                        const SizedBox(height: Spacing.md),
+                      ],
+                      _SectionCard(
+                        title: 'Shipping',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              order.shippingRecipientName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
                               ),
-                              child: Row(
+                            ),
+                            Text(
+                              order.shippingPhone,
+                              style: TextStyle(
+                                color: context.colors.textSubtle,
+                              ),
+                            ),
+                            Text(
+                              '${order.shippingAddressLine}, ${order.shippingCity}',
+                              style: TextStyle(
+                                color: context.colors.textSubtle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.md),
+                      _SectionCard(
+                        title: 'Items',
+                        child: Column(
+                          children: [
+                            ...order.items.map(
+                              (item) => Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: Spacing.sm,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.productTitle,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Text(
+                                            'x${item.quantity}',
+                                            style: TextStyle(
+                                              color: context.colors.textSubtle,
+                                              fontSize: FontSizeToken.sm,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      '৳${item.unitPrice * item.quantity}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (order.deliveryCharge > 0) ...[
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item.productTitle,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          'x${item.quantity}',
-                                          style: TextStyle(
-                                            color: context.colors.textSubtle,
-                                            fontSize: FontSizeToken.sm,
-                                          ),
-                                        ),
-                                      ],
+                                  Text(
+                                    'Delivery Charge',
+                                    style: TextStyle(
+                                      color: context.colors.textSubtle,
                                     ),
                                   ),
                                   Text(
-                                    '৳${item.unitPrice * item.quantity}',
+                                    '৳${order.deliveryCharge}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Total',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: FontSizeToken.lg,
-                                ),
-                              ),
-                              Text(
-                                '৳${order.totalAmount}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: FontSizeToken.lg,
-                                ),
-                              ),
+                              const SizedBox(height: Spacing.sm),
                             ],
-                          ),
-                        ],
+                            const Divider(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Total',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: FontSizeToken.lg,
+                                  ),
+                                ),
+                                Text(
+                                  '৳${order.totalAmount}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: FontSizeToken.lg,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: Spacing.lg),
-                    _Actions(order: order),
-                  ],
+                      const SizedBox(height: Spacing.lg),
+                      _Actions(order: order),
+                    ],
+                  ),
                 ),
+                loading: () =>
+                    const Center(child: CupertinoActivityIndicator()),
+                error: (e, _) =>
+                    Center(child: Text('Could not load order: $e')),
               ),
-              loading: () =>
-                  const Center(child: CupertinoActivityIndicator()),
-              error: (e, _) =>
-                  Center(child: Text('Could not load order: $e')),
             ),
           ),
         ),
-      ),
       ),
     );
   }

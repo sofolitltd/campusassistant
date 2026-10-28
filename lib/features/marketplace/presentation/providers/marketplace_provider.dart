@@ -294,6 +294,9 @@ Future<Merchant> updateMerchant(
   String? nidProofUrl,
   String? payoutMethod,
   String? payoutAccount,
+  String? city,
+  int? deliveryChargeInside,
+  int? deliveryChargeOutside,
 }) async {
   final apiClient = ref.read(apiClientProvider);
   final response = await apiClient.put(
@@ -311,6 +314,9 @@ Future<Merchant> updateMerchant(
       'nid_proof_url': nidProofUrl,
       'payout_method': payoutMethod,
       'payout_account': payoutAccount,
+      'city': city,
+      'delivery_charge_inside': deliveryChargeInside,
+      'delivery_charge_outside': deliveryChargeOutside,
     },
   );
   return Merchant.fromJson(response.data as Map<String, dynamic>);

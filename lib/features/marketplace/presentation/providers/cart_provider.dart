@@ -129,6 +129,29 @@ class CartNotifier extends Notifier<List<CartItem>> {
   int get totalItems => state.fold(0, (sum, item) => sum + item.quantity);
 
   int get totalAmount => state.fold(0, (sum, item) => sum + item.totalPrice);
+
+  /// Estimated delivery charge for the current cart if shipping to
+  /// [buyerCity] — one flat fee per distinct merchant in the cart, mirroring
+  /// OrderHandler.Checkout's server-side calculation (which has the final
+  /// say; this is only a checkout-screen preview). Items whose product
+  /// wasn't preloaded with its merchant are skipped rather than guessed at.
+  int deliveryChargeFor(String buyerCity) {
+    final perMerchant = <String, int>{};
+    for (final item in state) {
+      final merchant = item.product.merchant;
+      if (merchant == null) continue;
+      perMerchant.putIfAbsent(
+        merchant.id,
+        () =>
+            merchant.city.isNotEmpty &&
+                merchant.city.trim().toLowerCase() ==
+                    buyerCity.trim().toLowerCase()
+            ? merchant.deliveryChargeInside
+            : merchant.deliveryChargeOutside,
+      );
+    }
+    return perMerchant.values.fold(0, (sum, charge) => sum + charge);
+  }
 }
 
 final cartProvider = NotifierProvider<CartNotifier, List<CartItem>>(

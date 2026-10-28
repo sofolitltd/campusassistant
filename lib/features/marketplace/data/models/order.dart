@@ -7,6 +7,9 @@ class Order {
   final String shippingPhone;
   final String shippingAddressLine;
   final String shippingCity;
+  // Already included in totalAmount — the sum of each distinct merchant's
+  // flat delivery fee for this order.
+  final int deliveryCharge;
   final List<OrderItem> items;
   final String createdAt;
   // Only present on the merchant-facing "my merchant orders" endpoint, not
@@ -24,6 +27,7 @@ class Order {
     required this.shippingPhone,
     required this.shippingAddressLine,
     required this.shippingCity,
+    this.deliveryCharge = 0,
     required this.items,
     required this.createdAt,
     this.buyerId,
@@ -41,6 +45,7 @@ class Order {
       shippingPhone: json['shipping_phone'] as String? ?? '',
       shippingAddressLine: json['shipping_address_line'] as String? ?? '',
       shippingCity: json['shipping_city'] as String? ?? '',
+      deliveryCharge: json['delivery_charge'] as int? ?? 0,
       items: itemsJson
           .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
           .toList(),

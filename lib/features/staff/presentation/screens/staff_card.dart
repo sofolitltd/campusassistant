@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -152,7 +152,7 @@ class _StaffImage extends StatelessWidget {
           ),
         ),
         progressIndicatorBuilder: (_, _, _) =>
-            const CupertinoActivityIndicator(),
+            const AppLoader(),
         errorWidget: (_, _, _) => Container(
           decoration: BoxDecoration(
             color: context.colors.primary,

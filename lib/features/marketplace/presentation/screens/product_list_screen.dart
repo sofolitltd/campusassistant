@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -23,7 +23,7 @@ class ProductListScreen extends ConsumerWidget {
     final userAsync = ref.watch(userProvider);
     final user = userAsync.value;
 
-    if (user == null) return const Center(child: CupertinoActivityIndicator());
+    if (user == null) return const Center(child: AppLoader());
 
     final productsAsync = ref.watch(
       categoryId != null
@@ -81,7 +81,7 @@ class ProductListScreen extends ConsumerWidget {
                   );
                 },
                 loading: () =>
-                    const Center(child: CupertinoActivityIndicator()),
+                    const Center(child: AppLoader()),
                 error: (e, _) =>
                     Center(child: Text('Could not load products.')),
               ),

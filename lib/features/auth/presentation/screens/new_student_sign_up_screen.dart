@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -110,13 +110,11 @@ class _NewStudentSignUpScreenState
                         key: _globalKey,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: MediaQuery.of(context).size.width > 800
-                                ? MediaQuery.of(context).size.width * .3
-                                : 16,
+                            horizontal: Spacing.lg,
                             vertical: 16,
                           ),
                           child: Column(
-                            crossAxisAlignment: .start,
+                            crossAxisAlignment: .stretch,
                             children: [
                               Container(
                                 decoration: BoxDecoration(
@@ -320,7 +318,7 @@ class _NewStudentSignUpScreenState
                                         loading: () => const Center(
                                           child: Padding(
                                             padding: EdgeInsets.all(Spacing.sm),
-                                            child: CupertinoActivityIndicator(),
+                                            child: AppLoader(),
                                           ),
                                         ),
                                         error: (err, stack) => Text(
@@ -426,7 +424,7 @@ class _NewStudentSignUpScreenState
         );
       },
       loading: () =>
-          const Scaffold(body: Center(child: CupertinoActivityIndicator())),
+          const Scaffold(body: Center(child: AppLoader())),
       error: (error, stack) => Scaffold(
         appBar: AppBar(title: const Text('Error')),
         body: Center(

@@ -71,7 +71,6 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
 
     return HeaderGradientBackdrop(
       child: Scaffold(
@@ -98,7 +97,7 @@ class _DocumentSignupScreenState extends ConsumerState<DocumentSignupScreen> {
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               vertical: Spacing.xl,
-              horizontal: width > 800 ? width * .3 : Spacing.lg,
+              horizontal: Spacing.lg,
             ),
             child: Form(
               key: _formKey,

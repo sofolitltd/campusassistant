@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -117,7 +117,7 @@ class _NoticeCommentsSheetState extends ConsumerState<NoticeCommentsSheet> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
-                  return const Center(child: CupertinoActivityIndicator());
+                  return const Center(child: AppLoader());
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -187,7 +187,7 @@ class _NoticeCommentsSheetState extends ConsumerState<NoticeCommentsSheet> {
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CupertinoActivityIndicator(),
+                          child: AppLoader(),
                         )
                       : Icon(
                           Icons.send,

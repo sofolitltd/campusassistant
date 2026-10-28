@@ -51,7 +51,7 @@
 //         centerTitle: true,
 //       ),
 //       body: profileData == null
-//           ? const Center(child: CupertinoActivityIndicator())
+//           ? const Center(child: AppLoader())
 //           : StreamBuilder<QuerySnapshot>(
 //               stream: FirebaseFirestore.instance
 //                   .collection('Universities')
@@ -67,7 +67,7 @@
 //                 }
 //
 //                 if (snapshot.connectionState == ConnectionState.waiting) {
-//                   return const Center(child: CupertinoActivityIndicator());
+//                   return const Center(child: AppLoader());
 //                 }
 //
 //                 var data = snapshot.data!.docs;
@@ -112,7 +112,7 @@
 //                                     if (snapshot.connectionState ==
 //                                         ConnectionState.waiting) {
 //                                       return const Center(
-//                                           child: CupertinoActivityIndicator());
+//                                           child: AppLoader());
 //                                     }
 //
 //                                     var uploader = snapshot.data;

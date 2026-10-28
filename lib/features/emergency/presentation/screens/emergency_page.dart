@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -144,7 +144,7 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.all(Spacing.lg),
-                  child: CupertinoActivityIndicator(),
+                  child: AppLoader(),
                 ),
               );
             }
@@ -155,7 +155,7 @@ class _EmergencyListState extends ConsumerState<_EmergencyList>
           separatorBuilder: (_, _) => const SizedBox(height: Spacing.md),
         );
       },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (e, _) => Center(child: Text('Error: $e')),
     );
   }

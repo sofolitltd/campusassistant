@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import '/core/widgets/custom_header_layout.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -144,7 +144,7 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
         _loadContacts();
       },
       body: _loading
-          ? const Center(child: CupertinoActivityIndicator())
+          ? const Center(child: AppLoader())
           : _contacts.isEmpty
           ? Center(
               child: Text(
@@ -161,7 +161,7 @@ class _NewChatPageState extends ConsumerState<NewChatPage> {
                 if (index >= _contacts.length) {
                   return const Padding(
                     padding: EdgeInsets.all(Spacing.lg),
-                    child: Center(child: CupertinoActivityIndicator()),
+                    child: Center(child: AppLoader()),
                   );
                 }
                 final contact = _contacts[index];

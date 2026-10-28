@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -151,16 +151,10 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
               key: _formKey,
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width > 800
-                      ? MediaQuery.of(context).size.width * .3
-                      : 16,
+                  horizontal: Spacing.lg,
                   vertical: Spacing.xl,
                 ),
                 child: Container(
-                  constraints: const BoxConstraints(
-                    minWidth: 350,
-                    maxWidth: 400,
-                  ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(RadiusToken.xl),
@@ -213,9 +207,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                               ? SizedBox(
                                   height: 24,
                                   width: 24,
-                                  child: CupertinoActivityIndicator(
-                                    color: context.colors.onPrimary,
-                                  ),
+                                  child: AppLoader(),
                                 )
                               : Text(
                                   'Verify Code',
@@ -227,7 +219,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                         TextButton(
                           onPressed: canResend ? _resendCode : null,
                           child: _isResending
-                              ? const CupertinoActivityIndicator()
+                              ? const AppLoader()
                               : Text(
                                   _secondsRemaining > 0
                                       ? 'Resend code in ${_secondsRemaining}s'

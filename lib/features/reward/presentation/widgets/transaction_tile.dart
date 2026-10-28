@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +29,7 @@ class HistoryFooter extends StatelessWidget {
                 const SizedBox(
                   width: 14,
                   height: 14,
-                  child: CupertinoActivityIndicator(),
+                  child: AppLoader(),
                 ),
                 const SizedBox(width: Spacing.sm),
                 Text('Loading more transactions...', style: style),

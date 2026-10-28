@@ -42,7 +42,6 @@ class _PlacementSelectionScreenState
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final width = MediaQuery.of(context).size.width;
 
     return HeaderGradientBackdrop(
       child: Scaffold(
@@ -69,7 +68,7 @@ class _PlacementSelectionScreenState
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               vertical: Spacing.xl,
-              horizontal: width > 800 ? width * .3 : Spacing.lg,
+              horizontal: Spacing.lg,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -113,7 +112,7 @@ class _PlacementSelectionScreenState
             ),
             child: SafeArea(
               minimum: EdgeInsets.symmetric(
-                horizontal: width > 800 ? width * .3 : Spacing.lg,
+                horizontal: Spacing.lg,
                 vertical: Spacing.lg,
               ),
               child: _batchId == null

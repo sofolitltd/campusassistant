@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import '/routes/app_route.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -164,7 +164,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
               ? Column(
                   mainAxisAlignment: .center,
                   children: [
-                    const CupertinoActivityIndicator(),
+                    const AppLoader(),
                     const SizedBox(height: Spacing.xl),
                     Text(
                       _statusMessage,

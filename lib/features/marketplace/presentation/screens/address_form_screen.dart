@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -281,7 +281,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CupertinoActivityIndicator(),
+                              child: AppLoader(),
                             )
                           : Text(widget.address != null ? 'Update' : 'Save'),
                     ),

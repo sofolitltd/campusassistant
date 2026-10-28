@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
@@ -129,7 +129,7 @@ class CourseCardContent extends StatelessWidget {
                 ),
               ),
               progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  const CupertinoActivityIndicator(),
+                  const AppLoader(),
               errorWidget: (context, url, error) => Container(
                 decoration: BoxDecoration(
                   color: isDark

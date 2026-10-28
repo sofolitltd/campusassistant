@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +24,7 @@ class TransportPage extends ConsumerWidget {
       title: 'Transport Service',
       showSearchBar: false,
       body: transportAsync.when(
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: .center,
@@ -88,9 +88,7 @@ class TransportPage extends ConsumerWidget {
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
               vertical: 16,
-              horizontal: MediaQuery.of(context).size.width > 800
-                  ? MediaQuery.of(context).size.width * .2
-                  : 16,
+              horizontal: Spacing.lg,
             ),
             itemCount: transports.length,
             separatorBuilder: (context, index) =>
@@ -158,7 +156,7 @@ class TransportPage extends ConsumerWidget {
                                     ),
                                   ),
                               placeholder: (context, url) => const Center(
-                                child: CupertinoActivityIndicator(),
+                                child: AppLoader(),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: Theme.of(context)

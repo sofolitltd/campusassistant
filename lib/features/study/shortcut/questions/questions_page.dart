@@ -3,7 +3,7 @@ import 'dart:async';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/features/study/widgets/content_card.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -371,7 +371,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                                       width: 14,
                                                       height: 14,
                                                       child:
-                                                          CupertinoActivityIndicator(),
+                                                          AppLoader(),
                                                     ),
                                                     SizedBox(width: Spacing.sm),
                                                     Text(
@@ -393,7 +393,7 @@ class _QuestionsPageState extends ConsumerState<QuestionsPage> {
                                 );
                               },
                               loading: () => const Center(
-                                child: CupertinoActivityIndicator(),
+                                child: AppLoader(),
                               ),
                               error: (e, st) => Center(
                                 child: Column(

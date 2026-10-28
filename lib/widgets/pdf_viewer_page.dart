@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -229,7 +229,7 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
                     ),
                     if (_loadState == _LoadState.loading)
                       const Center(
-                        child: CupertinoActivityIndicator(radius: 14),
+                        child: AppLoader(size: 28),
                       ),
                     if (_loadState == _LoadState.failed)
                       _buildErrorState(context),

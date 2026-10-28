@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -72,13 +72,11 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width > 800
-                      ? MediaQuery.of(context).size.width * .3
-                      : 16,
+                  horizontal: Spacing.lg,
                   vertical: Spacing.xl,
                 ),
                 child: Column(
-                  crossAxisAlignment: .start,
+                  crossAxisAlignment: .stretch,
                   children: [
                     Container(
                       decoration: BoxDecoration(
@@ -103,7 +101,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                           horizontal: Spacing.lg,
                         ),
                         child: Column(
-                          crossAxisAlignment: .start,
+                          crossAxisAlignment: .stretch,
                           children: [
                             Row(
                               crossAxisAlignment: .start,
@@ -337,9 +335,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                   ? SizedBox(
                                       height: 24,
                                       width: 24,
-                                      child: CupertinoActivityIndicator(
-                                        color: context.colors.onPrimary,
-                                      ),
+                                      child: AppLoader(),
                                     )
                                   : Text(
                                       'Verify Now',
@@ -402,7 +398,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                     Center(
                       child: TextButton.icon(
                         onPressed: () => context.goNamed(AppRoute.login.name),
-                        icon: const Icon(CupertinoIcons.back, size: 16),
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
                         label: Text(
                           'Cancel & Login',
                           style: TextStyle(

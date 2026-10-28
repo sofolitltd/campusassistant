@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
@@ -701,7 +701,7 @@ class AlumniCard extends StatelessWidget {
                                       child: SizedBox(
                                         width: 18,
                                         height: 18,
-                                        child: CupertinoActivityIndicator(),
+                                        child: AppLoader(),
                                       ),
                                     ),
                                   ),

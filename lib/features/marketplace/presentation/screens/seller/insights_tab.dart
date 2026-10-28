@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -63,7 +63,7 @@ class _InsightsTabState extends ConsumerState<InsightsTab> {
           async.when(
             loading: () => const Padding(
               padding: EdgeInsets.all(Spacing.xxxxl),
-              child: Center(child: CupertinoActivityIndicator()),
+              child: Center(child: AppLoader()),
             ),
             error: (e, _) => Padding(
               padding: const EdgeInsets.all(Spacing.xxxl),

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -461,7 +461,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   children: [
                     Expanded(
                       child: s.initialLoading
-                          ? const Center(child: CupertinoActivityIndicator())
+                          ? const Center(child: AppLoader())
                           : NotificationListener<ScrollNotification>(
                               onNotification: (notification) {
                                 if (notification is ScrollEndNotification) {
@@ -484,7 +484,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     if (s.loadingMore)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: Spacing.xs),
-                        child: CupertinoActivityIndicator(),
+                        child: AppLoader(),
                       ),
                     if (_selectMode)
                       SelectBar(

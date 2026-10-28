@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -74,7 +74,7 @@ class HomeSectionLoading extends StatelessWidget {
       child: SizedBox(
         height: height,
         width: double.infinity,
-        child: const Center(child: CupertinoActivityIndicator()),
+        child: const Center(child: AppLoader()),
       ),
     ),
   );

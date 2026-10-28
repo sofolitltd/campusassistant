@@ -1,5 +1,5 @@
 import '/widgets/open_app.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -172,7 +172,7 @@ class _ResearchPageState extends ConsumerState<ResearchPage> {
           );
         },
         loading: () {
-          return const Center(child: CupertinoActivityIndicator());
+          return const Center(child: AppLoader());
         },
         error: (e, st) => Center(child: Text('Error: $e')),
       ),

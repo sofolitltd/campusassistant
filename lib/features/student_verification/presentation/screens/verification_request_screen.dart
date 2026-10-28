@@ -143,7 +143,6 @@ class _VerificationRequestScreenState
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final width = MediaQuery.of(context).size.width;
 
     return HeaderGradientBackdrop(
       child: Scaffold(
@@ -170,7 +169,7 @@ class _VerificationRequestScreenState
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               vertical: Spacing.xl,
-              horizontal: width > 800 ? width * .25 : Spacing.lg,
+              horizontal: Spacing.lg,
             ),
             child: Form(
               key: _formKey,

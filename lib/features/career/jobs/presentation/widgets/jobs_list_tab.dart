@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '/core/widgets/app_choice_chip.dart';
@@ -237,7 +237,7 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                 },
               );
             },
-            loading: () => const Center(child: CupertinoActivityIndicator()),
+            loading: () => const Center(child: AppLoader()),
             error: (err, _) => Center(child: Text('Failed to load jobs: $err')),
           ),
         ),

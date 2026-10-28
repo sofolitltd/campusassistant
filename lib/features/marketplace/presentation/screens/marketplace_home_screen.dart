@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +29,7 @@ class MarketplaceHomeScreen extends ConsumerWidget {
     final user = userAsync.value;
     final categoriesAsync = ref.watch(categoriesListProvider);
 
-    if (user == null) return const Center(child: CupertinoActivityIndicator());
+    if (user == null) return const Center(child: AppLoader());
 
     final productsAsync = ref.watch(
       productsListProvider((
@@ -163,7 +163,7 @@ class MarketplaceHomeScreen extends ConsumerWidget {
                         },
                         loading: () => const SizedBox(
                           height: 92,
-                          child: Center(child: CupertinoActivityIndicator()),
+                          child: Center(child: AppLoader()),
                         ),
                         error: (e, _) => const SizedBox.shrink(),
                       ),
@@ -235,7 +235,7 @@ class MarketplaceHomeScreen extends ConsumerWidget {
                         const SliverToBoxAdapter(
                           child: SizedBox(
                             height: 200,
-                            child: Center(child: CupertinoActivityIndicator()),
+                            child: Center(child: AppLoader()),
                           ),
                         ),
                       ],

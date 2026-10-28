@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -135,7 +135,7 @@ class _DepartmentNoticesPageState extends ConsumerState<DepartmentNoticesPage> {
             children: [
               SizedBox(
                 height: MediaQuery.sizeOf(context).height * 0.7,
-                child: const Center(child: CupertinoActivityIndicator()),
+                child: const Center(child: AppLoader()),
               ),
             ],
           ),

@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,14 +71,14 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                       child: _buildContent(context, plans, user.uid),
                     );
             },
-            loading: () => const Center(child: CupertinoActivityIndicator()),
+            loading: () => const Center(child: AppLoader()),
             error: (e, _) => _scrollableCentered(
               _buildErrorState(e.toString()),
               () => ref.invalidate(subscriptionPlansProvider(params)),
             ),
           );
         },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(child: Text('Error loading profile: $e')),
       ),
     );
@@ -322,7 +322,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
     return subAsync.when(
       loading: () => const Padding(
         padding: EdgeInsets.symmetric(vertical: Spacing.lg),
-        child: Center(child: CupertinoActivityIndicator()),
+        child: Center(child: AppLoader()),
       ),
       error: (_, _) => const SizedBox.shrink(),
       data: (sub) {

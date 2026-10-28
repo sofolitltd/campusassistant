@@ -1,6 +1,6 @@
 import '/routes/scaffold_with_navbar.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -131,7 +131,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                     await ref.read(semestersProvider.future);
                   },
                   child: isLoading
-                      ? const Center(child: CupertinoActivityIndicator())
+                      ? const Center(child: AppLoader())
                       : CustomScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           slivers: [

@@ -1,4 +1,5 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -83,7 +84,7 @@ class _StaffPageState extends ConsumerState<StaffPage> {
                 StaffCard(staff: filteredStaff[index], user: user),
           );
         },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );

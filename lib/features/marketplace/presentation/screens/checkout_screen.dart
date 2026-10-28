@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -157,7 +157,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         ),
                       );
                     },
-                    loading: () => const CupertinoActivityIndicator(),
+                    loading: () => const AppLoader(),
                     error: (e, _) => Text('Error: $e'),
                   ),
                   const SizedBox(height: Spacing.xxl),
@@ -274,7 +274,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CupertinoActivityIndicator(),
+                              child: AppLoader(),
                             )
                           : Text(
                               _paymentMethod == MarketplacePaymentMethod.bkash

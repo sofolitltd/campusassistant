@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/teacher/presentation/providers/teacher_provider.dart';
@@ -103,13 +103,11 @@ class _NewTeacherSignupScreenState
                     key: _globalKey,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width > 800
-                            ? MediaQuery.of(context).size.width * .3
-                            : 16,
+                        horizontal: Spacing.lg,
                         vertical: 16,
                       ),
                       child: Column(
-                        crossAxisAlignment: .start,
+                        crossAxisAlignment: .stretch,
                         children: [
                           Card(
                             elevation: 6,
@@ -323,9 +321,7 @@ class _NewTeacherSignupScreenState
                                         ? SizedBox(
                                             height: 24,
                                             width: 24,
-                                            child: CupertinoActivityIndicator(
-                                              color: context.colors.onPrimary,
-                                            ),
+                                            child: AppLoader(),
                                           )
                                         : Text(
                                             'Sign up',

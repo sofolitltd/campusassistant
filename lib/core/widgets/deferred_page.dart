@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Builds a screen from a `deferred as` library once it has loaded.
@@ -39,7 +39,7 @@ class _DeferredPageState extends State<DeferredPage> {
           return widget.builder();
         }
         return const Scaffold(
-          body: Center(child: CupertinoActivityIndicator()),
+          body: Center(child: AppLoader()),
         );
       },
     );

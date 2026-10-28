@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -117,7 +117,7 @@ class ProfilePage extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(child: CupertinoActivityIndicator()),
+          loading: () => const Center(child: AppLoader()),
           error: (error, _) =>
               Center(child: Text('Error: ${error.toString()}')),
         ),

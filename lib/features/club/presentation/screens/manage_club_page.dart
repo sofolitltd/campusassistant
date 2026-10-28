@@ -2,7 +2,7 @@ import 'dart:io';
 
 import '/core/widgets/custom_header_layout.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -95,7 +95,7 @@ class _ManageClubPageState extends ConsumerState<ManageClubPage>
             ),
           ],
         ),
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );
@@ -328,9 +328,7 @@ class _InfoTabState extends ConsumerState<_InfoTab> {
               ? SizedBox(
                   height: 18,
                   width: 18,
-                  child: CupertinoActivityIndicator(
-                    color: context.colors.onPrimary,
-                  ),
+                  child: AppLoader(),
                 )
               : const Text('Save changes'),
         ),
@@ -563,7 +561,7 @@ class _EventsTabState extends ConsumerState<_EventsTab> {
               ? const SizedBox(
                   height: 16,
                   width: 16,
-                  child: CupertinoActivityIndicator(),
+                  child: AppLoader(),
                 )
               : const Text('Add event'),
         ),
@@ -588,7 +586,7 @@ class _EventsTabState extends ConsumerState<_EventsTab> {
           loading: () => const Center(
             child: Padding(
               padding: EdgeInsets.all(Spacing.lg),
-              child: CupertinoActivityIndicator(),
+              child: AppLoader(),
             ),
           ),
           error: (_, _) => const SizedBox.shrink(),
@@ -699,7 +697,7 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
               ? const SizedBox(
                   height: 16,
                   width: 16,
-                  child: CupertinoActivityIndicator(),
+                  child: AppLoader(),
                 )
               : const Text('Post update'),
         ),
@@ -732,7 +730,7 @@ class _PostsTabState extends ConsumerState<_PostsTab> {
           loading: () => const Center(
             child: Padding(
               padding: EdgeInsets.all(Spacing.lg),
-              child: CupertinoActivityIndicator(),
+              child: AppLoader(),
             ),
           ),
           error: (_, _) => const SizedBox.shrink(),
@@ -808,7 +806,7 @@ class _ManagersTabState extends ConsumerState<_ManagersTab> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CupertinoActivityIndicator());
+      return const Center(child: AppLoader());
     }
 
     final managers = _managers ?? [];

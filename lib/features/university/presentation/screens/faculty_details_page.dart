@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -44,7 +44,7 @@ class _FacultyDetailsPageState extends ConsumerState<FacultyDetailsPage> {
       body: departmentsAsync.when(
         data: (departments) =>
             _DepartmentsList(departments: departments, query: _query),
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (err, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(Spacing.xl),

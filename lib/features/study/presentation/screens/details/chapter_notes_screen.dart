@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:material_ui/material_ui.dart';
@@ -283,7 +283,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                       Expanded(
                         child: resourcesStream.when(
                           loading: () =>
-                              const Center(child: CupertinoActivityIndicator()),
+                              const Center(child: AppLoader()),
                           error: (e, _) => Center(child: Text('Error: $e')),
                           data: (resources) {
                             if (resources.isEmpty) {

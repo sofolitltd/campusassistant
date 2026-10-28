@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -155,7 +155,7 @@ class _SetReminderFormState extends ConsumerState<_SetReminderForm> {
                 ? const SizedBox(
                     height: 18,
                     width: 18,
-                    child: CupertinoActivityIndicator(),
+                    child: AppLoader(),
                   )
                 : const Text('Save reminder'),
           ),

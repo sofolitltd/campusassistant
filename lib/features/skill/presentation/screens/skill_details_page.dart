@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +39,7 @@ class SkillDetailsPage extends ConsumerWidget {
     final userAsync = ref.watch(userProvider);
     final user = userAsync.value;
     if (user == null) {
-      return const Scaffold(body: Center(child: CupertinoActivityIndicator()));
+      return const Scaffold(body: Center(child: AppLoader()));
     }
 
     final skillsAsync = ref.watch(
@@ -57,7 +57,7 @@ class SkillDetailsPage extends ConsumerWidget {
             : _notFound(context);
       },
       loading: () =>
-          const Scaffold(body: Center(child: CupertinoActivityIndicator())),
+          const Scaffold(body: Center(child: AppLoader())),
       error: (_, _) => _notFound(context),
     );
   }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -646,9 +646,7 @@ class _DiscussionCardState extends ConsumerState<DiscussionCard> {
                           ? SizedBox(
                               width: 16,
                               height: 16,
-                              child: CupertinoActivityIndicator(
-                                color: context.colors.onPrimary,
-                              ),
+                              child: AppLoader(),
                             )
                           : const Text('Save'),
                     ),

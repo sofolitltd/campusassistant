@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -389,9 +389,7 @@ class _MerchantEditScreenState extends ConsumerState<MerchantEditScreen> {
                           ? SizedBox(
                               height: 16,
                               width: 16,
-                              child: CupertinoActivityIndicator(
-                                color: context.colors.onPrimary,
-                              ),
+                              child: AppLoader(),
                             )
                           : const Icon(LucideIcons.save, size: 18),
                       label: Text(_saving ? 'Saving...' : 'Save Changes'),

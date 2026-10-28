@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -65,7 +65,7 @@ class TransactionHistoryPage extends ConsumerWidget {
                   ),
           );
         },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );
@@ -132,7 +132,7 @@ class _ListFooter extends StatelessWidget {
                 const SizedBox(
                   width: 14,
                   height: 14,
-                  child: CupertinoActivityIndicator(),
+                  child: AppLoader(),
                 ),
                 const SizedBox(width: Spacing.sm),
                 Text('Loading more transactions...', style: style),

@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 
 import '/core/widgets/custom_header_layout.dart';
 
@@ -65,7 +65,7 @@ class MyClubsPage extends ConsumerWidget {
             itemBuilder: (context, i) => _MyClubCard(club: clubs[i]),
           );
         },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );

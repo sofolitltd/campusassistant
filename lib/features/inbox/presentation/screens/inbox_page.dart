@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import '/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -181,7 +181,7 @@ class _InboxPageState extends ConsumerState<InboxPage>
   }
 
   Widget _buildLoading() {
-    return const Center(child: CupertinoActivityIndicator());
+    return const Center(child: AppLoader());
   }
 
   Widget _buildConversationList(
@@ -366,7 +366,7 @@ class _InboxPageState extends ConsumerState<InboxPage>
                       context: context,
                       barrierDismissible: false,
                       builder: (_) =>
-                          const Center(child: CupertinoActivityIndicator()),
+                          const Center(child: AppLoader()),
                     );
 
                     try {

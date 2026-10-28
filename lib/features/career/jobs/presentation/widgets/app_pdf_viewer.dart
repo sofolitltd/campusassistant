@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -77,7 +77,7 @@ class _AppPdfViewerState extends State<AppPdfViewer> {
         ),
       );
     }
-    if (_isLoading) return const Center(child: CupertinoActivityIndicator());
+    if (_isLoading) return const Center(child: AppLoader());
     if (_pdfController == null) {
       return Center(
         child: Text(

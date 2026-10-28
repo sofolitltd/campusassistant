@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -99,7 +99,7 @@ class _ReportSheetState extends State<_ReportSheet> {
           if (_submitting)
             const Padding(
               padding: EdgeInsets.all(Spacing.xxl),
-              child: CupertinoActivityIndicator(),
+              child: AppLoader(),
             )
           else
             ..._reportReasons.map(

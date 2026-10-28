@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -109,7 +109,7 @@ class ChapterFilterButton extends ConsumerWidget {
         width: 100,
         height: 32,
         child: Center(
-          child: CupertinoActivityIndicator(color: context.colors.onPrimary),
+          child: AppLoader(color: context.colors.onPrimary),
         ),
       ),
       error: (_, _) => const SizedBox(),

@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
@@ -247,7 +247,7 @@ class MessageBubble extends StatelessWidget {
       return const SizedBox(
         width: 14,
         height: 14,
-        child: CupertinoActivityIndicator(radius: 6),
+        child: AppLoader(size: 12),
       );
     }
 

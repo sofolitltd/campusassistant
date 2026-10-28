@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -127,7 +127,7 @@ class TeacherCard extends StatelessWidget {
               ApiEndpoints.resolveImageUrl(teacher.imageUrl),
               fit: .cover,
               placeholder: (context) =>
-                  const Center(child: CupertinoActivityIndicator(radius: 6)),
+                  const Center(child: AppLoader(size: 12)),
               errorBuilder: (context, error, _) => Icon(
                 LucideIcons.user,
                 color: context.colors.borderStrong,

@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -65,7 +65,7 @@ class _CrPageState extends ConsumerState<CrPage>
           ),
           Expanded(
             child: crAsync.when(
-              loading: () => const Center(child: CupertinoActivityIndicator()),
+              loading: () => const Center(child: AppLoader()),
               error: (e, _) => Center(child: Text('Error: $e')),
               data: (crList) {
                 final activeCrs = crList.where((cr) => cr.isCurrent).toList();
@@ -150,9 +150,7 @@ class _CrList extends StatelessWidget {
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        horizontal: MediaQuery.of(context).size.width > 800
-            ? MediaQuery.of(context).size.width * .2
-            : 16,
+        horizontal: Spacing.lg,
       ).copyWith(top: 16, bottom: GlassSearchBar.listBottomPadding(context)),
       itemCount: batches.length,
       itemBuilder: (context, index) {

@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +38,7 @@ class EarningsTab extends ConsumerWidget {
           earnings.when(
             loading: () => const Padding(
               padding: EdgeInsets.all(40),
-              child: Center(child: CupertinoActivityIndicator()),
+              child: Center(child: AppLoader()),
             ),
             error: (_, _) => Padding(
               padding: const EdgeInsets.all(Spacing.xxl),
@@ -66,7 +66,7 @@ class EarningsTab extends ConsumerWidget {
           payouts.when(
             loading: () => const Padding(
               padding: EdgeInsets.all(Spacing.lg),
-              child: Center(child: CupertinoActivityIndicator()),
+              child: Center(child: AppLoader()),
             ),
             error: (_, _) => Text(
               'Could not load payouts.',

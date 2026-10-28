@@ -160,7 +160,7 @@
 //                     ),
 //                     progressIndicatorBuilder:
 //                         (context, url, downloadProgress) =>
-//                             const CupertinoActivityIndicator(),
+//                             const AppLoader(),
 //                     errorWidget: (context, url, error) => Container(
 //                       decoration: BoxDecoration(
 //                         borderRadius: BorderRadius.circular(RadiusToken.sm),

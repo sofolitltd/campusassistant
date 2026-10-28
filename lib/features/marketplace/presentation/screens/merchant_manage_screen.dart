@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -307,7 +307,7 @@ class _AboutTab extends StatelessWidget {
               ? const SizedBox(
                   height: 14,
                   width: 14,
-                  child: CupertinoActivityIndicator(),
+                  child: AppLoader(),
                 )
               : Icon(
                   LucideIcons.trash2,
@@ -468,7 +468,7 @@ class _ProductsTab extends ConsumerWidget {
               },
             );
           },
-          loading: () => const Center(child: CupertinoActivityIndicator()),
+          loading: () => const Center(child: AppLoader()),
           error: (e, _) => Center(
             child: Text(
               'Could not load products.',
@@ -804,7 +804,7 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
                                 ? const SizedBox(
                                     height: 14,
                                     width: 14,
-                                    child: CupertinoActivityIndicator(),
+                                    child: AppLoader(),
                                   )
                                 : const Icon(LucideIcons.truck, size: 16),
                             label: Text(_fulfillmentActionLabel(nextStatus)),
@@ -818,7 +818,7 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
           },
         );
       },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (e, _) => Center(
         child: Text(
           'Could not load orders.',

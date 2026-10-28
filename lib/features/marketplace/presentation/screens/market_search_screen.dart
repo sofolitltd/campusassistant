@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import '/core/widgets/app_choice_chip.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -350,7 +350,7 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
 
   Widget _body(AppColors c) {
     if (_results.isEmpty) {
-      if (_loading) return const Center(child: CupertinoActivityIndicator());
+      if (_loading) return const Center(child: AppLoader());
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(Spacing.xxxl),
@@ -417,7 +417,7 @@ class _MarketSearchScreenState extends ConsumerState<MarketSearchScreen> {
             padding: const EdgeInsets.all(Spacing.xxl),
             child: Center(
               child: _loading
-                  ? const CupertinoActivityIndicator()
+                  ? const AppLoader()
                   : const SizedBox.shrink(),
             ),
           ),

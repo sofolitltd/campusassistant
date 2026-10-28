@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -108,7 +108,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
-                  return const Center(child: CupertinoActivityIndicator());
+                  return const Center(child: AppLoader());
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));

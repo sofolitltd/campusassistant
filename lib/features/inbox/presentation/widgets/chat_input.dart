@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -95,7 +95,7 @@ class ChatInput extends StatelessWidget {
                   height: 46,
                   child: Center(
                     child: isSending
-                        ? CupertinoActivityIndicator(color: c.onPrimary)
+                        ? AppLoader(color: c.onPrimary)
                         : Icon(
                             Icons.arrow_upward_rounded,
                             color: canSend ? c.onPrimary : c.textSubtle,

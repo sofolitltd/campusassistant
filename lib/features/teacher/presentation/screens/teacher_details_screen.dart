@@ -3,7 +3,7 @@ import 'dart:io';
 
 import '/widgets/open_app.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -45,7 +45,7 @@ class _TeacherDetailsScreenState extends ConsumerState<TeacherDetailsScreen> {
       },
       showSearchBar: false,
       body: teacherAsync.when(
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(Spacing.xl),
@@ -300,7 +300,7 @@ class _HeaderCard extends StatelessWidget {
                   ApiEndpoints.resolveImageUrl(teacher.imageUrl),
                   fit: .cover,
                   placeholder: (context) => const Center(
-                    child: CupertinoActivityIndicator(radius: 6),
+                    child: AppLoader(size: 12),
                   ),
                   errorBuilder: (context, error, _) => Icon(
                     LucideIcons.user,

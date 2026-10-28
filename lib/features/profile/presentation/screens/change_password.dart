@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -273,9 +273,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                               ? SizedBox(
                                   height: 24,
                                   width: 24,
-                                  child: CupertinoActivityIndicator(
-                                    color: context.colors.onPrimary,
-                                  ),
+                                  child: AppLoader(),
                                 )
                               : Text(
                                   'Change password',

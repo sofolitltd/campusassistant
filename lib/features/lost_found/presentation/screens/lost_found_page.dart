@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -136,7 +136,7 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
                   return feedAsync.when(
                     data: (items) => _ItemsList(items: items),
                     loading: () =>
-                        const Center(child: CupertinoActivityIndicator()),
+                        const Center(child: AppLoader()),
                     error: (err, _) =>
                         Center(child: Text('Failed to load items: $err')),
                   );

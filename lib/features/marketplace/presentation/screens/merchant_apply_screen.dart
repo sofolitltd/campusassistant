@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -183,7 +183,7 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
         data: (merchants) => merchants.isEmpty || _addingNew
             ? _buildForm(context, showBackButton: merchants.isNotEmpty)
             : _buildMerchantList(context, merchants),
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => _buildForm(context, showBackButton: false),
       ),
     );
@@ -496,9 +496,7 @@ class _MerchantApplyScreenState extends ConsumerState<MerchantApplyScreen> {
                 ? SizedBox(
                     height: 16,
                     width: 16,
-                    child: CupertinoActivityIndicator(
-                      color: context.colors.onPrimary,
-                    ),
+                    child: AppLoader(),
                   )
                 : const Icon(LucideIcons.send, size: 18),
             label: Text(_submitting ? 'Submitting...' : 'Submit Application'),

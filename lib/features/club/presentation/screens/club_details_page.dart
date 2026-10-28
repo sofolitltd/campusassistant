@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -43,7 +43,7 @@ class ClubDetailsPage extends ConsumerWidget {
       loading: () => const CustomHeaderLayout(
         title: 'Club Details',
         showSearchBar: false,
-        body: Center(child: CupertinoActivityIndicator()),
+        body: Center(child: AppLoader()),
       ),
       error: (_, _) => const CustomHeaderLayout(
         title: 'Club Details',
@@ -540,7 +540,7 @@ class _MembersTab extends ConsumerWidget {
                   .toList(growable: false),
             );
           },
-          loading: () => const Center(child: CupertinoActivityIndicator()),
+          loading: () => const Center(child: AppLoader()),
           error: (_, _) => const SizedBox.shrink(),
         ),
       ],
@@ -608,7 +608,7 @@ class _EventsTab extends ConsumerWidget {
               .toList(),
         );
       },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (_, _) => Center(
         child: Text(
           'Failed to load events.',
@@ -748,7 +748,7 @@ class _NotificationsTab extends ConsumerWidget {
               _PostCard(post: posts[i], isDark: isDark),
         );
       },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (_, _) => Center(
         child: Text(
           'Failed to load updates.',

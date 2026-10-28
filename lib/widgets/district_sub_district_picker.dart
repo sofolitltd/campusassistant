@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '/core/theme/app_colors.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/features/association/data/models/bd_district.dart';
@@ -73,7 +73,7 @@ class DistrictSubDistrictPicker extends ConsumerWidget {
       },
       loading: () => const Padding(
         padding: EdgeInsets.symmetric(vertical: Spacing.lg),
-        child: Center(child: CupertinoActivityIndicator()),
+        child: Center(child: AppLoader()),
       ),
       error: (_, _) => Text(
         'Failed to load districts.',

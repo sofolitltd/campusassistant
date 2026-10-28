@@ -2,7 +2,7 @@ import 'dart:io';
 
 import '/core/widgets/custom_header_layout.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -305,9 +305,7 @@ class _SuggestClubPageState extends ConsumerState<SuggestClubPage> {
                   ? SizedBox(
                       height: 18,
                       width: 18,
-                      child: CupertinoActivityIndicator(
-                        color: context.colors.onPrimary,
-                      ),
+                      child: AppLoader(),
                     )
                   : const Text('Submit for Review'),
             ),

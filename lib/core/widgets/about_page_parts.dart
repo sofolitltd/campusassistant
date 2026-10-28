@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +51,7 @@ class AboutHero extends StatelessWidget {
             placeholder: (_, _) => Container(
               color: colors.surfaceAlt,
               alignment: Alignment.center,
-              child: const CupertinoActivityIndicator(),
+              child: const AppLoader(),
             ),
             errorWidget: (_, _, _) => Container(
               color: colors.primarySubtle,

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -95,7 +95,7 @@ class _PdfThumbnailWidgetState extends State<PdfThumbnailWidget> {
     if (_isLoading) {
       return Container(
         color: cs.surfaceContainerHighest,
-        child: const Center(child: CupertinoActivityIndicator()),
+        child: const Center(child: AppLoader()),
       );
     }
     if (_bytes != null) {
@@ -207,7 +207,7 @@ class _JobImageGalleryState extends State<JobImageGallery> {
                                   imageUrl: _resolveUrl(url),
                                   fit: .contain,
                                   placeholder: (c, u) => const Center(
-                                    child: CupertinoActivityIndicator(),
+                                    child: AppLoader(),
                                   ),
                                   errorWidget: (c, e, s) => Icon(
                                     LucideIcons.file,

@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import 'package:material_ui/material_ui.dart';
@@ -309,7 +309,7 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
                               width: 100,
                               height: 32,
                               child: Center(
-                                child: CupertinoActivityIndicator(
+                                child: AppLoader(
                                   color: context.colors.onPrimary,
                                 ),
                               ),
@@ -339,7 +339,7 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen>
                     top: Radius.circular(RadiusToken.xxxl),
                   ),
                   child: courseModel == null
-                      ? const Center(child: CupertinoActivityIndicator())
+                      ? const Center(child: AppLoader())
                       : Column(
                           children: [
                             // ── SectionTabBar ──────────────────────────

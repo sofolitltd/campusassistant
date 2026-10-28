@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +46,7 @@ class _UniversityFacultiesPageState
           body: facultiesAsync.when(
             data: (faculties) =>
                 _FacultiesList(faculties: faculties, query: _query),
-            loading: () => const Center(child: CupertinoActivityIndicator()),
+            loading: () => const Center(child: AppLoader()),
             error: (err, _) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(Spacing.xl),
@@ -89,7 +89,7 @@ class _UniversityFacultiesPageState
                       top: Radius.circular(RadiusToken.xxxl),
                     ),
                   ),
-                  child: const Center(child: CupertinoActivityIndicator()),
+                  child: const Center(child: AppLoader()),
                 ),
               ),
             ],

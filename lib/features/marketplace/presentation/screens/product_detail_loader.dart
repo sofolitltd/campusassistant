@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,7 +15,7 @@ class ProductDetailLoader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(productDetailsProvider(productId)).when(
       data: (product) => ProductDetailScreen(product: product),
-      loading: () => const Scaffold(body: Center(child: CupertinoActivityIndicator())),
+      loading: () => const Scaffold(body: Center(child: AppLoader())),
       error: (_, _) => Scaffold(
         appBar: AppBar(),
         body: Center(child: Text('This product is no longer available.', style: TextStyle(color: context.colors.textMuted))),

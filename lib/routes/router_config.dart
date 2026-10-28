@@ -869,8 +869,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.forgotPassword.name,
         path: AppRoute.forgotPassword.path,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: ForgotPassword()),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(
+            maxWidth: AppLayout.formWidth,
+            child: ForgotPassword(),
+          ),
+        ),
       ),
       GoRoute(
         name: AppRoute.resetPassword.name,
@@ -882,9 +886,19 @@ final routerProvider = Provider<GoRouter>((ref) {
           // email to reset, so send the user back to the start of the flow.
           final email = state.extra is String ? state.extra as String : null;
           if (email == null || email.isEmpty) {
-            return const NoTransitionPage(child: ForgotPassword());
+            return const NoTransitionPage(
+              child: ContentColumn(
+                maxWidth: AppLayout.formWidth,
+                child: ForgotPassword(),
+              ),
+            );
           }
-          return NoTransitionPage(child: ResetPasswordPage(email: email));
+          return NoTransitionPage(
+            child: ContentColumn(
+              maxWidth: AppLayout.formWidth,
+              child: ResetPasswordPage(email: email),
+            ),
+          );
         },
       ),
       GoRoute(
@@ -899,13 +913,21 @@ final routerProvider = Provider<GoRouter>((ref) {
               extra['email'] is String &&
               extra['resetToken'] is String) {
             return NoTransitionPage(
-              child: NewPasswordPage(
-                email: extra['email'] as String,
-                resetToken: extra['resetToken'] as String,
+              child: ContentColumn(
+                maxWidth: AppLayout.formWidth,
+                child: NewPasswordPage(
+                  email: extra['email'] as String,
+                  resetToken: extra['resetToken'] as String,
+                ),
               ),
             );
           }
-          return const NoTransitionPage(child: ForgotPassword());
+          return const NoTransitionPage(
+            child: ContentColumn(
+              maxWidth: AppLayout.formWidth,
+              child: ForgotPassword(),
+            ),
+          );
         },
       ),
       GoRoute(
@@ -1253,9 +1275,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final category = extra?['category'] as Category?;
           final categoryId = state.pathParameters['categoryId'] ?? category?.id;
           return MarketTheme(
-            child: ProductListScreen(
-              category: category,
-              categoryId: categoryId,
+            child: ContentColumn(
+              child: ProductListScreen(
+                category: category,
+                categoryId: categoryId,
+              ),
             ),
           );
         },
@@ -1264,14 +1288,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.marketplaceInfo.name,
         path: AppRoute.marketplaceInfo.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            MarketTheme(child: const MarketplaceInfoScreen()),
+        builder: (context, state) => MarketTheme(
+          child: const ContentColumn(child: MarketplaceInfoScreen()),
+        ),
       ),
       GoRoute(
         name: AppRoute.marketplaceCart.name,
         path: AppRoute.marketplaceCart.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => MarketTheme(child: const CartScreen()),
+        builder: (context, state) =>
+            MarketTheme(child: const ContentColumn(child: CartScreen())),
       ),
       GoRoute(
         name: AppRoute.marketplaceMerchantProfile.name,
@@ -1280,7 +1306,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final merchantId = state.pathParameters['merchantId'] ?? '';
           return MarketTheme(
-            child: MerchantProfileScreen(merchantId: merchantId),
+            child: ContentColumn(
+              child: MerchantProfileScreen(merchantId: merchantId),
+            ),
           );
         },
       ),
@@ -1288,14 +1316,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.marketplaceCheckout.name,
         path: AppRoute.marketplaceCheckout.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => MarketTheme(child: const CheckoutScreen()),
+        builder: (context, state) =>
+            MarketTheme(child: const ContentColumn(child: CheckoutScreen())),
       ),
       GoRoute(
         name: AppRoute.marketplaceOrders.name,
         path: AppRoute.marketplaceOrders.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            MarketTheme(child: const OrderHistoryScreen()),
+        builder: (context, state) => MarketTheme(
+          child: const ContentColumn(child: OrderHistoryScreen()),
+        ),
       ),
       GoRoute(
         name: AppRoute.marketplaceOrderDetails.name,
@@ -1303,7 +1333,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final orderId = state.pathParameters['orderId'] ?? '';
-          return MarketTheme(child: OrderDetailScreen(orderId: orderId));
+          return MarketTheme(
+            child: ContentColumn(child: OrderDetailScreen(orderId: orderId)),
+          );
         },
       ),
       GoRoute(
@@ -1311,14 +1343,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.marketplaceAddresses.path,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            MarketTheme(child: const AddressListScreen()),
+            MarketTheme(child: const ContentColumn(child: AddressListScreen())),
       ),
       GoRoute(
         name: AppRoute.marketplaceAddressForm.name,
         path: AppRoute.marketplaceAddressForm.path,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            MarketTheme(child: const AddressFormScreen()),
+            MarketTheme(child: const ContentColumn(child: AddressFormScreen())),
       ),
       GoRoute(
         name: AppRoute.marketplaceAddressEdit.name,
@@ -1326,7 +1358,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final addressId = state.pathParameters['addressId'] ?? '';
-          return MarketTheme(child: AddressFormScreen(addressId: addressId));
+          return MarketTheme(
+            child: ContentColumn(
+              child: AddressFormScreen(addressId: addressId),
+            ),
+          );
         },
       ),
       // Static /campusmarket/<word> routes must come before the :productId one.
@@ -1334,20 +1370,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.marketplaceSearch.name,
         path: AppRoute.marketplaceSearch.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            MarketTheme(child: const MarketSearchScreen()),
+        builder: (context, state) => MarketTheme(
+          child: const ContentColumn(child: MarketSearchScreen()),
+        ),
       ),
       GoRoute(
         name: AppRoute.marketplaceWishlist.name,
         path: AppRoute.marketplaceWishlist.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => MarketTheme(child: const WishlistScreen()),
+        builder: (context, state) =>
+            MarketTheme(child: const ContentColumn(child: WishlistScreen())),
       ),
       GoRoute(
         name: AppRoute.marketplaceInvoices.name,
         path: AppRoute.marketplaceInvoices.path,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => MarketTheme(child: const InvoicesScreen()),
+        builder: (context, state) =>
+            MarketTheme(child: const ContentColumn(child: InvoicesScreen())),
       ),
       GoRoute(
         name: AppRoute.marketplaceProductDetails.name,

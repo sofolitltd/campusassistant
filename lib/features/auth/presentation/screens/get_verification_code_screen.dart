@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -184,9 +184,7 @@ class _GetVerificationCodeScreenState extends State<GetVerificationCodeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(
                 vertical: Spacing.xl,
-                horizontal: MediaQuery.of(context).size.width > 800
-                    ? MediaQuery.of(context).size.width * .3
-                    : Spacing.lg,
+                horizontal: Spacing.lg,
               ),
               child: Column(
                 crossAxisAlignment: .stretch,
@@ -935,9 +933,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width > 800
-                    ? MediaQuery.of(context).size.width * .3
-                    : Spacing.lg,
+                horizontal: Spacing.lg,
                 vertical: Spacing.xl,
               ),
               child: Column(
@@ -1158,8 +1154,8 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                                                     placeholder: (_) =>
                                                         const Center(
                                                           child:
-                                                              CupertinoActivityIndicator(
-                                                                radius: 6,
+                                                              AppLoader(
+                                                                size: 12,
                                                               ),
                                                         ),
                                                     errorBuilder: (_, _, _) =>
@@ -1304,7 +1300,7 @@ class _ContactWithCRState extends ConsumerState<ContactWithCR> {
                             );
                           },
                           loading: () =>
-                              const Center(child: CupertinoActivityIndicator()),
+                              const Center(child: AppLoader()),
                           error: (e, _) => Text('Error: $e'),
                         )
                   else

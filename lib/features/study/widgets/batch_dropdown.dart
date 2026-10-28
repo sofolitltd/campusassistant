@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -80,7 +80,7 @@ class BatchDropdown extends ConsumerWidget {
         width: 100,
         height: 32,
         child: Center(
-          child: CupertinoActivityIndicator(
+          child: AppLoader(
             color: redBg ? context.colors.onPrimary : null,
           ),
         ),

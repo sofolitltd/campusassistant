@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -35,7 +35,7 @@ class WishlistScreen extends ConsumerWidget {
               constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
               child: async.when(
                 loading: () =>
-                    const Center(child: CupertinoActivityIndicator()),
+                    const Center(child: AppLoader()),
                 error: (_, _) => Center(
                   child: Text(
                     'Could not load your saved items.',

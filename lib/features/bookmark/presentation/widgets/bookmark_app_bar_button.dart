@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -136,7 +136,7 @@ class _BookmarkSheet extends ConsumerWidget {
           child: async.when(
             loading: () => const Padding(
               padding: EdgeInsets.all(Spacing.xl),
-              child: Center(child: CupertinoActivityIndicator()),
+              child: Center(child: AppLoader()),
             ),
             error: (_, _) => Padding(
               padding: const EdgeInsets.all(Spacing.xl),

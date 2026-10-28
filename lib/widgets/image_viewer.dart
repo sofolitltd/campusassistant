@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 // Immersive media surface: the black backdrop and white chrome are
 // intentional and theme-independent — photos are always viewed against
 // black, in light mode as well as dark. These are the documented
@@ -115,7 +115,7 @@ class ImageViewer extends StatelessWidget {
                 ),
               ),
               progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  const CupertinoActivityIndicator(
+                  const AppLoader(
                     color: Colors.white,
                   ), // Added color for visibility
               errorWidget: (context, url, error) => Container(

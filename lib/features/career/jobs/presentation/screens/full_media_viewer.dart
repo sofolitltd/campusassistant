@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' hide Share;
@@ -155,7 +155,7 @@ class _FullPageMediaViewerState extends State<FullPageMediaViewer> {
                         imageUrl: ApiEndpoints.resolveImageUrl(url),
                         fit: .contain,
                         placeholder: (c, u) =>
-                            const CupertinoActivityIndicator(),
+                            const AppLoader(),
                       ),
                     ),
                   );

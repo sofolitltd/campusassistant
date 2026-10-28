@@ -3,7 +3,7 @@ import 'dart:typed_data';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:collection/collection.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +67,7 @@ class EditProfilePage extends ConsumerWidget {
           permanentAddress: studentAsync.value?.permanentAddress,
           initialGender: currentUserAsync.value?.gender,
         ),
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );
@@ -384,7 +384,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               },
                               loading: () => const Padding(
                                 padding: EdgeInsets.all(Spacing.sm),
-                                child: CupertinoActivityIndicator(),
+                                child: AppLoader(),
                               ),
                               error: (e, _) => Text('Error loading halls: $e'),
                             ),
@@ -559,7 +559,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                     ? null
                     : _updateProfile,
                 child: _isLoading
-                    ? const CupertinoActivityIndicator()
+                    ? const AppLoader()
                     : const Text('UPDATE'),
               ),
             ),

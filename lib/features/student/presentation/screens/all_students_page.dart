@@ -3,7 +3,7 @@ import 'dart:async';
 import '/features/batch/domain/entities/batch.dart';
 import '/features/student/domain/entities/student.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -223,7 +223,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
                       top: Radius.circular(RadiusToken.xxxl),
                     ),
                   ),
-                  child: const Center(child: CupertinoActivityIndicator()),
+                  child: const Center(child: AppLoader()),
                 ),
               ),
             ],
@@ -313,7 +313,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           onPageChanged: (page) => _setPage('all', page),
         );
       },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (e, s) => Center(child: Text(e.toString())),
     );
   }
@@ -366,7 +366,7 @@ class _AllStudentsPageState extends ConsumerState<AllStudentsPage>
           onPageChanged: (page) => _setPage(batch.id, page),
         );
       },
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (e, s) => Center(child: Text(e.toString())),
     );
   }

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '/core/theme/app_colors.dart';
@@ -147,7 +147,7 @@ class _BkashWebViewState extends State<BkashWebView> {
                     ).textTheme.titleLarge!.copyWith(fontWeight: .bold),
                   ),
                   const SizedBox(height: Spacing.xxl),
-                  const CupertinoActivityIndicator(radius: 20),
+                  const AppLoader(size: 40),
                   const SizedBox(height: Spacing.md),
                   Text(
                     'Redirecting....',

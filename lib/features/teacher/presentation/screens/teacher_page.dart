@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -90,7 +90,7 @@ class TeacherListView extends ConsumerWidget {
     final teachersAsync = ref.watch(teachersListProvider(isPresent));
 
     return teachersAsync.when(
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (error, stack) => Center(
         child: Padding(
           padding: const EdgeInsets.all(Spacing.xl),

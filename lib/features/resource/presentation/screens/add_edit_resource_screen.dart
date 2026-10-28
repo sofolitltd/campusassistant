@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 
 import '/features/batch/presentation/providers/batch_provider.dart';
 import '/features/chapter/presentation/providers/chapter_provider.dart';
@@ -762,9 +762,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
                       elevation: 2,
                     ),
                     child: _isUploading
-                        ? CupertinoActivityIndicator(
-                            color: context.colors.onPrimary,
-                          )
+                        ? AppLoader()
                         : Row(
                             mainAxisAlignment: .center,
                             children: [

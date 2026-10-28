@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -306,11 +306,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                   height: 24,
                                                   width: 24,
                                                   child:
-                                                      CupertinoActivityIndicator(
-                                                        color: context
-                                                            .colors
-                                                            .onPrimary,
-                                                      ),
+                                                      AppLoader(),
                                                 )
                                               : const Text('Login'),
                                         ),

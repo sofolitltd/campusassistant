@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/app_colors.dart';
+import '/core/theme/tokens/app_layout.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/utils/constants.dart';
@@ -19,8 +20,13 @@ void showContactHelpSheet(
   showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
+    isScrollControlled: true,
+    constraints: BoxConstraints(
+      maxWidth: AppLayout.formWidth,
+      maxHeight: MediaQuery.of(context).size.height * 0.9,
+    ),
     builder: (sheetContext) => SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           Spacing.lg,
           0,

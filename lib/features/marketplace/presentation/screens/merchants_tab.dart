@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -58,7 +58,7 @@ class MerchantsTab extends ConsumerWidget {
                     _MerchantCard(merchant: merchants[i]),
               );
             },
-            loading: () => const Center(child: CupertinoActivityIndicator()),
+            loading: () => const Center(child: AppLoader()),
             error: (e, _) => ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: const [

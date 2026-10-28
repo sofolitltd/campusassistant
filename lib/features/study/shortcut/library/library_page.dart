@@ -2,7 +2,7 @@ import 'dart:async';
 
 import '/features/resource/presentation/widgets/resource_card.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -399,7 +399,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                               SizedBox(
                                 width: 14,
                                 height: 14,
-                                child: CupertinoActivityIndicator(),
+                                child: AppLoader(),
                               ),
                               SizedBox(width: Spacing.sm),
                               Text(
@@ -414,7 +414,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                   },
                 );
               },
-              loading: () => const Center(child: CupertinoActivityIndicator()),
+              loading: () => const Center(child: AppLoader()),
               error: (e, st) => Center(
                 child: Column(
                   mainAxisAlignment: .center,

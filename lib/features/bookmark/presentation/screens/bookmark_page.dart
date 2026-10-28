@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -38,7 +38,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
       searchHint: 'Search bookmarks...',
       onSearchChanged: (v) => setState(() => _query = v),
       body: bookmarksAsync.when(
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: .center,
@@ -125,7 +125,7 @@ class _BookmarkSearchResults extends ConsumerWidget {
     final q = query.trim().toLowerCase();
 
     return async.when(
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (_, _) => const Center(child: Text("Couldn't load bookmarks")),
       data: (resources) {
         final matches = resources
@@ -177,7 +177,7 @@ class _BookmarkResourceItemState extends ConsumerState<_BookmarkResourceItem> {
     return detailAsync.when(
       loading: () => const SizedBox(
         height: 110,
-        child: Center(child: CupertinoActivityIndicator()),
+        child: Center(child: AppLoader()),
       ),
       error: (_, _) => Container(
         height: 110,

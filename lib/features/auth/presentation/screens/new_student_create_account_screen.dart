@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,14 +98,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         child: Form(
           key: _globalKey,
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width > 800
-                  ? MediaQuery.of(context).size.width * .3
-                  : 16,
-              vertical: 16,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: 16),
             child: Column(
-              crossAxisAlignment: .start,
+              crossAxisAlignment: .stretch,
               children: [
                 Card(
                   elevation: 6,
@@ -360,9 +355,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                               ? SizedBox(
                                   height: 24,
                                   width: 24,
-                                  child: CupertinoActivityIndicator(
-                                    color: context.colors.onPrimary,
-                                  ),
+                                  child: AppLoader(),
                                 )
                               : Text(
                                   'Complete registration',

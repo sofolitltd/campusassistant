@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import '/features/cr/data/models/cr_model.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart';
@@ -65,7 +65,7 @@ class CrCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    placeholder: (_, _) => const CupertinoActivityIndicator(),
+                    placeholder: (_, _) => const AppLoader(),
                     errorWidget: (_, _, _) => const Icon(LucideIcons.user),
                   ),
                 ),

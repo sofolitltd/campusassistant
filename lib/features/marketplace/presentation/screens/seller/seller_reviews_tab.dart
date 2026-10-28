@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +21,7 @@ class SellerReviewsTab extends ConsumerWidget {
     final c = context.colors;
     final async = ref.watch(merchantReviewsProvider(merchantId));
     return async.when(
-      loading: () => const Center(child: CupertinoActivityIndicator()),
+      loading: () => const Center(child: AppLoader()),
       error: (_, _) => Center(
         child: Text(
           'Could not load reviews.',

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
@@ -71,7 +71,7 @@ class MemberCardPage extends ConsumerWidget {
           }
           return _MemberCardEditor(user: user, student: student);
         },
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(child: Text('Could not load your profile: $e')),
       ),
     );
@@ -363,5 +363,5 @@ class _ButtonSpinner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      const SizedBox.square(dimension: 16, child: CupertinoActivityIndicator());
+      const SizedBox.square(dimension: 16, child: AppLoader());
 }

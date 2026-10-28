@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:cupertino_ui/cupertino_ui.dart';
+import '/core/widgets/app_loader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -151,7 +151,7 @@ class OrderHistoryScreen extends ConsumerWidget {
                 );
               },
               loading: () =>
-                  const Center(child: CupertinoActivityIndicator()),
+                  const Center(child: AppLoader()),
               error: (e, _) =>
                   Center(child: Text('Could not load orders: $e')),
             ),

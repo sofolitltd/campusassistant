@@ -1,11 +1,11 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:collection/collection.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,6 +49,18 @@ class EditProfilePage extends ConsumerWidget {
       title: 'Edit Profile',
       showSearchBar: false,
       body: profileAsync.when(
+        // Picking/cropping a photo backgrounds the app briefly (native
+        // cropper activity, or the browser's file dialog on web), which
+        // triggers main.dart's app-resume refresh. That bumps
+        // appRefreshProvider, which batch/session providers watch, which
+        // cascades into this screen's own provider chain
+        // (studentByUserIdProvider -> userProfileByUidProvider) and would
+        // otherwise swap this form out for the loading spinner below —
+        // disposing _EditProfileFormState while _pickImage's crop Future is
+        // still in flight, crashing on the setState when it resolves and
+        // silently dropping the picked photo. Keep rendering the existing
+        // form with its stale data during that reload instead.
+        skipLoadingOnReload: true,
         data: (profile) => _EditProfileForm(
           profile: profile,
           presentAddress: studentAsync.value?.presentAddress,
@@ -90,8 +102,11 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   String? _selectedGender;
   bool _isLoading = false;
 
-  File? _pickedMobileImage;
-  Uint8List _webImage = Uint8List(8);
+  // Compressed, ready-to-upload avatar bytes — set by _pickImage once the
+  // cropped image has been shrunk under kMaxAvatarBytes. Using bytes on both
+  // platforms (instead of a dart:io File on mobile) keeps preview + upload
+  // identical cross-platform.
+  Uint8List? _pickedImageBytes;
 
   // Present/permanent address section.
   final _presentAddressLineController = TextEditingController();
@@ -174,7 +189,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
         _selectedHall != widget.profile.information.hall ||
         _selectedBloodGroup != widget.profile.information.blood ||
         _selectedGender != widget.initialGender ||
-        _pickedMobileImage != null ||
+        _pickedImageBytes != null ||
         _addressDirty;
   }
 
@@ -182,20 +197,22 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   Widget build(BuildContext context) {
     final hallsAsync = ref.watch(hallsProvider);
 
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
-        padding: const EdgeInsets.all(Spacing.lg),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  //
-                  ButtonTheme(
+    // The Update button lives outside the scroll view, in a fixed footer
+    // (see _buildStickyFooter) — it used to be the last item inside the
+    // SingleChildScrollView, where a long form (or the keyboard opening)
+    // pushed it off-screen, so it was easy to back out of the screen
+    // without ever seeing it was there to tap.
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(Spacing.lg),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+                child: Form(
+                  key: _formKey,
+                  child: ButtonTheme(
                     alignedDropdown: true,
                     child: Column(
                       crossAxisAlignment: .stretch,
@@ -501,22 +518,49 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             ],
                           ],
                         ),
-
-                        const SizedBox(height: Spacing.xxl),
-
-                        /// ---- SAVE BUTTON ----
-                        ElevatedButton(
-                          onPressed: _isLoading || !_hasChanged()
-                              ? null
-                              : _updateProfile,
-                          child: _isLoading
-                              ? const CupertinoActivityIndicator()
-                              : const Text('UPDATE'),
-                        ),
                       ],
                     ),
                   ),
-                ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        _buildStickyFooter(context),
+      ],
+    );
+  }
+
+  Widget _buildStickyFooter(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).cardColor
+              : context.colors.surface,
+          border: Border(top: BorderSide(color: context.colors.border)),
+          boxShadow: [
+            BoxShadow(
+              color: context.colors.shadow,
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(Spacing.lg),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading || !_hasChanged()
+                    ? null
+                    : _updateProfile,
+                child: _isLoading
+                    ? const CupertinoActivityIndicator()
+                    : const Text('UPDATE'),
               ),
             ),
           ),
@@ -553,10 +597,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   Widget _buildProfileImage(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ImageProvider? imageProvider;
-    if (_pickedMobileImage != null) {
-      imageProvider = kIsWeb
-          ? MemoryImage(_webImage)
-          : FileImage(_pickedMobileImage!);
+    if (_pickedImageBytes != null) {
+      imageProvider = MemoryImage(_pickedImageBytes!);
     } else if (widget.profile.image.isNotEmpty) {
       imageProvider = AppNetworkImage.provider(
         ApiEndpoints.resolveImageUrl(widget.profile.image),
@@ -631,7 +673,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
-              _pickedMobileImage == null
+              _pickedImageBytes == null
                   ? 'Change Photo'
                   : 'New Photo Selected',
             ),
@@ -662,22 +704,61 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
         WebUiSettings(
           context: context,
           presentStyle: WebPresentStyle.dialog,
-          size: const CropperSize(width: 350, height: 350),
+          size: const CropperSize(width: 320, height: 320),
+          viewMode: WebViewMode.mode_1,
+          initialAspectRatio: 1,
+          customDialogBuilder: (cropper, initCropper, crop, rotate, scale) =>
+              _CropperDialog(
+                cropper: cropper,
+                initCropper: initCropper,
+                crop: crop,
+                rotate: rotate,
+                scale: scale,
+                cropSize: 320,
+              ),
         ),
       ],
     );
 
-    if (cropped != null) {
-      if (kIsWeb) {
-        final bytes = await cropped.readAsBytes();
-        setState(() {
-          _webImage = bytes;
-          _pickedMobileImage = File('');
-        });
-      } else {
-        setState(() => _pickedMobileImage = File(cropped.path));
-      }
+    if (cropped == null) return;
+
+    final rawBytes = await cropped.readAsBytes();
+    final compressed = await _compressAvatarBytes(rawBytes);
+    if (!mounted) return;
+    setState(() => _pickedImageBytes = compressed);
+  }
+
+  /// Shrinks [bytes] to a JPEG no larger than [kMaxAvatarBytes] (100 KB),
+  /// stepping quality down until it fits. Both platforms need this: mobile's
+  /// native cropper quality setting (compressQuality above) only roughly
+  /// controls output size, and the web cropper ignores it entirely (see
+  /// image_cropper_for_web's own docs — ignored param), so this is the one
+  /// place that actually enforces the limit on either platform.
+  static const kMaxAvatarBytes = 100 * 1024;
+
+  Future<Uint8List> _compressAvatarBytes(Uint8List bytes) async {
+    if (bytes.lengthInBytes <= kMaxAvatarBytes) return bytes;
+
+    for (final quality in const [70, 55, 40, 25, 15]) {
+      final result = await FlutterImageCompress.compressWithList(
+        bytes,
+        minWidth: 512,
+        minHeight: 512,
+        quality: quality,
+        format: CompressFormat.jpeg,
+      );
+      if (result.length <= kMaxAvatarBytes) return result;
     }
+
+    // Lowest quality didn't make it either — return it anyway; the backend
+    // enforces the hard cap and will reject it rather than silently bloat.
+    return FlutterImageCompress.compressWithList(
+      bytes,
+      minWidth: 512,
+      minHeight: 512,
+      quality: 10,
+      format: CompressFormat.jpeg,
+    );
   }
 
   Future<void> _updateProfile() async {
@@ -686,7 +767,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
     try {
       String? imageUrl;
-      if (_pickedMobileImage != null) {
+      if (_pickedImageBytes != null) {
         imageUrl = await _uploadAndGetImageUrl();
       }
 
@@ -781,25 +862,145 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   }
 
   Future<String?> _uploadAndGetImageUrl() async {
+    final bytes = _pickedImageBytes;
+    if (bytes == null) return null;
     final apiClient = ref.read(apiClientProvider);
-    if (kIsWeb) {
-      final response = await apiClient.uploadBytes(
-        '/upload',
-        bytes: _webImage,
-        fileName: 'avatar.jpg',
-        fieldName: 'image',
-        data: {'folder': 'avatars'},
-      );
-      return response.data['file_url'] as String?;
-    }
-    final file = _pickedMobileImage;
-    if (file == null) return null;
-    final response = await apiClient.uploadFile(
+    final response = await apiClient.uploadBytes(
       '/upload',
-      filePath: file.path,
+      bytes: bytes,
+      fileName: 'avatar.jpg',
       fieldName: 'image',
       data: {'folder': 'avatars'},
     );
     return response.data['file_url'] as String?;
+  }
+}
+
+/// Replaces image_cropper_for_web's stock dialog (large title, a bottom
+/// Cancel text button alongside Crop, and a size that overflowed on short
+/// viewports) with a compact header (X close, top-right) and a single Crop
+/// action, sized to always fit — the whole thing scrolls as a fallback on
+/// very short viewports instead of overflowing.
+class _CropperDialog extends StatefulWidget {
+  final Widget cropper;
+  final VoidCallback initCropper;
+  final Future<String?> Function() crop;
+  final void Function(RotationAngle) rotate;
+  final void Function(num) scale;
+  final double cropSize;
+
+  const _CropperDialog({
+    required this.cropper,
+    required this.initCropper,
+    required this.crop,
+    required this.rotate,
+    required this.scale,
+    required this.cropSize,
+  });
+
+  @override
+  State<_CropperDialog> createState() => _CropperDialogState();
+}
+
+class _CropperDialogState extends State<_CropperDialog> {
+  double _scaleValue = 1;
+  bool _cropping = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.initCropper();
+  }
+
+  Future<void> _doCrop() async {
+    if (_cropping) return;
+    setState(() => _cropping = true);
+    final result = await widget.crop();
+    if (!mounted) return;
+    Navigator.of(context).pop(result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.all(Spacing.lg),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(RadiusToken.lg),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(Spacing.lg),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Crop Photo',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Spacing.sm),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(RadiusToken.md),
+                child: SizedBox(
+                  width: widget.cropSize,
+                  height: widget.cropSize,
+                  child: widget.cropper,
+                ),
+              ),
+              const SizedBox(height: Spacing.sm),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.rotate_90_degrees_ccw_rounded),
+                    tooltip: 'Rotate left',
+                    onPressed: () =>
+                        widget.rotate(RotationAngle.counterClockwise90),
+                  ),
+                  Expanded(
+                    child: Slider(
+                      value: _scaleValue,
+                      min: 1,
+                      max: 3,
+                      label: _scaleValue.toStringAsFixed(1),
+                      onChanged: (value) {
+                        setState(() => _scaleValue = value);
+                        widget.scale(value);
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.rotate_90_degrees_cw_outlined),
+                    tooltip: 'Rotate right',
+                    onPressed: () => widget.rotate(RotationAngle.clockwise90),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Spacing.sm),
+              ElevatedButton(
+                onPressed: _cropping ? null : _doCrop,
+                child: _cropping
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Crop'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

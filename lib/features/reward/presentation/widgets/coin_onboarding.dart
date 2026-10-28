@@ -46,6 +46,12 @@ class _CoinWelcomeGateState extends ConsumerState<CoinWelcomeGate> {
     if (!mounted) return;
     await showModalBottomSheet<void>(
       context: context,
+      // Opened from a shell branch page — without this it's confined to
+      // that branch's nested Navigator and gets cut off by the bottom nav.
+      useRootNavigator: true,
+      // Content doesn't fit the default 9/16-screen cap on short devices —
+      // let the sheet grow and scroll instead of clipping the buttons.
+      isScrollControlled: true,
       showDragHandle: true,
       builder: (_) => _CoinWelcomeSheet(balance: balance),
     );
@@ -79,7 +85,7 @@ class _CoinWelcomeSheet extends StatelessWidget {
     final isFreshBonus = balance.lifetimeSpent == 0 && balance.balance >= 50;
 
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           Spacing.xl,
           0,

@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:intl/intl.dart';
 
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
@@ -16,8 +14,8 @@ import '/core/theme/tokens/app_accents.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '../providers/reward_providers.dart';
 import '../widgets/daily_reward_banner.dart';
+import '../widgets/transaction_tile.dart';
 import '/core/theme/tokens/app_spacing.dart';
-import '/core/theme/tokens/app_font_size.dart';
 
 class RewardPage extends ConsumerStatefulWidget {
   const RewardPage({super.key});
@@ -80,139 +78,104 @@ class _RewardPageState extends ConsumerState<RewardPage> {
     return CustomHeaderLayout(
       title: 'Rewards',
       showSearchBar: false,
-      // Infinite scroll: fetch the next page of history as the list nears its
-      // end, the same way the library list does.
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (n) {
-          if (n.metrics.extentAfter < 400) {
-            ref.read(rewardTransactionsProvider.notifier).loadNextPage();
-          }
-          return false;
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(Spacing.lg),
-          children: [
-            balanceAsync.when(
-              data: (balance) => _BalanceCard(balance: balance),
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(Spacing.xxxl),
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-              error: (err, _) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(Spacing.xxxl),
-                  child: Text('Failed to load balance: $err'),
-                ),
+      body: ListView(
+        padding: const EdgeInsets.all(Spacing.lg),
+        children: [
+          balanceAsync.when(
+            data: (balance) => _BalanceCard(balance: balance),
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(Spacing.xxxl),
+                child: CircularProgressIndicator(),
               ),
             ),
+            error: (err, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(Spacing.xxxl),
+                child: Text('Failed to load balance: $err'),
+              ),
+            ),
+          ),
+          const SizedBox(height: Spacing.lg),
+          const DailyRewardBanner(padded: false),
+          if (!kIsWeb && !ref.watch(isAdFreeProvider)) ...[
             const SizedBox(height: Spacing.lg),
-            const DailyRewardBanner(padded: false),
-            if (!kIsWeb && !ref.watch(isAdFreeProvider)) ...[
-              const SizedBox(height: Spacing.lg),
-              _WatchAdCard(
-                isLoading: _isClaiming,
-                onPressed: _watchAdForReward,
-              ),
-            ],
-            if (!ref.watch(isProUserProvider)) ...[
-              const SizedBox(height: Spacing.md),
-              _GoProCard(
-                onPressed: () => context.pushNamed(AppRoute.subscription.name),
-              ),
-            ],
-            const SizedBox(height: Spacing.xxl),
-            Text(
-              'Transaction History',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: .w600),
-            ),
+            _WatchAdCard(isLoading: _isClaiming, onPressed: _watchAdForReward),
+          ],
+          if (!ref.watch(isProUserProvider)) ...[
             const SizedBox(height: Spacing.md),
-            transactionsAsync.when(
-              data: (state) {
-                if (state.transactions.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: Spacing.xxxl),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(
-                            LucideIcons.receipt,
-                            size: 48,
-                            color: context.colors.textSubtle,
-                          ),
-                          const SizedBox(height: Spacing.sm),
-                          Text(
-                            'No transactions yet',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: context.colors.textSubtle),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return Column(
-                  children: [
-                    ...state.transactions.map(
-                      (txn) => _TransactionTile(transaction: txn),
-                    ),
-                    _HistoryFooter(
-                      loading: state.hasMore,
-                      count: state.transactions.length,
-                    ),
-                  ],
-                );
-              },
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(Spacing.xxxl),
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-              error: (err, _) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(Spacing.xxxl),
-                  child: Text('Failed to load transactions: $err'),
-                ),
-              ),
+            _GoProCard(
+              onPressed: () => context.pushNamed(AppRoute.subscription.name),
             ),
           ],
-        ),
+          const SizedBox(height: Spacing.xxl),
+          Text(
+            'Transaction History',
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: .w600),
+          ),
+          const SizedBox(height: Spacing.md),
+          transactionsAsync.when(
+            data: (state) {
+              if (state.transactions.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Spacing.xxxl),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Icon(
+                          LucideIcons.receipt,
+                          size: 48,
+                          color: context.colors.textSubtle,
+                        ),
+                        const SizedBox(height: Spacing.sm),
+                        Text(
+                          'No transactions yet',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: context.colors.textSubtle),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              final preview = state.transactions.take(5);
+              return Column(
+                children: [
+                  ...preview.map((txn) => TransactionTile(transaction: txn)),
+                  if (state.transactions.length > 5 || state.hasMore)
+                    Padding(
+                      padding: const EdgeInsets.only(top: Spacing.sm),
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 36),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Spacing.lg,
+                          ),
+                        ),
+                        onPressed: () =>
+                            context.pushNamed(AppRoute.rewardHistory.name),
+                        child: const Text('See more'),
+                      ),
+                    ),
+                ],
+              );
+            },
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(Spacing.xxxl),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (err, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(Spacing.xxxl),
+                child: Text('Failed to load transactions: $err'),
+              ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
-}
-
-class _HistoryFooter extends StatelessWidget {
-  final bool loading;
-  final int count;
-
-  const _HistoryFooter({required this.loading, required this.count});
-
-  @override
-  Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontSize: FontSizeToken.sm,
-      color: context.colors.textMuted,
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: Spacing.md),
-      child: loading
-          ? Row(
-              mainAxisAlignment: .center,
-              children: [
-                const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CupertinoActivityIndicator(),
-                ),
-                const SizedBox(width: Spacing.sm),
-                Text('Loading more transactions...', style: style),
-              ],
-            )
-          : Center(child: Text('$count loaded', style: style)),
     );
   }
 }
@@ -498,77 +461,6 @@ class _Stat extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TransactionTile extends StatelessWidget {
-  final dynamic transaction;
-
-  const _TransactionTile({required this.transaction});
-
-  @override
-  Widget build(BuildContext context) {
-    final isEarn = transaction.type == 'earn';
-    final dateStr = transaction.createdAt != null
-        ? DateFormat('MMM d, yyyy').format(transaction.createdAt)
-        : '';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: Spacing.sm),
-      child: Container(
-        padding: const EdgeInsets.all(Spacing.md),
-        decoration: BoxDecoration(
-          color: context.colors.surface,
-          borderRadius: BorderRadius.circular(RadiusToken.md),
-          border: Border.all(color: context.colors.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(Spacing.sm),
-              decoration: BoxDecoration(
-                color: (isEarn ? context.colors.success : context.colors.danger)
-                    .withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(RadiusToken.md),
-              ),
-              child: Icon(
-                isEarn ? LucideIcons.arrowUp : LucideIcons.arrowDown,
-                size: 16,
-                color: isEarn ? context.colors.success : context.colors.danger,
-              ),
-            ),
-            const SizedBox(width: Spacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    transaction.description ?? '',
-                    style: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(fontWeight: .w500),
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                  ),
-                  if (dateStr.isNotEmpty)
-                    Text(
-                      dateStr,
-                      style: Theme.of(context).textTheme.bodySmall
-                          ?.copyWith(color: context.colors.textSubtle),
-                    ),
-                ],
-              ),
-            ),
-            Text(
-              '${isEarn ? '+' : '-'}${transaction.amount}',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: .bold,
-                color: isEarn ? context.colors.success : context.colors.danger,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -57,6 +57,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? userId,
     String? search,
     String? bloodGroup,
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
     required String cacheKey,
@@ -68,6 +69,7 @@ class StudentRepositoryImpl implements StudentRepository {
     if (userId != null) queryParams['user_id'] = userId;
     if (_isSearch(search)) queryParams['search'] = search;
     if (bloodGroup != null) queryParams['blood_group'] = bloodGroup;
+    if (hasBloodGroup == true) queryParams['has_blood_group'] = 'true';
     if (limit != null) queryParams['limit'] = limit.toString();
     if (offset != null) queryParams['offset'] = offset.toString();
     // Count-only requests (limit=1) don't need the joined user/batch/hall.
@@ -114,6 +116,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? userId,
     String? search,
     String? bloodGroup,
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
   }) async {
@@ -124,6 +127,7 @@ class StudentRepositoryImpl implements StudentRepository {
       userId: userId,
       search: search,
       bloodGroup: bloodGroup,
+      hasBloodGroup: hasBloodGroup,
       limit: limit,
       offset: offset,
     );
@@ -142,6 +146,7 @@ class StudentRepositoryImpl implements StudentRepository {
           userId: userId,
           search: search,
           bloodGroup: bloodGroup,
+          hasBloodGroup: hasBloodGroup,
           limit: limit,
           offset: offset,
           cacheKey: cacheKey,
@@ -165,6 +170,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? userId,
     String? search,
     String? bloodGroup,
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
   }) async* {
@@ -177,6 +183,7 @@ class StudentRepositoryImpl implements StudentRepository {
       userId: userId,
       search: search,
       bloodGroup: bloodGroup,
+      hasBloodGroup: hasBloodGroup,
       limit: limit,
       offset: offset,
     );
@@ -320,6 +327,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? userId,
     String? search,
     String? bloodGroup,
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
   }) {
@@ -331,6 +339,7 @@ class StudentRepositoryImpl implements StudentRepository {
       // Without this a search would be served the unfiltered cached page.
       if (search != null && search.isNotEmpty) 'q_$search',
       if (bloodGroup != null) 'blood_$bloodGroup',
+      if (hasBloodGroup == true) 'hasblood',
       if (limit != null) 'lmt_$limit',
       if (offset != null) 'off_$offset',
     ];

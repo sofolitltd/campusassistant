@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../repositories/student_repository.dart';
 
 part 'get_students.freezed.dart';
@@ -11,6 +12,9 @@ abstract class GetStudentsParams with _$GetStudentsParams {
     String? batch,
     String? search,
     String? bloodGroup,
+    // Blood Bank only: excludes students who never filled in a blood group,
+    // instead of showing them with a blank badge.
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
   }) = _GetStudentsParams;
@@ -28,6 +32,7 @@ class GetStudents {
       batchId: params.batch,
       search: params.search,
       bloodGroup: params.bloodGroup,
+      hasBloodGroup: params.hasBloodGroup,
       limit: params.limit,
       offset: params.offset,
     );

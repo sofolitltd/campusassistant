@@ -63,6 +63,9 @@ final bloodBankPageProvider = FutureProvider.autoDispose
         batch: scope == 0 ? profile.information.batchId : null,
         search: search.isEmpty ? null : search,
         bloodGroup: bloodGroup,
+        // Blood Bank is a donor directory — students who never filled in a
+        // blood group aren't useful donors to list here.
+        hasBloodGroup: true,
         limit: bloodBankPageSize,
         offset: (page - 1) * bloodBankPageSize,
       );

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GetStudentsParams {
 
- String? get universityId; String? get departmentId; String? get batch; String? get search; String? get bloodGroup; int? get limit; int? get offset;
+ String? get universityId; String? get departmentId; String? get batch; String? get search; String? get bloodGroup; bool? get hasBloodGroup; int? get limit; int? get offset;
 /// Create a copy of GetStudentsParams
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $GetStudentsParamsCopyWith<GetStudentsParams> get copyWith => _$GetStudentsParam
 @override
 bool operator ==(Object other) {
   final _this = this as GetStudentsParams;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetStudentsParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.bloodGroup, _this.bloodGroup) || other.bloodGroup == _this.bloodGroup)&&(identical(other.limit, _this.limit) || other.limit == _this.limit)&&(identical(other.offset, _this.offset) || other.offset == _this.offset));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetStudentsParams&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.batch, _this.batch) || other.batch == _this.batch)&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.bloodGroup, _this.bloodGroup) || other.bloodGroup == _this.bloodGroup)&&(identical(other.hasBloodGroup, _this.hasBloodGroup) || other.hasBloodGroup == _this.hasBloodGroup)&&(identical(other.limit, _this.limit) || other.limit == _this.limit)&&(identical(other.offset, _this.offset) || other.offset == _this.offset));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GetStudentsParams;
-  return Object.hash(runtimeType,_this.universityId,_this.departmentId,_this.batch,_this.search,_this.bloodGroup,_this.limit,_this.offset);
+  return Object.hash(runtimeType,_this.universityId,_this.departmentId,_this.batch,_this.search,_this.bloodGroup,_this.hasBloodGroup,_this.limit,_this.offset);
 }
 
 @override
 String toString() {
   final _this = this as GetStudentsParams;
-  return 'GetStudentsParams(universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, batch: ${_this.batch}, search: ${_this.search}, bloodGroup: ${_this.bloodGroup}, limit: ${_this.limit}, offset: ${_this.offset})';
+  return 'GetStudentsParams(universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, batch: ${_this.batch}, search: ${_this.search}, bloodGroup: ${_this.bloodGroup}, hasBloodGroup: ${_this.hasBloodGroup}, limit: ${_this.limit}, offset: ${_this.offset})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $GetStudentsParamsCopyWith<$Res>  {
   factory $GetStudentsParamsCopyWith(GetStudentsParams value, $Res Function(GetStudentsParams) _then) = _$GetStudentsParamsCopyWithImpl;
 @useResult
 $Res call({
- String? universityId, String? departmentId, String? batch, String? search, String? bloodGroup, int? limit, int? offset
+ String? universityId, String? departmentId, String? batch, String? search, String? bloodGroup, bool? hasBloodGroup, int? limit, int? offset
 });
 
 
@@ -68,14 +68,15 @@ class _$GetStudentsParamsCopyWithImpl<$Res>
 
 /// Create a copy of GetStudentsParams
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? universityId = freezed,Object? departmentId = freezed,Object? batch = freezed,Object? search = freezed,Object? bloodGroup = freezed,Object? limit = freezed,Object? offset = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? universityId = freezed,Object? departmentId = freezed,Object? batch = freezed,Object? search = freezed,Object? bloodGroup = freezed,Object? hasBloodGroup = freezed,Object? limit = freezed,Object? offset = freezed,}) {
   return _then(GetStudentsParams(
 universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String?,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,batch: freezed == batch ? _self.batch : batch // ignore: cast_nullable_to_non_nullable
 as String?,search: freezed == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
 as String?,bloodGroup: freezed == bloodGroup ? _self.bloodGroup : bloodGroup // ignore: cast_nullable_to_non_nullable
-as String?,limit: freezed == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as String?,hasBloodGroup: freezed == hasBloodGroup ? _self.hasBloodGroup : hasBloodGroup // ignore: cast_nullable_to_non_nullable
+as bool?,limit: freezed == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
 as int?,offset: freezed == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? universityId,  String? departmentId,  String? batch,  String? search,  String? bloodGroup,  int? limit,  int? offset)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? universityId,  String? departmentId,  String? batch,  String? search,  String? bloodGroup,  bool? hasBloodGroup,  int? limit,  int? offset)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GetStudentsParams() when $default != null:
-return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_that.bloodGroup,_that.limit,_that.offset);case _:
+return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_that.bloodGroup,_that.hasBloodGroup,_that.limit,_that.offset);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? universityId,  String? departmentId,  String? batch,  String? search,  String? bloodGroup,  int? limit,  int? offset)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? universityId,  String? departmentId,  String? batch,  String? search,  String? bloodGroup,  bool? hasBloodGroup,  int? limit,  int? offset)  $default,) {final _that = this;
 switch (_that) {
 case _GetStudentsParams():
-return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_that.bloodGroup,_that.limit,_that.offset);case _:
+return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_that.bloodGroup,_that.hasBloodGroup,_that.limit,_that.offset);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? universityId,  String? departmentId,  String? batch,  String? search,  String? bloodGroup,  int? limit,  int? offset)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? universityId,  String? departmentId,  String? batch,  String? search,  String? bloodGroup,  bool? hasBloodGroup,  int? limit,  int? offset)?  $default,) {final _that = this;
 switch (_that) {
 case _GetStudentsParams() when $default != null:
-return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_that.bloodGroup,_that.limit,_that.offset);case _:
+return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_that.bloodGroup,_that.hasBloodGroup,_that.limit,_that.offset);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.universityId,_that.departmentId,_that.batch,_that.search,_
 
 
 class _GetStudentsParams implements GetStudentsParams {
-  const _GetStudentsParams({this.universityId, this.departmentId, this.batch, this.search, this.bloodGroup, this.limit, this.offset});
+  const _GetStudentsParams({this.universityId, this.departmentId, this.batch, this.search, this.bloodGroup, this.hasBloodGroup, this.limit, this.offset});
   
 
 @override final  String? universityId;
@@ -226,6 +227,7 @@ class _GetStudentsParams implements GetStudentsParams {
 @override final  String? batch;
 @override final  String? search;
 @override final  String? bloodGroup;
+@override final  bool? hasBloodGroup;
 @override final  int? limit;
 @override final  int? offset;
 
@@ -239,18 +241,18 @@ _$GetStudentsParamsCopyWith<_GetStudentsParams> get copyWith => __$GetStudentsPa
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetStudentsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.search, search) || other.search == search)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetStudentsParams&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.batch, batch) || other.batch == batch)&&(identical(other.search, search) || other.search == search)&&(identical(other.bloodGroup, bloodGroup) || other.bloodGroup == bloodGroup)&&(identical(other.hasBloodGroup, hasBloodGroup) || other.hasBloodGroup == hasBloodGroup)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,universityId,departmentId,batch,search,bloodGroup,limit,offset);
+    return Object.hash(runtimeType,universityId,departmentId,batch,search,bloodGroup,hasBloodGroup,limit,offset);
 }
 
 @override
 String toString() {
-    return 'GetStudentsParams(universityId: $universityId, departmentId: $departmentId, batch: $batch, search: $search, bloodGroup: $bloodGroup, limit: $limit, offset: $offset)';
+    return 'GetStudentsParams(universityId: $universityId, departmentId: $departmentId, batch: $batch, search: $search, bloodGroup: $bloodGroup, hasBloodGroup: $hasBloodGroup, limit: $limit, offset: $offset)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$GetStudentsParamsCopyWith<$Res> implements $GetStudentsPa
   factory _$GetStudentsParamsCopyWith(_GetStudentsParams value, $Res Function(_GetStudentsParams) _then) = __$GetStudentsParamsCopyWithImpl;
 @override @useResult
 $Res call({
- String? universityId, String? departmentId, String? batch, String? search, String? bloodGroup, int? limit, int? offset
+ String? universityId, String? departmentId, String? batch, String? search, String? bloodGroup, bool? hasBloodGroup, int? limit, int? offset
 });
 
 
@@ -278,14 +280,15 @@ class __$GetStudentsParamsCopyWithImpl<$Res>
 
 /// Create a copy of GetStudentsParams
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? universityId = freezed,Object? departmentId = freezed,Object? batch = freezed,Object? search = freezed,Object? bloodGroup = freezed,Object? limit = freezed,Object? offset = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? universityId = freezed,Object? departmentId = freezed,Object? batch = freezed,Object? search = freezed,Object? bloodGroup = freezed,Object? hasBloodGroup = freezed,Object? limit = freezed,Object? offset = freezed,}) {
   return _then(_GetStudentsParams(
 universityId: freezed == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String?,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String?,batch: freezed == batch ? _self.batch : batch // ignore: cast_nullable_to_non_nullable
 as String?,search: freezed == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
 as String?,bloodGroup: freezed == bloodGroup ? _self.bloodGroup : bloodGroup // ignore: cast_nullable_to_non_nullable
-as String?,limit: freezed == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as String?,hasBloodGroup: freezed == hasBloodGroup ? _self.hasBloodGroup : hasBloodGroup // ignore: cast_nullable_to_non_nullable
+as bool?,limit: freezed == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
 as int?,offset: freezed == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
 as int?,
   ));

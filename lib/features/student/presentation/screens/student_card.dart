@@ -135,6 +135,8 @@ class StudentCard extends StatelessWidget {
                         ],
                       ),
 
+                      // show if blood group is not empty
+                      if (studentModel.bloodGroup.isNotEmpty) ...[
                       Text(
                         '|',
                         style: TextStyle(
@@ -167,7 +169,7 @@ class StudentCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ],
+                    ],],
                   ),
 
                   const SizedBox(height: Spacing.sm),
@@ -176,7 +178,7 @@ class StudentCard extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        'Student Id:',
+                        'ID:',
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: context.colors.textMuted,
                           fontSize: FontSizeToken.sm,
@@ -192,7 +194,7 @@ class StudentCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: Spacing.sm),
+                  const SizedBox(height: Spacing.xs),
 
                   if (studentModel.hall != 'None') ...[
                     const SizedBox(height: Spacing.xxs),

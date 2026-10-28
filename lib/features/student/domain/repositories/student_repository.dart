@@ -14,6 +14,7 @@ abstract class StudentRepository {
     String? userId,
     String? search,
     String? bloodGroup,
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
   });
@@ -28,6 +29,7 @@ abstract class StudentRepository {
     String? userId,
     String? search,
     String? bloodGroup,
+    bool? hasBloodGroup,
     int? limit,
     int? offset,
   });

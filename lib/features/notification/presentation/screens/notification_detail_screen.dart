@@ -161,10 +161,11 @@ class NotificationDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       Positioned(
-                        top: 80,
+                        top: 112,
                         left: 24,
                         right: 24,
                         child: Row(
+                          crossAxisAlignment: .start,
                           children: [
                             Container(
                               width: 48,
@@ -190,15 +191,15 @@ class NotificationDetailScreen extends ConsumerWidget {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: Spacing.sm,
-                                      vertical: Spacing.xs,
+                                      horizontal: Spacing.xs,
+                                      vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
                                       color: context.colors.surface.withValues(
                                         alpha: 0.15,
                                       ),
                                       borderRadius: BorderRadius.circular(
-                                        RadiusToken.sm,
+                                        RadiusToken.xs,
                                       ),
                                     ),
                                     child: Text(

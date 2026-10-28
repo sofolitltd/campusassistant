@@ -84,15 +84,25 @@ class NotificationTile extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
             color: notification.isRead
-                ? Colors.transparent
-                : color.withValues(alpha: isDark ? 0.06 : 0.04),
+                ? context.colors.surface
+                : Color.alphaBlend(
+                    color.withValues(alpha: isDark ? 0.1 : 0.06),
+                    context.colors.surface,
+                  ),
             borderRadius: BorderRadius.circular(RadiusToken.md),
             border: Border.all(
               color: notification.isRead
-                  ? Colors.transparent
-                  : color.withValues(alpha: isDark ? 0.15 : 0.1),
+                  ? context.colors.border
+                  : color.withValues(alpha: isDark ? 0.3 : 0.25),
               width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: context.colors.shadow,
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(

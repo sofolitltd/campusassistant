@@ -89,7 +89,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(
                     Spacing.lg,
-                    Spacing.sm,
+                    0,
                     Spacing.lg,
                     Spacing.xxl,
                   ),
@@ -120,12 +120,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
   Widget _buildFilterChip(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Spacing.lg,
-        Spacing.xs,
-        Spacing.lg,
-        Spacing.sm,
-      ),
+      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.md, Spacing.lg, 0),
       child: Align(
         alignment: Alignment.centerLeft,
         child: GestureDetector(
@@ -143,9 +138,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               borderRadius: BorderRadius.circular(RadiusToken.sm),
               border: Border.all(
                 color: _showUnreadOnly
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.3)
+                    ? Theme.of(context).colorScheme.primary
+                          .withValues(alpha: 0.3)
                     : (context.colors.border),
               ),
             ),

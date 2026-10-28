@@ -41,6 +41,7 @@ import '/features/notice/presentation/screens/department_notices_page.dart';
 import '/features/emergency/presentation/screens/emergency_page.dart';
 import '/features/home/home_page.dart';
 import '/features/routine/presentation/screens/routine_page.dart';
+import '/features/exams/presentation/screens/exams_page.dart';
 import '/features/search/presentation/screens/search_page.dart';
 import '/features/study/levels/presentation/screens/study_search_page.dart';
 import '/features/staff/presentation/screens/staff_details_screen.dart';
@@ -138,6 +139,7 @@ import '/features/app_update/presentation/providers/app_update_provider.dart';
 import '/features/app_update/presentation/screens/force_update_screen.dart';
 import '/features/cache/presentation/cache_management_page.dart'
     deferred as cache_management;
+import '/features/reward/presentation/screens/reward_history_page.dart';
 import '/features/reward/presentation/screens/reward_page.dart';
 import '/features/member_card/presentation/screens/member_card_page.dart';
 import '/features/referral/referral_page.dart';
@@ -454,6 +456,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: RoutinePage()),
+      ),
+      GoRoute(
+        name: AppRoute.exams.name,
+        path: AppRoute.exams.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: ExamsPage()),
       ),
       GoRoute(
         name: AppRoute.alumni.name,
@@ -1455,6 +1464,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: RewardPage()),
+      ),
+      GoRoute(
+        name: AppRoute.rewardHistory.name,
+        path: AppRoute.rewardHistory.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: RewardHistoryPage()),
       ),
       GoRoute(
         name: AppRoute.memberCard.name,

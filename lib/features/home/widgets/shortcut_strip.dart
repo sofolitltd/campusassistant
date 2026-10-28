@@ -1,8 +1,11 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/widgets/compact_shortcut_strip.dart';
+import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/exams/presentation/providers/exam_notice_provider.dart';
 import 'home_section.dart';
 
 class _Shortcut {
@@ -14,7 +17,7 @@ class _Shortcut {
 
 const _shortcuts = [
   _Shortcut('Class\nRoutine', LucideIcons.calendarDays, '/routine'),
-  _Shortcut('Alumni\nNetwork', LucideIcons.graduationCap, '/alumni'),
+  _Shortcut('Exam\nUpdates', LucideIcons.clipboardList, '/exams'),
   _Shortcut('Emergency\nContacts', LucideIcons.siren, '/emergency'),
   _Shortcut('Transport\nServices', LucideIcons.tramFront, '/transport'),
   _Shortcut('Clubs &\nOrganizations', LucideIcons.club, '/club'),
@@ -25,21 +28,37 @@ const _shortcuts = [
 
 /// The home page's quick links: two compact rows on phones, one on wide
 /// layouts. Shares [CompactShortcutStrip] with the study page.
-class ShortcutStrip extends StatelessWidget {
+class ShortcutStrip extends ConsumerWidget {
   const ShortcutStrip({super.key});
 
   @override
-  Widget build(BuildContext context) => CompactShortcutStrip(
-    maxRows: 2,
-    horizontalInset: homeInset,
-    topPad: 0,
-    items: [
-      for (final s in _shortcuts)
-        ShortcutItem(
-          label: s.title,
-          icon: s.icon,
-          onTap: () => context.push(s.route),
-        ),
-    ],
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final info = ref.watch(userProvider).value?.information;
+    final upcomingExams = ref
+        .watch(
+          upcomingExamNoticesProvider((
+            universityId: info?.universityId ?? '',
+            departmentId: info?.departmentId ?? '',
+            batchId: info?.batchId,
+          )),
+        )
+        .value
+        ?.where((e) => e.daysUntil() <= 7)
+        .length;
+
+    return CompactShortcutStrip(
+      maxRows: 2,
+      horizontalInset: homeInset,
+      topPad: 0,
+      items: [
+        for (final s in _shortcuts)
+          ShortcutItem(
+            label: s.title,
+            icon: s.icon,
+            badge: s.route == '/exams' ? (upcomingExams ?? 0) : 0,
+            onTap: () => context.push(s.route),
+          ),
+      ],
+    );
+  }
 }

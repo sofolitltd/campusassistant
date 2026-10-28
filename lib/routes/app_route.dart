@@ -36,6 +36,7 @@ class AppRoute {
 
   //
   static const routine = AppRoute(name: 'routine', path: '/routine');
+  static const exams = AppRoute(name: 'exams', path: '/exams');
   static const alumni = AppRoute(name: 'alumni', path: '/alumni');
   static const emergency = AppRoute(name: 'emergency', path: '/emergency');
   static const transport = AppRoute(name: 'transport', path: '/transport');
@@ -385,6 +386,10 @@ class AppRoute {
 
   //reward
   static const reward = AppRoute(name: 'reward', path: '/reward');
+  static const rewardHistory = AppRoute(
+    name: 'rewardHistory',
+    path: '/reward/history',
+  );
 
   //referral
   static const referral = AppRoute(name: 'referral', path: '/referral');

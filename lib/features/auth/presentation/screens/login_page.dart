@@ -404,29 +404,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   .animate()
                                   .fadeIn(duration: 350.ms, delay: 100.ms)
                                   .slideY(begin: 0.05, end: 0),
+
+                              const SizedBox(height: Spacing.lg),
+
+                              Center(
+                                child: GestureDetector(
+                                  onTap: () => showContactHelpSheet(
+                                    context,
+                                    title: 'Need help signing in?',
+                                  ),
+                                  child: Text(
+                                    'Having trouble? Contact us',
+                                    style: TextStyle(
+                                      fontSize: FontSizeToken.md,
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: Spacing.lg,
-                    top: Spacing.sm,
-                  ),
-                  child: GestureDetector(
-                    onTap: () => showContactHelpSheet(
-                      context,
-                      title: 'Need help signing in?',
-                    ),
-                    child: Text(
-                      'Having trouble? Contact us',
-                      style: TextStyle(
-                        fontSize: FontSizeToken.md,
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),

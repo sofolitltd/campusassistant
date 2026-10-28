@@ -83,87 +83,92 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
               top: Radius.circular(RadiusToken.xxxl),
             ),
           ),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width > 800
-                    ? MediaQuery.of(context).size.width * .3
-                    : 16,
-                vertical: Spacing.xl,
-              ),
-              child: Container(
-                constraints: const BoxConstraints(minWidth: 350, maxWidth: 400),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width > 800
+                      ? MediaQuery.of(context).size.width * .3
+                      : 16,
+                  vertical: Spacing.xl,
+                ),
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(RadiusToken.xl),
-                    border: Border.all(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? context.colors.border
-                          : context.colors.border,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.colors.shadow,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                  constraints: const BoxConstraints(
+                    minWidth: 350,
+                    maxWidth: 400,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(Spacing.lg),
-                    child: Column(
-                      mainAxisSize: .min,
-                      crossAxisAlignment: .stretch,
-                      children: [
-                        Text(
-                          'Reset your password',
-                          style: Theme.of(context).textTheme.titleMedium!
-                              .copyWith(fontWeight: .bold),
-                        ),
-                        Text(
-                          'Enter your email address and we will send you a 6-digit code to reset your password.',
-                          style: TextStyle(color: context.colors.textSubtle),
-                        ),
-                        const SizedBox(height: Spacing.sm),
-                        const Divider(height: .5),
-                        const SizedBox(height: Spacing.xxl),
-                        CommonTextFieldWidget(
-                          controller: _emailController,
-                          heading: 'Email',
-                          hintText: 'Enter your email',
-                          keyboardType: .emailAddress,
-                          validator: (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Enter your email';
-                            } else if (!regExp.hasMatch(val)) {
-                              return 'Enter valid email';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: Spacing.xxl),
-                        ElevatedButton(
-                          onPressed: _isLoading ? null : _submit,
-                          child: _isLoading
-                              ? SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CupertinoActivityIndicator(
-                                    color: context.colors.onPrimary,
-                                  ),
-                                )
-                              : Text(
-                                  'Submit',
-                                  style: const TextStyle(fontWeight: .bold),
-                                ),
-                        ),
-                        const SizedBox(height: Spacing.xxxl),
-                        const Text(
-                          '* If you don\'t see the email in your inbox, check your spam folder.',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(RadiusToken.xl),
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? context.colors.border
+                            : context.colors.border,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.colors.shadow,
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(Spacing.lg),
+                      child: Column(
+                        mainAxisSize: .min,
+                        crossAxisAlignment: .stretch,
+                        children: [
+                          Text(
+                            'Reset your password',
+                            style: Theme.of(context).textTheme.titleMedium!
+                                .copyWith(fontWeight: .bold),
+                          ),
+                          Text(
+                            'Enter your email address and we will send you a 6-digit code to reset your password.',
+                            style: TextStyle(color: context.colors.textSubtle),
+                          ),
+                          const SizedBox(height: Spacing.sm),
+                          const Divider(height: .5),
+                          const SizedBox(height: Spacing.xxl),
+                          CommonTextFieldWidget(
+                            controller: _emailController,
+                            heading: 'Email',
+                            hintText: 'Enter your email',
+                            keyboardType: .emailAddress,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Enter your email';
+                              } else if (!regExp.hasMatch(val)) {
+                                return 'Enter valid email';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: Spacing.xxl),
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _submit,
+                            child: _isLoading
+                                ? SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CupertinoActivityIndicator(
+                                      color: context.colors.onPrimary,
+                                    ),
+                                  )
+                                : Text(
+                                    'Submit',
+                                    style: const TextStyle(fontWeight: .bold),
+                                  ),
+                          ),
+                          const SizedBox(height: Spacing.xxxl),
+                          const Text(
+                            '* If you don\'t see the email in your inbox, check your spam folder.',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

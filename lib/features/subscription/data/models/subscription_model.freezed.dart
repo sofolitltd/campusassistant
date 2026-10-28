@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SubscriptionModel {
 
- String get id;@JsonKey(name: 'user_id') String get userId; String get plan;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;
+ String get id;@JsonKey(name: 'user_id') String get userId; String get plan;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(name: 'grace_ends_at') DateTime? get graceEndsAt;
 /// Create a copy of SubscriptionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $SubscriptionModelCopyWith<SubscriptionModel> get copyWith => _$SubscriptionMode
 @override
 bool operator ==(Object other) {
   final _this = this as SubscriptionModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.plan, _this.plan) || other.plan == _this.plan)&&(identical(other.startDate, _this.startDate) || other.startDate == _this.startDate)&&(identical(other.endDate, _this.endDate) || other.endDate == _this.endDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubscriptionModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.plan, _this.plan) || other.plan == _this.plan)&&(identical(other.startDate, _this.startDate) || other.startDate == _this.startDate)&&(identical(other.endDate, _this.endDate) || other.endDate == _this.endDate)&&(identical(other.graceEndsAt, _this.graceEndsAt) || other.graceEndsAt == _this.graceEndsAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SubscriptionModel;
-  return Object.hash(runtimeType,_this.id,_this.userId,_this.plan,_this.startDate,_this.endDate);
+  return Object.hash(runtimeType,_this.id,_this.userId,_this.plan,_this.startDate,_this.endDate,_this.graceEndsAt);
 }
 
 @override
 String toString() {
   final _this = this as SubscriptionModel;
-  return 'SubscriptionModel(id: ${_this.id}, userId: ${_this.userId}, plan: ${_this.plan}, startDate: ${_this.startDate}, endDate: ${_this.endDate})';
+  return 'SubscriptionModel(id: ${_this.id}, userId: ${_this.userId}, plan: ${_this.plan}, startDate: ${_this.startDate}, endDate: ${_this.endDate}, graceEndsAt: ${_this.graceEndsAt})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $SubscriptionModelCopyWith<$Res>  {
   factory $SubscriptionModelCopyWith(SubscriptionModel value, $Res Function(SubscriptionModel) _then) = _$SubscriptionModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'user_id') String userId, String plan,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate
+ String id,@JsonKey(name: 'user_id') String userId, String plan,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'grace_ends_at') DateTime? graceEndsAt
 });
 
 
@@ -71,13 +71,14 @@ class _$SubscriptionModelCopyWithImpl<$Res>
 
 /// Create a copy of SubscriptionModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,Object? graceEndsAt = freezed,}) {
   return _then(SubscriptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
 as String,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,graceEndsAt: freezed == graceEndsAt ? _self.graceEndsAt : graceEndsAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId,  String plan, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId,  String plan, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'grace_ends_at')  DateTime? graceEndsAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SubscriptionModel() when $default != null:
-return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);case _:
+return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate,_that.graceEndsAt);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId,  String plan, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId,  String plan, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'grace_ends_at')  DateTime? graceEndsAt)  $default,) {final _that = this;
 switch (_that) {
 case _SubscriptionModel():
-return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);case _:
+return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate,_that.graceEndsAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String userId,  String plan, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String userId,  String plan, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'grace_ends_at')  DateTime? graceEndsAt)?  $default,) {final _that = this;
 switch (_that) {
 case _SubscriptionModel() when $default != null:
-return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);case _:
+return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate,_that.graceEndsAt);case _:
   return null;
 
 }
@@ -219,7 +220,7 @@ return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);
 @JsonSerializable()
 
 class _SubscriptionModel extends SubscriptionModel {
-  const _SubscriptionModel({required this.id, @JsonKey(name: 'user_id') required this.userId, required this.plan, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate}): super._();
+  const _SubscriptionModel({required this.id, @JsonKey(name: 'user_id') required this.userId, required this.plan, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'grace_ends_at') this.graceEndsAt}): super._();
   factory _SubscriptionModel.fromJson(Map<String, dynamic> json) => _$SubscriptionModelFromJson(json);
 
 @override final  String id;
@@ -227,6 +228,7 @@ class _SubscriptionModel extends SubscriptionModel {
 @override final  String plan;
 @override@JsonKey(name: 'start_date') final  DateTime? startDate;
 @override@JsonKey(name: 'end_date') final  DateTime? endDate;
+@override@JsonKey(name: 'grace_ends_at') final  DateTime? graceEndsAt;
 
 /// Create a copy of SubscriptionModel
 /// with the given fields replaced by the non-null parameter values.
@@ -241,18 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscriptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.graceEndsAt, graceEndsAt) || other.graceEndsAt == graceEndsAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,userId,plan,startDate,endDate);
+    return Object.hash(runtimeType,id,userId,plan,startDate,endDate,graceEndsAt);
 }
 
 @override
 String toString() {
-    return 'SubscriptionModel(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate)';
+    return 'SubscriptionModel(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate, graceEndsAt: $graceEndsAt)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$SubscriptionModelCopyWith<$Res> implements $SubscriptionM
   factory _$SubscriptionModelCopyWith(_SubscriptionModel value, $Res Function(_SubscriptionModel) _then) = __$SubscriptionModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'user_id') String userId, String plan,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate
+ String id,@JsonKey(name: 'user_id') String userId, String plan,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'grace_ends_at') DateTime? graceEndsAt
 });
 
 
@@ -280,13 +282,14 @@ class __$SubscriptionModelCopyWithImpl<$Res>
 
 /// Create a copy of SubscriptionModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,Object? graceEndsAt = freezed,}) {
   return _then(_SubscriptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
 as String,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,graceEndsAt: freezed == graceEndsAt ? _self.graceEndsAt : graceEndsAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Subscription {
 
- String get id; String get userId; String get plan; DateTime? get startDate; DateTime? get endDate;
+ String get id; String get userId; String get plan; DateTime? get startDate; DateTime? get endDate; DateTime? get graceEndsAt;
 /// Create a copy of Subscription
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $SubscriptionCopyWith<Subscription> get copyWith => _$SubscriptionCopyWithImpl<S
 @override
 bool operator ==(Object other) {
   final _this = this as Subscription;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Subscription&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.plan, _this.plan) || other.plan == _this.plan)&&(identical(other.startDate, _this.startDate) || other.startDate == _this.startDate)&&(identical(other.endDate, _this.endDate) || other.endDate == _this.endDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Subscription&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.plan, _this.plan) || other.plan == _this.plan)&&(identical(other.startDate, _this.startDate) || other.startDate == _this.startDate)&&(identical(other.endDate, _this.endDate) || other.endDate == _this.endDate)&&(identical(other.graceEndsAt, _this.graceEndsAt) || other.graceEndsAt == _this.graceEndsAt));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Subscription;
-  return Object.hash(runtimeType,_this.id,_this.userId,_this.plan,_this.startDate,_this.endDate);
+  return Object.hash(runtimeType,_this.id,_this.userId,_this.plan,_this.startDate,_this.endDate,_this.graceEndsAt);
 }
 
 @override
 String toString() {
   final _this = this as Subscription;
-  return 'Subscription(id: ${_this.id}, userId: ${_this.userId}, plan: ${_this.plan}, startDate: ${_this.startDate}, endDate: ${_this.endDate})';
+  return 'Subscription(id: ${_this.id}, userId: ${_this.userId}, plan: ${_this.plan}, startDate: ${_this.startDate}, endDate: ${_this.endDate}, graceEndsAt: ${_this.graceEndsAt})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $SubscriptionCopyWith<$Res>  {
   factory $SubscriptionCopyWith(Subscription value, $Res Function(Subscription) _then) = _$SubscriptionCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, String plan, DateTime? startDate, DateTime? endDate
+ String id, String userId, String plan, DateTime? startDate, DateTime? endDate, DateTime? graceEndsAt
 });
 
 
@@ -68,13 +68,14 @@ class _$SubscriptionCopyWithImpl<$Res>
 
 /// Create a copy of Subscription
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,Object? graceEndsAt = freezed,}) {
   return _then(Subscription(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
 as String,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,graceEndsAt: freezed == graceEndsAt ? _self.graceEndsAt : graceEndsAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String plan,  DateTime? startDate,  DateTime? endDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String plan,  DateTime? startDate,  DateTime? endDate,  DateTime? graceEndsAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Subscription() when $default != null:
-return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);case _:
+return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate,_that.graceEndsAt);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String plan,  DateTime? startDate,  DateTime? endDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String plan,  DateTime? startDate,  DateTime? endDate,  DateTime? graceEndsAt)  $default,) {final _that = this;
 switch (_that) {
 case _Subscription():
-return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);case _:
+return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate,_that.graceEndsAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String plan,  DateTime? startDate,  DateTime? endDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String plan,  DateTime? startDate,  DateTime? endDate,  DateTime? graceEndsAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Subscription() when $default != null:
-return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);case _:
+return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate,_that.graceEndsAt);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.id,_that.userId,_that.plan,_that.startDate,_that.endDate);
 
 
 class _Subscription implements Subscription {
-  const _Subscription({required this.id, required this.userId, required this.plan, this.startDate, this.endDate});
+  const _Subscription({required this.id, required this.userId, required this.plan, this.startDate, this.endDate, this.graceEndsAt});
   
 
 @override final  String id;
@@ -224,6 +225,7 @@ class _Subscription implements Subscription {
 @override final  String plan;
 @override final  DateTime? startDate;
 @override final  DateTime? endDate;
+@override final  DateTime? graceEndsAt;
 
 /// Create a copy of Subscription
 /// with the given fields replaced by the non-null parameter values.
@@ -235,18 +237,18 @@ _$SubscriptionCopyWith<_Subscription> get copyWith => __$SubscriptionCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Subscription&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Subscription&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.plan, plan) || other.plan == plan)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.graceEndsAt, graceEndsAt) || other.graceEndsAt == graceEndsAt));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,userId,plan,startDate,endDate);
+    return Object.hash(runtimeType,id,userId,plan,startDate,endDate,graceEndsAt);
 }
 
 @override
 String toString() {
-    return 'Subscription(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate)';
+    return 'Subscription(id: $id, userId: $userId, plan: $plan, startDate: $startDate, endDate: $endDate, graceEndsAt: $graceEndsAt)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$SubscriptionCopyWith<$Res> implements $SubscriptionCopyWi
   factory _$SubscriptionCopyWith(_Subscription value, $Res Function(_Subscription) _then) = __$SubscriptionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, String plan, DateTime? startDate, DateTime? endDate
+ String id, String userId, String plan, DateTime? startDate, DateTime? endDate, DateTime? graceEndsAt
 });
 
 
@@ -274,13 +276,14 @@ class __$SubscriptionCopyWithImpl<$Res>
 
 /// Create a copy of Subscription
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? plan = null,Object? startDate = freezed,Object? endDate = freezed,Object? graceEndsAt = freezed,}) {
   return _then(_Subscription(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,plan: null == plan ? _self.plan : plan // ignore: cast_nullable_to_non_nullable
 as String,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,graceEndsAt: freezed == graceEndsAt ? _self.graceEndsAt : graceEndsAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

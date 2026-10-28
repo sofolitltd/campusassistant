@@ -17,6 +17,9 @@ _SubscriptionModel _$SubscriptionModelFromJson(Map<String, dynamic> json) =>
       endDate: json['end_date'] == null
           ? null
           : DateTime.parse(json['end_date'] as String),
+      graceEndsAt: json['grace_ends_at'] == null
+          ? null
+          : DateTime.parse(json['grace_ends_at'] as String),
     );
 
 Map<String, dynamic> _$SubscriptionModelToJson(_SubscriptionModel instance) =>
@@ -26,6 +29,7 @@ Map<String, dynamic> _$SubscriptionModelToJson(_SubscriptionModel instance) =>
       'plan': instance.plan,
       'start_date': ?instance.startDate?.toIso8601String(),
       'end_date': ?instance.endDate?.toIso8601String(),
+      'grace_ends_at': ?instance.graceEndsAt?.toIso8601String(),
     };
 
 _SubscriptionPlanModel _$SubscriptionPlanModelFromJson(

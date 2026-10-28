@@ -10,6 +10,7 @@ abstract class Subscription with _$Subscription {
     required String plan,
     DateTime? startDate,
     DateTime? endDate,
+    DateTime? graceEndsAt,
   }) = _Subscription;
 }
 

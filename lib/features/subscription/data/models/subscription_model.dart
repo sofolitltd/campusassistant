@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/entities/subscription.dart';
 
 part 'subscription_model.freezed.dart';
@@ -14,6 +15,7 @@ abstract class SubscriptionModel with _$SubscriptionModel {
     required String plan,
     @JsonKey(name: 'start_date') DateTime? startDate,
     @JsonKey(name: 'end_date') DateTime? endDate,
+    @JsonKey(name: 'grace_ends_at') DateTime? graceEndsAt,
   }) = _SubscriptionModel;
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) =>
@@ -25,6 +27,7 @@ abstract class SubscriptionModel with _$SubscriptionModel {
     plan: plan,
     startDate: startDate,
     endDate: endDate,
+    graceEndsAt: graceEndsAt,
   );
 
   factory SubscriptionModel.fromEntity(Subscription subscription) =>
@@ -34,6 +37,7 @@ abstract class SubscriptionModel with _$SubscriptionModel {
         plan: subscription.plan,
         startDate: subscription.startDate,
         endDate: subscription.endDate,
+        graceEndsAt: subscription.graceEndsAt,
       );
 }
 

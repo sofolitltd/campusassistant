@@ -40,6 +40,7 @@ abstract class StudentRepository {
   Future<Student> claimProfile({
     required String code,
     required String userId,
+    String? name,
     String? studentId,
     String? phone,
     String? bloodGroup,

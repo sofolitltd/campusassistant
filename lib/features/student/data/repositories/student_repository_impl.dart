@@ -267,6 +267,7 @@ class StudentRepositoryImpl implements StudentRepository {
   Future<Student> claimProfile({
     required String code,
     required String userId,
+    String? name,
     String? studentId,
     String? phone,
     String? bloodGroup,
@@ -280,6 +281,7 @@ class StudentRepositoryImpl implements StudentRepository {
       throw Exception('Internet connection required to claim profile');
     }
     final data = <String, dynamic>{'code': code, 'user_id': userId};
+    if (name != null) data['name'] = name;
     if (studentId != null) data['student_id'] = studentId;
     if (phone != null) data['phone'] = phone;
     if (bloodGroup != null) data['blood_group'] = bloodGroup;

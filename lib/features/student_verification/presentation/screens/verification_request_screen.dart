@@ -14,7 +14,7 @@ import '/core/theme/tokens/app_spacing.dart';
 import '/features/auth/presentation/providers/auth_provider.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
 import '/features/department/presentation/providers/department_provider.dart';
-import '/features/session/presentation/providers/session_provider.dart';
+import '/features/session/domain/entities/session.dart';
 import '/features/student_verification/data/student_verification_request.dart';
 import '/features/university/presentation/providers/university_provider.dart';
 import '/routes/app_route.dart';
@@ -389,12 +389,21 @@ class _VerificationRequestScreenState
       ],
       if (_batchId != null) ...[
         const SizedBox(height: Spacing.lg),
+        // Sessions are global; the ones that apply are the chosen batch's.
         asyncField(
-          ref.watch(sessionsByUniversityProvider(_universityId!)),
-          (sessions) => dropdown(
+          ref.watch(batchesByDepartmentProvider(_departmentId!)),
+          (batches) => dropdown(
             label: 'Session',
             value: _sessionId,
-            options: [for (final s in sessions) (id: s.id, name: s.name)],
+            options: [
+              for (final s
+                  in batches
+                          .where((b) => b.id == _batchId)
+                          .firstOrNull
+                          ?.sessions ??
+                      const <Session>[])
+                (id: s.id, name: s.name),
+            ],
             onChanged: (v) => setState(() => _sessionId = v),
           ),
         ),

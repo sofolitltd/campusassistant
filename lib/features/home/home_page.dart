@@ -14,6 +14,7 @@ import 'sections/marketplace_section.dart';
 import 'sections/quick_favorites_section.dart';
 import 'sections/skill_up_section.dart';
 import 'sections/subscription_section.dart';
+import 'widgets/complete_profile_nudge.dart';
 import 'widgets/home_header.dart';
 import 'widgets/home_section.dart';
 import 'widgets/offer_badge.dart';
@@ -35,6 +36,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     CoinWelcomeGate(),
     OfferBadge(),
     StudentVerificationBanner(),
+    CompleteProfileNudge(),
     GracePeriodBanner(),
     HomeSection(child: ShortcutStrip()),
     DailyRewardBanner(),

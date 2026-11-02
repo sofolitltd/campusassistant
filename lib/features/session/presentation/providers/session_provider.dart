@@ -46,34 +46,31 @@ final deleteSessionProvider = Provider<DeleteSession>((ref) {
   return DeleteSession(repository);
 });
 
-final sessionsByUniversityProvider = FutureProvider.autoDispose
-    .family<List<Session>, String>((ref, universityId) async {
-      ref.cacheFor(kParamProviderCacheTime);
-      ref.watch(appRefreshProvider);
-      final repository = ref.watch(sessionRepositoryProvider);
-      final result = await repository.getSessions(universityId: universityId);
-      return result.fold((failure) => throw failure, (sessions) => sessions);
-    });
+/// Every session (global, newest first). Sessions aren't scoped to a
+/// university — use `Batch.sessions` for the ones that apply to a batch.
+final allSessionsProvider = FutureProvider.autoDispose<List<Session>>((
+  ref,
+) async {
+  ref.cacheFor(kParamProviderCacheTime);
+  ref.watch(appRefreshProvider);
+  final repository = ref.watch(sessionRepositoryProvider);
+  final result = await repository.getSessions();
+  return result.fold((failure) => throw failure, (sessions) => sessions);
+});
 
-final sessionByIdProvider = FutureProvider.autoDispose
-    .family<Session?, ({String universityId, String id})>((ref, arg) async {
-      ref.cacheFor(kParamProviderCacheTime);
-      final sessions = await ref.watch(
-        sessionsByUniversityProvider(arg.universityId).future,
-      );
-      try {
-        return sessions.firstWhere((s) => s.id == arg.id);
-      } catch (_) {
-        return null;
-      }
-    });
+final sessionByIdProvider = FutureProvider.autoDispose.family<Session?, String>(
+  (ref, id) async {
+    ref.cacheFor(kParamProviderCacheTime);
+    final sessions = await ref.watch(allSessionsProvider.future);
+    return sessions.where((s) => s.id == id).firstOrNull;
+  },
+);
 
-final sessionNameProvider =
-    Provider.family<String, ({String universityId, String id})>((ref, arg) {
-      final sessionAsync = ref.watch(sessionByIdProvider(arg));
-      return sessionAsync.when(
-        data: (s) => s?.name ?? arg.id,
-        loading: () => '...',
-        error: (_, _) => arg.id,
-      );
-    });
+final sessionNameProvider = Provider.family<String, String>((ref, id) {
+  final sessionAsync = ref.watch(sessionByIdProvider(id));
+  return sessionAsync.when(
+    data: (s) => s?.name ?? id,
+    loading: () => '...',
+    error: (_, _) => id,
+  );
+});

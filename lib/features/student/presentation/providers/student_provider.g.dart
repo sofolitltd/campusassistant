@@ -525,7 +525,7 @@ final class StudentByUserIdProvider
   }
 }
 
-String _$studentByUserIdHash() => r'd9d4821f3b2f6951bf02a0502de7b7c5015ec418';
+String _$studentByUserIdHash() => r'e0a272aa2177c6d1887939b1fcd61ea15e4e1a5e';
 
 final class StudentByUserIdFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Student?>, String> {
@@ -596,7 +596,7 @@ final class StudentByAcademicIdProvider
 }
 
 String _$studentByAcademicIdHash() =>
-    r'a7f66069c06ad941950345c81d4927ac8dc83736';
+    r'9804bf905858fb8d4f98c17db3dd64fe09be6b2b';
 
 final class StudentByAcademicIdFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Student?>, String> {
@@ -699,7 +699,7 @@ final class StudentByCodeProvider
   }
 }
 
-String _$studentByCodeHash() => r'36124f334288d4b38e14416e174dbeb8a8ac5ea1';
+String _$studentByCodeHash() => r'fac365a29e6df8af6e6c9de40c847046fb4f70c2';
 
 final class StudentByCodeFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Student>, String> {

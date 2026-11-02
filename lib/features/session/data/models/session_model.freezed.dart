@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SessionModel {
 
- String get id; String get name; String get slug; String get universityId; String? get departmentId; bool get isActive;
+ String get id; String get name; String get kind; int get startYear; String get term;
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $SessionModelCopyWith<SessionModel> get copyWith => _$SessionModelCopyWithImpl<S
 @override
 bool operator ==(Object other) {
   final _this = this as SessionModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.isActive, _this.isActive) || other.isActive == _this.isActive));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.startYear, _this.startYear) || other.startYear == _this.startYear)&&(identical(other.term, _this.term) || other.term == _this.term));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SessionModel;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.slug,_this.universityId,_this.departmentId,_this.isActive);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.kind,_this.startYear,_this.term);
 }
 
 @override
 String toString() {
   final _this = this as SessionModel;
-  return 'SessionModel(id: ${_this.id}, name: ${_this.name}, slug: ${_this.slug}, universityId: ${_this.universityId}, departmentId: ${_this.departmentId}, isActive: ${_this.isActive})';
+  return 'SessionModel(id: ${_this.id}, name: ${_this.name}, kind: ${_this.kind}, startYear: ${_this.startYear}, term: ${_this.term})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $SessionModelCopyWith<$Res>  {
   factory $SessionModelCopyWith(SessionModel value, $Res Function(SessionModel) _then) = _$SessionModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, String universityId, String? departmentId, bool isActive
+ String id, String name, String kind, int startYear, String term
 });
 
 
@@ -71,15 +71,14 @@ class _$SessionModelCopyWithImpl<$Res>
 
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? universityId = null,Object? departmentId = freezed,Object? isActive = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? kind = null,Object? startYear = null,Object? term = null,}) {
   return _then(SessionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,slug: null == slug ? _self.slug : slug // ignore: cast_nullable_to_non_nullable
-as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
-as String,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
-as String?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
-as bool,
+as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as String,startYear: null == startYear ? _self.startYear : startYear // ignore: cast_nullable_to_non_nullable
+as int,term: null == term ? _self.term : term // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -164,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String universityId,  String? departmentId,  bool isActive)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String kind,  int startYear,  String term)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SessionModel() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.universityId,_that.departmentId,_that.isActive);case _:
+return $default(_that.id,_that.name,_that.kind,_that.startYear,_that.term);case _:
   return orElse();
 
 }
@@ -185,10 +184,10 @@ return $default(_that.id,_that.name,_that.slug,_that.universityId,_that.departme
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String universityId,  String? departmentId,  bool isActive)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String kind,  int startYear,  String term)  $default,) {final _that = this;
 switch (_that) {
 case _SessionModel():
-return $default(_that.id,_that.name,_that.slug,_that.universityId,_that.departmentId,_that.isActive);case _:
+return $default(_that.id,_that.name,_that.kind,_that.startYear,_that.term);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +204,10 @@ return $default(_that.id,_that.name,_that.slug,_that.universityId,_that.departme
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String universityId,  String? departmentId,  bool isActive)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String kind,  int startYear,  String term)?  $default,) {final _that = this;
 switch (_that) {
 case _SessionModel() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.universityId,_that.departmentId,_that.isActive);case _:
+return $default(_that.id,_that.name,_that.kind,_that.startYear,_that.term);case _:
   return null;
 
 }
@@ -220,15 +219,14 @@ return $default(_that.id,_that.name,_that.slug,_that.universityId,_that.departme
 @JsonSerializable()
 
 class _SessionModel extends SessionModel {
-  const _SessionModel({required this.id, required this.name, required this.slug, required this.universityId, this.departmentId, this.isActive = true}): super._();
+  const _SessionModel({required this.id, required this.name, this.kind = 'academic_year', this.startYear = 0, this.term = ''}): super._();
   factory _SessionModel.fromJson(Map<String, dynamic> json) => _$SessionModelFromJson(json);
 
 @override final  String id;
 @override final  String name;
-@override final  String slug;
-@override final  String universityId;
-@override final  String? departmentId;
-@override@JsonKey() final  bool isActive;
+@override@JsonKey() final  String kind;
+@override@JsonKey() final  int startYear;
+@override@JsonKey() final  String term;
 
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +241,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.isActive, isActive) || other.isActive == isActive));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.startYear, startYear) || other.startYear == startYear)&&(identical(other.term, term) || other.term == term));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,slug,universityId,departmentId,isActive);
+    return Object.hash(runtimeType,id,name,kind,startYear,term);
 }
 
 @override
 String toString() {
-    return 'SessionModel(id: $id, name: $name, slug: $slug, universityId: $universityId, departmentId: $departmentId, isActive: $isActive)';
+    return 'SessionModel(id: $id, name: $name, kind: $kind, startYear: $startYear, term: $term)';
 }
 
 
@@ -265,7 +263,7 @@ abstract mixin class _$SessionModelCopyWith<$Res> implements $SessionModelCopyWi
   factory _$SessionModelCopyWith(_SessionModel value, $Res Function(_SessionModel) _then) = __$SessionModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, String universityId, String? departmentId, bool isActive
+ String id, String name, String kind, int startYear, String term
 });
 
 
@@ -282,15 +280,14 @@ class __$SessionModelCopyWithImpl<$Res>
 
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? universityId = null,Object? departmentId = freezed,Object? isActive = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? kind = null,Object? startYear = null,Object? term = null,}) {
   return _then(_SessionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,slug: null == slug ? _self.slug : slug // ignore: cast_nullable_to_non_nullable
-as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
-as String,departmentId: freezed == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
-as String?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
-as bool,
+as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as String,startYear: null == startYear ? _self.startYear : startYear // ignore: cast_nullable_to_non_nullable
+as int,term: null == term ? _self.term : term // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

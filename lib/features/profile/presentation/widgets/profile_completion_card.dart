@@ -16,11 +16,12 @@ import '/core/theme/tokens/app_font_size.dart';
 const Map<String, String Function(user_entity.User)> _completionFields = {
   'Full name': _fullName,
   'Email': _email,
+  // Blood group first among the optional ones — Blood Bank depends on it.
+  'Blood group': _blood,
   'Phone': _phone,
+  'Hall': _hall,
   'Profile photo': _profileImage,
   'Gender': _gender,
-  'Blood group': _blood,
-  'Hall': _hall,
 };
 
 String _fullName(user_entity.User u) => u.fullName;
@@ -123,7 +124,6 @@ class ProfileCompletionCard extends StatelessWidget {
           ),
         ),
         actions: [
-        
           SizedBox(
             width: double.infinity,
             child: FilledButton(
@@ -142,15 +142,13 @@ class ProfileCompletionCard extends StatelessWidget {
               ),
             ),
           ),
-         SizedBox(
+          SizedBox(
             width: double.infinity,
             child: TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: const Text('Cancel'),
             ),
           ),
-           
-         
         ],
       ),
     );

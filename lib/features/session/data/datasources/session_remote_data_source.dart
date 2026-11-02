@@ -3,7 +3,7 @@ import '/core/network/api_endpoints.dart';
 import '../models/session_model.dart';
 
 abstract class SessionRemoteDataSource {
-  Future<List<SessionModel>> getSessions({required String universityId});
+  Future<List<SessionModel>> getSessions();
   Future<SessionModel> createSession(SessionModel session);
   Future<SessionModel> updateSession(SessionModel session);
   Future<void> deleteSession(String id);
@@ -15,10 +15,11 @@ class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
   SessionRemoteDataSourceImpl({required this.apiClient});
 
   @override
-  Future<List<SessionModel>> getSessions({required String universityId}) async {
+  Future<List<SessionModel>> getSessions() async {
+    // Sessions are global and few, so the whole list (newest first) in one go.
     final response = await apiClient.get(
       ApiEndpoints.sessions,
-      queryParameters: {'university_id': universityId, 'limit': 500},
+      queryParameters: {'limit': 500},
     );
 
     final Map<String, dynamic> body = response.data;

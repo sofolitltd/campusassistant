@@ -111,6 +111,24 @@ class ApiEndpoints {
   static const String myStudentVerification = '/my/student-verification';
   static const String myUpload = '/my/upload';
 
+  // Moderator panel
+  static const String moderationRoles = '/moderation/roles';
+  static const String moderationStudents = '/moderation/students';
+  static String moderationGenerateCode(String id) =>
+      '/moderation/students/$id/generate-code';
+  static const String moderationVerifications = '/moderation/verifications';
+  static String moderationVerification(String id) =>
+      '/moderation/verifications/$id';
+  static String moderationVerificationApprove(String id) =>
+      '/moderation/verifications/$id/approve';
+  static String moderationVerificationReject(String id) =>
+      '/moderation/verifications/$id/reject';
+  static const String moderationResources = '/moderation/resources';
+  static String moderationResourceApprove(String id) =>
+      '/moderation/resources/$id/approve';
+  static String moderationResourceReject(String id) =>
+      '/moderation/resources/$id/reject';
+
   // Notification preferences (per-category mute)
   static const String notificationPreferences = '/my/notification-preferences';
   static String notificationPreferenceDetail(String category) =>

@@ -29,6 +29,11 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   isModerator: json['is_moderator'] as bool? ?? false,
   isAdmin: json['is_admin'] as bool? ?? false,
   isCr: json['is_cr'] as bool? ?? false,
+  moderatorRoles:
+      (json['moderator_roles'] as List<dynamic>?)
+          ?.map((e) => ModeratorRole.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   universityId: json['university_id'] as String?,
   departmentId: json['department_id'] as String?,
   createdAt: json['created_at'] == null
@@ -61,6 +66,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'is_moderator': instance.isModerator,
       'is_admin': instance.isAdmin,
       'is_cr': instance.isCr,
+      'moderator_roles': instance.moderatorRoles,
       'university_id': ?instance.universityId,
       'department_id': ?instance.departmentId,
       'created_at': ?instance.createdAt?.toIso8601String(),

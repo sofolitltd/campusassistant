@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -252,10 +253,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((
-                          universityId: p.universityId,
-                          id: p.sessionId,
-                        )),
+                        sessionNameProvider(p.sessionId),
                       );
                       return Text(
                         'Session: $sessionName',
@@ -270,10 +268,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((
-                          universityId: p.universityId,
-                          id: p.sessionId,
-                        )),
+                        sessionNameProvider(p.sessionId),
                       );
                       return Text(
                         'Session: $sessionName',
@@ -296,10 +291,7 @@ class _BloodBankState extends ConsumerState<BloodBank>
                   Consumer(
                     builder: (context, ref, _) {
                       final sessionName = ref.watch(
-                        sessionNameProvider((
-                          universityId: p.universityId,
-                          id: p.sessionId,
-                        )),
+                        sessionNameProvider(p.sessionId),
                       );
                       return Text(
                         'Session: $sessionName',

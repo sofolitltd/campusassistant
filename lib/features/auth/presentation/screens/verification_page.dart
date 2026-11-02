@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -134,7 +135,7 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                       ),
                                       const SizedBox(height: Spacing.xxs),
                                       Text(
-                                        'Enter your 6-digit code below',
+                                        'Enter your 6-character code below',
                                         style: TextStyle(
                                           color: context.colors.textMuted,
                                         ),
@@ -153,17 +154,25 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                                     segments: const [
                                       ButtonSegment(
                                         value: _AccountRole.student,
-                                        label: Text('Student'),
+                                        label: _SegmentLabel('Student'),
                                       ),
                                       ButtonSegment(
                                         value: _AccountRole.teacher,
-                                        label: Text('Teacher'),
+                                        label: _SegmentLabel('Teacher'),
                                       ),
                                       ButtonSegment(
                                         value: _AccountRole.staff,
-                                        label: Text('Staff'),
+                                        label: _SegmentLabel('Staff'),
                                       ),
                                     ],
+                                    // The selected-check icon is what pushes
+                                    // labels onto two lines on small screens.
+                                    showSelectedIcon: false,
+                                    style: SegmentedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: Spacing.xs,
+                                      ),
+                                    ),
                                     selected: {_role},
                                     onSelectionChanged: (selection) {
                                       setState(() => _role = selection.first);
@@ -176,12 +185,13 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                             OtpCodeFieldWidget(
                               controller: _verificationCodeController,
                               heading: 'Verification Code',
+                              alphanumeric: true,
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return 'Enter your verification code';
                                 }
                                 if (val.length != 6) {
-                                  return 'Verification code must be 6 digits';
+                                  return 'Verification code must be 6 characters';
                                 }
                                 return null;
                               },
@@ -398,7 +408,10 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
                     Center(
                       child: TextButton.icon(
                         onPressed: () => context.goNamed(AppRoute.login.name),
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 16,
+                        ),
                         label: Text(
                           'Cancel & Login',
                           style: TextStyle(
@@ -417,4 +430,17 @@ class _VerificationPageState extends ConsumerState<VerificationPage> {
       ),
     );
   }
+}
+
+/// Single-line segment label that scales down rather than wrapping.
+class _SegmentLabel extends StatelessWidget {
+  const _SegmentLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, maxLines: 1, softWrap: false),
+  );
 }

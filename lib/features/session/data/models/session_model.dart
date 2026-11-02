@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/entities/session.dart';
 
 part 'session_model.freezed.dart';
@@ -11,30 +12,22 @@ abstract class SessionModel with _$SessionModel {
   const factory SessionModel({
     required String id,
     required String name,
-    required String slug,
-    required String universityId,
-    String? departmentId,
-    @Default(true) bool isActive,
+    @Default('academic_year') String kind,
+    @Default(0) int startYear,
+    @Default('') String term,
   }) = _SessionModel;
 
   factory SessionModel.fromJson(Map<String, dynamic> json) =>
       _$SessionModelFromJson(json);
 
-  Session toEntity() => Session(
-    id: id,
-    name: name,
-    slug: slug,
-    universityId: universityId,
-    departmentId: departmentId,
-    isActive: isActive,
-  );
+  Session toEntity() =>
+      Session(id: id, name: name, kind: kind, startYear: startYear, term: term);
 
   factory SessionModel.fromEntity(Session session) => SessionModel(
     id: session.id,
     name: session.name,
-    slug: session.slug,
-    universityId: session.universityId,
-    departmentId: session.departmentId,
-    isActive: session.isActive,
+    kind: session.kind,
+    startYear: session.startYear,
+    term: session.term,
   );
 }

@@ -12,13 +12,13 @@ devices: ## list available devices (simulators, emulators, phones, chrome)
 run: ## flutter run against production API (.env). Add DEVICE=<id> to target a specific device
 	flutter run $(DEFINE) $(DEVICE_FLAG)
 
-run-web: ## flutter run on Chrome against your local backend (.env.web — localhost, not .env.local's 10.0.2.2)
+run-w: ## flutter run on Chrome against your local backend (.env.web — localhost, not .env.local's 10.0.2.2)
 	flutter run --dart-define-from-file=.env.web -d chrome
 
-run-emulator: ## flutter run against Android emulator loopback (.env.local). Add DEVICE=<id>
+run-e: ## flutter run against Android emulator loopback (.env.local). Add DEVICE=<id>
 	flutter run --dart-define-from-file=.env.local $(DEVICE_FLAG)
 
-run-real: ## flutter run against your machine's LAN IP, for a real device on same WiFi/hotspot (.env.lan). Add DEVICE=<id>
+run-r: ## flutter run against your machine's LAN IP, for a real device on same WiFi/hotspot (.env.lan). Add DEVICE=<id>
 	flutter run --dart-define-from-file=.env.lan $(DEVICE_FLAG)
 
 build-web: ## release web build

@@ -36,6 +36,10 @@ class AppRoute {
 
   //
   static const routine = AppRoute(name: 'routine', path: '/routine');
+  static const moderatorPanel = AppRoute(
+    name: 'moderatorPanel',
+    path: '/moderator-panel',
+  );
   static const exams = AppRoute(name: 'exams', path: '/exams');
   static const alumni = AppRoute(name: 'alumni', path: '/alumni');
   static const emergency = AppRoute(name: 'emergency', path: '/emergency');

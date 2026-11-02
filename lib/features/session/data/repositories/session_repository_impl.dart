@@ -21,17 +21,13 @@ class SessionRepositoryImpl implements SessionRepository {
   });
 
   @override
-  Future<Either<Failure, List<Session>>> getSessions({
-    required String universityId,
-  }) async {
-    final cacheKey = 'session_$universityId';
+  Future<Either<Failure, List<Session>>> getSessions() async {
+    const cacheKey = 'sessions_all';
 
     // Try remote if online
     if (connectivity.isConnected) {
       try {
-        final remoteSessions = await remoteDataSource.getSessions(
-          universityId: universityId,
-        );
+        final remoteSessions = await remoteDataSource.getSessions();
         final entities = remoteSessions.map((m) => m.toEntity()).toList();
 
         // Cache the result

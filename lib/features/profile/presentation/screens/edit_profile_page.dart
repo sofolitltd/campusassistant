@@ -3,7 +3,9 @@ import 'dart:typed_data';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:collection/collection.dart';
+
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +68,7 @@ class EditProfilePage extends ConsumerWidget {
           presentAddress: studentAsync.value?.presentAddress,
           permanentAddress: studentAsync.value?.permanentAddress,
           initialGender: currentUserAsync.value?.gender,
+          nameLocked: currentUserAsync.value?.isVerified ?? false,
         ),
         loading: () => const Center(child: AppLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -81,11 +84,16 @@ class _EditProfileForm extends ConsumerStatefulWidget {
   final StudentAddress? permanentAddress;
   final String? initialGender;
 
+  /// Verified users' names are their certificate names — only an admin can
+  /// change them (the API rejects it too).
+  final bool nameLocked;
+
   const _EditProfileForm({
     required this.profile,
     this.presentAddress,
     this.permanentAddress,
     this.initialGender,
+    this.nameLocked = false,
   });
 
   @override
@@ -209,7 +217,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
             padding: const EdgeInsets.all(Spacing.lg),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: AppLayout.pageWidth,
+                ),
                 child: Form(
                   key: _formKey,
                   child: ButtonTheme(
@@ -245,8 +255,15 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                             TextFormField(
                               controller: _nameController,
                               textCapitalization: .words,
-                              decoration: const InputDecoration(
+                              readOnly: widget.nameLocked,
+                              decoration: InputDecoration(
                                 hintText: 'Name',
+                                suffixIcon: widget.nameLocked
+                                    ? const Icon(Icons.lock_outline, size: 18)
+                                    : null,
+                                helperText: widget.nameLocked
+                                    ? 'Verified name. Contact your CR or admin to correct it.'
+                                    : null,
                               ),
                               validator: (val) =>
                                   val!.isEmpty ? 'Enter your name' : null,
@@ -555,12 +572,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _isLoading || !_hasChanged()
-                    ? null
-                    : _updateProfile,
-                child: _isLoading
-                    ? const AppLoader()
-                    : const Text('UPDATE'),
+                onPressed: _isLoading || !_hasChanged() ? null : _updateProfile,
+                child: _isLoading ? const AppLoader() : const Text('UPDATE'),
               ),
             ),
           ),
@@ -673,9 +686,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
-              _pickedImageBytes == null
-                  ? 'Change Photo'
-                  : 'New Photo Selected',
+              _pickedImageBytes == null ? 'Change Photo' : 'New Photo Selected',
             ),
           ),
         ],
@@ -788,8 +799,8 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
       await updateMyUser(
         ref,
-        firstName: firstName,
-        lastName: lastName,
+        firstName: widget.nameLocked ? null : firstName,
+        lastName: widget.nameLocked ? null : lastName,
         avatarUrl: imageUrl,
         gender: _selectedGender,
       );

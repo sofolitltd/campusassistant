@@ -76,7 +76,6 @@ String? resolveRedirect(RouteGuardState s, String matchedLocation) {
       matchedLocation == AppRoute.newPassword.path ||
       matchedLocation == AppRoute.verification.path ||
       matchedLocation.startsWith('/register') ||
-      matchedLocation.startsWith('/create-account') ||
       matchedLocation.startsWith('/teacher-signup') ||
       matchedLocation.startsWith('/staff-signup') ||
       matchedLocation == AppRoute.studentVerificationPlacement.path ||

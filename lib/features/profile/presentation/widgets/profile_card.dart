@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/auth/domain/entities/user.dart' as user_entity;
+import '/features/moderation/data/moderation_api.dart';
 import '/features/reward/presentation/providers/reward_providers.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
@@ -34,6 +35,20 @@ class ProfileCard extends ConsumerWidget {
             if (user.subscriptionStatus == 'pro')
               SubscriptionCard(uid: user.id),
             ProfileInfoTabsSection(user: user),
+            if (user.isModerator)
+              Padding(
+                padding: const EdgeInsets.only(top: Spacing.lg),
+                child: PreferenceCard(
+                  children: [
+                    PreferenceTile(
+                      icon: LucideIcons.shieldCheck,
+                      title: 'Moderator Panel',
+                      trailing: const _ModeratorPendingBadge(),
+                      onTap: () => context.push(AppRoute.moderatorPanel.path),
+                    ),
+                  ],
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.only(top: Spacing.lg),
               child: PreferenceCard(
@@ -87,6 +102,26 @@ class ProfileCard extends ConsumerWidget {
   }
 }
 
+class _ModeratorPendingBadge extends ConsumerWidget {
+  const _ModeratorPendingBadge();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dashboard = ref.watch(moderationDashboardProvider);
+    return dashboard.when(
+      data: (value) => value.totalPending > 0
+          ? Badge(label: Text('${value.totalPending}'))
+          : const Icon(LucideIcons.chevronRight, size: 18),
+      loading: () => const SizedBox(
+        width: 18,
+        height: 18,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+      error: (_, _) => const Icon(LucideIcons.chevronRight, size: 18),
+    );
+  }
+}
+
 class _BalanceChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,10 +139,8 @@ class _BalanceChip extends ConsumerWidget {
         ),
         child: Text(
           '${balance.balance}',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: context.colors.warning,
-            fontWeight: .w600,
-          ),
+          style: Theme.of(context).textTheme.labelSmall
+              ?.copyWith(color: context.colors.warning, fontWeight: .w600),
         ),
       ),
       loading: () => const SizedBox(width: 24, height: 12),

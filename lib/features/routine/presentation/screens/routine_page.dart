@@ -1,12 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '/routes/app_route.dart';
 import '/features/routine/presentation/providers/routine_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/features/auth/domain/entities/moderator_role.dart';
 import '/features/routine/domain/entities/routine.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -54,14 +59,23 @@ class _RoutinePageState extends ConsumerState<RoutinePage>
 
   @override
   Widget build(BuildContext context) {
-    final isCr = ref.watch(userProvider).value?.information.status?.cr ?? false;
+    final user = ref.watch(currentUserProvider).value;
+    final canManageNotices =
+        user != null &&
+        user.can(
+          'class_notices.manage',
+          ModeratorScopeTarget(
+            batchId: user.batchId,
+            departmentId: user.departmentId,
+            universityId: user.universityId,
+          ),
+        );
 
     return CustomHeaderLayout(
       title: 'Class Routine',
       showSearchBar: false,
-      // Only CRs can post; the API enforces it again server-side.
-      actionIcon: isCr ? LucideIcons.plus : null,
-      onActionTap: isCr ? _openPostSheet : null,
+      actionIcon: canManageNotices ? LucideIcons.plus : null,
+      onActionTap: canManageNotices ? _openPostSheet : null,
       body: Column(
         children: [
           Padding(
@@ -122,9 +136,8 @@ class _RoutineListTab extends ConsumerWidget {
                 Icon(
                   LucideIcons.calendarDays,
                   size: 64,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.outline
+                      .withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: Spacing.lg),
                 Text(
@@ -137,9 +150,8 @@ class _RoutineListTab extends ConsumerWidget {
                 const SizedBox(height: Spacing.sm),
                 Text(
                   'Check back later for updates.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
               ],
             ),
@@ -148,10 +160,7 @@ class _RoutineListTab extends ConsumerWidget {
 
         return ListView.separated(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(
-            vertical: 16,
-            horizontal: Spacing.lg,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: Spacing.lg),
           itemCount: routines.length,
           itemBuilder: (context, index) {
             final routine = routines[index];
@@ -243,9 +252,8 @@ class RoutineCard extends StatelessWidget {
                 child: Container(
                   height: 220,
                   width: double.infinity,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3),
                   child: CachedNetworkImage(
                     imageUrl: resolvedUrl,
                     // Full-width preview: cap the decode near a 3x phone width.
@@ -262,9 +270,8 @@ class RoutineCard extends StatelessWidget {
                     placeholder: (context, url) =>
                         const Center(child: AppLoader()),
                     errorWidget: (context, url, error) => Container(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.errorContainer.withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.errorContainer
+                          .withValues(alpha: 0.1),
                       child: Column(
                         mainAxisAlignment: .center,
                         children: [
@@ -312,9 +319,8 @@ class RoutineCard extends StatelessWidget {
                         Icon(
                           LucideIcons.clock,
                           size: 14,
-                          color: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                          color: Theme.of(context).textTheme.bodySmall?.color
+                              ?.withValues(alpha: 0.7),
                         ),
                         const SizedBox(width: Spacing.sm),
                         Expanded(

@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +9,8 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/features/auth/domain/entities/moderator_role.dart';
 import '../../data/models/class_slot.dart';
 import '../providers/class_slot_provider.dart';
 import '/core/widgets/content_column.dart';
@@ -27,11 +30,19 @@ class TodayClassesTab extends ConsumerWidget {
     final info = ref.watch(userProvider).value?.information;
     final departmentId = info?.departmentId ?? '';
     final batchId = info?.batchId ?? '';
-    final isCr = info?.status?.cr ?? false;
-    final isAdmin = info?.status?.admin ?? false;
+    final user = ref.watch(currentUserProvider).value;
     // The server re-checks this; here it only decides whether to show the
     // manage/status-change affordances.
-    final canManage = isAdmin || isCr;
+    final canManage =
+        user != null &&
+        user.can(
+          'class_slots.manage',
+          ModeratorScopeTarget(
+            batchId: batchId,
+            departmentId: departmentId,
+            universityId: user.universityId,
+          ),
+        );
 
     final today = DateTime.now();
     final dow = today.weekday % 7; // Mon=1..Sun=7 -> 0=Sunday..6=Saturday

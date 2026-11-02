@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +12,8 @@ import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/features/auth/presentation/providers/auth_provider.dart';
+import '/features/auth/domain/entities/moderator_role.dart';
 import '/routes/app_route.dart';
 import '../../data/models/class_notice.dart';
 import '../providers/class_notice_provider.dart';
@@ -27,7 +30,7 @@ class ClassNoticeTab extends ConsumerWidget {
       departmentId: info?.departmentId ?? '',
       batchId: info?.batchId,
     );
-    final isCr = info?.status?.cr ?? false;
+    final user = ref.watch(currentUserProvider).value;
     final noticesAsync = ref.watch(classNoticesProvider(scope));
 
     return RefreshIndicator(
@@ -49,7 +52,16 @@ class ClassNoticeTab extends ConsumerWidget {
               final notice = notices[i];
               // The server re-checks this; here it only decides whether to
               // show the delete button.
-              final canDelete = isCr && notice.batchId == info?.batchId;
+              final canDelete =
+                  user != null &&
+                  user.can(
+                    'class_notices.manage',
+                    ModeratorScopeTarget(
+                      batchId: notice.batchId,
+                      departmentId: user.departmentId,
+                      universityId: user.universityId,
+                    ),
+                  );
               return _NoticeCard(notice: notice, canDelete: canDelete);
             },
           );

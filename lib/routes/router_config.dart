@@ -10,7 +10,6 @@ import '/features/auth/presentation/screens/forgot_password_page.dart';
 import '/features/auth/presentation/screens/new_password_page.dart';
 import '/features/auth/presentation/screens/reset_password_page.dart';
 import '/features/auth/presentation/screens/login_page.dart';
-import '/features/auth/presentation/screens/new_student_create_account_screen.dart';
 import '/features/auth/presentation/screens/new_student_sign_up_screen.dart';
 import '/features/auth/presentation/screens/new_teacher_signup_screen.dart';
 import '/features/auth/presentation/screens/new_staff_signup_screen.dart';
@@ -41,6 +40,7 @@ import '/features/notice/presentation/screens/department_notices_page.dart';
 import '/features/emergency/presentation/screens/emergency_page.dart';
 import '/features/home/home_page.dart';
 import '/features/routine/presentation/screens/routine_page.dart';
+import '/features/moderation/presentation/screens/moderator_panel_screen.dart';
 import '/features/exams/presentation/screens/exams_page.dart';
 import '/features/search/presentation/screens/search_page.dart';
 import '/features/study/levels/presentation/screens/study_search_page.dart';
@@ -456,6 +456,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: RoutinePage()),
+      ),
+      GoRoute(
+        name: AppRoute.moderatorPanel.name,
+        path: AppRoute.moderatorPanel.path,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ContentColumn(child: ModeratorPanelScreen()),
+        ),
       ),
       GoRoute(
         name: AppRoute.exams.name,
@@ -1012,45 +1020,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return NoTransitionPage(
             child: ContentColumn(
               maxWidth: AppLayout.formWidth,
-              child: NewStudentSignUpScreen(studentId: studentId),
-            ),
-          );
-        },
-      ),
-      GoRoute(
-        name: 'createAccount',
-        path: '/create-account/:uid',
-        parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) {
-          final uid = state.pathParameters['uid']!;
-          final args = state.extra as Map<String, dynamic>?;
-          if (args == null) {
-            return const NoTransitionPage(
-              child: ContentColumn(
-                maxWidth: AppLayout.formWidth,
-                child: VerificationPage(),
-              ),
-            );
-          }
-          return NoTransitionPage(
-            child: ContentColumn(
-              maxWidth: AppLayout.formWidth,
-              child: CreateAccountScreen(
-                universityId: args['universityId'],
-                departmentId: args['departmentId'],
-                university: args['university'],
-                department: args['department'],
-                profession: args['profession'],
-                name: args['name'],
-                mobile: args['mobile'],
-                batchId: args['batchId'],
-                studentId: args['studentId'],
-                sessionId: args['sessionId'],
-                hallId: args['hallId'],
-                hallName: args['hallName'],
-                blood: args['blood'],
-                verificationUID: uid,
-              ),
+              child: NewStudentSignUpScreen(code: studentId),
             ),
           );
         },

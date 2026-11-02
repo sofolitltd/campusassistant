@@ -81,9 +81,7 @@ Future<List<Student>> _enrichStudents(
   final batches = await ref.watch(
     batchesByDepartmentProvider(effectiveDepartmentId).future,
   );
-  final sessions = await ref.watch(
-    sessionsByUniversityProvider(effectiveUniversityId).future,
-  );
+  final sessions = await ref.watch(allSessionsProvider.future);
 
   return students.map((s) {
     final hall = halls.firstWhereOrNull((h) => h.id == s.hallId);
@@ -185,9 +183,7 @@ Future<Student?> studentByUserId(Ref ref, String userId) async {
   } catch (_) {}
 
   try {
-    final sessions = await ref.watch(
-      sessionsByUniversityProvider(student.universityId).future,
-    );
+    final sessions = await ref.watch(allSessionsProvider.future);
     sessionName = sessions
         .firstWhereOrNull((ses) => ses.id == student.sessionId)
         ?.name;
@@ -213,9 +209,7 @@ Future<Student?> studentByAcademicId(Ref ref, String studentId) async {
   final batches = await ref.watch(
     batchesByDepartmentProvider(student.departmentId).future,
   );
-  final sessions = await ref.watch(
-    sessionsByUniversityProvider(student.universityId).future,
-  );
+  final sessions = await ref.watch(allSessionsProvider.future);
 
   final hall = halls.firstWhereOrNull((h) => h.id == student.hallId);
   final batch = batches.firstWhereOrNull((b) => b.id == student.batchId);
@@ -248,9 +242,7 @@ Future<Student> studentByCode(Ref ref, String code) async {
   final batches = await ref.watch(
     batchesByDepartmentProvider(student.departmentId).future,
   );
-  final sessions = await ref.watch(
-    sessionsByUniversityProvider(student.universityId).future,
-  );
+  final sessions = await ref.watch(allSessionsProvider.future);
 
   final hall = halls.firstWhereOrNull((h) => h.id == student.hallId);
   final batch = batches.firstWhereOrNull((b) => b.id == student.batchId);

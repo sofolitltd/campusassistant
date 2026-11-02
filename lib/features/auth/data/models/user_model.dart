@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entities/user.dart';
+import '../../domain/entities/moderator_role.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
@@ -39,6 +40,9 @@ abstract class UserModel with _$UserModel {
     @Default(false) bool isModerator,
     @Default(false) bool isAdmin,
     @Default(false) bool isCr,
+    @JsonKey(name: 'moderator_roles')
+    @Default([])
+    List<ModeratorRole> moderatorRoles,
     String? universityId,
     String? departmentId,
     DateTime? createdAt,
@@ -68,9 +72,10 @@ abstract class UserModel with _$UserModel {
     isPhonePublic: isPhonePublic,
     isEmailPublic: isEmailPublic,
     subscriptionStatus: subscriptionStatus,
-    isModerator: isModerator,
+    legacyIsModerator: isModerator,
     isAdmin: isAdmin,
     isCr: isCr,
+    moderatorRoles: moderatorRoles,
     universityId: universityId,
     departmentId: departmentId,
     createdAt: createdAt,
@@ -100,6 +105,7 @@ abstract class UserModel with _$UserModel {
     isModerator: user.isModerator,
     isAdmin: user.isAdmin,
     isCr: user.isCr,
+    moderatorRoles: user.moderatorRoles,
     universityId: user.universityId,
     departmentId: user.departmentId,
     createdAt: user.createdAt,

@@ -10,6 +10,7 @@ abstract class FeedbackItem with _$FeedbackItem {
     required String subject,
     required String message,
     String? attachmentUrl,
+    @Default([]) List<String> imageUrls,
     @Default('pending') String status,
     String? adminReply,
     String? repliedAt,

@@ -23,9 +23,11 @@ class ChapterRepositoryImpl implements ChapterRepository {
   @override
   Future<Either<Failure, List<Chapter>>> getChapters(
     String courseCode, {
+    String? departmentId,
     String? batchId,
   }) async {
-    final cacheKey = 'chapter_${courseCode}_batch_${batchId ?? 'all'}';
+    final cacheKey =
+        'chapter_${departmentId ?? ''}_${courseCode}_batch_${batchId ?? 'all'}';
 
     // 1. Try remote first when online. The cache is an offline fallback, not
     // the source of truth: cache-first hid freshly created chapters for up to
@@ -35,6 +37,7 @@ class ChapterRepositoryImpl implements ChapterRepository {
       try {
         final chapters = await remoteDataSource.getChapters(
           courseCode,
+          departmentId: departmentId,
           batchId: batchId,
         );
         final entities = chapters.map((m) => m.toEntity()).toList();

@@ -1,10 +1,15 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import '/features/community/utils/image_compress.dart';
 import '/features/feedback/presentation/providers/feedback_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/core/widgets/custom_header_layout.dart';
@@ -25,6 +30,11 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
   final _messageController = TextEditingController();
   bool _submitting = false;
 
+  /// Screenshots, already compressed (≤ ~256KB JPEG, max 1080px).
+  final List<Uint8List> _images = [];
+  bool _picking = false;
+  static const _maxImages = 4;
+
   static const _categories = [
     ('bug', 'Bug Report', LucideIcons.bug, AccentToken.red),
     ('feature', 'Feature Request', LucideIcons.sparkles, AccentToken.violet),
@@ -41,6 +51,26 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
     super.dispose();
   }
 
+  Future<void> _pickImages() async {
+    final remaining = _maxImages - _images.length;
+    if (remaining <= 0) return;
+    setState(() => _picking = true);
+    try {
+      final picked = await ImagePicker().pickMultiImage(limit: remaining);
+      for (final file in picked.take(remaining)) {
+        final compressed = await compressCommunityImage(File(file.path));
+        if (!mounted) return;
+        setState(() => _images.add(compressed));
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Could not add image: $e')));
+    } finally {
+      if (mounted) setState(() => _picking = false);
+    }
+  }
+
   Future<void> _submit() async {
     final subject = _subjectController.text.trim();
     final message = _messageController.text.trim();
@@ -54,10 +84,15 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
     setState(() => _submitting = true);
     try {
       final repo = ref.read(feedbackRepositoryProvider);
+      final imageUrls = <String>[];
+      for (final bytes in _images) {
+        imageUrls.add(await repo.uploadImage(bytes));
+      }
       await repo.createFeedback(
         category: _categoryController.value,
         subject: subject,
         message: message,
+        imageUrls: imageUrls,
       );
       if (!mounted) return;
       ref.invalidate(myFeedbacksProvider);
@@ -70,9 +105,8 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
       context.pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -167,6 +201,82 @@ class _CreateFeedbackPageState extends ConsumerState<CreateFeedbackPage> {
               alignLabelWithHint: true,
             ),
             textCapitalization: .sentences,
+          ),
+          const SizedBox(height: Spacing.xl),
+          Text(
+            'Screenshots (optional, up to $_maxImages)',
+            style: const TextStyle(
+              fontSize: FontSizeToken.base,
+              fontWeight: .w500,
+            ),
+          ),
+          const SizedBox(height: Spacing.sm),
+          Wrap(
+            spacing: Spacing.sm,
+            runSpacing: Spacing.sm,
+            children: [
+              for (var i = 0; i < _images.length; i++)
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(RadiusToken.sm),
+                      child: Image.memory(
+                        _images[i],
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        cacheWidth: 240,
+                      ),
+                    ),
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: GestureDetector(
+                        onTap: _submitting
+                            ? null
+                            : () => setState(() => _images.removeAt(i)),
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            LucideIcons.x,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              if (_images.length < _maxImages)
+                GestureDetector(
+                  onTap: _picking || _submitting ? null : _pickImages,
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: context.colors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(RadiusToken.sm),
+                      border: Border.all(color: context.colors.borderStrong),
+                    ),
+                    child: _picking
+                        ? const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : Icon(
+                            LucideIcons.imagePlus,
+                            color: context.colors.textMuted,
+                          ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: Spacing.xxxl),
           SizedBox(

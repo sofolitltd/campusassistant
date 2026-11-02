@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BatchModel {
 
- String get id; String get name; String get slug; bool get isStudying; String get departmentId; String get universityId; List<SessionModel> get sessions;
+ String get id; String get name; String get slug; bool get isStudying; String get departmentId; String get universityId; List<SessionModel> get sessions; String get program; String get imageUrl;
 /// Create a copy of BatchModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $BatchModelCopyWith<BatchModel> get copyWith => _$BatchModelCopyWithImpl<BatchMo
 @override
 bool operator ==(Object other) {
   final _this = this as BatchModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BatchModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.isStudying, _this.isStudying) || other.isStudying == _this.isStudying)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&const DeepCollectionEquality().equals(other.sessions, _this.sessions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BatchModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.isStudying, _this.isStudying) || other.isStudying == _this.isStudying)&&(identical(other.departmentId, _this.departmentId) || other.departmentId == _this.departmentId)&&(identical(other.universityId, _this.universityId) || other.universityId == _this.universityId)&&const DeepCollectionEquality().equals(other.sessions, _this.sessions)&&(identical(other.program, _this.program) || other.program == _this.program)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as BatchModel;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.slug,_this.isStudying,_this.departmentId,_this.universityId,const DeepCollectionEquality().hash(_this.sessions));
+  return Object.hash(runtimeType,_this.id,_this.name,_this.slug,_this.isStudying,_this.departmentId,_this.universityId,const DeepCollectionEquality().hash(_this.sessions),_this.program,_this.imageUrl);
 }
 
 @override
 String toString() {
   final _this = this as BatchModel;
-  return 'BatchModel(id: ${_this.id}, name: ${_this.name}, slug: ${_this.slug}, isStudying: ${_this.isStudying}, departmentId: ${_this.departmentId}, universityId: ${_this.universityId}, sessions: ${_this.sessions})';
+  return 'BatchModel(id: ${_this.id}, name: ${_this.name}, slug: ${_this.slug}, isStudying: ${_this.isStudying}, departmentId: ${_this.departmentId}, universityId: ${_this.universityId}, sessions: ${_this.sessions}, program: ${_this.program}, imageUrl: ${_this.imageUrl})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $BatchModelCopyWith<$Res>  {
   factory $BatchModelCopyWith(BatchModel value, $Res Function(BatchModel) _then) = _$BatchModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, bool isStudying, String departmentId, String universityId, List<SessionModel> sessions
+ String id, String name, String slug, bool isStudying, String departmentId, String universityId, List<SessionModel> sessions, String program, String imageUrl
 });
 
 
@@ -71,7 +71,7 @@ class _$BatchModelCopyWithImpl<$Res>
 
 /// Create a copy of BatchModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? isStudying = null,Object? departmentId = null,Object? universityId = null,Object? sessions = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? isStudying = null,Object? departmentId = null,Object? universityId = null,Object? sessions = null,Object? program = null,Object? imageUrl = null,}) {
   return _then(BatchModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -80,7 +80,9 @@ as String,isStudying: null == isStudying ? _self.isStudying : isStudying // igno
 as bool,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,sessions: null == sessions ? _self.sessions : sessions // ignore: cast_nullable_to_non_nullable
-as List<SessionModel>,
+as List<SessionModel>,program: null == program ? _self.program : program // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -165,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  bool isStudying,  String departmentId,  String universityId,  List<SessionModel> sessions)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  bool isStudying,  String departmentId,  String universityId,  List<SessionModel> sessions,  String program,  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BatchModel() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.departmentId,_that.universityId,_that.sessions);case _:
+return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.departmentId,_that.universityId,_that.sessions,_that.program,_that.imageUrl);case _:
   return orElse();
 
 }
@@ -186,10 +188,10 @@ return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.department
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  bool isStudying,  String departmentId,  String universityId,  List<SessionModel> sessions)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  bool isStudying,  String departmentId,  String universityId,  List<SessionModel> sessions,  String program,  String imageUrl)  $default,) {final _that = this;
 switch (_that) {
 case _BatchModel():
-return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.departmentId,_that.universityId,_that.sessions);case _:
+return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.departmentId,_that.universityId,_that.sessions,_that.program,_that.imageUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +208,10 @@ return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.department
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  bool isStudying,  String departmentId,  String universityId,  List<SessionModel> sessions)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  bool isStudying,  String departmentId,  String universityId,  List<SessionModel> sessions,  String program,  String imageUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _BatchModel() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.departmentId,_that.universityId,_that.sessions);case _:
+return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.departmentId,_that.universityId,_that.sessions,_that.program,_that.imageUrl);case _:
   return null;
 
 }
@@ -221,7 +223,7 @@ return $default(_that.id,_that.name,_that.slug,_that.isStudying,_that.department
 @JsonSerializable()
 
 class _BatchModel extends BatchModel {
-  const _BatchModel({required this.id, required this.name, required this.slug, this.isStudying = true, required this.departmentId, required this.universityId,  List<SessionModel> sessions = const []}): _sessions = sessions,super._();
+  const _BatchModel({required this.id, required this.name, required this.slug, this.isStudying = true, required this.departmentId, required this.universityId,  List<SessionModel> sessions = const [], this.program = 'honours', this.imageUrl = ''}): _sessions = sessions,super._();
   factory _BatchModel.fromJson(Map<String, dynamic> json) => _$BatchModelFromJson(json);
 
 @override final  String id;
@@ -237,6 +239,8 @@ class _BatchModel extends BatchModel {
   return EqualUnmodifiableListView(_sessions);
 }
 
+@override@JsonKey() final  String program;
+@override@JsonKey() final  String imageUrl;
 
 /// Create a copy of BatchModel
 /// with the given fields replaced by the non-null parameter values.
@@ -251,18 +255,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BatchModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.isStudying, isStudying) || other.isStudying == isStudying)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&const DeepCollectionEquality().equals(other.sessions, _sessions));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BatchModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.isStudying, isStudying) || other.isStudying == isStudying)&&(identical(other.departmentId, departmentId) || other.departmentId == departmentId)&&(identical(other.universityId, universityId) || other.universityId == universityId)&&const DeepCollectionEquality().equals(other.sessions, _sessions)&&(identical(other.program, program) || other.program == program)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,slug,isStudying,departmentId,universityId,const DeepCollectionEquality().hash(_sessions));
+    return Object.hash(runtimeType,id,name,slug,isStudying,departmentId,universityId,const DeepCollectionEquality().hash(_sessions),program,imageUrl);
 }
 
 @override
 String toString() {
-    return 'BatchModel(id: $id, name: $name, slug: $slug, isStudying: $isStudying, departmentId: $departmentId, universityId: $universityId, sessions: $sessions)';
+    return 'BatchModel(id: $id, name: $name, slug: $slug, isStudying: $isStudying, departmentId: $departmentId, universityId: $universityId, sessions: $sessions, program: $program, imageUrl: $imageUrl)';
 }
 
 
@@ -273,7 +277,7 @@ abstract mixin class _$BatchModelCopyWith<$Res> implements $BatchModelCopyWith<$
   factory _$BatchModelCopyWith(_BatchModel value, $Res Function(_BatchModel) _then) = __$BatchModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, bool isStudying, String departmentId, String universityId, List<SessionModel> sessions
+ String id, String name, String slug, bool isStudying, String departmentId, String universityId, List<SessionModel> sessions, String program, String imageUrl
 });
 
 
@@ -290,7 +294,7 @@ class __$BatchModelCopyWithImpl<$Res>
 
 /// Create a copy of BatchModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? isStudying = null,Object? departmentId = null,Object? universityId = null,Object? sessions = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? isStudying = null,Object? departmentId = null,Object? universityId = null,Object? sessions = null,Object? program = null,Object? imageUrl = null,}) {
   return _then(_BatchModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -299,7 +303,9 @@ as String,isStudying: null == isStudying ? _self.isStudying : isStudying // igno
 as bool,departmentId: null == departmentId ? _self.departmentId : departmentId // ignore: cast_nullable_to_non_nullable
 as String,universityId: null == universityId ? _self.universityId : universityId // ignore: cast_nullable_to_non_nullable
 as String,sessions: null == sessions ? _self._sessions : sessions // ignore: cast_nullable_to_non_nullable
-as List<SessionModel>,
+as List<SessionModel>,program: null == program ? _self.program : program // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

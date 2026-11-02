@@ -1,6 +1,7 @@
 import '/routes/scaffold_with_navbar.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -10,6 +11,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '../providers/semester_provider.dart';
+import '/features/batch/presentation/providers/program_provider.dart';
 import '/core/theme/app_colors.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/bookmark/presentation/providers/bookmark_provider.dart';
@@ -41,6 +43,8 @@ class _StudyPageState extends ConsumerState<StudyPage>
     final currentBatch = ref.watch(resolvedBatchProvider);
     final batchesAsync = ref.watch(batchProviderStudy);
     final semesters = ref.watch(filteredSemestersProvider);
+    final programs = ref.watch(departmentProgramsProvider);
+    final program = ref.watch(effectiveProgramProvider);
 
     var displaySemesters = List.from(semesters)
       ..sort(
@@ -128,6 +132,7 @@ class _StudyPageState extends ConsumerState<StudyPage>
                   onRefresh: () async {
                     ref.invalidate(semestersProvider);
                     ref.invalidate(batchProviderStudy);
+                    ref.invalidate(myProgramsProvider);
                     await ref.read(semestersProvider.future);
                   },
                   child: isLoading
@@ -142,6 +147,25 @@ class _StudyPageState extends ConsumerState<StudyPage>
                                 downloadCount: downloadCount,
                               ),
                             ),
+
+                            // Honors / Masters switch — only for departments
+                            // that have more than one program.
+                            if (programs.length > 1)
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    Spacing.lg,
+                                    Spacing.xl,
+                                    Spacing.lg,
+                                    0,
+                                  ),
+                                  child: _ProgramSwitch(
+                                    programs: programs,
+                                    selected: program,
+                                    onChanged: (p) => switchProgram(ref, p),
+                                  ),
+                                ),
+                              ),
 
                             // Levels header row
                             SliverToBoxAdapter(
@@ -362,5 +386,61 @@ class _StudyPageState extends ConsumerState<StudyPage>
       },
     );
     context.push(uri.toString());
+  }
+}
+
+class _ProgramSwitch extends StatelessWidget {
+  final List<String> programs;
+  final String selected;
+  final ValueChanged<String> onChanged;
+
+  const _ProgramSwitch({
+    required this.programs,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.all(Spacing.xs),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: Border.all(color: context.colors.borderStrong),
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+      ),
+      child: Row(
+        children: [
+          for (final p in programs)
+            Expanded(
+              child: GestureDetector(
+                onTap: p == selected ? null : () => onChanged(p),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: p == selected
+                        ? theme.colorScheme.primary
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
+                  ),
+                  child: Text(
+                    programLabel(p),
+                    style: TextStyle(
+                      fontSize: FontSizeToken.md,
+                      fontWeight: .w600,
+                      color: p == selected
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

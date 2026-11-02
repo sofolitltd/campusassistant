@@ -1,18 +1,49 @@
-import '/core/widgets/app_loader.dart';
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
+import '/core/di.dart';
+import '/core/network/api_endpoints.dart';
+import '/core/widgets/app_loader.dart';
 import '/core/widgets/custom_header_layout.dart';
-import '/core/theme/app_colors.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
+import '/features/batch/presentation/widgets/batch_cover.dart';
 import '/features/student/presentation/providers/student_provider.dart';
-import 'student_card.dart';
-import '/core/theme/tokens/app_spacing.dart';
-import '/core/widgets/glass_search_bar.dart';
+import '/features/student/presentation/widgets/student_paged_list.dart';
 
+/// Irregular students in a batch (count only, limit=1); regular = total −
+/// this. Null when it can't be fetched (offline), and the header then
+/// leaves the regular/irregular split out.
+final _irregularCountProvider = FutureProvider.autoDispose.family<int?, String>(
+  (ref, batchId) async {
+    try {
+      final response = await ref
+          .watch(apiClientProvider)
+          .get(
+            ApiEndpoints.students,
+            queryParameters: {
+              'batch_id': batchId,
+              'is_regular': 'false',
+              'include_history': 'true',
+              'limit': '1',
+            },
+          );
+      return (response.data as Map<String, dynamic>)['count'] as int?;
+    } catch (_) {
+      return null;
+    }
+  },
+);
+
+/// One batch's students (opened from a card on [AllStudentsPage]), under the
+/// batch cover with its details laid over it. [batch] is the batch id, or
+/// [all] for every student of the department in one list (the "All" button).
 class BatchStudentsPage extends ConsumerStatefulWidget {
   const BatchStudentsPage({super.key, required this.batch});
   final String batch;
+
+  static const all = 'all';
 
   @override
   ConsumerState<BatchStudentsPage> createState() => _BatchStudentsPageState();
@@ -20,78 +51,62 @@ class BatchStudentsPage extends ConsumerStatefulWidget {
 
 class _BatchStudentsPageState extends ConsumerState<BatchStudentsPage> {
   String _searchQuery = '';
+  Timer? _searchDebounce;
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      setState(() => _searchQuery = value.trim());
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final studentsAsync = ref.watch(studentsByBatchProvider(widget.batch));
+    final batches = ref.watch(batchProviderAll).value;
+    if (widget.batch == BatchStudentsPage.all) {
+      // The department comes from its batches (all in the user's department).
+      final first = batches?.firstOrNull;
+      return CustomHeaderLayout(
+        title: 'All Students',
+        searchAtBottom: true,
+        searchHint: 'Search by name, ID or phone...',
+        onSearchChanged: _onSearchChanged,
+        body: first == null
+            ? const Center(child: AppLoader())
+            : StudentPagedList(
+                universityId: first.universityId,
+                departmentId: first.departmentId,
+                batchName: 'All',
+                search: _searchQuery,
+              ),
+      );
+    }
+
+    final batch = batches?.where((b) => b.id == widget.batch).firstOrNull;
 
     return CustomHeaderLayout(
-      title: widget.batch,
+      title: batch?.name ?? 'Students',
       searchAtBottom: true,
-      searchHint: 'Search by name, id, hall or blood',
-      onSearchChanged: (value) => setState(() => _searchQuery = value),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: Spacing.lg),
-          child: TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: context.colors.onPrimary,
-            ),
-            onPressed: () => context.pushNamed('allStudents'),
-            child: const Text('All Students'),
-          ),
-        ),
-      ],
-      body: studentsAsync.when(
-        data: (students) {
-          final query = _searchQuery.trim().toLowerCase();
-          final filteredStudents = students.where((s) {
-            return s.name.toLowerCase().contains(query) ||
-                s.studentId.toLowerCase().contains(query) ||
-                s.hall.toLowerCase().contains(query) ||
-                s.blood.toLowerCase().contains(query);
-          }).toList();
-
-          return Column(
-            crossAxisAlignment: .start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  Spacing.lg,
-                  Spacing.lg,
-                  Spacing.lg,
-                  Spacing.sm,
-                ),
-                child: Text(
-                  'Students (${filteredStudents.length})',
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: .bold),
-                ),
+      searchHint: 'Search by name, ID or phone...',
+      onSearchChanged: _onSearchChanged,
+      body: StudentPagedList(
+        batchId: widget.batch,
+        batchName: batch?.name ?? '',
+        search: _searchQuery,
+        header: batch == null || _searchQuery.isNotEmpty
+            ? null
+            : BatchCoverHeader(
+                batch: batch,
+                total: ref.watch(studentCountByBatchProvider(batch.id)).value,
+                irregular: ref.watch(_irregularCountProvider(batch.id)).value,
               ),
-              Expanded(
-                child: filteredStudents.isEmpty
-                    ? const Center(child: Text('No students found!'))
-                    : ListView.separated(
-                        padding: EdgeInsets.fromLTRB(
-                          Spacing.lg,
-                          Spacing.sm,
-                          Spacing.lg,
-                          GlassSearchBar.listBottomPadding(context),
-                        ),
-                        itemCount: filteredStudents.length,
-                        separatorBuilder: (_, _) =>
-                            const SizedBox(height: Spacing.md),
-                        itemBuilder: (_, index) => StudentCard(
-                          studentModel: filteredStudents[index],
-                          selectedBatch: widget.batch,
-                        ),
-                      ),
-              ),
-            ],
-          );
-        },
-        loading: () => const Center(child: AppLoader()),
-        error: (e, st) => Center(child: Text('Error: $e')),
       ),
     );
   }

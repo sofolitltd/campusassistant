@@ -15,6 +15,7 @@ abstract class StudentRepository {
     String? search,
     String? bloodGroup,
     bool? hasBloodGroup,
+    bool includeHistory = false,
     int? limit,
     int? offset,
   });
@@ -30,6 +31,7 @@ abstract class StudentRepository {
     String? search,
     String? bloodGroup,
     bool? hasBloodGroup,
+    bool includeHistory = false,
     int? limit,
     int? offset,
   });

@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '/core/network/api_endpoints.dart';
+import '/core/widgets/app_network_image.dart';
 import '/features/feedback/domain/entities/feedback.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/app_colors.dart';
@@ -17,8 +19,7 @@ class FeedbackCard extends StatelessWidget {
     'bug': (LucideIcons.bug, 'Bug Report', AccentToken.red),
     'feature': (LucideIcons.sparkles, 'Feature Request', AccentToken.violet),
     'suggestion': (LucideIcons.lightbulb, 'Suggestion', AccentToken.amber),
-    'complaint':
-        (LucideIcons.alertTriangle, 'Complaint', AccentToken.orange),
+    'complaint': (LucideIcons.alertTriangle, 'Complaint', AccentToken.orange),
     'general': (LucideIcons.messageSquare, 'General', AccentToken.gray),
   };
 
@@ -40,7 +41,8 @@ class FeedbackCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final meta = _categoryMeta[feedback.category] ??
+    final meta =
+        _categoryMeta[feedback.category] ??
         (LucideIcons.messageSquare, 'General', AccentToken.gray);
     final icon = meta.$1;
     final label = meta.$2;
@@ -52,9 +54,7 @@ class FeedbackCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(RadiusToken.md),
-        border: Border.all(
-          color: context.colors.border,
-        ),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
         crossAxisAlignment: .start,
@@ -73,8 +73,10 @@ class FeedbackCard extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.xs),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Spacing.sm,
+                  vertical: Spacing.xs,
+                ),
                 decoration: BoxDecoration(
                   color: _statusColor(feedback.status).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(RadiusToken.full),
@@ -109,7 +111,27 @@ class FeedbackCard extends StatelessWidget {
             maxLines: 3,
             overflow: .ellipsis,
           ),
-          if (feedback.adminReply != null && feedback.adminReply!.isNotEmpty) ...[
+          if (feedback.imageUrls.isNotEmpty) ...[
+            const SizedBox(height: Spacing.md),
+            Wrap(
+              spacing: Spacing.sm,
+              runSpacing: Spacing.sm,
+              children: [
+                for (final url in feedback.imageUrls)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(RadiusToken.sm),
+                    child: AppNetworkImage(
+                      ApiEndpoints.resolveImageUrl(url),
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+              ],
+            ),
+          ],
+          if (feedback.adminReply != null &&
+              feedback.adminReply!.isNotEmpty) ...[
             const SizedBox(height: Spacing.md),
             Container(
               padding: const EdgeInsets.all(Spacing.md),
@@ -125,8 +147,11 @@ class FeedbackCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(LucideIcons.messageCircleReply,
-                          size: 14, color: AccentToken.blueDeep),
+                      Icon(
+                        LucideIcons.messageCircleReply,
+                        size: 14,
+                        color: AccentToken.blueDeep,
+                      ),
                       const SizedBox(width: Spacing.sm),
                       Text(
                         'Admin Reply',

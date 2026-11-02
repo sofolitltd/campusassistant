@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -164,12 +165,17 @@ List<Widget> _itemWidgetsForType(
   BuildContext context,
   String type,
   SearchResults results,
+  String searchCategory,
 ) {
   switch (type) {
     case 'resource':
       return [
         for (final r in results.resources)
-          ResourceCard(key: ValueKey('resource-${r.id}'), resource: r),
+          ResourceCard(
+            key: ValueKey('resource-${r.id}'),
+            resource: r,
+            searchCategory: searchCategory,
+          ),
       ];
     // Resource subtypes: same underlying data as 'resource', already
     // filtered down to this subtype by searchResultsProvider when one is
@@ -182,7 +188,11 @@ List<Widget> _itemWidgetsForType(
     case 'syllabus':
       return [
         for (final r in results.resources.where((r) => r.type == type))
-          ResourceCard(key: ValueKey('resource-${r.id}'), resource: r),
+          ResourceCard(
+            key: ValueKey('resource-${r.id}'),
+            resource: r,
+            searchCategory: searchCategory,
+          ),
       ];
     case 'video':
       return [
@@ -316,7 +326,12 @@ class _GroupedResultsList extends ConsumerWidget {
     // again per itemBuilder call) avoids constructing every card twice.
     final sectionItems = {
       for (final type in _typeOrder)
-        type: _itemWidgetsForType(context, type, results),
+        type: _itemWidgetsForType(
+          context,
+          type,
+          results,
+          ref.read(searchCategoryProvider),
+        ),
     }..removeWhere((_, items) => items.isEmpty);
     final sections = sectionItems.keys.toList();
 
@@ -361,7 +376,12 @@ class _FlatResultsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final items = _itemWidgetsForType(context, type, results);
+    final items = _itemWidgetsForType(
+      context,
+      type,
+      results,
+      ref.read(searchCategoryProvider),
+    );
     if (items.isEmpty) {
       return _EmptyState(
         icon: LucideIcons.searchX,

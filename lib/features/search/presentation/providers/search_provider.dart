@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -50,8 +52,21 @@ final searchResultsProvider = FutureProvider.autoDispose<SearchResults?>((
     limitPerType: isSubtype ? 20 : null,
   );
 
-  if (!isSubtype) return results;
-  return results.copyWith(
-    resources: results.resources.where((r) => r.type == category).toList(),
+  final filteredResults = isSubtype
+      ? results.copyWith(
+          resources: results.resources
+              .where((r) => r.type == category)
+              .toList(),
+        )
+      : results;
+  unawaited(
+    ref
+        .read(usageAnalyticsProvider)
+        .record(
+          eventType: 'search_performed',
+          category: category,
+          resultCount: filteredResults.total,
+        ),
   );
+  return filteredResults;
 });

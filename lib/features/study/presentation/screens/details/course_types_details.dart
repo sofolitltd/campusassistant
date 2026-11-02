@@ -52,7 +52,7 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
   void _syncSelectionWithParams() {
     // Sync batch if passed in URL
     if (widget.batch != null && widget.batch!.isNotEmpty) {
-      final batchesAsync = ref.read(batchProviderStudy);
+      final batchesAsync = ref.read(batchProviderAll);
       final batches = batchesAsync.value;
       if (batches != null) {
         final match = batches

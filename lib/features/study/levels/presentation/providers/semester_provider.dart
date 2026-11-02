@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../../core/cache/cache_manager.dart';
 import '../../../../../core/cache/connectivity_service.dart';
 import '../../../../../core/di.dart';
@@ -8,6 +9,9 @@ import '../../domain/repositories/semester_repository.dart';
 import '../../data/repositories/semester_repository_impl.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
+import '/features/batch/presentation/providers/program_provider.dart';
+import '/features/batch/domain/entities/batch.dart';
 
 final semesterRepositoryProvider = Provider<SemesterRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -59,8 +63,17 @@ final filteredSemestersProvider = Provider<List<Semester>>((ref) {
   final allSemesters = ref.watch(semestersProvider).value ?? [];
   final selectedBatch = ref.watch(resolvedBatchProvider);
 
-  // If no batch selected, or "All Batches" sentinel → show everything
-  if (isAllBatches(selectedBatch)) return allSemesters;
+  // "All Batches" → everything, or with several programs (Honors/Masters)
+  // just the levels of the current program's batches.
+  if (isAllBatches(selectedBatch)) {
+    if (ref.watch(departmentProgramsProvider).length < 2) return allSemesters;
+    final program = ref.watch(effectiveProgramProvider);
+    final ids = (ref.watch(batchProviderAll).value ?? const <Batch>[])
+        .where((b) => b.program == program)
+        .map((b) => b.id)
+        .toSet();
+    return allSemesters.where((s) => s.batches.any(ids.contains)).toList();
+  }
 
   // Filter semesters that include the selected batch
   return allSemesters

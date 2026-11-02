@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/providers/app_refresh_provider.dart';
 import '../../../auth/presentation/providers/user_profile_provider.dart';
 import '../../domain/entities/batch.dart';
 import 'batch_provider.dart';
+import '/features/study/levels/presentation/providers/semester_provider.dart';
 
 // Base: ALL batches for the user's department.
 // Not auto-disposed — batch list rarely changes, so we cache it.
@@ -21,9 +23,22 @@ final batchProviderAll = FutureProvider<List<Batch>>((ref) async {
   }
 });
 
-// Derived: only studying batches, filtered from cached all-batches.
+// Derived: batches that have study content (a level is linked to them),
+// newest first. Whether a batch is still on campus (isStudying) doesn't
+// matter here — a graduated batch's notes stay readable, and an old batch
+// with nothing in it stays out of the picker.
 // Auto-disposed — only needed while study page is active.
 final batchProviderStudy = FutureProvider.autoDispose<List<Batch>>((ref) async {
   final all = await ref.watch(batchProviderAll.future);
-  return all.where((b) => b.isStudying).toList();
+  final semesters = await ref.watch(semestersProvider.future);
+  // No levels loaded (offline with an empty cache, or a department with no
+  // study content yet): fall back to on-campus batches so the picker isn't empty.
+  if (semesters.isEmpty) return all.where((b) => b.isStudying).toList();
+  final withContent = {for (final s in semesters) ...s.batches};
+  return all.where((b) => withContent.contains(b.id)).toList()
+    ..sort((a, b) => batchNumber(b).compareTo(batchNumber(a)));
 });
+
+/// "Batch 14" / "Masters Batch 14" → 14 (0 when there's no number).
+int batchNumber(Batch b) =>
+    int.tryParse(RegExp(r'\d+').firstMatch(b.name)?.group(0) ?? '') ?? 0;

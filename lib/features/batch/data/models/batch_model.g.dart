@@ -18,6 +18,8 @@ _BatchModel _$BatchModelFromJson(Map<String, dynamic> json) => _BatchModel(
           ?.map((e) => SessionModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  program: json['program'] as String? ?? 'honours',
+  imageUrl: json['image_url'] as String? ?? '',
 );
 
 Map<String, dynamic> _$BatchModelToJson(_BatchModel instance) =>
@@ -29,4 +31,6 @@ Map<String, dynamic> _$BatchModelToJson(_BatchModel instance) =>
       'department_id': instance.departmentId,
       'university_id': instance.universityId,
       'sessions': instance.sessions,
+      'program': instance.program,
+      'image_url': instance.imageUrl,
     };

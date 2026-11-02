@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'analytics/usage_analytics.dart';
 import 'auth/token_store.dart';
 import 'network/api_client.dart';
 import 'network/api_endpoints.dart';
@@ -50,6 +51,10 @@ final apiClientProvider = Provider<ApiClient>((ref) {
       }
     },
   );
+});
+
+final usageAnalyticsProvider = Provider<UsageAnalytics>((ref) {
+  return UsageAnalytics(ref.watch(apiClientProvider));
 });
 
 final communityRepositoryProvider = Provider<CommunityRepository>((ref) {

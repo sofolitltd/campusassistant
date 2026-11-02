@@ -13,6 +13,11 @@ _FeedbackItemModel _$FeedbackItemModelFromJson(Map<String, dynamic> json) =>
       subject: json['subject'] as String,
       message: json['message'] as String,
       attachmentUrl: json['attachment_url'] as String?,
+      imageUrls:
+          (json['image_urls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       status: json['status'] as String? ?? 'pending',
       adminReply: json['admin_reply'] as String?,
       repliedAt: json['replied_at'] as String?,
@@ -27,6 +32,7 @@ Map<String, dynamic> _$FeedbackItemModelToJson(_FeedbackItemModel instance) =>
       'subject': instance.subject,
       'message': instance.message,
       'attachment_url': ?instance.attachmentUrl,
+      'image_urls': instance.imageUrls,
       'status': instance.status,
       'admin_reply': ?instance.adminReply,
       'replied_at': ?instance.repliedAt,

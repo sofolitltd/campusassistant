@@ -58,6 +58,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? search,
     String? bloodGroup,
     bool? hasBloodGroup,
+    bool includeHistory = false,
     int? limit,
     int? offset,
     required String cacheKey,
@@ -70,6 +71,11 @@ class StudentRepositoryImpl implements StudentRepository {
     if (_isSearch(search)) queryParams['search'] = search;
     if (bloodGroup != null) queryParams['blood_group'] = bloodGroup;
     if (hasBloodGroup == true) queryParams['has_blood_group'] = 'true';
+    // A batch's former members too (e.g. Honors students now in Masters),
+    // shown with that batch's roll — see the API's StudentHandler.GetAll.
+    if (includeHistory && batchId != null) {
+      queryParams['include_history'] = 'true';
+    }
     if (limit != null) queryParams['limit'] = limit.toString();
     if (offset != null) queryParams['offset'] = offset.toString();
     // Count-only requests (limit=1) don't need the joined user/batch/hall.
@@ -117,6 +123,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? search,
     String? bloodGroup,
     bool? hasBloodGroup,
+    bool includeHistory = false,
     int? limit,
     int? offset,
   }) async {
@@ -128,6 +135,7 @@ class StudentRepositoryImpl implements StudentRepository {
       search: search,
       bloodGroup: bloodGroup,
       hasBloodGroup: hasBloodGroup,
+      includeHistory: includeHistory,
       limit: limit,
       offset: offset,
     );
@@ -147,6 +155,7 @@ class StudentRepositoryImpl implements StudentRepository {
           search: search,
           bloodGroup: bloodGroup,
           hasBloodGroup: hasBloodGroup,
+          includeHistory: includeHistory,
           limit: limit,
           offset: offset,
           cacheKey: cacheKey,
@@ -171,6 +180,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? search,
     String? bloodGroup,
     bool? hasBloodGroup,
+    bool includeHistory = false,
     int? limit,
     int? offset,
   }) async* {
@@ -184,6 +194,7 @@ class StudentRepositoryImpl implements StudentRepository {
       search: search,
       bloodGroup: bloodGroup,
       hasBloodGroup: hasBloodGroup,
+      includeHistory: includeHistory,
       limit: limit,
       offset: offset,
     );
@@ -330,6 +341,7 @@ class StudentRepositoryImpl implements StudentRepository {
     String? search,
     String? bloodGroup,
     bool? hasBloodGroup,
+    bool includeHistory = false,
     int? limit,
     int? offset,
   }) {
@@ -342,6 +354,7 @@ class StudentRepositoryImpl implements StudentRepository {
       if (search != null && search.isNotEmpty) 'q_$search',
       if (bloodGroup != null) 'blood_$bloodGroup',
       if (hasBloodGroup == true) 'hasblood',
+      if (includeHistory) 'history',
       if (limit != null) 'lmt_$limit',
       if (offset != null) 'off_$offset',
     ];

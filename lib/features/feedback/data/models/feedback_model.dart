@@ -15,6 +15,7 @@ abstract class FeedbackItemModel with _$FeedbackItemModel {
     required String subject,
     required String message,
     @JsonKey(name: 'attachment_url') String? attachmentUrl,
+    @JsonKey(name: 'image_urls') @Default([]) List<String> imageUrls,
     @Default('pending') String status,
     @JsonKey(name: 'admin_reply') String? adminReply,
     @JsonKey(name: 'replied_at') String? repliedAt,
@@ -26,15 +27,16 @@ abstract class FeedbackItemModel with _$FeedbackItemModel {
       _$FeedbackItemModelFromJson(json);
 
   FeedbackItem toEntity() => FeedbackItem(
-        id: id,
-        category: category,
-        subject: subject,
-        message: message,
-        attachmentUrl: attachmentUrl,
-        status: status,
-        adminReply: adminReply,
-        repliedAt: repliedAt,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+    id: id,
+    category: category,
+    subject: subject,
+    message: message,
+    attachmentUrl: attachmentUrl,
+    imageUrls: imageUrls,
+    status: status,
+    adminReply: adminReply,
+    repliedAt: repliedAt,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/student/presentation/providers/student_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
@@ -70,7 +71,15 @@ final resolvedBatchProvider = Provider<Batch?>((ref) {
 
   if (studentAsync.isLoading || ref.watch(userProvider).isLoading) return null;
 
-  return batches.first;
+  // Own batch has no study content (an old batch): open the newest batch
+  // that has some, in the student's own program (Honors/Masters).
+  final all = ref.watch(batchProviderAll).asData?.value ?? const <Batch>[];
+  final ownProgram = all
+      .where((b) => b.id == student?.batchId)
+      .firstOrNull
+      ?.program;
+  return batches.where((b) => b.program == ownProgram).firstOrNull ??
+      batches.first;
 });
 
 // ---------------------------------------------------------------------------

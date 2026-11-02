@@ -39,7 +39,11 @@ Future<List<Chapter>> chaptersForCourse(
 }) async {
   ref.cacheFor(kParamProviderCacheTime);
   final repository = ref.watch(chapterRepositoryProvider);
-  final result = await repository.getChapters(courseCode, batchId: batchId);
+  final result = await repository.getChapters(
+    courseCode,
+    departmentId: departmentId,
+    batchId: batchId,
+  );
   return result.fold((failure) => throw failure, (chapters) => chapters);
 }
 

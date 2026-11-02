@@ -451,13 +451,12 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                 hintText: 'House/road/hall name',
                               ),
                               onChanged: (v) {
-                                _addressDirty = true;
-                                if (_permanentSameAsPresent) {
-                                  setState(
-                                    () => _permanentAddressLineController.text =
-                                        v,
-                                  );
-                                }
+                                setState(() {
+                                  _addressDirty = true;
+                                  if (_permanentSameAsPresent) {
+                                    _permanentAddressLineController.text = v;
+                                  }
+                                });
                               },
                             ),
 
@@ -530,7 +529,9 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                                 decoration: const InputDecoration(
                                   hintText: 'House/road/village name',
                                 ),
-                                onChanged: (_) => _addressDirty = true,
+                                onChanged: (_) => setState(() {
+                                  _addressDirty = true;
+                                }),
                               ),
                             ],
                           ],
@@ -774,6 +775,31 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
 
   Future<void> _updateProfile() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final presentAddressLine = _presentAddressLineController.text.trim();
+    final permanentAddressLine = _permanentAddressLineController.text.trim();
+    final presentAddressHasData =
+        _presentDistrictId != null || presentAddressLine.isNotEmpty;
+    final permanentAddressHasData =
+        (_permanentSameAsPresent
+            ? _presentDistrictId
+            : _permanentDistrictId) !=
+        null ||
+        permanentAddressLine.isNotEmpty;
+
+    if (_addressDirty &&
+        ((presentAddressHasData && _presentDistrictId == null) ||
+            (permanentAddressHasData &&
+                (_permanentSameAsPresent
+                        ? _presentDistrictId
+                        : _permanentDistrictId) ==
+                    null))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select a district for each address')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -854,7 +880,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
       ref.invalidate(userProvider);
       ref.invalidate(currentUserProvider);
       ref.invalidate(userProfileByUidProvider(widget.profile.uid));
-      ref.invalidate(studentByUserIdProvider(widget.profile.uid));
+      await invalidateStudentProfileCache(ref, widget.profile.uid);
 
       if (!mounted) return;
       _addressDirty = false;

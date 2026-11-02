@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '/features/feedback/domain/entities/feedback.dart';
 
 abstract class FeedbackRepository {
@@ -6,5 +8,9 @@ abstract class FeedbackRepository {
     required String category,
     required String subject,
     required String message,
+    List<String> imageUrls = const [],
   });
+
+  /// Uploads one (already compressed) screenshot and returns its URL.
+  Future<String> uploadImage(Uint8List bytes);
 }

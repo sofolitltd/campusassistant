@@ -126,7 +126,9 @@ class SearchResults {
     final teachers = _parseList(
       rawResults,
       'teacher',
-      (e) => TeacherModel.fromJson(e).toEntity(),
+      // fromJsonData, not fromJson: the backend sends designation/weight/
+      // is_present/..., which only fromJsonData maps onto the model's keys.
+      (e) => TeacherModel.fromJsonData(e).toEntity(),
     );
     final staffList = _parseList(
       rawResults,

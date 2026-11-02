@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -23,6 +24,7 @@ import '/core/providers/is_pro_provider.dart';
 import '/core/providers/perks_provider.dart';
 import '/features/reward/presentation/providers/reward_providers.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
+import '/core/di.dart';
 import '/core/cache/cache_manager.dart';
 import '/core/network/api_endpoints.dart';
 import '/core/providers/download_counter_provider.dart';
@@ -56,6 +58,7 @@ const double _kMenuTapSize = 40;
 
 class ResourceCard extends ConsumerStatefulWidget {
   final Resource resource;
+  final String? searchCategory;
 
   /// When true, this card automatically opens its content (downloading it
   /// first if needed) as soon as its local-file status is known — used to
@@ -66,6 +69,7 @@ class ResourceCard extends ConsumerStatefulWidget {
     super.key,
     required this.resource,
     this.autoOpen = false,
+    this.searchCategory,
   });
 
   @override
@@ -85,6 +89,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   String? _bookmarkId;
   String? _savedBookmarkId;
   String _localPath = '';
+  String? _downloadAttemptId;
   CancelToken? _cancelToken;
 
   @override
@@ -778,13 +783,41 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   }
 
   Future<void> _handleDownloadTap() async {
+    final attemptId = _isDownloaded ? null : _recordDownloadAttempt();
     final canAccess = await _canAccessResource();
     if (canAccess) {
       // Coins (or Pro) already granted access above — skip the separate ad
       // gate inside _downloadIfNeeded, otherwise a user who just paid with
       // coins gets shown the ad prompt too.
-      await _handleOpenContent(gateAlreadyChecked: true);
+      await _handleOpenContent(gateAlreadyChecked: true, attemptId: attemptId);
+    } else if (attemptId != null && mounted) {
+      unawaited(
+        ref
+            .read(usageAnalyticsProvider)
+            .record(
+              eventType: 'resource_download_blocked',
+              entityType: 'resource',
+              entityId: widget.resource.id,
+              attemptId: attemptId,
+            ),
+      );
     }
+  }
+
+  String _recordDownloadAttempt() {
+    final attemptId = const Uuid().v4();
+    _downloadAttemptId = attemptId;
+    unawaited(
+      ref
+          .read(usageAnalyticsProvider)
+          .record(
+            eventType: 'resource_download_attempt',
+            entityType: 'resource',
+            entityId: widget.resource.id,
+            attemptId: attemptId,
+          ),
+    );
+    return attemptId;
   }
 
   Future<bool> _checkRewardGate() async {
@@ -1061,12 +1094,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     );
   }
 
-  Future<void> _handleOpenContent({bool gateAlreadyChecked = false}) async {
+  Future<void> _handleOpenContent({
+    bool gateAlreadyChecked = false,
+    String? attemptId,
+  }) async {
     // Web streams the PDF straight from the URL (see PdfViewerPage) — no
     // local download step needed or possible.
     if (kIsWeb) {
       if (mounted) {
         ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
+        _recordResourceOpen();
         await openPdfTab(
           context,
           ref,
@@ -1083,11 +1120,15 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
 
     if (!_isDownloaded) {
-      await _downloadIfNeeded(gateAlreadyChecked: gateAlreadyChecked);
+      await _downloadIfNeeded(
+        gateAlreadyChecked: gateAlreadyChecked,
+        attemptId: attemptId,
+      );
     }
     if (_isDownloaded && _localPath.isNotEmpty) {
       if (mounted) {
         ref.read(resourceRepositoryProvider).recordView(widget.resource.id);
+        _recordResourceOpen();
         await openPdfTab(
           context,
           ref,
@@ -1103,11 +1144,41 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
   }
 
-  Future<void> _downloadIfNeeded({bool gateAlreadyChecked = false}) async {
+  void _recordResourceOpen() {
+    unawaited(
+      ref
+          .read(usageAnalyticsProvider)
+          .record(
+            eventType: 'resource_opened',
+            entityType: 'resource',
+            entityId: widget.resource.id,
+          ),
+    );
+    final category = widget.searchCategory;
+    if (category != null) {
+      unawaited(
+        ref
+            .read(usageAnalyticsProvider)
+            .record(
+              eventType: 'search_result_opened',
+              entityType: 'resource',
+              entityId: widget.resource.id,
+              category: category,
+            ),
+      );
+    }
+  }
+
+  Future<void> _downloadIfNeeded({
+    bool gateAlreadyChecked = false,
+    String? attemptId,
+  }) async {
     // No local filesystem on web — nothing to download to, and the ad gate
     // below relies on google_mobile_ads, which has no web implementation.
     if (kIsWeb) return;
     if (_isDownloaded || _isLoading) return;
+    attemptId ??= _downloadAttemptId ?? _recordDownloadAttempt();
+    _downloadAttemptId = attemptId;
 
     // If coins, Pro, or the out-of-coins dialog already handled access (and
     // any ad), don't show another interstitial on top of it.
@@ -1119,7 +1190,24 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       _isPaused = false;
     });
     _cancelToken = CancelToken();
-    final success = await _downloadFile(widget.resource.fileUrl, _localPath);
+    final success = await _downloadFile(
+      widget.resource.fileUrl,
+      _localPath,
+      attemptId,
+    );
+    if (!success && mounted) {
+      unawaited(
+        ref
+            .read(usageAnalyticsProvider)
+            .record(
+              eventType: 'resource_download_failed',
+              entityType: 'resource',
+              entityId: widget.resource.id,
+              attemptId: attemptId,
+            ),
+      );
+    }
+    _downloadAttemptId = null;
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -1128,7 +1216,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
   }
 
-  Future<bool> _downloadFile(String url, String path) async {
+  Future<bool> _downloadFile(String url, String path, String attemptId) async {
     try {
       await _fetchToFile(url, path);
     } catch (e) {
@@ -1166,6 +1254,16 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         resource: widget.resource,
       );
       ref.read(resourceRepositoryProvider).recordDownload(widget.resource.id);
+      unawaited(
+        ref
+            .read(usageAnalyticsProvider)
+            .record(
+              eventType: 'resource_download_success',
+              entityType: 'resource',
+              entityId: widget.resource.id,
+              attemptId: attemptId,
+            ),
+      );
       // The downloads page and the study page's badge both list files on
       // disk, so refresh them now the new file is there.
       ref.invalidate(downloadedFilesProvider);
@@ -1216,7 +1314,25 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       });
     }
     _cancelToken = CancelToken();
-    final success = await _downloadFile(widget.resource.fileUrl, _localPath);
+    final attemptId = _downloadAttemptId ?? _recordDownloadAttempt();
+    final success = await _downloadFile(
+      widget.resource.fileUrl,
+      _localPath,
+      attemptId,
+    );
+    if (!success && mounted) {
+      unawaited(
+        ref
+            .read(usageAnalyticsProvider)
+            .record(
+              eventType: 'resource_download_failed',
+              entityType: 'resource',
+              entityId: widget.resource.id,
+              attemptId: attemptId,
+            ),
+      );
+    }
+    _downloadAttemptId = null;
     if (mounted) {
       setState(() {
         _isLoading = false;

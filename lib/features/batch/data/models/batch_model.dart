@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/entities/batch.dart';
 import '../../../session/data/models/session_model.dart';
 
@@ -17,6 +18,8 @@ abstract class BatchModel with _$BatchModel {
     required String departmentId,
     required String universityId,
     @Default([]) List<SessionModel> sessions,
+    @Default('honours') String program,
+    @Default('') String imageUrl,
   }) = _BatchModel;
 
   factory BatchModel.fromJson(Map<String, dynamic> json) =>
@@ -30,6 +33,8 @@ abstract class BatchModel with _$BatchModel {
     departmentId: departmentId,
     universityId: universityId,
     sessions: sessions.map((s) => s.toEntity()).toList(),
+    program: program,
+    imageUrl: imageUrl,
   );
 
   factory BatchModel.fromEntity(Batch batch) => BatchModel(
@@ -40,5 +45,7 @@ abstract class BatchModel with _$BatchModel {
     departmentId: batch.departmentId,
     universityId: batch.universityId,
     sessions: batch.sessions.map((s) => SessionModel.fromEntity(s)).toList(),
+    program: batch.program,
+    imageUrl: batch.imageUrl,
   );
 }

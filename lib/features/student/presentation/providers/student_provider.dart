@@ -39,7 +39,13 @@ StudentRepository studentRepository(Ref ref) {
 @riverpod
 Future<int> studentCountByBatch(Ref ref, String batchId) async {
   final repository = ref.watch(studentRepositoryProvider);
-  final paginated = await repository.getStudents(batchId: batchId, limit: 1);
+  // Counts former members too (Honors students now in Masters), matching
+  // the batch page's list.
+  final paginated = await repository.getStudents(
+    batchId: batchId,
+    limit: 1,
+    includeHistory: true,
+  );
   return paginated.total;
 }
 
@@ -132,6 +138,7 @@ Stream<PaginatedStudents> studentsWithTotalByBatchPaginated(
     search: search,
     limit: limit,
     offset: offset,
+    includeHistory: true,
   )) {
     final enriched = await _enrichStudents(ref, paginated.students);
     yield PaginatedStudents(students: enriched, total: paginated.total);
@@ -339,6 +346,12 @@ Future<void> updateMyStudentAddress(
       if (permanent != null) 'permanent_address': permanent.toJson(),
     },
   );
+}
+
+Future<void> invalidateStudentProfileCache(WidgetRef ref, String userId) async {
+  await ref.read(cacheManagerProvider).invalidate('student_page');
+  ref.invalidate(studentByUserIdProvider(userId));
+  ref.invalidate(studentProfileProvider);
 }
 
 // ---------------------------------------------------------------------------

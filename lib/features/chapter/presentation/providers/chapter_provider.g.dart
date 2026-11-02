@@ -178,7 +178,7 @@ final class ChaptersForCourseProvider
   }
 }
 
-String _$chaptersForCourseHash() => r'e92bbfea6c061b10b7cff1ed0362e59185064a27';
+String _$chaptersForCourseHash() => r'18178aff59770ba1bf93e47322e312cf66b5c196';
 
 final class ChaptersForCourseFamily extends $Family
     with

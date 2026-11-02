@@ -1,10 +1,11 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/batch/domain/entities/batch.dart';
-import '/features/batch/presentation/providers/batch_list_provider.dart';
+import '/features/batch/presentation/providers/program_provider.dart';
 import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import 'batch_tile.dart';
 import '/core/widgets/inline_search_bar.dart';
@@ -22,7 +23,7 @@ class BatchDropdown extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final batchesAsync = ref.watch(batchProviderStudy);
+    final batchesAsync = ref.watch(programBatchesProvider);
     final currentBatch = ref.watch(resolvedBatchProvider);
     final theme = Theme.of(context);
 
@@ -62,7 +63,9 @@ class BatchDropdown extends ConsumerWidget {
                 Icon(LucideIcons.users, size: 14, color: textColor),
                 const SizedBox(width: Spacing.sm),
                 Text(
-                  batch?.name ?? 'All Batches',
+                  batch == null || isAllBatches(batch)
+                      ? 'All Batches'
+                      : batchShortName(batch),
                   style: TextStyle(
                     fontSize: FontSizeToken.md,
                     fontWeight: .w500,
@@ -80,9 +83,7 @@ class BatchDropdown extends ConsumerWidget {
         width: 100,
         height: 32,
         child: Center(
-          child: AppLoader(
-            color: redBg ? context.colors.onPrimary : null,
-          ),
+          child: AppLoader(color: redBg ? context.colors.onPrimary : null),
         ),
       ),
       error: (_, _) => const SizedBox(),
@@ -114,9 +115,10 @@ class BatchDropdown extends ConsumerWidget {
                 ? batches
                 : batches
                       .where(
-                        (b) => b.name.toLowerCase().contains(
-                          searchText.toLowerCase(),
-                        ),
+                        (b) =>
+                            batchShortName(b)
+                                .toLowerCase()
+                                .contains(searchText.toLowerCase()),
                       )
                       .toList();
 
@@ -198,7 +200,7 @@ class BatchDropdown extends ConsumerWidget {
                         ...filteredBatches.map(
                           (b) => BatchTile(
                             grid: true,
-                            title: b.name,
+                            title: batchShortName(b),
                             isSelected: currentBatch?.id == b.id,
                             onTap: () {
                               ref

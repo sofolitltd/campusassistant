@@ -137,39 +137,26 @@ class StudentCard extends StatelessWidget {
 
                       // show if blood group is not empty
                       if (studentModel.bloodGroup.isNotEmpty) ...[
-                      Text(
-                        '|',
-                        style: TextStyle(
-                          color: context.colors.textSubtle,
-                          fontSize: FontSizeToken.sm,
-                          height: 1.2,
+                        Text(
+                          '|',
+                          style: TextStyle(
+                            color: context.colors.textSubtle,
+                            fontSize: FontSizeToken.sm,
+                            height: 1.2,
+                          ),
                         ),
-                      ),
-                      //
-                      Row(
-                        crossAxisAlignment: .start,
-                        spacing: 6,
-                        children: [
-                          Text(
-                            'Blood:',
-                            style: Theme.of(context).textTheme.bodySmall!
-                                .copyWith(
-                                  color: context.colors.textMuted,
-                                  fontSize: FontSizeToken.sm,
-                                ),
-                          ),
-                          Text(
-                            studentModel.bloodGroup,
-                            style: Theme.of(context).textTheme.bodySmall!
-                                .copyWith(
-                                  fontWeight: .w600,
-                                  color: context.colors.danger,
-                                  fontSize: FontSizeToken.sm,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],],
+                        //
+                        Text(
+                          studentModel.bloodGroup,
+                          style: Theme.of(context).textTheme.bodySmall!
+                              .copyWith(
+                                fontWeight: .w600,
+                                color: context.colors.danger,
+                                fontSize: FontSizeToken.sm,
+                              ),
+                        ),
+                      ],
+                    ],
                   ),
 
                   const SizedBox(height: Spacing.sm),

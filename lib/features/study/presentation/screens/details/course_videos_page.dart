@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +12,8 @@ import '/features/batch/presentation/providers/selected_batch_provider.dart';
 import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
+import '/features/study/presentation/widgets/details/batch_label.dart';
+import '/features/resource/presentation/widgets/batch_strip.dart';
 import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/routes/app_route.dart';
 import '/utils/constants.dart';
@@ -100,6 +103,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
     final explicitBatch = ref.watch(selectedBatchNotifierProvider);
     final selectedBatch = ref.watch(resolvedBatchProvider);
     final effectiveBatch = explicitBatch != null ? selectedBatch : null;
+    final allBatches = ref.watch(batchProviderAll).value ?? const [];
 
     final params = (
       universityId: widget.universityId ?? widget.courseModel.universityId,
@@ -159,8 +163,15 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
             return const Center(child: Text('No videos found!'));
           }
 
+          // Every batch's videos: the selected batch's first, then the rest
+          // by newest batch, each showing its batches.
+          final selectedId = isAllBatches(effectiveBatch)
+              ? null
+              : effectiveBatch?.id;
+          final sorted = sortByBatch(resources, selectedId, allBatches);
+
           final playlist = [
-            for (final r in resources)
+            for (final r in sorted)
               if (YoutubePlayerController.convertUrlToId(r.fileUrl)
                   case final id?)
                 YoutubePlaylistItem(videoId: id, title: r.title),
@@ -168,7 +179,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
 
           return ListView.separated(
             physics: const BouncingScrollPhysics(),
-            itemCount: resources.length,
+            itemCount: sorted.length,
             separatorBuilder: (BuildContext context, int index) =>
                 const SizedBox(height: Spacing.md),
             padding: const EdgeInsets.fromLTRB(
@@ -178,7 +189,12 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
               Spacing.lg,
             ),
             itemBuilder: (context, index) {
-              final resource = resources[index];
+              final resource = sorted[index];
+              final batchNames = otherBatchNames(
+                resource,
+                selectedId,
+                allBatches,
+              );
               final videoId =
                   YoutubePlayerController.convertUrlToId(resource.fileUrl) ??
                   '';
@@ -189,7 +205,7 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
               final subtitle = resource.description;
               final chapterNo = resource.lessonNo.toString();
 
-              return Container(
+              final tile = Container(
                 decoration: BoxDecoration(
                   color: theme.cardColor,
                   borderRadius: BorderRadius.circular(RadiusToken.md),
@@ -378,6 +394,8 @@ class _CourseVideosState extends ConsumerState<CourseVideos> {
                   ),
                 ),
               );
+              if (batchNames == null) return tile;
+              return BatchStrip(names: batchNames, child: tile);
             },
           );
         },

@@ -1,6 +1,7 @@
 import '/core/widgets/app_loader.dart';
 import '/features/bookmark/presentation/widgets/bookmark_app_bar_button.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,9 +17,13 @@ import '/core/theme/app_colors.dart';
 import '/utils/constants.dart';
 
 import '/features/resource/presentation/widgets/resource_card.dart';
+import '/features/resource/domain/entities/resource.dart';
+import '/core/widgets/glass_search_bar.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_tab_bar.dart';
 import '/features/study/presentation/widgets/details/chapter_filter_button.dart';
+import '/features/study/presentation/widgets/details/batch_label.dart';
+import '/features/batch/presentation/providers/program_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
@@ -56,6 +61,23 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
   late TabController _tabController;
   int _currentTab = 0;
   String? _selectedChapterNo;
+  String _search = '';
+
+  /// Title, description, teacher/creator and tags, case-insensitive.
+  bool _matchesSearch(Resource r) {
+    if (_search.isEmpty) return true;
+    final q = _search.toLowerCase();
+    final meta = r.metadata;
+    return [
+      r.title,
+      r.description,
+      // Older notes keep the creator under 'subtitle'.
+      '${meta['subtitle'] ?? ''}',
+      '${meta['creator'] ?? ''}',
+      '${meta['teacher'] ?? ''}',
+      ...r.tags,
+    ].any((s) => s.toLowerCase().contains(q));
+  }
 
   @override
   void initState() {
@@ -211,9 +233,7 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
           iconTheme: IconThemeData(color: context.colors.onPrimary),
           centerTitle: false,
           titleSpacing: 0,
-          actions: [
-            const BookmarkAppBarButton(),
-          ],
+          actions: [const BookmarkAppBarButton()],
           title: Text(
             chapterTitle.isNotEmpty
                 ? 'Chapter ${_selectedChapterNo ?? widget.chapterNo}: $chapterTitle'
@@ -280,75 +300,160 @@ class _CourseNotesScreensState extends ConsumerState<CourseNotesScreens>
                       ),
 
                       // ── Tab content ──────────────────────────────
+                      // The search capsule floats over the list (content
+                      // scrolls behind the glass), as on Jobs/Circulars.
                       Expanded(
-                        child: resourcesStream.when(
-                          loading: () =>
-                              const Center(child: AppLoader()),
-                          error: (e, _) => Center(child: Text('Error: $e')),
-                          data: (resources) {
-                            if (resources.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: .center,
-                                  children: [
-                                    Icon(
-                                      _currentTab == 0
-                                          ? Icons.description_outlined
-                                          : Icons.videocam_outlined,
-                                      size: 64,
-                                      color: context.colors.borderStrong,
-                                    ),
-                                    const SizedBox(height: Spacing.lg),
-                                    Text(
-                                      _currentTab == 0
-                                          ? 'No notes found!'
-                                          : 'No videos found!',
-                                      style: TextStyle(
-                                        color: context.colors.textMuted,
-                                        fontSize: FontSizeToken.lg,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: resourcesStream.when(
+                                loading: () => const Center(child: AppLoader()),
+                                error: (e, _) =>
+                                    Center(child: Text('Error: $e')),
+                                data: (resources) {
+                                  if (resources.isEmpty) {
+                                    return Center(
+                                      child: Column(
+                                        mainAxisAlignment: .center,
+                                        children: [
+                                          Icon(
+                                            _currentTab == 0
+                                                ? Icons.description_outlined
+                                                : Icons.videocam_outlined,
+                                            size: 64,
+                                            color: context.colors.borderStrong,
+                                          ),
+                                          const SizedBox(height: Spacing.lg),
+                                          Text(
+                                            _currentTab == 0
+                                                ? 'No notes found!'
+                                                : 'No videos found!',
+                                            style: TextStyle(
+                                              color: context.colors.textMuted,
+                                              fontSize: FontSizeToken.lg,
+                                            ),
+                                          ),
+                                          const SizedBox(height: Spacing.sm),
+                                          Text(
+                                            _currentTab == 0
+                                                ? 'Upload lecture notes for this chapter'
+                                                : 'Add video lectures for this chapter',
+                                            style: TextStyle(
+                                              color: context.colors.textSubtle,
+                                              fontSize: FontSizeToken.md,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(height: Spacing.sm),
-                                    Text(
-                                      _currentTab == 0
-                                          ? 'Upload lecture notes for this chapter'
-                                          : 'Add video lectures for this chapter',
-                                      style: TextStyle(
-                                        color: context.colors.textSubtle,
-                                        fontSize: FontSizeToken.md,
+                                    );
+                                  }
+
+                                  // Every batch's notes: the selected batch's
+                                  // first, then the rest by newest batch. Head
+                                  // each part.
+                                  final batchId = params.batchId;
+                                  final allBatches =
+                                      ref.watch(batchProviderAll).value ??
+                                      const [];
+                                  final sorted = sortByBatch(
+                                    resources,
+                                    batchId,
+                                    allBatches,
+                                  ).where(_matchesSearch).toList();
+                                  if (sorted.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                        'Nothing matches "$_search"',
+                                        style: TextStyle(
+                                          color: context.colors.textMuted,
+                                          fontSize: FontSizeToken.md,
+                                        ),
                                       ),
+                                    );
+                                  }
+                                  bool isOwn(int i) =>
+                                      batchId != null &&
+                                      sorted[i].batches.contains(batchId);
+                                  final firstOther = sorted.indexWhere(
+                                    (r) =>
+                                        batchId == null ||
+                                        !r.batches.contains(batchId),
+                                  );
+                                  final adList = withPeriodicAds(
+                                    realCount: sorted.length,
+                                    realItemBuilder: (context, index) {
+                                      final resource = sorted[index];
+                                      final card = ResourceCard(
+                                        resource: resource,
+                                        batchNames: otherBatchNames(
+                                          resource,
+                                          batchId,
+                                          allBatches,
+                                        ),
+                                        autoOpen:
+                                            widget.resourceId != null &&
+                                            resource.id == widget.resourceId,
+                                      );
+                                      final String? heading = batchId == null
+                                          ? null
+                                          : index == 0 && isOwn(0)
+                                          ? batchShortName(selectedBatch!)
+                                          : index == firstOther
+                                          ? 'From other batches'
+                                          : null;
+                                      if (heading == null) return card;
+                                      return Column(
+                                        crossAxisAlignment: .start,
+                                        children: [
+                                          if (index > 0)
+                                            const SizedBox(height: Spacing.sm),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: Spacing.sm,
+                                            ),
+                                            child: Text(
+                                              heading,
+                                              style: TextStyle(
+                                                color: context.colors.textMuted,
+                                                fontSize: FontSizeToken.sm,
+                                                fontWeight: .bold,
+                                              ),
+                                            ),
+                                          ),
+                                          card,
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  return ListView.separated(
+                                    padding: EdgeInsets.fromLTRB(
+                                      Spacing.lg,
+                                      Spacing.xs,
+                                      Spacing.lg,
+                                      GlassSearchBar.listBottomPadding(context),
                                     ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            final adList = withPeriodicAds(
-                              realCount: resources.length,
-                              realItemBuilder: (context, index) {
-                                final resource = resources[index];
-                                return ResourceCard(
-                                  resource: resource,
-                                  autoOpen:
-                                      widget.resourceId != null &&
-                                      resource.id == widget.resourceId,
-                                );
-                              },
-                            );
-
-                            return ListView.separated(
-                              padding: const EdgeInsets.fromLTRB(
-                                Spacing.lg,
-                                Spacing.xs,
-                                Spacing.lg,
-                                Spacing.lg,
+                                    itemCount: adList.itemCount,
+                                    separatorBuilder: (_, _) =>
+                                        const SizedBox(height: Spacing.md),
+                                    itemBuilder: adList.itemBuilder,
+                                  );
+                                },
                               ),
-                              itemCount: adList.itemCount,
-                              separatorBuilder: (_, _) =>
-                                  const SizedBox(height: Spacing.md),
-                              itemBuilder: adList.itemBuilder,
-                            );
-                          },
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: GlassSearchDock(
+                                hint: _currentTab == 0
+                                    ? 'Search notes...'
+                                    : 'Search videos...',
+                                onChanged: (value) =>
+                                    setState(() => _search = value.trim()),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

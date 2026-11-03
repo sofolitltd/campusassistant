@@ -1,7 +1,9 @@
 import 'package:material_ui/material_ui.dart';
+
 import '/core/widgets/search_outline.dart';
 import '/core/widgets/search_clear_suffix.dart';
 import '/features/batch/domain/entities/batch.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/theme/app_colors.dart';
@@ -99,9 +101,14 @@ class _BatchSelectorSheetState extends State<_BatchSelectorSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredBatches = widget.batches
-        .where((b) => b.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+    // Newest batch first, whatever order the caller passed.
+    final filteredBatches =
+        widget.batches
+            .where(
+              (b) => b.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+            )
+            .toList()
+          ..sort((a, b) => batchNumber(b).compareTo(batchNumber(a)));
 
     return Container(
       decoration: BoxDecoration(

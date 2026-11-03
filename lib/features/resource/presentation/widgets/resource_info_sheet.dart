@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/features/resource/domain/entities/resource.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/resource/presentation/widgets/user_profile_dialog.dart';
 import '/core/network/api_endpoints.dart';
@@ -134,11 +135,16 @@ class _ResourceInfoSheetState extends ConsumerState<ResourceInfoSheet> {
     );
 
     final batchNameList = batchesAsync.when(
+      // Newest batch first, not the order the tags happen to be stored in.
       data: (batches) {
-        return resource.batches.map((id) {
-          final batch = batches.where((b) => b.id == id).firstOrNull;
-          return batch?.name ?? id;
-        }).toList();
+        final tagged =
+            batches.where((b) => resource.batches.contains(b.id)).toList()
+              ..sort((a, b) => batchNumber(b).compareTo(batchNumber(a)));
+        final known = {for (final b in tagged) b.id};
+        return [
+          ...tagged.map((b) => b.name),
+          ...resource.batches.where((id) => !known.contains(id)),
+        ];
       },
       loading: () => const ['Loading...'],
       error: (_, _) => resource.batches,

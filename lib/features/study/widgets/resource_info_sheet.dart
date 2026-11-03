@@ -1,8 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '/features/study/data/models/content_model.dart';
 import '/features/batch/presentation/providers/batch_provider.dart';
+import '/features/batch/presentation/providers/batch_list_provider.dart';
 import '/features/resource/presentation/widgets/user_profile_dialog.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_radius.dart';
@@ -28,13 +30,16 @@ class ResourceInfoSheet extends ConsumerWidget {
     );
 
     final batchNames = batchesAsync.when(
+      // Newest batch first, not the order the tags happen to be stored in.
       data: (batches) {
-        return contentModel.batches
-            .map((id) {
-              final batch = batches.where((b) => b.id == id).firstOrNull;
-              return batch?.name ?? id;
-            })
-            .join(', ');
+        final tagged =
+            batches.where((b) => contentModel.batches.contains(b.id)).toList()
+              ..sort((a, b) => batchNumber(b).compareTo(batchNumber(a)));
+        final known = {for (final b in tagged) b.id};
+        return [
+          ...tagged.map((b) => b.name),
+          ...contentModel.batches.where((id) => !known.contains(id)),
+        ].join(', ');
       },
       loading: () => 'Loading...',
       error: (_, _) => contentModel.batches.join(', '),
@@ -122,9 +127,8 @@ class ResourceInfoSheet extends ConsumerWidget {
                   children: [
                     Text(
                       contentModel.contentTitle,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: .bold),
                     ),
                     const SizedBox(height: Spacing.xs),
                     Container(
@@ -302,10 +306,8 @@ class ResourceInfoSheet extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: Spacing.md),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          fontWeight: .bold,
-          color: context.colors.text,
-        ),
+        style: Theme.of(context).textTheme.titleSmall
+            ?.copyWith(fontWeight: .bold, color: context.colors.text),
       ),
     );
   }
@@ -331,9 +333,8 @@ class ResourceInfoSheet extends ConsumerWidget {
               width: 100,
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colors.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.colors.textMuted),
               ),
             ),
             Expanded(

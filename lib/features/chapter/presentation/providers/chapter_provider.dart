@@ -39,12 +39,31 @@ Future<List<Chapter>> chaptersForCourse(
 }) async {
   ref.cacheFor(kParamProviderCacheTime);
   final repository = ref.watch(chapterRepositoryProvider);
+  // Fetch the whole course and pick the batch's chapters here, so a batch
+  // with none of its own still gets a chapter list (see chaptersForBatch).
   final result = await repository.getChapters(
     courseCode,
     departmentId: departmentId,
-    batchId: batchId,
   );
-  return result.fold((failure) => throw failure, (chapters) => chapters);
+  return result.fold(
+    (failure) => throw failure,
+    (chapters) => chaptersForBatch(chapters, batchId),
+  );
+}
+
+/// The batch's own chapters (tagged to it, or untagged = everyone's). A
+/// batch with none yet — a new batch, or "All Batches" — gets every chapter
+/// once per number instead of an empty list, so its notes stay reachable.
+List<Chapter> chaptersForBatch(List<Chapter> chapters, String? batchId) {
+  if (batchId != null && batchId != 'all_batches') {
+    final own = chapters
+        .where((c) => c.batches.isEmpty || c.batches.contains(batchId))
+        .toList();
+    if (own.isNotEmpty) return own;
+  }
+  final seen = <int>{};
+  return chapters.where((c) => seen.add(c.chapterNo)).toList()
+    ..sort((a, b) => a.chapterNo.compareTo(b.chapterNo));
 }
 
 @riverpod

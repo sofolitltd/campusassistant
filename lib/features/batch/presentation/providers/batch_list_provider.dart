@@ -17,7 +17,12 @@ final batchProviderAll = FutureProvider<List<Batch>>((ref) async {
     final batches = await ref.watch(
       batchesByDepartmentProvider(departmentId).future,
     );
-    return List<Batch>.from(batches)..sort((a, b) => b.name.compareTo(a.name));
+    // Newest first by number: a text sort put "Batch 9" above "Batch 20".
+    return List<Batch>.from(batches)..sort(
+      (a, b) => batchNumber(b) != batchNumber(a)
+          ? batchNumber(b).compareTo(batchNumber(a))
+          : a.name.compareTo(b.name),
+    );
   } catch (_) {
     return [];
   }

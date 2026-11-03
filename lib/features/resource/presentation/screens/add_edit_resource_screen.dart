@@ -94,7 +94,7 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
     final meta = widget.resource?.metadata ?? {};
     if (widget.type == 'note') {
       _metadataControllers['creator'] = TextEditingController(
-        text: meta['creator'] ?? meta['teacher'], // Fallback for old data
+        text: creatorOf(meta),
       );
       _metadataControllers['chapter'] = TextEditingController(
         text:
@@ -270,13 +270,18 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
         thumbnailUrl = thumbResponse.data['file_url'];
       }
 
-      final metadata = <String, dynamic>{};
+      // Start from the saved metadata: the update replaces it whole, so
+      // keys this form doesn't edit (uploader, subtitle…) must be kept.
+      final metadata = <String, dynamic>{...?widget.resource?.metadata};
       _metadataControllers.forEach((key, controller) {
         final val = controller.text.trim();
         if (val.isNotEmpty) {
           metadata[key] = val;
+        } else {
+          metadata.remove(key);
         }
       });
+      if (widget.type == 'note') setCreator(metadata, metadata['creator']);
 
       final resource = ResourceModel(
         id: widget.resource?.id ?? '',
@@ -914,4 +919,36 @@ class _AddEditResourceScreenState extends ConsumerState<AddEditResourceScreen> {
       _ => LucideIcons.info,
     };
   }
+}
+
+/// A note's creator. Older notes keep it in `subtitle` (subtitle_type
+/// "Creator"), newer ones in `creator`, the oldest in `teacher`.
+String? creatorOf(Map<String, dynamic> meta) {
+  for (final key in ['creator', 'subtitle', 'teacher']) {
+    if (key == 'subtitle' &&
+        (meta['subtitle_type'] ?? 'Creator') != 'Creator') {
+      continue;
+    }
+    final v = meta[key]?.toString().trim() ?? '';
+    if (v.isNotEmpty) return v;
+  }
+  return null;
+}
+
+/// Writes a note's creator to both keys the app reads, so an edit can't
+/// leave a stale `subtitle` showing; an empty value clears both.
+void setCreator(Map<String, dynamic> meta, Object? value) {
+  final v = value?.toString().trim() ?? '';
+  meta.remove('teacher');
+  if (v.isEmpty) {
+    meta.remove('creator');
+    if ((meta['subtitle_type'] ?? 'Creator') == 'Creator') {
+      meta.remove('subtitle');
+      meta.remove('subtitle_type');
+    }
+    return;
+  }
+  meta['creator'] = v;
+  meta['subtitle'] = v;
+  meta['subtitle_type'] = 'Creator';
 }

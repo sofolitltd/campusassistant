@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import '/features/resource/presentation/providers/resource_provider.dart';
 import '/features/study/levels/presentation/providers/semester_provider.dart';
 import '/features/auth/presentation/providers/user_profile_provider.dart';
 import '/features/resource/presentation/widgets/resource_card.dart';
+import '/features/study/presentation/widgets/details/batch_label.dart';
 import '/routes/app_route.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_spacing.dart';
@@ -151,11 +153,27 @@ class _CourseTypesDetailsState extends ConsumerState<CourseTypesDetails> {
                   return Center(child: Text('No ${widget.courseType} found!'));
                 }
 
+                // Every batch's resources: the selected batch's first, then
+                // the rest by newest batch, each showing its batches.
+                final allBatches =
+                    ref.watch(batchProviderAll).value ?? const [];
+                final sorted = sortByBatch(
+                  resources,
+                  params.batchId,
+                  allBatches,
+                );
                 final adList = withPeriodicAds(
-                  realCount: resources.length,
+                  realCount: sorted.length,
                   realItemBuilder: (context, index) {
-                    final resource = resources[index];
-                    return ResourceCard(resource: resource);
+                    final resource = sorted[index];
+                    return ResourceCard(
+                      resource: resource,
+                      batchNames: otherBatchNames(
+                        resource,
+                        params.batchId,
+                        allBatches,
+                      ),
+                    );
                   },
                 );
 

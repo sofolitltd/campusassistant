@@ -1,4 +1,5 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,19 +53,15 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
         universityId: widget.courseModel.universityId,
         departmentId: widget.courseModel.departmentId,
         courseCode: widget.courseModel.courseCode,
-        batchId: null, // Client-side filter below handles batching
+        batchId: isAllBatches(selectedBatch) ? null : selectedBatch?.id,
       ),
     );
 
     return Scaffold(
       body: chaptersAsync.when(
         data: (chapters) {
-          // Local filter as fallback if API filter wasn't precise enough
-          final filteredChapters = chapters.where((c) {
-            if (isAllBatches(selectedBatch)) return true;
-            final batchId = selectedBatch!.id;
-            return c.batches.isEmpty || c.batches.contains(batchId);
-          }).toList();
+          // Already the batch's chapters (chaptersForBatch).
+          final filteredChapters = chapters;
 
           if (filteredChapters.isEmpty) {
             return const Center(child: Text('No Chapters Found!'));
@@ -140,9 +137,8 @@ class _CourseChaptersScreenState extends ConsumerState<CourseChaptersScreen> {
                           alignment: Alignment.center,
                           child: Text(
                             '${chapterModel.chapterNo}',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleSmall!.copyWith(fontWeight: .bold),
+                            style: Theme.of(context).textTheme.titleSmall!
+                                .copyWith(fontWeight: .bold),
                           ),
                         ),
                         const SizedBox(width: Spacing.md),

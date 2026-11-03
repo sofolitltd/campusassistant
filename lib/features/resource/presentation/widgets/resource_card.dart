@@ -39,6 +39,7 @@ import '/features/reward/presentation/widgets/reward_cost_indicator.dart';
 import '/routes/app_route.dart';
 import 'resource_info_sheet.dart';
 import '/core/theme/tokens/app_spacing.dart';
+import 'batch_strip.dart';
 import '/core/theme/tokens/app_font_size.dart';
 import '/core/theme/tokens/app_accents.dart';
 import '/core/widgets/app_network_image.dart';
@@ -65,11 +66,16 @@ class ResourceCard extends ConsumerStatefulWidget {
   /// deep-link straight to a resource from a "new resource" notification.
   final bool autoOpen;
 
+  /// The batches another batch's resource is on, newest first, shown in a
+  /// strip under the card. Null for the selected batch's own resources.
+  final List<String>? batchNames;
+
   const ResourceCard({
     super.key,
     required this.resource,
     this.autoOpen = false,
     this.searchCategory,
+    this.batchNames,
   });
 
   @override
@@ -162,7 +168,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       _isBookmarked = savedBookmarkId != null;
     }
 
-    return Container(
+    final card = Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(RadiusToken.md + 2),
         color: theme.cardColor,
@@ -246,6 +252,10 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
         ],
       ),
     );
+
+    final names = widget.batchNames;
+    if (names == null || names.isEmpty) return card;
+    return BatchStrip(names: names, child: card);
   }
 
   Widget _buildThumbnail(bool isProContent, {required bool showRewardCost}) {

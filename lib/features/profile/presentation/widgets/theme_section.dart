@@ -217,6 +217,7 @@ class PreferenceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.fromLTRB(16, 16, trailing != null ? 8 : 12, 16),

@@ -1,14 +1,19 @@
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '/core/error/failures.dart';
 import '/features/auth/domain/entities/user.dart' as user_entity;
 import '/features/student/domain/entities/student_address.dart';
 import '/features/student/presentation/providers/student_provider.dart';
+import '/routes/app_route.dart';
 import '/core/theme/tokens/app_radius.dart';
 import '/core/theme/tokens/app_spacing.dart';
 import '/core/widgets/section_tab_bar.dart';
+import '/core/widgets/section_card.dart';
 import '/core/theme/app_colors.dart';
 import '/core/theme/tokens/app_font_size.dart';
 
@@ -44,57 +49,140 @@ class _ProfileInfoTabsSectionState extends State<ProfileInfoTabsSection>
 
     return Padding(
       padding: const EdgeInsets.only(top: Spacing.xs),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(RadiusToken.lg),
-          border: Border.all(color: context.colors.border),
-          boxShadow: [
-            BoxShadow(
-              color: context.colors.shadow,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(RadiusToken.lg),
+              border: Border.all(color: context.colors.border),
+              boxShadow: [
+                BoxShadow(
+                  color: context.colors.shadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: .start,
-          mainAxisSize: .min,
-          children: [
+            child: Column(
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.lg,
+                    Spacing.lg,
+                    0,
+                  ),
+                  child: SectionTabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Academic'),
+                      Tab(text: 'Personal'),
+                      Tab(text: 'Address'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: Spacing.sm),
+                SizedBox(
+                  // Batch/Session and Blood Group/Gender are now paired into
+                  // rows instead of stacked, so each tab is shorter than before
+                  // — 240 left a big empty gap under the content. Address can
+                  // wrap to 2 lines per entry, so it gets a little more room.
+                  height: 170,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildAcademicTab(),
+                      _buildPersonalTab(),
+                      _buildAddressTab(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (widget.user.moderatorRoles.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                Spacing.lg,
-                Spacing.lg,
-                Spacing.lg,
-                0,
-              ),
-              child: SectionTabBar(
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Academic'),
-                  Tab(text: 'Personal'),
-                  Tab(text: 'Address'),
-                ],
-              ),
-            ),
-            const SizedBox(height: Spacing.sm),
-            SizedBox(
-              // Batch/Session and Blood Group/Gender are now paired into
-              // rows instead of stacked, so each tab is shorter than before
-              // — 240 left a big empty gap under the content. Address can
-              // wrap to 2 lines per entry, so it gets a little more room.
-              height: 170,
-              child: TabBarView(
-                controller: _tabController,
+              padding: const EdgeInsets.only(top: Spacing.lg),
+              child: Column(
+                crossAxisAlignment: .start,
                 children: [
-                  _buildAcademicTab(),
-                  _buildPersonalTab(),
-                  _buildAddressTab(),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: Spacing.sm),
+                    child: Row(
+                      children: [
+                        Icon(
+                          LucideIcons.shieldCheck,
+                          size: 18,
+                          color: context.colors.primary,
+                        ),
+                        const SizedBox(width: Spacing.sm),
+                        Text(
+                          'Moderator roles',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: .w700),
+                        ),
+                      ],
+                    ),
+                  ),
+                  for (final role in widget.user.moderatorRoles)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Spacing.sm),
+                      child: SectionCard(
+                        onTap: () =>
+                            context.pushNamed(AppRoute.moderatorPanel.name),
+                        padding: const EdgeInsets.all(Spacing.md),
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              role.title,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: .w600),
+                            ),
+                            const SizedBox(height: Spacing.xs),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text(
+                                        role.scopeName,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                      if (role.termEnd != null)
+                                        Text(
+                                          'Until ${MaterialLocalizations.of(context).formatShortDate(role.termEnd!)}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: context.colors.textMuted,
+                                              ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  LucideIcons.chevronRight,
+                                  size: 18,
+                                  color: context.colors.textSubtle,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -308,9 +396,8 @@ class _InfoItem extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: Spacing.xxs),
           Text(
@@ -351,9 +438,8 @@ class _AddressItem extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: Spacing.sm),
           if (!hasAny)
@@ -371,9 +457,8 @@ class _AddressItem extends StatelessWidget {
                 region,
                 maxLines: 1,
                 overflow: .ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: cs.onSurfaceVariant),
               ),
           ],
         ],

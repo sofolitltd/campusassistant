@@ -44,7 +44,8 @@ class ProfileCard extends ConsumerWidget {
                       icon: LucideIcons.shieldCheck,
                       title: 'Moderator Panel',
                       trailing: const _ModeratorPendingBadge(),
-                      onTap: () => context.push(AppRoute.moderatorPanel.path),
+                      onTap: () =>
+                          context.pushNamed(AppRoute.moderatorPanel.name),
                     ),
                   ],
                 ),

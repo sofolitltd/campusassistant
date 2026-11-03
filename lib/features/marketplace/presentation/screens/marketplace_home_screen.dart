@@ -1,5 +1,8 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:material_ui/material_ui.dart' hide CarouselView;
+import 'package:flutter/material.dart' show CarouselView;
+
 import '/core/widgets/app_loader.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
@@ -74,8 +77,7 @@ class MarketplaceHomeScreen extends ConsumerWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
                     const SliverToBoxAdapter(child: _SearchBar()),
-                    const SliverToBoxAdapter(child: _HeroBanner()),
-                    const SliverToBoxAdapter(child: _TrustStrip()),
+                    const SliverToBoxAdapter(child: _MarketCarousel()),
 
                     // Featured
                     SliverToBoxAdapter(
@@ -323,248 +325,123 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-// ─── Hero ────────────────────────────────────────────────────────────────
-
-class _HeroBanner extends StatefulWidget {
-  const _HeroBanner();
-
-  @override
-  State<_HeroBanner> createState() => _HeroBannerState();
-}
-
-class _HeroBannerState extends State<_HeroBanner> {
-  bool _visible = true;
+class _MarketCarousel extends StatelessWidget {
+  const _MarketCarousel();
 
   @override
   Widget build(BuildContext context) {
-    if (!_visible) return const SizedBox.shrink();
-    final c = context.colors;
+    const slides = [
+      (
+        LucideIcons.bookOpen,
+        'Books, gadgets & more',
+        'Find everyday essentials for campus life.',
+      ),
+      (
+        LucideIcons.sparkles,
+        'Discover something new',
+        'Explore fresh listings from your campus community.',
+      ),
+      (
+        LucideIcons.shoppingBag,
+        'Your campus marketplace',
+        'Browse products and find your next favorite.',
+      ),
+    ];
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(RadiusToken.xl),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [c.primary, c.primaryPressed],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+      padding: const EdgeInsets.only(left: Spacing.lg, top: Spacing.lg),
+      child: SizedBox(
+        height: 148,
+        child: CarouselView(
+          itemExtent: 320,
+          shrinkExtent: 280,
+          itemSnapping: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(RadiusToken.md),
           ),
-          child: Stack(
-            children: [
-              // Soft decorative rings
-              Positioned(
-                right: -36,
-                top: -36,
-                child: _Ring(
-                  size: 150,
-                  color: c.onPrimary.withValues(alpha: 0.08),
-                ),
-              ),
-              Positioned(
-                right: 24,
-                bottom: -52,
-                child: _Ring(
-                  size: 110,
-                  color: c.onPrimary.withValues(alpha: 0.06),
-                ),
-              ),
-              Positioned(
-                right: Spacing.sm,
-                top: Spacing.sm,
-                child: _HeroIconButton(
-                  icon: LucideIcons.x,
-                  tooltip: 'Close',
-                  onTap: () => setState(() => _visible = false),
-                ),
-              ),
-              Positioned(
-                right: Spacing.md,
-                bottom: Spacing.md,
-                child: _HeroIconButton(
-                  icon: LucideIcons.arrowRight,
-                  tooltip: 'How it works',
-                  onTap: () => context.pushNamed(AppRoute.marketplaceInfo.name),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(Spacing.xl),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.md,
-                        vertical: Spacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: c.onPrimary.withValues(alpha: 0.16),
-                        borderRadius: BorderRadius.circular(RadiusToken.full),
-                      ),
-                      child: Row(
-                        mainAxisSize: .min,
-                        children: [
-                          Icon(
-                            LucideIcons.sparkles,
-                            size: 12,
-                            color: c.onPrimary,
-                          ),
-                          const SizedBox(width: Spacing.xs),
-                          Text(
-                            'CAMPUS EXCLUSIVE',
-                            style: TextStyle(
-                              fontSize: FontSizeToken.xxs,
-                              fontWeight: .w700,
-                              letterSpacing: 0.8,
-                              color: c.onPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.md),
-                    Text(
-                      'Shop smarter,\nright on campus.',
-                      style: TextStyle(
-                        fontSize: FontSizeToken.display,
-                        height: 1.15,
-                        fontWeight: .w800,
-                        color: c.onPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.sm),
-                    Text(
-                      'Verified student sellers, secure bKash checkout and delivery to your campus.',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        height: 1.4,
-                        color: c.onPrimary.withValues(alpha: 0.85),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          children: [
+            for (final (icon, title, subtitle) in slides)
+              _MarketCarouselCard(icon: icon, title: title, subtitle: subtitle),
+          ],
         ),
       ),
     );
   }
 }
 
-class _HeroIconButton extends StatelessWidget {
+class _MarketCarouselCard extends StatelessWidget {
   final IconData icon;
-  final String tooltip;
-  final VoidCallback onTap;
-  const _HeroIconButton({
+  final String title;
+  final String subtitle;
+
+  const _MarketCarouselCard({
     required this.icon,
-    required this.tooltip,
-    required this.onTap,
+    required this.title,
+    required this.subtitle,
   });
 
   @override
   Widget build(BuildContext context) {
-    final c = context.colors;
-    return Tooltip(
-      message: tooltip,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: c.onPrimary.withValues(alpha: 0.18),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, size: 16, color: c.onPrimary),
+    final colors = context.colors;
+    return Container(
+      padding: const EdgeInsets.all(Spacing.lg),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [colors.primary, colors.primaryPressed],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
-    );
-  }
-}
-
-class _Ring extends StatelessWidget {
-  final double size;
-  final Color color;
-  const _Ring({required this.size, required this.color});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: size,
-    height: size,
-    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-  );
-}
-
-// ─── Trust strip ─────────────────────────────────────────────────────────
-
-class _TrustStrip extends StatefulWidget {
-  const _TrustStrip();
-
-  @override
-  State<_TrustStrip> createState() => _TrustStripState();
-}
-
-class _TrustStripState extends State<_TrustStrip> {
-  bool _visible = true;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_visible) return const SizedBox.shrink();
-    const items = [
-      (LucideIcons.badgeCheck, 'Verified sellers'),
-      (LucideIcons.shieldCheck, 'Secure payment'),
-      (LucideIcons.truck, 'Campus delivery'),
-    ];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, 0),
-      child: Stack(
+      child: Row(
         children: [
-          Row(
-            children: [
-              for (final (icon, label) in items)
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: context.colors.primarySubtle,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          icon,
-                          size: 18,
-                          color: context.colors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: Spacing.sm),
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontSize: FontSizeToken.xs,
-                          fontWeight: .w600,
-                          color: context.colors.textMuted,
-                        ),
-                      ),
-                    ],
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: colors.onPrimary.withValues(alpha: 0.16),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 22, color: colors.onPrimary),
+          ),
+          const SizedBox(width: Spacing.md),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  'CAMPUS MARKET',
+                  style: TextStyle(
+                    color: colors.onPrimary.withValues(alpha: 0.8),
+                    fontSize: FontSizeToken.xxs,
+                    fontWeight: .w700,
+                    letterSpacing: 1,
                   ),
                 ),
-            ],
-          ),
-          Positioned(
-            right: -6,
-            top: -10,
-            child: IconButton(
-              tooltip: 'Close',
-              visualDensity: VisualDensity.compact,
-              iconSize: 14,
-              color: context.colors.textSubtle,
-              icon: const Icon(LucideIcons.x),
-              onPressed: () => setState(() => _visible = false),
+                const SizedBox(height: Spacing.xs),
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: .ellipsis,
+                  style: TextStyle(
+                    color: colors.onPrimary,
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: .w800,
+                    height: 1.15,
+                  ),
+                ),
+                const SizedBox(height: Spacing.xs),
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: .ellipsis,
+                  style: TextStyle(
+                    color: colors.onPrimary.withValues(alpha: 0.85),
+                    fontSize: FontSizeToken.xs,
+                    height: 1.3,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

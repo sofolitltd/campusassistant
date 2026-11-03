@@ -60,21 +60,6 @@ class HeaderCard extends StatelessWidget {
                     fontWeight: .bold,
                   ),
                 ),
-                if (user.highestModeratorRole case final role?) ...[
-                  const SizedBox(height: Spacing.xs),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(RadiusToken.full),
-                    onTap: () => _showModeratorRoles(context, user),
-                    child: Chip(
-                      visualDensity: VisualDensity.compact,
-                      avatar: const Icon(LucideIcons.shieldCheck, size: 15),
-                      label: Text(
-                        '${role.title} · ${role.scopeName}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
                 const SizedBox(height: Spacing.md),
                 Row(
                   children: [
@@ -186,39 +171,6 @@ class HeaderCard extends StatelessWidget {
       ),
     );
   }
-}
-
-void _showModeratorRoles(BuildContext context, user_entity.User user) {
-  showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    builder: (context) => SafeArea(
-      child: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.only(bottom: Spacing.lg),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Text(
-              'Moderator roles',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-          for (final role in user.moderatorRoles)
-            ListTile(
-              leading: const Icon(LucideIcons.shieldCheck),
-              title: Text(role.title),
-              subtitle: Text(
-                role.scopeName +
-                    (role.termEnd == null
-                        ? ''
-                        : ' · Until ${MaterialLocalizations.of(context).formatShortDate(role.termEnd!)}'),
-              ),
-            ),
-        ],
-      ),
-    ),
-  );
 }
 
 class _ProfileImage extends StatelessWidget {

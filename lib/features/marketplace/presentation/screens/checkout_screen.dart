@@ -1,8 +1,11 @@
 import 'package:material_ui/material_ui.dart';
+
 import '/core/widgets/app_loader.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:intl/intl.dart';
 
 import '/core/theme/tokens/app_radius.dart';
 import '/routes/app_route.dart';
@@ -160,6 +163,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     loading: () => const AppLoader(),
                     error: (e, _) => Text('Error: $e'),
                   ),
+                  if (_selectedAddress != null) ...[
+                    const SizedBox(height: Spacing.md),
+                    _DeliveryEstimate(city: _selectedAddress!.city),
+                  ],
                   const SizedBox(height: Spacing.xxl),
                   const Text(
                     'Order Summary',
@@ -376,6 +383,72 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
+  }
+}
+
+class _DeliveryEstimate extends StatelessWidget {
+  final String city;
+
+  const _DeliveryEstimate({required this.city});
+
+  @override
+  Widget build(BuildContext context) {
+    final today = DateTime.now();
+    final start = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).add(const Duration(days: 3));
+    final end = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).add(const Duration(days: 5));
+    final dateFormat = DateFormat(start.year == end.year ? 'd MMM' : 'd MMM y');
+    final deliveryWindow =
+        '${dateFormat.format(start)} – ${dateFormat.format(end)}';
+
+    return Container(
+      padding: const EdgeInsets.all(Spacing.md),
+      decoration: BoxDecoration(
+        color: context.colors.primarySubtle,
+        borderRadius: BorderRadius.circular(RadiusToken.md),
+      ),
+      child: Row(
+        crossAxisAlignment: .start,
+        children: [
+          Icon(LucideIcons.truck, color: context.colors.primary, size: 22),
+          const SizedBox(width: Spacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                const Text(
+                  'Estimated delivery',
+                  style: TextStyle(fontWeight: .w600),
+                ),
+                const SizedBox(height: Spacing.xs),
+                Text(
+                  deliveryWindow,
+                  style: TextStyle(
+                    color: context.colors.primary,
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: .bold,
+                  ),
+                ),
+                Text(
+                  'In 3–5 days${city.isEmpty ? '' : ' to $city'} · dates may vary.',
+                  style: TextStyle(
+                    color: context.colors.textMuted,
+                    fontSize: FontSizeToken.sm,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

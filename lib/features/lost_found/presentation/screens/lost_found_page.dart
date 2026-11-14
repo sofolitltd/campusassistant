@@ -126,15 +126,18 @@ class _LostFoundPageState extends ConsumerState<LostFoundPage>
             Expanded(
               child: Consumer(
                 builder: (context, ref, _) {
-                  final feedAsync = ref.watch(
-                    lostFoundFeedProvider((
-                      tab: _activeTab,
-                      categoryId: _categoryId,
-                      search: _search,
-                    )),
+                  final args = (
+                    tab: _activeTab,
+                    categoryId: _categoryId,
+                    search: _search,
                   );
+                  final feedAsync = ref.watch(lostFoundFeedProvider(args));
                   return feedAsync.when(
-                    data: (items) => _ItemsList(items: items),
+                    data: (items) => RefreshIndicator(
+                      onRefresh: () =>
+                          ref.refresh(lostFoundFeedProvider(args).future),
+                      child: _ItemsList(items: items),
+                    ),
                     loading: () =>
                         const Center(child: AppLoader()),
                     error: (err, _) =>
@@ -157,25 +160,31 @@ class _ItemsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(Spacing.xxl),
-          child: Column(
-            mainAxisSize: .min,
-            children: [
-              Icon(
-                Icons.inventory_2_outlined,
-                size: 48,
-                color: Theme.of(context).colorScheme.outline,
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: 400,
+            child: Center(
+              child: Column(
+                mainAxisSize: .min,
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  const Text('Nothing here yet'),
+                ],
               ),
-              const SizedBox(height: Spacing.md),
-              const Text('Nothing here yet'),
-            ],
+            ),
           ),
-        ),
+        ],
       );
     }
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       // Extra room so the last card also clears the "Post item" button,
       // which sits just above the search capsule.
       padding: EdgeInsets.fromLTRB(

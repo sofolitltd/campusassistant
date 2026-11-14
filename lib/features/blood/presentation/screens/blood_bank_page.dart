@@ -150,8 +150,23 @@ class _BloodBankState extends ConsumerState<BloodBank>
           Expanded(
             child: pageAsync.when(
               data: (state) {
+                Future<void> onRefresh() => ref.refresh(
+                  bloodBankPageProvider(_currentPage).future,
+                );
+
                 if (state.students.isEmpty) {
-                  return const Center(child: Text('No donors found.'));
+                  return RefreshIndicator(
+                    onRefresh: onRefresh,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(
+                          height: 400,
+                          child: Center(child: Text('No donors found.')),
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 final totalPages = (state.total / bloodBankPageSize).ceil();
@@ -164,38 +179,42 @@ class _BloodBankState extends ConsumerState<BloodBank>
                 return Column(
                   children: [
                     Expanded(
-                      child: ListView.separated(
-                        padding: EdgeInsets.fromLTRB(
-                          16,
-                          0,
-                          16,
-                          GlassSearchBar.listBottomPadding(context),
+                      child: RefreshIndicator(
+                        onRefresh: onRefresh,
+                        child: ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.fromLTRB(
+                            16,
+                            0,
+                            16,
+                            GlassSearchBar.listBottomPadding(context),
+                          ),
+                          itemCount: totalPages > 1
+                              ? state.students.length + 1
+                              : state.students.length,
+                          separatorBuilder: (_, index) {
+                            if (totalPages > 1 &&
+                                index == state.students.length - 1) {
+                              return const SizedBox(height: 0);
+                            }
+                            return const SizedBox(height: Spacing.md);
+                          },
+                          itemBuilder: (context, index) {
+                            if (totalPages > 1 &&
+                                index == state.students.length) {
+                              return NumberedPagination(
+                                currentPage: _currentPage,
+                                totalPages: totalPages,
+                                totalItems: state.total,
+                                startIndex: startIndex,
+                                endIndex: endIndex,
+                                onPageChanged: _setPage,
+                              );
+                            }
+                            final p = state.students[index];
+                            return _buildDonorCard(p, currentScope, isDark);
+                          },
                         ),
-                        itemCount: totalPages > 1
-                            ? state.students.length + 1
-                            : state.students.length,
-                        separatorBuilder: (_, index) {
-                          if (totalPages > 1 &&
-                              index == state.students.length - 1) {
-                            return const SizedBox(height: 0);
-                          }
-                          return const SizedBox(height: Spacing.md);
-                        },
-                        itemBuilder: (context, index) {
-                          if (totalPages > 1 &&
-                              index == state.students.length) {
-                            return NumberedPagination(
-                              currentPage: _currentPage,
-                              totalPages: totalPages,
-                              totalItems: state.total,
-                              startIndex: startIndex,
-                              endIndex: endIndex,
-                              onPageChanged: _setPage,
-                            );
-                          }
-                          final p = state.students[index];
-                          return _buildDonorCard(p, currentScope, isDark);
-                        },
                       ),
                     ),
                   ],

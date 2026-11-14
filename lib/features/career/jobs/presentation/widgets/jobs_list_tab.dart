@@ -202,39 +202,59 @@ class _JobsListTabState extends ConsumerState<JobsListTab> {
                     job.organization.toLowerCase().contains(query);
                 return statusOk && deadlineOk && searchOk;
               }).toList();
+              Future<void> onRefresh() =>
+                  ref.refresh(myCareerJobsProvider.future);
+
               if (filtered.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: .min,
+                return RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      Icon(
-                        LucideIcons.briefcase,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.outline,
+                      SizedBox(
+                        height: 400,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: .min,
+                            children: [
+                              Icon(
+                                LucideIcons.briefcase,
+                                size: 48,
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                              const SizedBox(height: Spacing.md),
+                              const Text('No jobs yet'),
+                              const SizedBox(height: Spacing.xs),
+                              const Text(
+                                'Save a circular or add one manually.',
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: Spacing.md),
-                      const Text('No jobs yet'),
-                      const SizedBox(height: Spacing.xs),
-                      const Text('Save a circular or add one manually.'),
                     ],
                   ),
                 );
               }
-              return ListView.builder(
-                padding: EdgeInsets.only(
-                  bottom: GlassSearchBar.listBottomPadding(context),
+              return RefreshIndicator(
+                onRefresh: onRefresh,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    bottom: GlassSearchBar.listBottomPadding(context),
+                  ),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final job = filtered[index];
+                    return JobCard(
+                      job: job,
+                      onTap: () => context.pushNamed(
+                        AppRoute.careerJobDetails.name,
+                        pathParameters: {'jobId': job.id},
+                      ),
+                    );
+                  },
                 ),
-                itemCount: filtered.length,
-                itemBuilder: (context, index) {
-                  final job = filtered[index];
-                  return JobCard(
-                    job: job,
-                    onTap: () => context.pushNamed(
-                      AppRoute.careerJobDetails.name,
-                      pathParameters: {'jobId': job.id},
-                    ),
-                  );
-                },
               );
             },
             loading: () => const Center(child: AppLoader()),

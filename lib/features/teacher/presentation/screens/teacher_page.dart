@@ -112,50 +112,62 @@ class TeacherListView extends ConsumerWidget {
               t.post.toLowerCase().contains(query);
         }).toList();
 
-        if (filteredTeachers.isEmpty) {
-          return _buildEmpty(context, isPresent, searchQuery.isNotEmpty);
-        }
-
-        return ListView.builder(
-          padding: EdgeInsets.fromLTRB(
-            Spacing.lg,
-            Spacing.sm,
-            Spacing.lg,
-            GlassSearchBar.listBottomPadding(context),
-          ),
-          physics: const BouncingScrollPhysics(),
-          itemCount: filteredTeachers.length,
-          itemBuilder: (context, index) {
-            final teacher = filteredTeachers[index];
-            return TeacherCard(teacher: teacher);
-          },
+        return RefreshIndicator(
+          onRefresh: () =>
+              ref.refresh(teachersListProvider(isPresent).future),
+          child: filteredTeachers.isEmpty
+              ? _buildEmpty(context, isPresent, searchQuery.isNotEmpty)
+              : ListView.builder(
+                  padding: EdgeInsets.fromLTRB(
+                    Spacing.lg,
+                    Spacing.sm,
+                    Spacing.lg,
+                    GlassSearchBar.listBottomPadding(context),
+                  ),
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  itemCount: filteredTeachers.length,
+                  itemBuilder: (context, index) {
+                    final teacher = filteredTeachers[index];
+                    return TeacherCard(teacher: teacher);
+                  },
+                ),
         );
       },
     );
   }
 
   Widget _buildEmpty(BuildContext context, bool isPresent, bool isSearching) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: .center,
-        children: [
-          Icon(
-            isSearching ? LucideIcons.searchX : LucideIcons.userX,
-            size: 48,
-            color: context.colors.borderStrong,
-          ),
-          const SizedBox(height: Spacing.md),
-          Text(
-            isSearching
-                ? 'No matches found'
-                : 'No ${isPresent ? "present" : "on leave"} faculties',
-            style: TextStyle(
-              color: context.colors.textSubtle,
-              fontWeight: .w500,
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: 400,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: .center,
+              children: [
+                Icon(
+                  isSearching ? LucideIcons.searchX : LucideIcons.userX,
+                  size: 48,
+                  color: context.colors.borderStrong,
+                ),
+                const SizedBox(height: Spacing.md),
+                Text(
+                  isSearching
+                      ? 'No matches found'
+                      : 'No ${isPresent ? "present" : "on leave"} faculties',
+                  style: TextStyle(
+                    color: context.colors.textSubtle,
+                    fontWeight: .w500,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

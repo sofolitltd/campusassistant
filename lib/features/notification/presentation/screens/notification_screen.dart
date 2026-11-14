@@ -75,7 +75,15 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               : visible.toList();
 
           if (filtered.isEmpty) {
-            return _buildEmptyState(isDark);
+            return RefreshIndicator(
+              onRefresh: () => ref.refresh(notificationsProvider.future),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(height: 500, child: _buildEmptyState(isDark)),
+                ],
+              ),
+            );
           }
 
           final grouped = _groupByDate(filtered);
@@ -86,19 +94,27 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             children: [
               _buildFilterChip(isDark),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(
-                    Spacing.lg,
-                    0,
-                    Spacing.lg,
-                    Spacing.xxl,
+                child: RefreshIndicator(
+                  onRefresh: () => ref.refresh(notificationsProvider.future),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.lg,
+                      0,
+                      Spacing.lg,
+                      Spacing.xxl,
+                    ),
+                    children: [
+                      ...grouped.entries.map((entry) {
+                        return _buildDateSection(
+                          entry.key,
+                          entry.value,
+                          isDark,
+                        );
+                      }),
+                      if (notifier.hasMore) _buildLoadMore(isDark, notifier),
+                    ],
                   ),
-                  children: [
-                    ...grouped.entries.map((entry) {
-                      return _buildDateSection(entry.key, entry.value, isDark);
-                    }),
-                    if (notifier.hasMore) _buildLoadMore(isDark, notifier),
-                  ],
                 ),
               ),
             ],

@@ -26,37 +26,55 @@ class RemindersListTab extends ConsumerWidget {
             .where((r) => r.status != CareerReminderStatus.pending)
             .toList();
 
+        Future<void> onRefresh() =>
+            ref.refresh(myCareerRemindersProvider.future);
+
         if (reminders.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: .min,
+          return RefreshIndicator(
+            onRefresh: onRefresh,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Icon(
-                  LucideIcons.bell,
-                  size: 48,
-                  color: Theme.of(context).colorScheme.outline,
+                SizedBox(
+                  height: 400,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: .min,
+                      children: [
+                        Icon(
+                          LucideIcons.bell,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                        const SizedBox(height: Spacing.md),
+                        const Text('No reminders yet'),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: Spacing.md),
-                const Text('No reminders yet'),
               ],
             ),
           );
         }
 
-        return ListView(
-          padding: const EdgeInsets.only(bottom: 80),
-          children: [
-            if (upcoming.isNotEmpty) ...[
-              const _SectionHeader('Upcoming'),
-              for (final reminder in upcoming)
-                _ReminderTile(reminder: reminder, ref: ref),
+        return RefreshIndicator(
+          onRefresh: onRefresh,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 80),
+            children: [
+              if (upcoming.isNotEmpty) ...[
+                const _SectionHeader('Upcoming'),
+                for (final reminder in upcoming)
+                  _ReminderTile(reminder: reminder, ref: ref),
+              ],
+              if (past.isNotEmpty) ...[
+                const _SectionHeader('Past'),
+                for (final reminder in past)
+                  _ReminderTile(reminder: reminder, ref: ref),
+              ],
             ],
-            if (past.isNotEmpty) ...[
-              const _SectionHeader('Past'),
-              for (final reminder in past)
-                _ReminderTile(reminder: reminder, ref: ref),
-            ],
-          ],
+          ),
         );
       },
       loading: () => const Center(child: AppLoader()),

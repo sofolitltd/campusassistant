@@ -71,17 +71,22 @@ class _StaffPageState extends ConsumerState<StaffPage> {
 
           final user = userAsync.value;
 
-          return ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(
-              Spacing.lg,
-              Spacing.lg,
-              Spacing.lg,
-              GlassSearchBar.listBottomPadding(context),
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(staffListProvider.future),
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              padding: EdgeInsets.fromLTRB(
+                Spacing.lg,
+                Spacing.lg,
+                Spacing.lg,
+                GlassSearchBar.listBottomPadding(context),
+              ),
+              itemCount: filteredStaff.length,
+              itemBuilder: (context, index) =>
+                  StaffCard(staff: filteredStaff[index], user: user),
             ),
-            itemCount: filteredStaff.length,
-            itemBuilder: (context, index) =>
-                StaffCard(staff: filteredStaff[index], user: user),
           );
         },
         loading: () => const Center(child: AppLoader()),

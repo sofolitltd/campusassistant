@@ -153,29 +153,44 @@ class _AlumniPageState extends ConsumerState<AlumniPage>
                 final alumniList = state.alumni;
 
                 if (alumniList.isEmpty && !state.isLoadingMore) {
-                  return const AlumniEmptyState();
+                  return RefreshIndicator(
+                    onRefresh: () =>
+                        ref.refresh(alumniPaginationProvider.future),
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(height: 400, child: AlumniEmptyState()),
+                      ],
+                    ),
+                  );
                 }
 
-                return ListView.separated(
-                  controller: _scrollController,
-                  padding: EdgeInsets.fromLTRB(
-                    Spacing.lg,
-                    Spacing.lg,
-                    Spacing.lg,
-                    GlassSearchBar.listBottomPadding(context),
+                return RefreshIndicator(
+                  onRefresh: () =>
+                      ref.refresh(alumniPaginationProvider.future),
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      Spacing.lg,
+                      Spacing.lg,
+                      Spacing.lg,
+                      GlassSearchBar.listBottomPadding(context),
+                    ),
+                    itemCount:
+                        alumniList.length + (state.isLoadingMore ? 1 : 0),
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: Spacing.lg),
+                    itemBuilder: (context, index) {
+                      if (index == alumniList.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: Spacing.xxl),
+                          child: Center(child: AppLoader()),
+                        );
+                      }
+                      return AlumniCard(alumni: alumniList[index]);
+                    },
                   ),
-                  itemCount: alumniList.length + (state.isLoadingMore ? 1 : 0),
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(height: Spacing.lg),
-                  itemBuilder: (context, index) {
-                    if (index == alumniList.length) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: Spacing.xxl),
-                        child: Center(child: AppLoader()),
-                      );
-                    }
-                    return AlumniCard(alumni: alumniList[index]);
-                  },
                 );
               },
               loading: () => const Center(child: AppLoader()),

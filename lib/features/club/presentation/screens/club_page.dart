@@ -113,29 +113,44 @@ class _ClubsListState extends ConsumerState<ClubsList> {
             : allClubs.where((c) => c.category == _selectedCategory).toList();
 
         if (allClubs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: .center,
+          return RefreshIndicator(
+            onRefresh: () =>
+                ref.refresh(clubsListProvider(widget.filterType).future),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Icon(
-                  LucideIcons.users,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.outline
-                      .withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: Spacing.lg),
-                Text(
-                  'No clubs found',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: .bold,
-                    color: Theme.of(context).colorScheme.outline,
+                SizedBox(
+                  height: 400,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Icon(
+                          LucideIcons.users,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.outline
+                              .withValues(alpha: 0.5),
+                        ),
+                        const SizedBox(height: Spacing.lg),
+                        Text(
+                          'No clubs found',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: .bold,
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                        ),
+                        const SizedBox(height: Spacing.sm),
+                        Text(
+                          'Be the first to add one!',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: Spacing.sm),
-                Text(
-                  'Be the first to add one!',
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
               ],
             ),
@@ -166,28 +181,42 @@ class _ClubsListState extends ConsumerState<ClubsList> {
               ),
             const SizedBox(height: Spacing.sm),
             Expanded(
-              child: clubs.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No clubs in this category',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.outline,
+              child: RefreshIndicator(
+                onRefresh: () => ref.refresh(
+                  clubsListProvider(widget.filterType).future,
+                ),
+                child: clubs.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: 300,
+                            child: Center(
+                              child: Text(
+                                'No clubs in this category',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(
+                          Spacing.lg,
+                          0,
+                          Spacing.lg,
+                          GlassSearchBar.listBottomPadding(context),
                         ),
+                        itemCount: clubs.length,
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: Spacing.lg),
+                        itemBuilder: (context, index) =>
+                            ClubCard(club: clubs[index]),
                       ),
-                    )
-                  : ListView.separated(
-                      padding: EdgeInsets.fromLTRB(
-                        Spacing.lg,
-                        0,
-                        Spacing.lg,
-                        GlassSearchBar.listBottomPadding(context),
-                      ),
-                      itemCount: clubs.length,
-                      separatorBuilder: (_, _) =>
-                          const SizedBox(height: Spacing.lg),
-                      itemBuilder: (context, index) =>
-                          ClubCard(club: clubs[index]),
-                    ),
+              ),
             ),
           ],
         );

@@ -263,36 +263,62 @@ class _CircularListTabState extends ConsumerState<CircularListTab> {
                 final dateOk = _passesDateFilter(item);
                 return scopeOk && dateOk;
               }).toList();
+              Future<void> onRefresh() => ref.refresh(
+                careerFeedProvider((
+                  categoryId: _categoryId,
+                  search: _search,
+                )).future,
+              );
+
               if (filtered.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: .min,
+                return RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      Icon(LucideIcons.fileText, size: 48, color: cs.outline),
-                      const SizedBox(height: Spacing.md),
-                      const Text('Nothing here yet'),
+                      SizedBox(
+                        height: 400,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: .min,
+                            children: [
+                              Icon(
+                                LucideIcons.fileText,
+                                size: 48,
+                                color: cs.outline,
+                              ),
+                              const SizedBox(height: Spacing.md),
+                              const Text('Nothing here yet'),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );
               }
-              return ListView.builder(
-                padding: EdgeInsets.only(
-                  bottom: GlassSearchBar.listBottomPadding(context),
-                ),
-                itemCount: filtered.length,
-                itemBuilder: (context, index) {
-                  final item = filtered[index];
-                  return switch (item) {
-                    CircularFeedItem(:final circular) => CircularCard(
-                      circular: circular,
-                      onTap: () => context.pushNamed(
-                        AppRoute.careerCircularDetails.name,
-                        pathParameters: {'circularId': circular.id},
+              return RefreshIndicator(
+                onRefresh: onRefresh,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    bottom: GlassSearchBar.listBottomPadding(context),
+                  ),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final item = filtered[index];
+                    return switch (item) {
+                      CircularFeedItem(:final circular) => CircularCard(
+                        circular: circular,
+                        onTap: () => context.pushNamed(
+                          AppRoute.careerCircularDetails.name,
+                          pathParameters: {'circularId': circular.id},
+                        ),
                       ),
-                    ),
-                    SharedJobFeedItem(:final job) => SharedJobCard(job: job),
-                  };
-                },
+                      SharedJobFeedItem(:final job) => SharedJobCard(job: job),
+                    };
+                  },
+                ),
               );
             },
             loading: () => const Center(child: AppLoader()),

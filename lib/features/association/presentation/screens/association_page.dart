@@ -94,29 +94,43 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
         }).toList();
 
         if (allAssociations.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: .center,
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(associationsListProvider.future),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Icon(
-                  LucideIcons.landmark,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.outline
-                      .withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: Spacing.lg),
-                Text(
-                  'No associations found',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: .bold,
-                    color: Theme.of(context).colorScheme.outline,
+                SizedBox(
+                  height: 400,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Icon(
+                          LucideIcons.landmark,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.outline
+                              .withValues(alpha: 0.5),
+                        ),
+                        const SizedBox(height: Spacing.lg),
+                        Text(
+                          'No associations found',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: .bold,
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                        ),
+                        const SizedBox(height: Spacing.sm),
+                        Text(
+                          'Be the first to add one!',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: Spacing.sm),
-                Text(
-                  'Be the first to add one!',
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
               ],
             ),
@@ -149,30 +163,42 @@ class _AssociationsListState extends ConsumerState<AssociationsList> {
               ),
             const SizedBox(height: Spacing.lg),
             Expanded(
-              child: associations.isEmpty
-                  ? Center(
-                      child: Text(
-                        query.isNotEmpty
-                            ? 'No matches found'
-                            : 'No associations in this category',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.outline,
+              child: RefreshIndicator(
+                onRefresh: () => ref.refresh(associationsListProvider.future),
+                child: associations.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: 300,
+                            child: Center(
+                              child: Text(
+                                query.isNotEmpty
+                                    ? 'No matches found'
+                                    : 'No associations in this category',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(
+                          Spacing.lg,
+                          0,
+                          Spacing.lg,
+                          GlassSearchBar.listBottomPadding(context),
                         ),
+                        itemCount: associations.length,
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: Spacing.lg),
+                        itemBuilder: (context, index) =>
+                            AssociationCard(association: associations[index]),
                       ),
-                    )
-                  : ListView.separated(
-                      padding: EdgeInsets.fromLTRB(
-                        Spacing.lg,
-                        0,
-                        Spacing.lg,
-                        GlassSearchBar.listBottomPadding(context),
-                      ),
-                      itemCount: associations.length,
-                      separatorBuilder: (_, _) =>
-                          const SizedBox(height: Spacing.lg),
-                      itemBuilder: (context, index) =>
-                          AssociationCard(association: associations[index]),
-                    ),
+              ),
             ),
           ],
         );

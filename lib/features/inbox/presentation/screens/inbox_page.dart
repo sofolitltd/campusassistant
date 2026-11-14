@@ -5,8 +5,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '/core/widgets/glass_search_bar.dart';
 import '/core/widgets/header_gradient_backdrop.dart';
 import '/core/widgets/app_loader.dart';
+
 import 'package:material_ui/material_ui.dart';
+
 import '/core/theme/app_colors.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -152,7 +155,9 @@ class _InboxPageState extends ConsumerState<InboxPage>
                       Expanded(
                         child: Center(
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: AppLayout.pageWidth),
+                            constraints: const BoxConstraints(
+                              maxWidth: AppLayout.pageWidth,
+                            ),
                             child: conversationsAsync.when(
                               data: (conversations) =>
                                   _buildConversationList(conversations, isDark),
@@ -207,66 +212,81 @@ class _InboxPageState extends ConsumerState<InboxPage>
           }).toList();
 
     if (filtered.isEmpty) {
-      return Center(
-        child: Text(
-          _filterText.isNotEmpty
-              ? 'No conversations found'
-              : 'No conversations yet',
-          style: TextStyle(
-            color: context.colors.textSubtle,
-            fontSize: FontSizeToken.lg,
-            fontWeight: .w500,
-          ),
+      return RefreshIndicator(
+        onRefresh: _performSync,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: 400,
+              child: Center(
+                child: Text(
+                  _filterText.isNotEmpty
+                      ? 'No conversations found'
+                      : 'No conversations yet',
+                  style: TextStyle(
+                    color: context.colors.textSubtle,
+                    fontSize: FontSizeToken.lg,
+                    fontWeight: .w500,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(Spacing.lg),
-      itemCount: filtered.length,
-      itemBuilder: (context, index) {
-        final conv = filtered[index];
-        final convId = conv['id'] as String;
-        final participantData =
-            conv['participantData'] as Map<String, dynamic>? ?? {};
-        final otherEntry = participantData.entries.firstWhere(
-          (e) => e.key != userId,
-          orElse: () => MapEntry('', const {'name': 'Unknown'}),
-        );
-        final otherName = otherEntry.value['name'] as String? ?? 'Unknown';
-        final otherImage = otherEntry.value['image'] as String? ?? '';
-        final lastMessage = conv['lastMessage'] as String? ?? '';
-        final lastMessageTime = conv['lastMessageTime'] as String? ?? '';
-        final lastMessageSender = conv['lastMessageSender'] as String? ?? '';
-        final isSentByMe = lastMessageSender == userId;
-        final unreadCount = conv['unreadCount'] as int? ?? 0;
-        final timeAgo = _timeAgo(lastMessageTime);
-        final status = conv['status'] as String? ?? 'accepted';
-        final initiatorId = conv['initiatorId'] as String?;
-        final isPending = status == 'pending' && initiatorId != userId;
+    return RefreshIndicator(
+      onRefresh: _performSync,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(Spacing.lg),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          final conv = filtered[index];
+          final convId = conv['id'] as String;
+          final participantData =
+              conv['participantData'] as Map<String, dynamic>? ?? {};
+          final otherEntry = participantData.entries.firstWhere(
+            (e) => e.key != userId,
+            orElse: () => MapEntry('', const {'name': 'Unknown'}),
+          );
+          final otherName = otherEntry.value['name'] as String? ?? 'Unknown';
+          final otherImage = otherEntry.value['image'] as String? ?? '';
+          final lastMessage = conv['lastMessage'] as String? ?? '';
+          final lastMessageTime = conv['lastMessageTime'] as String? ?? '';
+          final lastMessageSender = conv['lastMessageSender'] as String? ?? '';
+          final isSentByMe = lastMessageSender == userId;
+          final unreadCount = conv['unreadCount'] as int? ?? 0;
+          final timeAgo = _timeAgo(lastMessageTime);
+          final status = conv['status'] as String? ?? 'accepted';
+          final initiatorId = conv['initiatorId'] as String?;
+          final isPending = status == 'pending' && initiatorId != userId;
 
-        return _ConversationTile(
-          convId: convId,
-          name: otherName,
-          imageUrl: otherImage,
-          lastMessage: lastMessage,
-          time: timeAgo,
-          isSentByMe: isSentByMe,
-          isDark: isDark,
-          otherUserId: otherEntry.key,
-          unreadCount: unreadCount,
-          isPending: isPending,
-          status: status,
-          initiatorId: initiatorId,
-          onLongPress: () => _showConversationActions(
-            context,
-            convId,
-            otherName,
-            otherEntry.key,
-            isDark,
-          ),
-        );
-      },
+          return _ConversationTile(
+            convId: convId,
+            name: otherName,
+            imageUrl: otherImage,
+            lastMessage: lastMessage,
+            time: timeAgo,
+            isSentByMe: isSentByMe,
+            isDark: isDark,
+            otherUserId: otherEntry.key,
+            unreadCount: unreadCount,
+            isPending: isPending,
+            status: status,
+            initiatorId: initiatorId,
+            onLongPress: () => _showConversationActions(
+              context,
+              convId,
+              otherName,
+              otherEntry.key,
+              isDark,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -365,8 +385,7 @@ class _InboxPageState extends ConsumerState<InboxPage>
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) =>
-                          const Center(child: AppLoader()),
+                      builder: (_) => const Center(child: AppLoader()),
                     );
 
                     try {

@@ -18,6 +18,8 @@ class UsageAnalytics {
     String? attemptId,
     String? category,
     int? resultCount,
+    // Why a download failed or was blocked — a DownloadFailureReason code.
+    String? reason,
   }) async {
     try {
       await _apiClient.post(
@@ -30,6 +32,7 @@ class UsageAnalytics {
           'attempt_id': ?attemptId,
           'category': ?category,
           'result_count': ?resultCount,
+          'reason': ?reason,
           'platform': kIsWeb
               ? 'web'
               : switch (defaultTargetPlatform) {

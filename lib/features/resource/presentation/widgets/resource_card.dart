@@ -18,6 +18,7 @@ import 'package:uuid/uuid.dart';
 import '/features/resource/domain/entities/resource.dart';
 import '/features/pdf_tabs/presentation/open_pdf_tab.dart';
 import '/core/ads/download_ad_gate.dart';
+import '/core/analytics/download_failure_reason.dart';
 import '/core/ads/interstitial_ad_manager.dart';
 import '/core/ads/rewarded_ad_manager.dart';
 import '/core/providers/is_pro_provider.dart';
@@ -97,6 +98,8 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
   String _localPath = '';
   String? _downloadAttemptId;
   CancelToken? _cancelToken;
+  // Why the last access check said no; sent with the blocked analytics event.
+  String? _blockReason;
 
   @override
   void initState() {
@@ -783,12 +786,17 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
 
     final isProContent = widget.resource.accessLevel == 'pro';
     if (isProContent) {
+      _blockReason = DownloadFailureReason.proRequired;
       _showProDialog(context);
       return false;
     }
 
     final granted = await _checkRewardGate();
-    if (granted) _accessGranted = true;
+    if (granted) {
+      _accessGranted = true;
+    } else {
+      _blockReason = DownloadFailureReason.outOfCoins;
+    }
     return granted;
   }
 
@@ -809,6 +817,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
               entityType: 'resource',
               entityId: widget.resource.id,
               attemptId: attemptId,
+              reason: _blockReason,
             ),
       );
     }
@@ -1200,24 +1209,15 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       _isPaused = false;
     });
     _cancelToken = CancelToken();
-    final success = await _downloadFile(
+    final outcome = await _downloadFile(
       widget.resource.fileUrl,
       _localPath,
       attemptId,
     );
-    if (!success && mounted) {
-      unawaited(
-        ref
-            .read(usageAnalyticsProvider)
-            .record(
-              eventType: 'resource_download_failed',
-              entityType: 'resource',
-              entityId: widget.resource.id,
-              attemptId: attemptId,
-            ),
-      );
-    }
-    _downloadAttemptId = null;
+    final success = outcome == _DownloadOutcome.success;
+    // A paused download keeps its attempt id, so resuming continues the same
+    // attempt instead of leaving this one without an outcome.
+    if (outcome != _DownloadOutcome.cancelled) _downloadAttemptId = null;
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -1226,11 +1226,20 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
   }
 
-  Future<bool> _downloadFile(String url, String path, String attemptId) async {
+  Future<_DownloadOutcome> _downloadFile(
+    String url,
+    String path,
+    String attemptId,
+  ) async {
     try {
       await _fetchToFile(url, path);
     } catch (e) {
       log('Download error: $e');
+      // Pausing cancels the request. That is the user's choice, not a
+      // failure: no toast, no proxy retry, no failure event.
+      if (isDownloadCancelled(e)) return _DownloadOutcome.cancelled;
+      Object failure = e;
+      var proxyFailed = false;
       // Devices on networks that can't reach R2's pub-*.r2.dev links (ISP /
       // DNS filtering) fail instantly while the API server itself stays
       // reachable — stream the same object through the backend's already
@@ -1244,16 +1253,31 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
           );
         } catch (proxyErr) {
           log('Proxy download error: $proxyErr');
-          if (mounted) {
-            _showDownloadFailedToast();
-          }
-          return false;
+          if (isDownloadCancelled(proxyErr)) return _DownloadOutcome.cancelled;
+          proxyFailed = true;
+          // Storage's own answer (e.g. 404) says more than the proxy's; if
+          // storage was never reached, the proxy's error is what we know.
+          if (!isDownloadServerAnswer(e)) failure = proxyErr;
         }
       } else {
+        proxyFailed = true;
+      }
+      if (proxyFailed) {
         if (mounted) {
           _showDownloadFailedToast();
+          unawaited(
+            ref
+                .read(usageAnalyticsProvider)
+                .record(
+                  eventType: 'resource_download_failed',
+                  entityType: 'resource',
+                  entityId: widget.resource.id,
+                  attemptId: attemptId,
+                  reason: downloadFailureReason(failure),
+                ),
+          );
         }
-        return false;
+        return _DownloadOutcome.failed;
       }
     }
     // Cache metadata for the downloads page
@@ -1279,7 +1303,7 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
       ref.invalidate(downloadedFilesProvider);
       ref.invalidate(downloadCountProvider);
     }
-    return true;
+    return _DownloadOutcome.success;
   }
 
   /// Never fail silently — a user who just paid coins for this file deserves
@@ -1325,24 +1349,15 @@ class _ResourceCardState extends ConsumerState<ResourceCard> {
     }
     _cancelToken = CancelToken();
     final attemptId = _downloadAttemptId ?? _recordDownloadAttempt();
-    final success = await _downloadFile(
+    final outcome = await _downloadFile(
       widget.resource.fileUrl,
       _localPath,
       attemptId,
     );
-    if (!success && mounted) {
-      unawaited(
-        ref
-            .read(usageAnalyticsProvider)
-            .record(
-              eventType: 'resource_download_failed',
-              entityType: 'resource',
-              entityId: widget.resource.id,
-              attemptId: attemptId,
-            ),
-      );
-    }
-    _downloadAttemptId = null;
+    final success = outcome == _DownloadOutcome.success;
+    // A paused download keeps its attempt id, so resuming continues the same
+    // attempt instead of leaving this one without an outcome.
+    if (outcome != _DownloadOutcome.cancelled) _downloadAttemptId = null;
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -1530,3 +1545,6 @@ class _PopupItem extends StatelessWidget {
 }
 
 enum _UnlockChoice { download, watchVideo, pro }
+
+/// How one download run ended. Cancelled means the user paused it.
+enum _DownloadOutcome { success, failed, cancelled }
